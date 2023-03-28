@@ -1,0 +1,48 @@
+﻿@using T.Web.Areas.Services.Database
+
+@inject IDatabaseControl dbcontrol
+
+@{
+    ViewData["Title"] = "Thông tin Db";
+    var databaseResponse = await dbcontrol.GetDbInfo();
+}
+<partial name="_AlertMessage"></partial>
+
+<h2>Thông tin</h2>
+<p>- Database: @databaseResponse.dbname</p>
+<p>- Source: @databaseResponse.source</p>
+<p>- State: @databaseResponse.state</p>
+<hr />
+<h2>Migrations</h2>
+@if (databaseResponse.list_applied_migration != null)
+{
+    @foreach (var migration in databaseResponse.list_applied_migration)
+    {
+        <p>@migration</p>
+    }
+}
+@if (databaseResponse.list_migration_pending != null)
+{
+    @foreach (var migration in databaseResponse.list_migration_pending)
+    {
+        <p>@migration (pending)</p>
+    }
+}
+@if (databaseResponse.can_connect){
+    <h2>Các table</h2>
+    <ul>
+        @foreach(var item in databaseResponse.list_tables){
+            <li>@item</li>
+        }
+    </ul>
+    <a class="btn btn-danger" asp-action="DeleteDb">Xoá database: @databaseResponse.dbname</a>
+}
+else{
+    <p class="alert alert-danger">Không thể kết nối tới database</p>
+}
+
+@if (databaseResponse.list_migration_pending.Any()){
+    <form method="post">
+        <button class="btn btn-success" asp-action="Migrate">Tạo database (cập nhật migration)</button>
+    </form>
+}
