@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace T.WebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,17 +17,17 @@ namespace T.WebApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryTemplateId = table.Column<int>(type: "int", nullable: false),
-                    MetaKeywords = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MetaDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MetaTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MetaKeywords = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MetaDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MetaTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ParentCategoryId = table.Column<int>(type: "int", nullable: false),
                     PictureId = table.Column<int>(type: "int", nullable: false),
                     PageSize = table.Column<int>(type: "int", nullable: false),
                     AllowCustomersToSelectPageSize = table.Column<bool>(type: "bit", nullable: false),
-                    PageSizeOptions = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PageSizeOptions = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ShowOnHomepage = table.Column<bool>(type: "bit", nullable: false),
                     IncludeInTopMenu = table.Column<bool>(type: "bit", nullable: false),
                     SubjectToAcl = table.Column<bool>(type: "bit", nullable: false),
@@ -53,12 +53,12 @@ namespace T.WebApi.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MimeType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SeoFilename = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AltAttribute = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TitleAttribute = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SeoFilename = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AltAttribute = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TitleAttribute = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsNew = table.Column<bool>(type: "bit", nullable: false),
-                    VirtualPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VirtualPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -214,10 +214,10 @@ namespace T.WebApi.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Dob = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AvatarPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AvatarPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Banned = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),

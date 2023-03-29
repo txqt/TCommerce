@@ -1,14 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
 using T.WebApi.Database.ConfigurationDatabase;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using T.WebApi.Attribute;
+using T.Library.Model.Enum;
 
 namespace T.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DbManageController : ControllerBase
     {
         private readonly DatabaseContext _databaseContext;
@@ -18,7 +22,8 @@ namespace T.WebApi.Controllers
             this._databaseContext = databaseContext;
         }
         [HttpGet]
-        public async Task<ActionResult> Index()
+        [CustomAuthorizationFilter(RoleName.Customer)]
+        public ActionResult Index()
         {
             var connect = _databaseContext.Database.GetDbConnection();
             var dbname = connect.Database;

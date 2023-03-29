@@ -16,7 +16,7 @@ namespace T.WebApi.Helpers.TokenHelpers
         Task<List<Claim>> GetClaims(User user);
         JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims);
         string GenerateRefreshToken();
-        ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
+        ClaimsPrincipal GetPrincipalFromExpiredToken(string? token);
     }
     public class TokenService : ITokenService
     {
@@ -76,7 +76,7 @@ namespace T.WebApi.Helpers.TokenHelpers
             }
         }
 
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        public ClaimsPrincipal GetPrincipalFromExpiredToken(string? token)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {

@@ -11,6 +11,7 @@ using T.Library.Model;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Helpers.TokenHelpers;
+using T.WebApi.Services.AccountServices;
 
 namespace T.WebApi.Extensions
 {
@@ -65,27 +66,33 @@ namespace T.WebApi.Extensions
             // Lấy thời gian hết hạn của JWT làm mới
             var refreshTokenExpirationInMinutes = _configuration["RefreshTokenExpirationInMinutes"];
 
+            // Cấu hình phân quyền (authorization) sử dụng JWT
             services.AddAuthorization(options =>
             {
+                // Thêm policy với tên là "Jwt" và yêu cầu tất cả người dùng phải được xác thực bằng JWT
                 options.AddPolicy("Jwt", policy =>
                 {
+                    // Sử dụng scheme xác thực là JwtBearerDefaults.AuthenticationScheme
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    // Yêu cầu tất cả người dùng phải được xác thực
                     policy.RequireAuthenticatedUser();
                 });
 
+                // Cấu hình policy mặc định để yêu cầu tất cả các yêu cầu phải được xác thực bằng JWT
                 var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme);
-                defaultAuthorizationPolicyBuilder =
-                    defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+                defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
                 options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
             });
 
+            // Cấu hình xác thực (authentication) sử dụng JWT
             services.AddAuthentication(opt =>
             {
+                // Sử dụng scheme xác thực mặc định là JwtBearerDefaults.AuthenticationScheme cho cả việc xác thực và thách thức (challenge)
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
 
-                .AddJwtBearer(options =>
+                 .AddJwtBearer(options =>
                 {
                     options.RequireHttpsMetadata = false;
                     options.SaveToken = true;
@@ -98,7 +105,7 @@ namespace T.WebApi.Extensions
                         ValidIssuer = issuer,
                         ValidAudience = audience,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-                        ClockSkew = TimeSpan.Zero
+                        ClockSkew = TimeSpan.Zero,
                     };
 
                     options.Events = new JwtBearerEvents
@@ -127,6 +134,7 @@ namespace T.WebApi.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAccountService, AccountService>();
             return services;
         }
 
@@ -143,7 +151,8 @@ namespace T.WebApi.Extensions
         public static IServiceCollection AddIdentityConfig(this IServiceCollection services)
         {
             services.AddIdentity<User, Role>()
-                .AddEntityFrameworkStores<DatabaseContext>().AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<DatabaseContext>().AddDefaultTokenProviders()
+                .AddDefaultTokenProviders(); 
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -154,6 +163,9 @@ namespace T.WebApi.Extensions
                 options.Password.RequireUppercase = false;
                 options.SignIn.RequireConfirmedEmail = true;
                 options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+                options.Lockout.MaxFailedAccessAttempts = 3;
             });
             return services;
         }

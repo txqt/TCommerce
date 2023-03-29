@@ -146,7 +146,6 @@ namespace T.WebApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DisplayOrder")
@@ -162,26 +161,21 @@ namespace T.WebApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("MetaDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MetaKeywords")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MetaTitle")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PageSize")
                         .HasColumnType("int");
 
                     b.Property<string>("PageSizeOptions")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ParentCategoryId")
@@ -302,7 +296,6 @@ namespace T.WebApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AltAttribute")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Deleted")
@@ -312,19 +305,15 @@ namespace T.WebApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("MimeType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SeoFilename")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TitleAttribute")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VirtualPath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -837,8 +826,10 @@ namespace T.WebApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("AvatarPath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Banned")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -861,9 +852,6 @@ namespace T.WebApi.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -894,7 +882,6 @@ namespace T.WebApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("RefreshToken")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")

@@ -8,12 +8,12 @@
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Gets or sets a value of used category template identifier
@@ -23,17 +23,17 @@
         /// <summary>
         /// Gets or sets the meta keywords
         /// </summary>
-        public string MetaKeywords { get; set; }
+        public string? MetaKeywords { get; set; }
 
         /// <summary>
         /// Gets or sets the meta description
         /// </summary>
-        public string MetaDescription { get; set; }
+        public string? MetaDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the meta title
         /// </summary>
-        public string MetaTitle { get; set; }
+        public string? MetaTitle { get; set; }
 
         /// <summary>
         /// Gets or sets the parent category identifier
@@ -58,7 +58,7 @@
         /// <summary>
         /// Gets or sets the available customer selectable page size options
         /// </summary>
-        public string PageSizeOptions { get; set; }
+        public string? PageSizeOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show the category on home page
@@ -120,6 +120,6 @@
         /// </summary>
         public bool ManuallyPriceRange { get; set; }
 
-        public List<ProductCategory> ProductCategories { get; set; }
+        public List<ProductCategory>? ProductCategories { get; set; }
     }
 }
