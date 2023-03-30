@@ -51,7 +51,29 @@ namespace T.WebApi.Controllers
                     EmailConfirmed = true // không cần xác thực email nữa , 
                 };
                 await _userManager.CreateAsync(user2, "123321");
-                await _userManager.AddToRoleAsync(user2, RoleName.Customer);
+                await _userManager.AddToRoleAsync(user2, RoleName.Admin);
+                return Ok();
+            }
+
+            var user3 = await _userManager.FindByEmailAsync("hovanthanh@gmail.com");
+            if (user3 == null)
+            {
+                user3 = new User()
+                {
+                    Id = Guid.NewGuid(),
+
+                    FirstName = "Văn Thành",
+                    LastName = "Hồ",
+                    Email = "hovanthanh@gmail.com",
+                    NormalizedEmail = "hovanthanh@gmail.com",
+                    PhoneNumber = "032232131",
+                    UserName = "thanhhv2",
+                    NormalizedUserName = "THANHHV2",
+                    CreatedDate = AppExtensions.GetDateTimeNow(),
+                    EmailConfirmed = true // không cần xác thực email nữa , 
+                };
+                await _userManager.CreateAsync(user3, "123321");
+                await _userManager.AddToRoleAsync(user3, RoleName.Customer);
                 return Ok();
             }
             return BadRequest();

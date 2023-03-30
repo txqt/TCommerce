@@ -7,6 +7,7 @@ using T.WebApi.Database.ConfigurationDatabase;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using T.WebApi.Attribute;
 using T.Library.Model.Enum;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace T.WebApi.Controllers
 {
@@ -16,13 +17,15 @@ namespace T.WebApi.Controllers
     public class DbManageController : ControllerBase
     {
         private readonly DatabaseContext _databaseContext;
+        private readonly IDistributedCache _cache;
 
-        public DbManageController(DatabaseContext databaseContext)
+        public DbManageController(DatabaseContext databaseContext, IDistributedCache cache)
         {
             this._databaseContext = databaseContext;
+            _cache = cache;
         }
         [HttpGet]
-        [CustomAuthorizationFilter(RoleName.Customer)]
+        [CustomAuthorizationFilter(RoleName.Admin)]
         public ActionResult Index()
         {
             var connect = _databaseContext.Database.GetDbConnection();
@@ -50,10 +53,15 @@ namespace T.WebApi.Controllers
         }
 
         [HttpDelete]
+        [CustomAuthorizationFilter(RoleName.Admin)]
         public IActionResult DeleteDatabase()
         {
             var result = _databaseContext.Database.EnsureDeleted();
-            return Ok("Đã xoá cơ sở dữ liệu thành công!");
+            if (result)
+            {
+                return Ok("Đã xoá cơ sở dữ liệu thành công!");
+            }
+            return BadRequest("Xoá cơ sở dữ liệu không thành công!");
         }
 
         [HttpPost("Migrate")]

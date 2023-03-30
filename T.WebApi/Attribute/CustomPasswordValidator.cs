@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace T.WebApi.Extensions
+namespace T.WebApi.Attribute
 {
     public class CustomPasswordValidator<TUser> : IPasswordValidator<TUser> where TUser : class
     {

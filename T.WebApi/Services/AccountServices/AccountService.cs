@@ -69,6 +69,7 @@ namespace T.WebApi.Services.AccountServices
             if (result.IsNotAllowed) 
                 return new LoginResponse<AuthResponseDto>() { Message = "Tài khoản không được cấp quyền vào trang này", Success = false };
 
+          
             if (result.IsLockedOut)
             {
                 //AppExtensions.GetDateTimeNow();
@@ -82,12 +83,13 @@ namespace T.WebApi.Services.AccountServices
 
             var roles = await _userManager.GetRolesAsync(user);
 
-
+            //Create token
             var signingCredentials = _tokenService.GetSigningCredentials();
             var claims = await _tokenService.GetClaims(user);
             var tokenOptions = _tokenService.GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
+            //Create refresh token
             var refreshToken = _tokenService.GenerateRefreshToken();
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = AppExtensions.GetDateTimeNow().AddDays(7);

@@ -12,6 +12,9 @@ using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Services.AccountServices;
+using T.WebApi.Attribute;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace T.WebApi.Extensions
 {
@@ -135,6 +138,7 @@ namespace T.WebApi.Extensions
         {
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddMemoryCache();
             return services;
         }
 
@@ -152,7 +156,8 @@ namespace T.WebApi.Extensions
         {
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<DatabaseContext>().AddDefaultTokenProviders()
-                .AddDefaultTokenProviders(); 
+                .AddDefaultTokenProviders()
+                .AddPasswordValidator<CustomPasswordValidator<User>>();
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -167,6 +172,20 @@ namespace T.WebApi.Extensions
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
                 options.Lockout.MaxFailedAccessAttempts = 3;
             });
+            return services;
+        }
+
+        public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
+        {
+            //services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = configuration.GetSection("Url:ApiUrl").Value; // Thay đổi địa chỉ Redis server nếu cần thiết
+            //    options.InstanceName = "MyRedisCache";
+            //});
+            //services.AddDistributedRedisCache(options =>
+            //{
+            //    options.Configuration = configuration.GetConnectionString(configuration.GetSection("Url:ApiUrl").Value);
+            //});
             return services;
         }
     }
