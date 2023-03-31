@@ -12,7 +12,7 @@ using T.WebApi.Database.ConfigurationDatabase;
 namespace T.WebApi.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230329094403_Init")]
+    [Migration("20230331082247_Init")]
     partial class Init
     {
         /// <inheritdoc />

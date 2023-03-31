@@ -28,4 +28,9 @@
     <ProjectReference Include="..\T.Library\T.Library.csproj" />
   </ItemGroup>
 
+
+	<ItemGroup>
+	  <Folder Include="Services\NewFolder\" />
+	</ItemGroup>
+
 </Project>

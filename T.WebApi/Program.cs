@@ -28,6 +28,9 @@ builder.Services.AddServices();
 builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddSwagger(builder.Configuration);
 builder.Services.AddIdentityConfig();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
+
 
 var app = builder.Build();
 

@@ -15,6 +15,7 @@ using T.WebApi.Services.AccountServices;
 using T.WebApi.Attribute;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
+using T.WebApi.Services.CacheServices;
 
 namespace T.WebApi.Extensions
 {
@@ -138,7 +139,7 @@ namespace T.WebApi.Extensions
         {
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddMemoryCache();
+            services.AddScoped<ICacheService, CacheService>();
             return services;
         }
 

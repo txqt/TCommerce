@@ -8,6 +8,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using T.WebApi.Attribute;
 using T.Library.Model.Enum;
 using Microsoft.Extensions.Caching.Distributed;
+using T.WebApi.Services.CacheServices;
 
 namespace T.WebApi.Controllers
 {
@@ -17,9 +18,9 @@ namespace T.WebApi.Controllers
     public class DbManageController : ControllerBase
     {
         private readonly DatabaseContext _databaseContext;
-        private readonly IDistributedCache _cache;
+        private readonly ICacheService _cache;
 
-        public DbManageController(DatabaseContext databaseContext, IDistributedCache cache)
+        public DbManageController(DatabaseContext databaseContext, ICacheService cache)
         {
             this._databaseContext = databaseContext;
             _cache = cache;
@@ -28,6 +29,10 @@ namespace T.WebApi.Controllers
         [CustomAuthorizationFilter(RoleName.Admin)]
         public ActionResult Index()
         {
+            var cacheDbInfo = _cache.GetData<DatabaseControlResponse> ();
+            if (cacheDbInfo != null)
+                return Ok(cacheDbInfo);
+
             var connect = _databaseContext.Database.GetDbConnection();
             var dbname = connect.Database;
             var can_connect = _databaseContext.Database.CanConnect();
@@ -40,6 +45,18 @@ namespace T.WebApi.Controllers
             {
                 all_tables = _databaseContext.Model.GetEntityTypes().Select(t => t.GetTableName()).ToList();
             }
+
+            var expirationTime = DateTimeOffset.Now.AddSeconds(30);
+            _cache.SetData(new DatabaseControlResponse
+            {
+                dbname = dbname,
+                source = connect.DataSource,
+                state = (int)connect.State,
+                can_connect = can_connect,
+                list_applied_migration = list_applied_migraiton,
+                list_migration_pending = list_migration_pending,
+                list_tables = all_tables
+            }, expirationTime);
             return Ok(new DatabaseControlResponse
             {
                 dbname = dbname,
@@ -65,6 +82,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("Migrate")]
+        [CustomAuthorizationFilter(RoleName.Admin)]
         public async Task<IActionResult> Migrate()
         {
             await _databaseContext.Database.MigrateAsync();
