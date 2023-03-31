@@ -9,6 +9,7 @@ using T.WebApi.Attribute;
 using T.Library.Model.Enum;
 using Microsoft.Extensions.Caching.Distributed;
 using T.WebApi.Services.CacheServices;
+using System.Data;
 
 namespace T.WebApi.Controllers
 {
@@ -29,44 +30,29 @@ namespace T.WebApi.Controllers
         [CustomAuthorizationFilter(RoleName.Admin)]
         public ActionResult Index()
         {
-            var cacheDbInfo = _cache.GetData<DatabaseControlResponse> ();
+            var cacheDbInfo = _cache.GetData<DatabaseControlResponse>(null);
             if (cacheDbInfo != null)
                 return Ok(cacheDbInfo);
 
             var connect = _databaseContext.Database.GetDbConnection();
-            var dbname = connect.Database;
-            var can_connect = _databaseContext.Database.CanConnect();
-            var all_tables = new List<string?>();
+            var all_tables = connect.State == ConnectionState.Open
+                ? _databaseContext.Model.GetEntityTypes().Select(t => t.GetTableName()).ToList()
+                : new List<string?>();
 
-            var list_applied_migraiton = _databaseContext.Database.GetAppliedMigrations().ToList();
-            var list_migration_pending = _databaseContext.Database.GetPendingMigrations().ToList();
-
-            if (can_connect)
+            var dbResponse = new DatabaseControlResponse
             {
-                all_tables = _databaseContext.Model.GetEntityTypes().Select(t => t.GetTableName()).ToList();
-            }
+                dbname = connect.Database,
+                source = connect.DataSource,
+                state = (int)connect.State,
+                can_connect = _databaseContext.Database.CanConnect(),
+                list_applied_migration = _databaseContext.Database.GetAppliedMigrations().ToList(),
+                list_migration_pending = _databaseContext.Database.GetPendingMigrations().ToList(),
+                list_tables = all_tables
+            };
 
             var expirationTime = DateTimeOffset.Now.AddSeconds(30);
-            _cache.SetData(new DatabaseControlResponse
-            {
-                dbname = dbname,
-                source = connect.DataSource,
-                state = (int)connect.State,
-                can_connect = can_connect,
-                list_applied_migration = list_applied_migraiton,
-                list_migration_pending = list_migration_pending,
-                list_tables = all_tables
-            }, expirationTime);
-            return Ok(new DatabaseControlResponse
-            {
-                dbname = dbname,
-                source = connect.DataSource,
-                state = (int)connect.State,
-                can_connect = can_connect,
-                list_applied_migration = list_applied_migraiton,
-                list_migration_pending = list_migration_pending,
-                list_tables = all_tables
-            });
+            _cache.SetData(dbResponse, expirationTime);
+            return Ok(dbResponse);
         }
 
         [HttpDelete]

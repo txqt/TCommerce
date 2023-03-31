@@ -4,7 +4,7 @@ namespace T.WebApi.Services.CacheServices
 {
     public interface ICacheService
     {
-        T GetData<T> ();
+        T GetData<T> (string key);
         bool SetData<T> (T value, DateTimeOffset expirationTime);
         object RemoveData();
     }
@@ -19,11 +19,12 @@ namespace T.WebApi.Services.CacheServices
         }
 
         private string GetCacheKey() { var request = _httpContextAccessor.HttpContext?.Request; var path = request?.Path.HasValue == true ? request.Path.Value : string.Empty; return $"cache_{path}"; }
-        public T GetData<T>()
+        public T GetData<T>(string key)
         {
+            var _key = key != null ? key : GetCacheKey();
             try
             {
-                T item = (T) _memoryCache.Get(GetCacheKey());
+                T item = (T) _memoryCache.Get(_key);
                 return item;
             }
             catch (Exception ex)
