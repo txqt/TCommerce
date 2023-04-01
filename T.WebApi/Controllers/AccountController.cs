@@ -1,4 +1,5 @@
 ﻿using App.Utilities;
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,8 @@ using T.Library.Model;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
 using T.Library.Model.Users;
+using T.WebApi.Extensions;
+using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Services.AccountServices;
 using T.WebApi.Services.CacheServices;
 
@@ -19,17 +22,36 @@ namespace T.WebApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        private readonly ICacheService _cache;
-        public AccountController(IAccountService accountService, ICacheService cache)
+        private readonly ITokenService _tokenService;
+
+        public AccountController(IAccountService accountService, ITokenService tokenService)
         {
             _accountService = accountService;
-            _cache = cache;
+            this._tokenService = tokenService;
         }
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponse<string>>> Login(LoginViewModel model, string? returnUrl = null)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             var response = await _accountService.Login(model, returnUrl);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto tokenDto)
+        {
+            var response = await _accountService.RefreshToken(tokenDto);
+
             if (!response.Success)
             {
                 return BadRequest(response);

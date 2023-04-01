@@ -12,11 +12,13 @@ namespace T.WebApi.Helpers.TokenHelpers
 {
     public interface ITokenService
     {
-        SigningCredentials GetSigningCredentials();
+        SigningCredentials GetSigningCredentials(string key);
         Task<List<Claim>> GetClaims(User user);
         JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims);
-        string GenerateRefreshToken();
+        //string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string? token);
+        Task<string> GenerateRefreshToken();
+        Task<string> GenerateAccessToken(User user);
     }
     public class TokenService : ITokenService
     {
@@ -27,13 +29,13 @@ namespace T.WebApi.Helpers.TokenHelpers
         public TokenService(IConfiguration configuration, UserManager<User> userManager)
         {
             _configuration = configuration;
-            _jwtSettings = _configuration.GetSection("Jwt");
+            _jwtSettings = _configuration.GetSection("Authorization");
             _userManager = userManager;
         }
 
-        public SigningCredentials GetSigningCredentials()
+        public SigningCredentials GetSigningCredentials(string _key)
         {
-            var key = Encoding.UTF8.GetBytes(_jwtSettings["Key"]);
+            var key = Encoding.UTF8.GetBytes(_key);
             var secret = new SymmetricSecurityKey(key);
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
@@ -66,15 +68,15 @@ namespace T.WebApi.Helpers.TokenHelpers
             return tokenOptions;
         }
 
-        public string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
-        }
+        //public string GenerateRefreshToken()
+        //{
+        //    var randomNumber = new byte[32];
+        //    using (var rng = RandomNumberGenerator.Create())
+        //    {
+        //        rng.GetBytes(randomNumber);
+        //        return Convert.ToBase64String(randomNumber);
+        //    }
+        //}
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string? token)
         {
@@ -86,7 +88,7 @@ namespace T.WebApi.Helpers.TokenHelpers
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = _jwtSettings["Issuer"],
                 ValidAudience = _jwtSettings["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings["Key"])),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings["AccessTokenKey"])),
                 ClockSkew = TimeSpan.Zero
             };
 
@@ -102,6 +104,21 @@ namespace T.WebApi.Helpers.TokenHelpers
             }
 
             return principal;
+        }
+
+        public async Task<string> GenerateRefreshToken()
+        {
+            var signingCredentials = GetSigningCredentials(_jwtSettings["RefreshTokenKey"]);
+            var tokenOptions = GenerateTokenOptions(signingCredentials, null);
+            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        }
+
+        public async Task<string> GenerateAccessToken(User user)
+        {
+            var claims = await GetClaims(user);
+            var signingCredentials = GetSigningCredentials(_jwtSettings["AccessTokenKey"]);
+            var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
+            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
     }
 }

@@ -54,9 +54,9 @@ namespace T.WebApi.Extensions
 
         public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
         {
-            var _configuration = configuration.GetSection("Jwt");
+            var _configuration = configuration.GetSection("Authorization");
             // Lấy khóa bí mật để tạo JWT
-            var key = _configuration["Key"];
+            var key = _configuration["AccessTokenKey"];
 
             // Lấy tên người tạo JWT
             var issuer = _configuration["Issuer"];
@@ -67,8 +67,6 @@ namespace T.WebApi.Extensions
             // Lấy thời gian hết hạn của JWT truy cập
             var accessTokenExpirationInMinutes = _configuration["AccessTokenExpirationInMinutes"];
 
-            // Lấy thời gian hết hạn của JWT làm mới
-            var refreshTokenExpirationInMinutes = _configuration["RefreshTokenExpirationInMinutes"];
 
             // Cấu hình phân quyền (authorization) sử dụng JWT
             services.AddAuthorization(options =>

@@ -14,6 +14,8 @@ namespace T.WebApi.Services.AccountServices
     public interface IAccountService
     {
         Task<LoginResponse<AuthResponseDto>> Login(LoginViewModel login, string? returnUrl);
+        Task<User> FindUserByName(string userName);
+        Task<ServiceResponse<AuthResponseDto>> RefreshToken(RefreshTokenDto tokenDto);
     }
     public class AccountService : IAccountService
     {
@@ -47,6 +49,12 @@ namespace T.WebApi.Services.AccountServices
             _httpContext = httpContext;
             _context = context;
         }
+
+        public async Task<User> FindUserByName(string userName)
+        {
+            return await _userManager.FindByNameAsync(userName);
+        }
+
         public async Task<LoginResponse<AuthResponseDto>> Login(LoginViewModel login, string? returnUrl)
         {
             var user = await _userManager.FindByNameAsync(login.UserNameOrEmail);
@@ -84,24 +92,62 @@ namespace T.WebApi.Services.AccountServices
             var roles = await _userManager.GetRolesAsync(user);
 
             //Create token
-            var signingCredentials = _tokenService.GetSigningCredentials();
-            var claims = await _tokenService.GetClaims(user);
-            var tokenOptions = _tokenService.GenerateTokenOptions(signingCredentials, claims);
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            
+            var accessToken = await _tokenService.GenerateAccessToken(user);
 
             //Create refresh token
-            var refreshToken = _tokenService.GenerateRefreshToken();
+            var refreshToken = await _tokenService.GenerateRefreshToken();
+
+            //Save refresh token
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = AppExtensions.GetDateTimeNow().AddDays(7);
             await _userManager.UpdateAsync(user);
+
             var response = new AuthResponseDto()
             {
-                Token = token,
+                AccessToken = accessToken,
                 RefreshToken = refreshToken,
                 ReturnUrl = returnUrl
             };
 
             return new LoginResponse<AuthResponseDto>() { Success = true, Data = response, RoleNames = roles.ToList() };
+        }
+
+        public async Task<ServiceResponse<AuthResponseDto>> RefreshToken(RefreshTokenDto tokenDto)
+        {
+            try
+            {
+                if (tokenDto is null)
+                {
+                    return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Invalid client request" };
+                }
+
+                var principal = _tokenService.GetPrincipalFromExpiredToken(tokenDto.Token);
+                var username = principal.Identity.Name;
+                var user = await _userManager.FindByNameAsync(username);
+
+                if (user == null || user.RefreshToken != tokenDto.RefreshToken || user.RefreshTokenExpiryTime <= AppExtensions.GetDateTimeNow())
+                    return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Invalid client request" };
+
+                var accessToken = await _tokenService.GenerateAccessToken(user);
+                user.RefreshToken = await _tokenService.GenerateRefreshToken();
+                await _userManager.UpdateAsync(user);
+
+                var data = new AuthResponseDto()
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = user.RefreshToken,
+                    ReturnUrl = tokenDto.ReturnUrl
+                };
+
+                return new ServiceErrorResponse<AuthResponseDto> { Success = true, Data = data };
+            }
+            catch (Exception e)
+            {
+
+                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = $"{e.Message}" };
+
+            }
         }
     }
 }

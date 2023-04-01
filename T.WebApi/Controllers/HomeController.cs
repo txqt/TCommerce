@@ -18,13 +18,9 @@ namespace T.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<string>> Hello()
         {
-            var user = new User() { Id = Guid.NewGuid(),UserName = "dsfads", FirstName = "dfad", LastName = "đấ0", Email="đấ" };
-            var signingCredentials = _tokenService.GetSigningCredentials();
-            var claims = await _tokenService.GetClaims(user);
-            var tokenOptions = _tokenService.GenerateTokenOptions(signingCredentials, claims);
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+           
 
-            return token;
+            return "Hello";
         }
     }
 }
