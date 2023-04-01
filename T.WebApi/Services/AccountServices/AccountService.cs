@@ -1,6 +1,9 @@
 ﻿using App.Utilities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using T.Library.Model;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
@@ -16,6 +19,7 @@ namespace T.WebApi.Services.AccountServices
         Task<LoginResponse<AuthResponseDto>> Login(LoginViewModel login, string? returnUrl);
         Task<User> FindUserByName(string userName);
         Task<ServiceResponse<AuthResponseDto>> RefreshToken(RefreshTokenDto tokenDto);
+        Task<ServiceResponse<bool>> Register(RegisterRequest request);
     }
     public class AccountService : IAccountService
     {
@@ -148,6 +152,75 @@ namespace T.WebApi.Services.AccountServices
                 return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = $"{e.Message}" };
 
             }
+        }
+
+        public async Task<ServiceResponse<bool>> Register(RegisterRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(request.UserName);
+
+            if (user != null)
+            {
+                return new ServiceErrorResponse<bool>("Tài khoản đã tồn tại");
+            }
+            if (await _userManager.FindByEmailAsync(request.Email) != null)
+            {
+                return new ServiceErrorResponse<bool>("Email đã tồn tại");
+            }
+
+            if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) != null)
+                return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
+
+            if (!AppUtilities.IsValidEmail(request.Email))
+                return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
+
+            user = new User()
+            {
+                Dob = request.Dob,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                UserName = request.UserName,
+                PhoneNumber = request.PhoneNumber,
+            };
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                return new ServiceErrorResponse<bool>(string.Join(", ", errors));
+            }
+            if (result.Succeeded)
+            {
+                var defaultrole = _roleManager.FindByNameAsync("Customer").Result;
+                if (defaultrole != null)
+                {
+                    IdentityResult roleresult = await _userManager.AddToRoleAsync(user, defaultrole.Name);
+                }
+            }
+            var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);
+            var validEmailToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
+
+            //string url = $"{_configuration["ApiUrl"]}/api/user/confirmemail?userid={user.Id}&token={validEmailToken}";
+
+            //EmailDto emailDto = new EmailDto
+            //{
+            //    Subject = "Xác thực email người dùng",
+            //    Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
+            //    + $"<h3>Tài khoản: {user.UserName}</h3></br>"
+            //    + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
+            //    To = user.Email
+            //};
+            //try
+            //{
+            //    _emailService.SendEmail(emailDto);
+            //}
+            //catch
+            //{
+            //    return new ServiceErrorResponse<bool>("Không thể gửi mail");
+            //}
+
+            return new ServiceSuccessResponse<bool>();
         }
     }
 }

@@ -46,12 +46,22 @@ namespace T.WebApi.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
-        [Route("refresh")]
+        [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto tokenDto)
         {
             var response = await _accountService.RefreshToken(tokenDto);
 
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+        [HttpPost("register")]
+        public async Task<ActionResult<ServiceResponse<int>>> Register(RegisterRequest request)
+        {
+            var response = await _accountService.Register(request);
             if (!response.Success)
             {
                 return BadRequest(response);
