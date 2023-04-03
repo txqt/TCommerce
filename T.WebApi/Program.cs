@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json.Serialization;
@@ -7,6 +7,7 @@ using T.Library.Model.Users;
 using T.WebApi.Attribute;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
+using T.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ builder.Services.AddSwagger(builder.Configuration);
 builder.Services.AddIdentityConfig();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
+builder.Services.AddRedis(builder.Configuration);
 
 
 var app = builder.Build();
@@ -43,9 +45,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//// Sử dụng JwtBlacklistMiddleware
+
+//app.Use(async (context, next) =>
+//{
+//    var middleware = app.Services.GetRequiredService<JwtBlacklistMiddleware>();
+
+
+//    await middleware.InvokeAsync(context);
+//});
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware<TokenManagerMiddleware>();
 app.MapControllers();
 
 app.Run();

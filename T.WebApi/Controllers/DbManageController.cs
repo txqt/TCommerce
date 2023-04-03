@@ -10,6 +10,9 @@ using T.Library.Model.Enum;
 using Microsoft.Extensions.Caching.Distributed;
 using T.WebApi.Services.CacheServices;
 using System.Data;
+using Azure.Core;
+using T.Library.Model.Users;
+using System.Security.Claims;
 
 namespace T.WebApi.Controllers
 {
@@ -30,6 +33,12 @@ namespace T.WebApi.Controllers
         [CustomAuthorizationFilter(RoleName.Admin)]
         public ActionResult Index()
         {
+            // Lấy token từ header Authorization của request
+            string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var cache = _cache.GetData<string>($"token_{accessToken}_{HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)}:active");
+            if (cache != null)
+                return NoContent();
+
             var cacheDbInfo = _cache.GetData<DatabaseControlResponse>(null);
             if (cacheDbInfo != null)
                 return Ok(cacheDbInfo);

@@ -1,19 +1,10 @@
-﻿using App.Utilities;
-using Azure;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json.Linq;
-using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using T.Library.Model;
 using T.Library.Model.RefreshToken;
-using T.Library.Model.Response;
-using T.Library.Model.Users;
-using T.WebApi.Extensions;
 using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Services.AccountServices;
-using T.WebApi.Services.CacheServices;
 
 namespace T.WebApi.Controllers
 {
@@ -23,14 +14,13 @@ namespace T.WebApi.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly ITokenService _tokenService;
-
         public AccountController(IAccountService accountService, ITokenService tokenService)
         {
             _accountService = accountService;
             this._tokenService = tokenService;
         }
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResponse<string>>> Login(LoginViewModel model, string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (!ModelState.IsValid)
             {
@@ -59,7 +49,7 @@ namespace T.WebApi.Controllers
             return Ok(response);
         }
         [HttpPost("register")]
-        public async Task<ActionResult<ServiceResponse<int>>> Register(RegisterRequest request)
+        public async Task<IActionResult> Register(RegisterRequest request)
         {
             var response = await _accountService.Register(request);
             if (!response.Success)
@@ -68,6 +58,23 @@ namespace T.WebApi.Controllers
             }
 
             return Ok(response);
+        }
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            // Lấy token từ header Authorization của request
+            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            
+            string? rawUserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(!Guid.TryParse(rawUserId, out Guid userId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _accountService.Logout(userId);
+            return NoContent();
         }
     }
 }

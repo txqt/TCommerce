@@ -1,12 +1,13 @@
-﻿using System.Runtime.Caching;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Runtime.Caching;
 
 namespace T.WebApi.Services.CacheServices
 {
     public interface ICacheService
     {
         T GetData<T> (string key);
-        bool SetData<T> (T value, DateTimeOffset expirationTime);
-        object RemoveData();
+        bool SetData<T> (T value, DateTimeOffset expirationTime, string key = null);
+        object RemoveData(string key = null);
     }
     public class CacheService : ICacheService
     {
@@ -33,15 +34,15 @@ namespace T.WebApi.Services.CacheServices
             }
         }
 
-        public object RemoveData()
+        public object RemoveData(string key = null)
         {
             var result = true;
 
             try
             {
-                if (!string.IsNullOrEmpty(GetCacheKey()))
+                if (!string.IsNullOrEmpty(GetCacheKey()) || key != null)
                 {
-                    var res = _memoryCache.Remove(GetCacheKey());
+                    var res = _memoryCache.Remove(key != null ? key :GetCacheKey());
                 }
                 else
                 {
@@ -55,15 +56,15 @@ namespace T.WebApi.Services.CacheServices
             }
         }
 
-        public bool SetData<T>(T value, DateTimeOffset expirationTime)
+        public bool SetData<T>(T value, DateTimeOffset expirationTime, string key = null)
         {
             var result = true;
 
             try
             {
-                if (!string.IsNullOrEmpty(GetCacheKey()))
+                if (!string.IsNullOrEmpty(GetCacheKey()) || key != null)
                 {
-                    _memoryCache.Set(GetCacheKey(), value, expirationTime);
+                    _memoryCache.Set(key != null ? key : GetCacheKey(), value, expirationTime);
                 }
                 else
                 {

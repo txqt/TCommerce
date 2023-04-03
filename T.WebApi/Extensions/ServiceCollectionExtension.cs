@@ -16,6 +16,10 @@ using T.WebApi.Attribute;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using T.WebApi.Services.CacheServices;
+using T.Library.Model.JwtToken;
+using T.WebApi.Services;
+using StackExchange.Redis;
+using Microsoft.Extensions.Configuration;
 
 namespace T.WebApi.Extensions
 {
@@ -54,18 +58,23 @@ namespace T.WebApi.Extensions
 
         public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
         {
-            var _configuration = configuration.GetSection("Authorization");
-            // Lấy khóa bí mật để tạo JWT
-            var key = _configuration["AccessTokenKey"];
+            //var _configuration = configuration.GetSection("Authorization");
+            //// Lấy khóa bí mật để tạo JWT
+            //var key = _configuration["AccessTokenKey"];
 
-            // Lấy tên người tạo JWT
-            var issuer = _configuration["Issuer"];
+            //// Lấy tên người tạo JWT
+            //var issuer = _configuration["Issuer"];
 
-            // Lấy tên đối tượng nhận JWT
-            var audience = _configuration["Audience"];
+            //// Lấy tên đối tượng nhận JWT
+            //var audience = _configuration["Audience"];
 
-            // Lấy thời gian hết hạn của JWT truy cập
-            var accessTokenExpirationInMinutes = _configuration["AccessTokenExpirationInMinutes"];
+            //// Lấy thời gian hết hạn của JWT truy cập
+            //var accessTokenExpirationInMinutes = _configuration["AccessTokenExpirationInMinutes"];
+
+            var jwtSection = configuration.GetSection("Authorization");
+            var jwtOptions = new JwtOptions();
+            jwtSection.Bind(jwtOptions);
+            services.Configure<JwtOptions>(jwtSection);
 
 
             // Cấu hình phân quyền (authorization) sử dụng JWT
@@ -104,9 +113,9 @@ namespace T.WebApi.Extensions
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = issuer,
-                        ValidAudience = audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                        ValidIssuer = jwtOptions.Issuer,
+                        ValidAudience = jwtOptions.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.AccessTokenKey)),
                         ClockSkew = TimeSpan.Zero,
                     };
 
@@ -130,6 +139,8 @@ namespace T.WebApi.Extensions
                 });
 
 
+            
+
             return services;
         }
 
@@ -138,6 +149,8 @@ namespace T.WebApi.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ICacheService, CacheService>();
+            services.AddScoped<TokenManagerMiddleware>();
+            services.AddTransient<ITokenManager, TokenManager>();
             return services;
         }
 
@@ -153,7 +166,7 @@ namespace T.WebApi.Extensions
 
         public static IServiceCollection AddIdentityConfig(this IServiceCollection services)
         {
-            services.AddIdentity<User, Role>()
+            services.AddIdentity<User, Library.Model.Users.Role>()
                 .AddEntityFrameworkStores<DatabaseContext>().AddDefaultTokenProviders()
                 .AddDefaultTokenProviders()
                 .AddPasswordValidator<CustomPasswordValidator<User>>();
@@ -185,6 +198,12 @@ namespace T.WebApi.Extensions
             //{
             //    options.Configuration = configuration.GetConnectionString(configuration.GetSection("Url:ApiUrl").Value);
             //});
+            // Thêm Redis cache vào dịch vụ
+            //var redisConnectionString = configuration.GetSection("redis:connectionString").Value;
+            //services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+
+            //// Thêm JwtBlacklistMiddleware vào pipeline
+            //services.AddScoped<JwtBlacklistMiddleware>();
             return services;
         }
     }

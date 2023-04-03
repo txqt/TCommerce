@@ -11,6 +11,7 @@ using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
 using T.WebApi.Helpers.TokenHelpers;
+using T.WebApi.Services.CacheServices;
 
 namespace T.WebApi.Services.AccountServices
 {
@@ -20,6 +21,7 @@ namespace T.WebApi.Services.AccountServices
         Task<User> FindUserByName(string userName);
         Task<ServiceResponse<AuthResponseDto>> RefreshToken(RefreshTokenDto tokenDto);
         Task<ServiceResponse<bool>> Register(RegisterRequest request);
+        Task<bool> Logout(Guid userId);
     }
     public class AccountService : IAccountService
     {
@@ -32,6 +34,9 @@ namespace T.WebApi.Services.AccountServices
         private readonly DatabaseContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly ITokenService _tokenService;
+        private readonly ITokenManager _tokenManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICacheService _cache;
 
         public AccountService(IConfiguration configuration,
                                UserManager<User> userManager,
@@ -41,7 +46,10 @@ namespace T.WebApi.Services.AccountServices
                                DatabaseContext context,
                                IHttpContextAccessor httpContext,
                                IWebHostEnvironment env,
-                               ITokenService tokenService)
+                               ITokenService tokenService,
+                               IHttpContextAccessor httpContextAccessor,
+                               ICacheService cache,
+                               ITokenManager tokenManager)
         {
             //this._emailService = emailService;
             _configuration = configuration;
@@ -52,6 +60,9 @@ namespace T.WebApi.Services.AccountServices
             this._tokenService = tokenService;
             _httpContext = httpContext;
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            _cache = cache;
+            _tokenManager = tokenManager;
         }
 
         public async Task<User> FindUserByName(string userName)
@@ -99,6 +110,11 @@ namespace T.WebApi.Services.AccountServices
             
             var accessToken = await _tokenService.GenerateAccessToken(user);
 
+            //var cache = _cache.GetData<string>($"token_{accessToken}_{user.Id}:active");
+            //if (cache != null)
+            //    _cache.RemoveData(cache);
+
+            //_cache.SetData(accessToken, DateTimeOffset.Now.AddHours(1), $"token_{accessToken}_{user.Id}:active");
             //Create refresh token
             var refreshToken = await _tokenService.GenerateRefreshToken();
 
@@ -115,6 +131,16 @@ namespace T.WebApi.Services.AccountServices
             };
 
             return new LoginResponse<AuthResponseDto>() { Success = true, Data = response, RoleNames = roles.ToList() };
+        }
+
+        public async Task<bool> Logout(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            user.RefreshToken = null;
+            _context.Users.Update(user);
+            _context.SaveChanges();
+            await _tokenManager.DeactivateCurrentAsync();
+            return true;
         }
 
         public async Task<ServiceResponse<AuthResponseDto>> RefreshToken(RefreshTokenDto tokenDto)
@@ -177,10 +203,12 @@ namespace T.WebApi.Services.AccountServices
             {
                 Dob = request.Dob,
                 Email = request.Email,
+                NormalizedEmail = request.Email,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 UserName = request.UserName,
                 PhoneNumber = request.PhoneNumber,
+                CreatedDate = AppExtensions.GetDateTimeNow(),
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -197,9 +225,9 @@ namespace T.WebApi.Services.AccountServices
                     IdentityResult roleresult = await _userManager.AddToRoleAsync(user, defaultrole.Name);
                 }
             }
-            var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);
-            var validEmailToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
+            //var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);
+            //var validEmailToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
 
             //string url = $"{_configuration["ApiUrl"]}/api/user/confirmemail?userid={user.Id}&token={validEmailToken}";
 

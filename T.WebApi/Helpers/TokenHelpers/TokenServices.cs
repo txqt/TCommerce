@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using T.Library.Model.JwtToken;
 using T.Library.Model.Users;
 using T.WebApi.Extensions;
 
@@ -23,14 +25,16 @@ namespace T.WebApi.Helpers.TokenHelpers
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
-        private readonly IConfiguration _jwtSettings;
+        //private readonly IConfiguration _jwtSettings;
         private readonly UserManager<User> _userManager;
+        private readonly IOptions<JwtOptions> _jwtOptions;
 
-        public TokenService(IConfiguration configuration, UserManager<User> userManager)
+        public TokenService(IConfiguration configuration, UserManager<User> userManager, IOptions<JwtOptions> jwtOptions)
         {
             _configuration = configuration;
-            _jwtSettings = _configuration.GetSection("Authorization");
+            //_jwtSettings = _configuration.GetSection("Authorization");
             _userManager = userManager;
+            _jwtOptions = jwtOptions;
         }
 
         public SigningCredentials GetSigningCredentials(string _key)
@@ -59,10 +63,10 @@ namespace T.WebApi.Helpers.TokenHelpers
         public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
             var tokenOptions = new JwtSecurityToken(
-            issuer: _jwtSettings["Issuer"],
-            audience: _jwtSettings["Audience"],
+            issuer: _jwtOptions.Value.Issuer,
+            audience: _jwtOptions.Value.Audience,
                 claims: claims,
-                expires: AppExtensions.GetDateTimeNow().AddHours(Convert.ToDouble(_jwtSettings["AccessTokenExpirationInHours"])),
+                expires: AppExtensions.GetDateTimeNow().AddHours(Convert.ToDouble(_jwtOptions.Value.AccessTokenExpirationInHours)),
                 signingCredentials: signingCredentials);
 
             return tokenOptions;
@@ -86,9 +90,9 @@ namespace T.WebApi.Helpers.TokenHelpers
                 ValidateAudience = true,
                 ValidateLifetime = false,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = _jwtSettings["Issuer"],
-                ValidAudience = _jwtSettings["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings["AccessTokenKey"])),
+                ValidIssuer = _jwtOptions.Value.Issuer,
+                ValidAudience = _jwtOptions.Value.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.AccessTokenKey)),
                 ClockSkew = TimeSpan.Zero
             };
 
@@ -108,7 +112,7 @@ namespace T.WebApi.Helpers.TokenHelpers
 
         public async Task<string> GenerateRefreshToken()
         {
-            var signingCredentials = GetSigningCredentials(_jwtSettings["RefreshTokenKey"]);
+            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.RefreshTokenKey);
             var tokenOptions = GenerateTokenOptions(signingCredentials, null);
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
@@ -116,7 +120,7 @@ namespace T.WebApi.Helpers.TokenHelpers
         public async Task<string> GenerateAccessToken(User user)
         {
             var claims = await GetClaims(user);
-            var signingCredentials = GetSigningCredentials(_jwtSettings["AccessTokenKey"]);
+            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.AccessTokenKey);
             var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
