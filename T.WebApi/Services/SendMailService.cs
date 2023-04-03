@@ -1,4 +1,5 @@
 using System;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
@@ -54,7 +55,10 @@ public class SendMailService : IEmailSender {
         using var smtp = new MailKit.Net.Smtp.SmtpClient();
 
         try {
-            smtp.Connect (mailSettings.Host, mailSettings.Port, SecureSocketOptions.StartTls);
+            smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            smtp.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13;
+            smtp.CheckCertificateRevocation = false;
+            smtp.Connect (mailSettings.Host, mailSettings.Port, SecureSocketOptions.Auto);
             smtp.Authenticate (mailSettings.Mail, mailSettings.Password);
             await smtp.SendAsync(message);
         }

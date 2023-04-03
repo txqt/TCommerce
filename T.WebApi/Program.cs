@@ -31,7 +31,7 @@ builder.Services.AddSwagger(builder.Configuration);
 builder.Services.AddIdentityConfig();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
-builder.Services.AddRedis(builder.Configuration);
+builder.Services.AddCustomOptions(builder.Configuration);
 
 
 var app = builder.Build();

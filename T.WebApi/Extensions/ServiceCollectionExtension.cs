@@ -151,6 +151,7 @@ namespace T.WebApi.Extensions
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<TokenManagerMiddleware>();
             services.AddTransient<ITokenManager, TokenManager>();
+            services.AddTransient<IEmailSender, SendMailService>();
             return services;
         }
 
@@ -187,23 +188,11 @@ namespace T.WebApi.Extensions
             return services;
         }
 
-        public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
         {
-            //services.AddStackExchangeRedisCache(options =>
-            //{
-            //    options.Configuration = configuration.GetSection("Url:ApiUrl").Value; // Thay đổi địa chỉ Redis server nếu cần thiết
-            //    options.InstanceName = "MyRedisCache";
-            //});
-            //services.AddDistributedRedisCache(options =>
-            //{
-            //    options.Configuration = configuration.GetConnectionString(configuration.GetSection("Url:ApiUrl").Value);
-            //});
-            // Thêm Redis cache vào dịch vụ
-            //var redisConnectionString = configuration.GetSection("redis:connectionString").Value;
-            //services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
-
-            //// Thêm JwtBlacklistMiddleware vào pipeline
-            //services.AddScoped<JwtBlacklistMiddleware>();
+            var mailSection = configuration.GetSection("MailSettings");
+            mailSection.Bind(new MailSettings());
+            services.Configure<MailSettings>(mailSection);
             return services;
         }
     }

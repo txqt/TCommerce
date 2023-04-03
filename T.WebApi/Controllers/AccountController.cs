@@ -13,12 +13,11 @@ namespace T.WebApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        private readonly ITokenService _tokenService;
-        public AccountController(IAccountService accountService, ITokenService tokenService)
+        public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
-            this._tokenService = tokenService;
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
@@ -48,6 +47,7 @@ namespace T.WebApi.Controllers
 
             return Ok(response);
         }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
@@ -59,6 +59,7 @@ namespace T.WebApi.Controllers
 
             return Ok(response);
         }
+
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
