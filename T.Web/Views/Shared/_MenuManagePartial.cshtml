@@ -1,8 +1,44 @@
-﻿<div class="dropdown">
+﻿
+<script>
+    $(document).ready(function () {
+        $('#logout-btn').click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '/account/Logout',
+                success: function () {
+                    window.location.href = '/Account/Login';
+                },
+                error: function () {
+                    alert('Đăng xuất không thành công.');
+                }
+            });
+        });
+    });
+</script>
+
+<div class="dropdown">
     <button class="btn btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Manage
+        @{
+            var title = User.Identity.Name != null ? User.Identity.Name : "Manage";
+        }
+        @title
     </button>
     <ul class="dropdown-menu">
-        <li><a class="dropdown-item" asp-action="Index" asp-controller="DbManage" asp-area="Database">Database</a></li>
+        
+        @if (User.Identity.IsAuthenticated)
+        {
+            <li><a class="dropdown-item" asp-action="Index" asp-controller="DbManage" asp-area="Database">Database</a></li>
+            @*<li class="dropdown-item">
+                <form method="post" asp-action="Logout" asp-controller="Account" asp-area="Identity">
+                    <button style="border: none; background-color: var(--bs-dropdown-link-hover-color); padding-left: 0" type="submit">Logout</button>
+                </form>
+            </li>*@
+            <li><a class="dropdown-item" id="logout-btn" href="#">Đăng xuất</a></li>
+        }
+        else
+        {
+            <li><a class="dropdown-item" asp-action="Login" asp-controller="Account" asp-area="Identity">Login</a></li>
+        }
     </ul>
 </div>

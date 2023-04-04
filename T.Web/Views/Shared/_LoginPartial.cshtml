@@ -1,8 +1,9 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@*@using Microsoft.AspNetCore.Identity
 @using App.Models
+@using T.Library.Model.Users;
 
-@inject SignInManager<AppUser> SignInManager
-@inject UserManager<AppUser> UserManager
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 
 @if (SignInManager.IsSignedIn(User))
 {
@@ -27,4 +28,4 @@ else
             <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Login">Đăng nhập</a>
         </li>
     </ul>
-}
+}*@

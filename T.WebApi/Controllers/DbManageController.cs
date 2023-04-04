@@ -13,24 +13,30 @@ using System.Data;
 using Azure.Core;
 using T.Library.Model.Users;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using T.WebApi.Extensions;
 
 namespace T.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class DbManageController : ControllerBase
     {
         private readonly DatabaseContext _databaseContext;
         private readonly ICacheService _cache;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> roleManager;
 
-        public DbManageController(DatabaseContext databaseContext, ICacheService cache)
+        public DbManageController(DatabaseContext databaseContext, ICacheService cache, RoleManager<Role> roleManager, UserManager<User> userManager)
         {
             this._databaseContext = databaseContext;
             _cache = cache;
+            this.roleManager = roleManager;
+            _userManager = userManager;
         }
         [HttpGet]
-        [CustomAuthorizationFilter(RoleName.Admin)]
+        //[CustomAuthorizationFilter(RoleName.Admin)]
         public ActionResult Index()
         {
             // Lấy token từ header Authorization của request
@@ -82,6 +88,65 @@ namespace T.WebApi.Controllers
         {
             await _databaseContext.Database.MigrateAsync();
             return Ok("Cập nhật database thành công!");
+        }
+        [HttpGet("Seed-Data")]
+        public async Task<IActionResult> Seed()
+        {
+            var rolenames = typeof(RoleName).GetFields().ToList();
+            foreach (var item in rolenames)
+            {
+                string? name = item.GetRawConstantValue().ToString();
+                var ffound = await roleManager.FindByNameAsync(name);
+                if (ffound == null)
+                {
+                    await roleManager.CreateAsync(new Role(name));
+                }
+            }
+
+            var user2 = await _userManager.FindByEmailAsync("hovanthanh12102002@gmail.com");
+            if (user2 == null)
+            {
+                user2 = new User()
+                {
+                    Id = Guid.NewGuid(),
+
+                    FirstName = "Văn Thành",
+                    LastName = "Hồ",
+                    Email = "hovanthanh12102002@gmail.com",
+                    NormalizedEmail = "hovanthanh12102002@gmail.com",
+                    PhoneNumber = "032232131",
+                    UserName = "thanhhv",
+                    NormalizedUserName = "THANHHV",
+                    CreatedDate = AppExtensions.GetDateTimeNow(),
+                    EmailConfirmed = true // không cần xác thực email nữa , 
+                };
+                await _userManager.CreateAsync(user2, "123321");
+                await _userManager.AddToRoleAsync(user2, RoleName.Admin);
+                return Ok();
+            }
+
+            var user3 = await _userManager.FindByEmailAsync("hovanthanh@gmail.com");
+            if (user3 == null)
+            {
+                user3 = new User()
+                {
+                    Id = Guid.NewGuid(),
+
+                    FirstName = "Văn Thành",
+                    LastName = "Hồ",
+                    Email = "hovanthanh@gmail.com",
+                    NormalizedEmail = "hovanthanh@gmail.com",
+                    PhoneNumber = "032232131",
+                    UserName = "thanhhv2",
+                    NormalizedUserName = "THANHHV2",
+                    CreatedDate = AppExtensions.GetDateTimeNow(),
+                    EmailConfirmed = true // không cần xác thực email nữa , 
+                };
+                await _userManager.CreateAsync(user3, "123321");
+                await _userManager.AddToRoleAsync(user3, RoleName.Customer);
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }

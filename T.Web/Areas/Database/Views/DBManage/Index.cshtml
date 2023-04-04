@@ -1,7 +1,10 @@
-﻿@using T.Web.Areas.Services.Database
-
+﻿@using System.IdentityModel.Tokens.Jwt;
+@using System.Security.Claims;
+@using T.Library.Model;
+@using T.Web.Areas.Services.Database
+@using T.Web.Areas.Services.AccountService;
 @inject IDatabaseControl dbcontrol
-
+@inject IAccountService _accountSvc
 @{
     ViewData["Title"] = "Thông tin Db";
     var databaseResponse = await dbcontrol.GetDbInfo();
@@ -36,6 +39,7 @@
         }
     </ul>
     <a class="btn btn-danger" asp-action="DeleteDb">Xoá database: @databaseResponse.dbname</a>
+    <a class="btn btn-danger" asp-action="SeedData">Seed data</a>
 }
 else{
     <p class="alert alert-danger">Không thể kết nối tới database</p>
@@ -46,3 +50,13 @@ else{
         <button class="btn btn-success" asp-action="Migrate">Tạo database (cập nhật migration)</button>
     </form>
 }
+
+@{
+    var model = new LoginViewModel() { UserNameOrEmail = "thanhhv", Password = "123321", RememberMe = true };
+    var res = await _accountSvc.Login(model);
+    var handler = new JwtSecurityTokenHandler();
+    var token = handler.ReadJwtToken(res.Data.AccessToken);
+
+    string username = token.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+}
+<p>@username</p>

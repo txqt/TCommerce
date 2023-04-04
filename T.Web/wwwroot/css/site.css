@@ -24,3 +24,7 @@ body {
 .navbar_custom{
     padding: 0 100px;
 }
+
+.form-group{
+    padding-bottom: 16px;
+}

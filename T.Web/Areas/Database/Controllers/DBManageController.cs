@@ -41,5 +41,13 @@ namespace T.Web.Areas.Database.Controllers
             StatusMessage = success ? "Cập nhật database thành công !" : "Cập nhật database thất bại !";
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SeedData()
+        {
+            var success = await _databaseControl.SeedData();
+            StatusMessage = success ? "Seed data thành công !" : "Seed data thất bại !";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

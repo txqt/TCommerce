@@ -8,6 +8,7 @@ namespace T.Web.Areas.Services.Database
         Task<DatabaseControlResponse> GetDbInfo();
         Task<bool> DeleteDb();
         Task<bool> MigrateDb();
+        Task<bool> SeedData();
     }
     public class DatabaseControl : IDatabaseControl
     {
@@ -33,6 +34,12 @@ namespace T.Web.Areas.Services.Database
         public async Task<bool> MigrateDb()
         {
             var result = await _httpClient.PostAsync($"api/DbManage/Migrate", null);
+            return result.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> SeedData()
+        {
+            var result = await _httpClient.GetAsync($"api/DbManage/Seed-Data");
             return result.IsSuccessStatusCode;
         }
     }
