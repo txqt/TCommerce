@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using NuGet.Protocol.Plugins;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,6 +14,8 @@ using T.Library.Model;
 using T.Library.Model.JwtToken;
 using T.Library.Model.Response;
 using T.Web.Areas.Services.AccountService;
+using T.Web.Controllers;
+using T.Web.Extensions;
 
 namespace T.Web.Areas.Identity.Controllers
 {
@@ -37,7 +40,7 @@ namespace T.Web.Areas.Identity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel, string? returnUrl)
         {
             var loginResponse = await _accountService.Login(loginViewModel);
             var userPrincipal = this.ValidateToken(loginResponse.Data.AccessToken);
@@ -46,9 +49,14 @@ namespace T.Web.Areas.Identity.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
                 IsPersistent = loginViewModel.RememberMe
             };
+            // Lưu trữ giá trị vào session
+            HttpContext.Session.SetString("jwt", loginResponse.Data.AccessToken);
+
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
 
-            return Redirect(loginResponse.Data.ReturnUrl != null ? loginResponse.Data.ReturnUrl : "/");
+            if (returnUrl != null)
+                return RedirectToLocal(returnUrl);
+            return Redirect("/");
         }
 
         [HttpPost]
@@ -77,6 +85,15 @@ namespace T.Web.Areas.Identity.Controllers
             ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, tokenValidationParameters, out validatedToken);
 
             return principal;
+        }
+
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
     }
 }

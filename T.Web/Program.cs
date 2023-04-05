@@ -8,12 +8,13 @@ using System.Text.Json;
 using T.Library.Model.JwtToken;
 using T.Web.Areas.Services.AccountService;
 using T.Web.Areas.Services.Database;
+using T.Web.CusomMiddleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped(sp => new HttpClient
+builder.Services.AddTransient(sp => new HttpClient
 {
     BaseAddress = new Uri(builder.Configuration.GetSection("Url:ApiUrl").Value)
 });
@@ -24,6 +25,7 @@ builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
     PropertyNameCaseInsensitive = true,
     IgnoreNullValues = true
 });
+
 
 var jwtSection = builder.Configuration.GetSection("Authorization");
 var jwtOptions = new JwtOptions();
@@ -37,7 +39,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     options.AccessDeniedPath = "/";
 });
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(jwtOptions.AccessTokenExpirationInHours);
+});
 
+builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,7 +54,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -55,6 +62,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 
 app.MapControllerRoute(

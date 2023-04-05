@@ -20,7 +20,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [CustomAuthorizationFilter(RoleName.Admin)]
     public class DbManageController : ControllerBase
     {
         private readonly DatabaseContext _databaseContext;
@@ -36,14 +36,8 @@ namespace T.WebApi.Controllers
             _userManager = userManager;
         }
         [HttpGet]
-        //[CustomAuthorizationFilter(RoleName.Admin)]
         public ActionResult Index()
         {
-            // Lấy token từ header Authorization của request
-            string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var cache = _cache.GetData<string>($"token_{accessToken}_{HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)}:active");
-            if (cache != null)
-                return NoContent();
 
             var cacheDbInfo = _cache.GetData<DatabaseControlResponse>(null);
             if (cacheDbInfo != null)
@@ -71,7 +65,6 @@ namespace T.WebApi.Controllers
         }
 
         [HttpDelete]
-        [CustomAuthorizationFilter(RoleName.Admin)]
         public IActionResult DeleteDatabase()
         {
             var result = _databaseContext.Database.EnsureDeleted();
@@ -83,7 +76,6 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("Migrate")]
-        [CustomAuthorizationFilter(RoleName.Admin)]
         public async Task<IActionResult> Migrate()
         {
             await _databaseContext.Database.MigrateAsync();

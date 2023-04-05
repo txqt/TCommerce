@@ -32,9 +32,7 @@ namespace T.Web.Areas.Services.AccountService
             {
                 return loginResponse;
             }
-            //await _localStorage.SetItemAsync("authToken", loginResponse.Data.Token);
-            //await _localStorage.SetItemAsync("refreshToken", loginResponse.Data.RefreshToken);
-            //((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(loginResponse.Data.AccessToken);
+            _httpClient.DefaultRequestHeaders.Authorization = null;
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResponse.Data.AccessToken);
             return loginResponse;
         }

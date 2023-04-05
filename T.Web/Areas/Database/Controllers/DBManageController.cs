@@ -1,23 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using T.Library.Model.Enum;
+using T.Web.Areas.Attribute;
 using T.Web.Areas.Services.Database;
+using T.Web.Controllers;
 
 namespace T.Web.Areas.Database.Controllers
 {
     [Area("Database")]
     [Route("/database-manage/[action]")]
-    public class DBManageController : Controller
+    [Authorize]
+    [CustomAuthorizationFilter(RoleName.Admin)]
+    public class DBManageController : BaseController
     {
         private readonly IDatabaseControl _databaseControl;
 
         public DBManageController(IDatabaseControl databaseControl)
         {
-            this._databaseControl = databaseControl;
+            _databaseControl = databaseControl;
         }
 
-        
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var databaseResponse = await _databaseControl.GetDbInfo();
+            return View(databaseResponse);
         }
         [HttpGet]
         public IActionResult DeleteDb()
