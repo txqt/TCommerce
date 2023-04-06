@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Policy;
 using System.Text;
 using T.Library.Model;
 using T.Library.Model.Account;
@@ -101,7 +102,28 @@ namespace T.WebApi.Services.AccountServices
             if (user == null)
                 return new ServiceErrorResponse<string>("Tài khoản không tồn tại");
 
-            await SendConfirmEmail(user);
+
+            var validToken = await GenerateEncodeToken(user);
+
+            string url = $"{_configuration["Url:ClientUrl"]}/account/reset-password?email={email}&token={validToken}";
+
+            EmailDto emailDto = new EmailDto
+            {
+                Subject = "Đặt lại mật khẩu",
+                Body = $"<h1>Làm theo hướng dẫn để đặt lại mật khẩu của bạn</h1>" +
+                $"<p>Tên đăng nhập của bạn là: </p><h3>{user.UserName}</h3>" +
+                $"<p>Để đặt lại mật khẩu <a href='{url}'>Bấm vào đây</a></p>",
+                To = user.Email
+            };
+
+            try
+            {
+                _emailService.SendEmailAsync(emailDto);
+            }
+            catch
+            {
+                return new ServiceErrorResponse<string>("Không thể gửi mail đặt lại mật khẩu, vui lòng thử lại hoặc liên hệ bộ phận kỹ thuật");
+            }
 
             return new ServiceSuccessResponse<string>("Reset password URL has been sent to the email successfully!");
         }
@@ -130,8 +152,29 @@ namespace T.WebApi.Services.AccountServices
                 var message = "Tài khoản của bạn đã bị chặn và không thể đăng nhập vào hệ thống";
                 if(user.EmailConfirmed == false)
                 {
-                    await SendConfirmEmail(user);
+
                     message = "Tài khoản của bạn chưa được xác thực. Hệ thống đã gửi email đến cho bạn, vui lòng kiểm tra email của bạn và làm theo hướng dẫn để hoàn tất quá trình xác thực.\r\n";
+
+                    var encodeToken = await GenerateEncodeToken(user);
+                    string url = $"{_configuration["Url:ApiUrl"]}/api/user/confirmemail?userid={user.Id}&token={encodeToken}";
+
+                    EmailDto emailDto = new EmailDto
+                    {
+                        Subject = "Xác thực email người dùng",
+                        Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
+                        + $"<h3>Tài khoản: {user.UserName}</h3></br>"
+                        + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
+                        To = user.Email
+                    };
+                    try
+                    {
+                        _emailService.SendEmailAsync(emailDto);
+                    }
+                    catch
+                    {
+                        message = "Tài khoản của bạn chưa được xác thực. Không thể gửi email xác nhận, vui lòng thử lại hoặc liên hệ bộ phận kỹ thuật";
+                    }
+                    
                 }
                 return new LoginResponse<AuthResponseDto>() { Message = $"{message}", Success = false };
             }
@@ -267,7 +310,26 @@ namespace T.WebApi.Services.AccountServices
                 }
             }
 
-            await SendConfirmEmail(user);
+            var encodeToken = await GenerateEncodeToken(user);
+            string url = $"{_configuration["Url:ApiUrl"]}/api/user/confirmemail?userid={user.Id}&token={encodeToken}";
+
+            EmailDto emailDto = new EmailDto
+            {
+                Subject = "Xác thực email người dùng",
+                Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
+                + $"<h3>Tài khoản: {user.UserName}</h3></br>"
+                + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
+                To = user.Email
+            };
+            try
+            {
+                _emailService.SendEmailAsync(emailDto);
+            }
+            catch
+            {
+                return new ServiceErrorResponse<bool>("Không thể gửi email xác nhận, vui lòng thử lại hoặc liên hệ bộ phận kỹ thuật");
+            }
+
             return new ServiceSuccessResponse<bool>();
         }
 
@@ -305,30 +367,16 @@ namespace T.WebApi.Services.AccountServices
             }
         }
 
-        public async Task SendConfirmEmail(User user)
+        public async Task<string> GenerateEncodeToken(User user)
         {
             var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);
-            var validEmailToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
-
-            string url = $"{_configuration["Url:ApiUrl"]}/api/account/confirmemail?userid={user.Id}&token={validEmailToken}";
-
-            EmailDto emailDto = new EmailDto
-            {
-                Subject = "Xác thực email người dùng",
-                Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
-                + $"<h3>Tài khoản: {user.UserName}</h3></br>"
-                + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
-                To = user.Email
-            };
-            try
-            {
-                _emailService.SendEmailAsync(emailDto);
-            }
-            catch
-            {
-
-            }
+            return  WebEncoders.Base64UrlEncode(encodedEmailToken); 
+        }
+        public string DecodeToken(string encodeToken)
+        {
+            var decodedToken = WebEncoders.Base64UrlDecode(encodeToken);
+            return Encoding.UTF8.GetString(decodedToken);
         }
     }
 }

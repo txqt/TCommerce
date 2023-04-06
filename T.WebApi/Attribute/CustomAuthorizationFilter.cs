@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security;
 using System.Security.Claims;
@@ -18,6 +19,16 @@ namespace T.WebApi.Attribute
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            // Kiểm tra xem Action hoặc Controller có bị đánh dấu với [AllowAnonymous] không
+            bool allowAnonymous = context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousAttribute))
+            || context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousFilter));
+            if (allowAnonymous)
+            {
+                return;
+            }
+
+            // Các xử lý khác ở đây
+
             // Lấy thông tin đăng nhập của user
             var user = context.HttpContext.User;
 

@@ -90,7 +90,7 @@ namespace T.WebApi.Controllers
 
         [HttpGet("ConfirmEmail")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        public async Task<IActionResult> confirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
                 return NotFound();
@@ -107,6 +107,7 @@ namespace T.WebApi.Controllers
 
         [HttpPost("forgot-password")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [AllowAnonymous]
         public async Task<ActionResult<ServiceResponse<string>>> ForgotPassword(string email)
         {
             if (string.IsNullOrEmpty(email))

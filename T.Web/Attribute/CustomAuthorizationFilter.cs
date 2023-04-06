@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using T.Library.Model.Enum;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace T.Web.Attribute
 {
@@ -16,6 +17,16 @@ namespace T.Web.Attribute
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            // Kiểm tra xem Action hoặc Controller có bị đánh dấu với [AllowAnonymous] không
+            bool allowAnonymous = context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousAttribute))
+            || context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousFilter));
+            if (allowAnonymous)
+            {
+                return;
+            }
+
+            // Các xử lý khác ở đây
+
             // Lấy thông tin đăng nhập của user
             var user = context.HttpContext.User;
 
