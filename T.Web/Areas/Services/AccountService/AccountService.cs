@@ -11,6 +11,8 @@ namespace T.Web.Areas.Services.AccountService
     public interface IAccountService
     {
         Task<ServiceResponse<AuthResponseDto>> Login(LoginViewModel loginRequest);
+        Task Logout();
+        Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest);
     }
     public class AccountService : IAccountService
     {
@@ -35,6 +37,17 @@ namespace T.Web.Areas.Services.AccountService
             _httpClient.DefaultRequestHeaders.Authorization = null;
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResponse.Data.AccessToken);
             return loginResponse;
+        }
+
+        public async Task Logout()
+        {
+            await _httpClient.PostAsync("api/account/logout", null);
+        }
+
+        public async Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest)
+        {
+            var result = await _httpClient.PostAsJsonAsync("api/account/register", registerRequest);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
     }
 }

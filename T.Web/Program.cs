@@ -8,6 +8,7 @@ using System.Text.Json;
 using T.Library.Model.JwtToken;
 using T.Web.Areas.Services.AccountService;
 using T.Web.Areas.Services.Database;
+using T.Web.Attribute;
 using T.Web.CusomMiddleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services.AddTransient(sp => new HttpClient
 });
 builder.Services.AddTransient<IDatabaseControl, DatabaseControl>();
 builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,

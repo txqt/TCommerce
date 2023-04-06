@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using T.Library.Model;
+using T.Library.Model.Account;
+using T.Library.Model.Enum;
 using T.Library.Model.RefreshToken;
+using T.Library.Model.Response;
+using T.WebApi.Attribute;
 using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Services.AccountServices;
 
@@ -10,6 +15,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [CustomAuthorizationFilter()]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -19,6 +25,8 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("login")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (!ModelState.IsValid)
@@ -36,6 +44,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("refresh")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto tokenDto)
         {
             var response = await _accountService.RefreshToken(tokenDto);
@@ -49,6 +58,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("register")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
             var response = await _accountService.Register(request);
@@ -76,6 +86,50 @@ namespace T.WebApi.Controllers
 
             var result = await _accountService.Logout(userId);
             return NoContent();
+        }
+
+        [HttpGet("ConfirmEmail")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+                return NotFound();
+
+            var result = await _accountService.ConfirmEmail(userId, token);
+
+            if (result.Success)
+            {
+                return Redirect($"{result.Data}");
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpPost("forgot-password")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult<ServiceResponse<string>>> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return NotFound(new ServiceErrorResponse<string>("Chưa nhập email"));
+
+            var result = await _accountService.ForgotPassword(email);
+
+            if (result.Success)
+                return Ok(result); // 200
+
+            return BadRequest(result); // 400
+        }
+
+        [HttpPost("reset-password")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
+        {
+                var result = await _accountService.ResetPassword(model);
+
+                if (result.Success)
+                    return Ok(result);
+
+                return BadRequest(result);
         }
     }
 }

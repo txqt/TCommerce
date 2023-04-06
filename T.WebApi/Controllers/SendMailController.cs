@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using T.Library.Model.SendMail;
+using T.WebApi.Attribute;
 
 namespace T.WebApi.Controllers
 {
@@ -14,9 +16,10 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendMail(string email, string subject, string message)
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> SendMail([FromForm]EmailDto emailDto)
         {
-            await _emailSender.SendEmailAsync(email, subject, message);
+            await _emailSender.SendEmailAsync(emailDto);
             return NoContent();
         }
     }

@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security;
 using System.Security.Claims;
+using T.Library.Model.Enum;
 
 namespace T.WebApi.Attribute
 {
     public class CustomAuthorizationFilter : AuthorizeAttribute, IAuthorizationFilter
     {
         private readonly string _role;
-        public CustomAuthorizationFilter(string role)
+        public CustomAuthorizationFilter(string role = null)
         {
             _role = role;
         }
@@ -24,6 +26,20 @@ namespace T.WebApi.Attribute
             {
                 context.Result = new UnauthorizedResult();
                 return;
+            }
+
+            if(_role  == null)
+            {
+                var rolenames = typeof(RoleName).GetFields();
+                foreach (var item in rolenames)
+                {
+                    string? name = item.GetRawConstantValue().ToString();
+                    if (!user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == name))
+                    {
+                        context.Result = new ForbidResult();
+                        return;
+                    }
+                }
             }
 
             // Kiểm tra xem user có quyền truy cập vào tài nguyên này hay không

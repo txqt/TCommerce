@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using T.Library.Model;
+using T.Library.Model.Account;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
+using T.Library.Model.SendMail;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
@@ -22,13 +24,16 @@ namespace T.WebApi.Services.AccountServices
         Task<ServiceResponse<AuthResponseDto>> RefreshToken(RefreshTokenDto tokenDto);
         Task<ServiceResponse<bool>> Register(RegisterRequest request);
         Task<bool> Logout(Guid userId);
+        Task<ServiceResponse<string>> ConfirmEmail(string userId, string token);
+        Task<ServiceResponse<string>> ForgotPassword(string email);
+        Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest model);
     }
     public class AccountService : IAccountService
     {
         private readonly IConfiguration _configuration;
         private readonly SignInManager<User> _signInManager;
         private readonly IHttpContextAccessor _httpContext;
-        //private readonly IEmailService _emailService;
+        private readonly IEmailSender _emailService;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
         private readonly DatabaseContext _context;
@@ -41,7 +46,7 @@ namespace T.WebApi.Services.AccountServices
         public AccountService(IConfiguration configuration,
                                UserManager<User> userManager,
                                SignInManager<User> signInManager,
-                               //IEmailService emailService,
+                               IEmailSender emailService,
                                RoleManager<Role> roleManager,
                                DatabaseContext context,
                                IHttpContextAccessor httpContext,
@@ -51,7 +56,7 @@ namespace T.WebApi.Services.AccountServices
                                ICacheService cache,
                                ITokenManager tokenManager)
         {
-            //this._emailService = emailService;
+            this._emailService = emailService;
             _configuration = configuration;
             _signInManager = signInManager;
             _userManager = userManager;
@@ -65,9 +70,40 @@ namespace T.WebApi.Services.AccountServices
             _tokenManager = tokenManager;
         }
 
+        public async Task<ServiceResponse<string>> ConfirmEmail(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return new ServiceErrorResponse<string>($"Unable to load user with ID '{userId}'.");
+            }
+
+            var decodedToken = WebEncoders.Base64UrlDecode(token);
+            string normalToken = Encoding.UTF8.GetString(decodedToken);
+
+            var result = await _userManager.ConfirmEmailAsync(user, normalToken);
+
+            if (result.Succeeded)
+                return new ServiceSuccessResponse<string>(_configuration.GetSection("Url:ApiUrl").Value);
+
+            return new ServiceErrorResponse<string>("Email did not confirm");
+        }
+
         public async Task<User> FindUserByName(string userName)
         {
             return await _userManager.FindByNameAsync(userName);
+        }
+
+        public async Task<ServiceResponse<string>> ForgotPassword(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return new ServiceErrorResponse<string>("Tài khoản không tồn tại");
+
+            await SendConfirmEmail(user);
+
+            return new ServiceSuccessResponse<string>("Reset password URL has been sent to the email successfully!");
         }
 
         public async Task<LoginResponse<AuthResponseDto>> Login(LoginViewModel login, string? returnUrl)
@@ -89,8 +125,17 @@ namespace T.WebApi.Services.AccountServices
 
             
 
-            if (result.IsNotAllowed) 
-                return new LoginResponse<AuthResponseDto>() { Message = "Tài khoản không được cấp quyền vào trang này", Success = false };
+            if (result.IsNotAllowed)
+            {
+                var message = "Tài khoản của bạn đã bị chặn và không thể đăng nhập vào hệ thống";
+                if(user.EmailConfirmed == false)
+                {
+                    await SendConfirmEmail(user);
+                    message = "Tài khoản của bạn chưa được xác thực. Hệ thống đã gửi email đến cho bạn, vui lòng kiểm tra email của bạn và làm theo hướng dẫn để hoàn tất quá trình xác thực.\r\n";
+                }
+                return new LoginResponse<AuthResponseDto>() { Message = $"{message}", Success = false };
+            }
+                
 
           
             if (result.IsLockedOut)
@@ -110,11 +155,7 @@ namespace T.WebApi.Services.AccountServices
             
             var accessToken = await _tokenService.GenerateAccessToken(user);
 
-            //var cache = _cache.GetData<string>($"token_{accessToken}_{user.Id}:active");
-            //if (cache != null)
-            //    _cache.RemoveData(cache);
 
-            //_cache.SetData(accessToken, DateTimeOffset.Now.AddHours(1), $"token_{accessToken}_{user.Id}:active");
             //Create refresh token
             var refreshToken = await _tokenService.GenerateRefreshToken();
 
@@ -225,30 +266,69 @@ namespace T.WebApi.Services.AccountServices
                     IdentityResult roleresult = await _userManager.AddToRoleAsync(user, defaultrole.Name);
                 }
             }
-            //var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            //var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);
-            //var validEmailToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
 
-            //string url = $"{_configuration["ApiUrl"]}/api/user/confirmemail?userid={user.Id}&token={validEmailToken}";
-
-            //EmailDto emailDto = new EmailDto
-            //{
-            //    Subject = "Xác thực email người dùng",
-            //    Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
-            //    + $"<h3>Tài khoản: {user.UserName}</h3></br>"
-            //    + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
-            //    To = user.Email
-            //};
-            //try
-            //{
-            //    _emailService.SendEmail(emailDto);
-            //}
-            //catch
-            //{
-            //    return new ServiceErrorResponse<bool>("Không thể gửi mail");
-            //}
-
+            await SendConfirmEmail(user);
             return new ServiceSuccessResponse<bool>();
+        }
+
+        public async Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (!AppUtilities.IsValidEmail(model.Email))
+                return new ServiceErrorResponse<string>("Cần nhập đúng định dạng email");
+
+            if (user == null)
+                return new ServiceErrorResponse<string>("No user associated with email");
+
+            if (model.NewPassword != model.ConfirmPassword)
+                return new ServiceErrorResponse<string>("Mật khẩu phải trùng khớp");
+
+
+            var decodedToken = WebEncoders.Base64UrlDecode(model.Token);
+            string normalToken = Encoding.UTF8.GetString(decodedToken);
+
+            try
+            {
+                var result = await _userManager.ResetPasswordAsync(user, normalToken, model.NewPassword);
+
+                if (result.Succeeded)
+                    return new ServiceSuccessResponse<string>("Password has been reset successfully!");
+                else
+                {
+                    var errors = result.Errors.Select(e => e.Description);
+                    return new ServiceErrorResponse<string>(string.Join(", ", errors));
+                }
+            }
+            catch
+            {
+                return new ServiceErrorResponse<string>("Something went wrong !");
+            }
+        }
+
+        public async Task SendConfirmEmail(User user)
+        {
+            var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);
+            var validEmailToken = WebEncoders.Base64UrlEncode(encodedEmailToken);
+
+            string url = $"{_configuration["Url:ApiUrl"]}/api/account/confirmemail?userid={user.Id}&token={validEmailToken}";
+
+            EmailDto emailDto = new EmailDto
+            {
+                Subject = "Xác thực email người dùng",
+                Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
+                + $"<h3>Tài khoản: {user.UserName}</h3></br>"
+                + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
+                To = user.Email
+            };
+            try
+            {
+                _emailService.SendEmailAsync(emailDto);
+            }
+            catch
+            {
+
+            }
         }
     }
 }

@@ -14,12 +14,11 @@ using T.Library.Model;
 using T.Library.Model.JwtToken;
 using T.Library.Model.Response;
 using T.Web.Areas.Services.AccountService;
-using T.Web.Controllers;
+using T.Web.Attribute;
 using T.Web.Extensions;
 
-namespace T.Web.Areas.Identity.Controllers
+namespace T.Web.Controllers
 {
-    [Area("Identity")]
     [Route("/account/[action]")]
     public class AccountController : Controller
     {
@@ -40,10 +39,21 @@ namespace T.Web.Areas.Identity.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel, string? returnUrl)
         {
+            if (!ModelState.IsValid)
+                return Redirect("/");
+
             var loginResponse = await _accountService.Login(loginViewModel);
-            var userPrincipal = this.ValidateToken(loginResponse.Data.AccessToken);
+
+            if (!loginResponse.Success)
+            {
+                ModelState.AddModelError(string.Empty, loginResponse.Message);
+                return View(loginViewModel);
+            }
+
+            var userPrincipal = ValidateToken(loginResponse.Data.AccessToken);
             var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
@@ -56,14 +66,28 @@ namespace T.Web.Areas.Identity.Controllers
 
             if (returnUrl != null)
                 return RedirectToLocal(returnUrl);
+
             return Redirect("/");
         }
 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
+            await _accountService.Logout();
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Register()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest)
+        {
+            return await _accountService.Register(registerRequest);
         }
         private ClaimsPrincipal ValidateToken(string jwtToken)
         {

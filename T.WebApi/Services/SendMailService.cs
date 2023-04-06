@@ -5,6 +5,7 @@ using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using T.Library.Model.SendMail;
 
 public class MailSettings
 {
@@ -18,7 +19,7 @@ public class MailSettings
 
 public interface IEmailSender
 {
-    Task SendEmailAsync(string email, string subject, string message);
+    Task SendEmailAsync(EmailDto emailDto);
     Task SendSmsAsync(string number, string message);
 }
 
@@ -39,16 +40,16 @@ public class SendMailService : IEmailSender {
     }
 
    
-    public async Task SendEmailAsync(string email, string subject, string htmlMessage) {
+    public async Task SendEmailAsync(EmailDto emailDto) {
        var message = new MimeMessage ();
         message.Sender = new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail);
         message.From.Add(new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail));
-        message.To.Add (MailboxAddress.Parse (email));
-        message.Subject = subject;
+        message.To.Add (MailboxAddress.Parse (emailDto.To));
+        message.Subject = emailDto.Subject;
 
 
         var builder = new BodyBuilder();
-        builder.HtmlBody = htmlMessage;
+        builder.HtmlBody = emailDto.Body;
         message.Body = builder.ToMessageBody ();
 
         // dùng SmtpClient của MailKit
@@ -75,7 +76,7 @@ public class SendMailService : IEmailSender {
 
         smtp.Disconnect (true);
 
-        logger.LogInformation("send mail to " + email);
+        logger.LogInformation("send mail to " + emailDto.To);
 
 
     }

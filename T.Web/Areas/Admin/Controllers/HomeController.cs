@@ -2,7 +2,7 @@
 
 namespace T.Web.Areas.Identity.Controllers
 {
-    [Area("Identity")]
+    [Area("Admin")]
     [Route("/admin/home/[action]")]
     public class HomeController : Controller
     {

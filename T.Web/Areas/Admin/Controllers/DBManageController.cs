@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Enum;
-using T.Web.Areas.Attribute;
 using T.Web.Areas.Services.Database;
+using T.Web.Attribute;
 using T.Web.Controllers;
 
-namespace T.Web.Areas.Database.Controllers
+namespace T.Web.Areas.Identity.Controllers
 {
-    [Area("Database")]
+    [Area("Admin")]
     [Route("/database-manage/[action]")]
     [Authorize]
     [CustomAuthorizationFilter(RoleName.Admin)]
