@@ -21,20 +21,18 @@ namespace T.Web.Areas.Services.Database
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
+            var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
         public async Task<bool> DeleteDb()
         {
-            var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             var response = await _httpClient.DeleteAsync($"api/DbManage");
             return response.IsSuccessStatusCode? true : false;
         }
 
         public async Task<DatabaseControlResponse> GetDbInfo()
         {
-            var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             var result = await _httpClient.GetFromJsonAsync<DatabaseControlResponse>($"api/DbManage");
             return result;
         }

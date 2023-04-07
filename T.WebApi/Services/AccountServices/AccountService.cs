@@ -7,6 +7,7 @@ using System.Security.Policy;
 using System.Text;
 using T.Library.Model;
 using T.Library.Model.Account;
+using T.Library.Model.Enum;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
 using T.Library.Model.SendMail;
@@ -303,7 +304,7 @@ namespace T.WebApi.Services.AccountServices
             }
             if (result.Succeeded)
             {
-                var defaultrole = _roleManager.FindByNameAsync("Customer").Result;
+                var defaultrole = _roleManager.FindByNameAsync(RoleName.Customer).Result;
                 if (defaultrole != null)
                 {
                     IdentityResult roleresult = await _userManager.AddToRoleAsync(user, defaultrole.Name);
@@ -311,7 +312,7 @@ namespace T.WebApi.Services.AccountServices
             }
 
             var encodeToken = await GenerateEncodeToken(user);
-            string url = $"{_configuration["Url:ApiUrl"]}/api/user/confirmemail?userid={user.Id}&token={encodeToken}";
+            string url = $"{_configuration["Url:ApiUrl"]}/api/account/confirmemail?userid={user.Id}&token={encodeToken}";
 
             EmailDto emailDto = new EmailDto
             {
@@ -330,7 +331,7 @@ namespace T.WebApi.Services.AccountServices
                 return new ServiceErrorResponse<bool>("Không thể gửi email xác nhận, vui lòng thử lại hoặc liên hệ bộ phận kỹ thuật");
             }
 
-            return new ServiceSuccessResponse<bool>();
+            return new ServiceResponse<bool>() { Message = "Vui lòng kiểm tra email để xác nhận !" };
         }
 
         public async Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest model)

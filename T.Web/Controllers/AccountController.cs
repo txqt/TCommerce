@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
@@ -85,9 +86,18 @@ namespace T.Web.Controllers
         }
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest)
+        public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
-            return await _accountService.Register(registerRequest);
+            var result = await _accountService.Register(registerRequest);
+
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View(registerRequest);
+            }
+
+
+            return LocalRedirect(Url.Action(nameof(RegisterConfirmation)));
         }
         private ClaimsPrincipal ValidateToken(string jwtToken)
         {
@@ -118,6 +128,12 @@ namespace T.Web.Controllers
                 return Redirect(returnUrl);
             }
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegisterConfirmation()
+        {
+            return View();
         }
     }
 }

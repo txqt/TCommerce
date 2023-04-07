@@ -20,6 +20,7 @@ namespace T.Library.Model
         public string LastName { get; set; }
 
         [Display(Name = "Ngày sinh")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]
         [DataType(DataType.Date)]
         public DateTime Dob { get; set; }
 

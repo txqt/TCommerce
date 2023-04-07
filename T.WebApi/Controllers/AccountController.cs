@@ -58,6 +58,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
