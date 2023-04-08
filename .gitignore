@@ -364,6 +364,6 @@ FodyWeavers.xsd
 
 .svn*
 
-Migrations/*
+T.WebApi/Migrations/*
 
-appsettings.json
+T.WebApi/appsettings.json
