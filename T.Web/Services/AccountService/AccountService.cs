@@ -3,16 +3,19 @@ using NuGet.Protocol.Plugins;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using T.Library.Model;
+using T.Library.Model.Account;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
 
-namespace T.Web.Areas.Services.AccountService
+namespace T.Web.Services.AccountService
 {
     public interface IAccountService
     {
         Task<ServiceResponse<AuthResponseDto>> Login(LoginViewModel loginRequest);
         Task Logout();
         Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest);
+        Task<ServiceResponse<string>> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel);
+        Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest resetPasswordRequest);
     }
     public class AccountService : IAccountService
     {
@@ -48,6 +51,18 @@ namespace T.Web.Areas.Services.AccountService
         {
             var result = await _httpClient.PostAsJsonAsync("api/account/register", registerRequest);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<string>> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
+        {
+            var result = await _httpClient.PostAsync($"/api/account/forgot-password?email={forgotPasswordViewModel.Email}", null);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+        }
+
+        public async Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest resetPasswordRequest)
+        {
+            var result = await _httpClient.PostAsJsonAsync("/api/account/reset-password", resetPasswordRequest);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<string>>();
         }
     }
 }

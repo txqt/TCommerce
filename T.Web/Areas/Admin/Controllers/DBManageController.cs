@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Enum;
-using T.Web.Areas.Services.Database;
 using T.Web.Attribute;
 using T.Web.Controllers;
+using T.Web.Services.Database;
 
 namespace T.Web.Areas.Identity.Controllers
 {

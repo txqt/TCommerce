@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using T.Library.Model;
 using T.Library.Model.Response;
 
-namespace T.Web.Areas.Services.Database
+namespace T.Web.Services.Database
 {
     public interface IDatabaseControl
     {
@@ -28,7 +28,7 @@ namespace T.Web.Areas.Services.Database
         public async Task<bool> DeleteDb()
         {
             var response = await _httpClient.DeleteAsync($"api/DbManage");
-            return response.IsSuccessStatusCode? true : false;
+            return response.IsSuccessStatusCode ? true : false;
         }
 
         public async Task<DatabaseControlResponse> GetDbInfo()

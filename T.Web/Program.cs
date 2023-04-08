@@ -6,10 +6,10 @@ using System.Configuration;
 using System.Text;
 using System.Text.Json;
 using T.Library.Model.JwtToken;
-using T.Web.Areas.Services.AccountService;
-using T.Web.Areas.Services.Database;
 using T.Web.Attribute;
 using T.Web.CusomMiddleware;
+using T.Web.Services.AccountService;
+using T.Web.Services.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 

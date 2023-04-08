@@ -77,10 +77,10 @@ namespace T.WebApi.Controllers
         {
             // Lấy token từ header Authorization của request
             string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            
+
             string? rawUserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if(!Guid.TryParse(rawUserId, out Guid userId))
+            if (!Guid.TryParse(rawUserId, out Guid userId))
             {
                 return Unauthorized();
             }
@@ -91,7 +91,8 @@ namespace T.WebApi.Controllers
 
         [HttpGet("ConfirmEmail")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> confirmEmail(string userId, string token)
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
                 return NotFound();
@@ -100,7 +101,7 @@ namespace T.WebApi.Controllers
 
             if (result.Success)
             {
-                return Redirect($"{result.Data}");
+                return Redirect($"{result.Data}/account/RegisterConfirmed");
             }
 
             return BadRequest(result);
@@ -124,14 +125,15 @@ namespace T.WebApi.Controllers
 
         [HttpPost("reset-password")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
         {
-                var result = await _accountService.ResetPassword(model);
+            var result = await _accountService.ResetPassword(model);
 
-                if (result.Success)
-                    return Ok(result);
+            if (result.Success)
+                return Ok(result);
 
-                return BadRequest(result);
+            return BadRequest(result);
         }
     }
 }

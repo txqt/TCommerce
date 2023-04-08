@@ -12,11 +12,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using T.Library.Model;
+using T.Library.Model.Account;
 using T.Library.Model.JwtToken;
 using T.Library.Model.Response;
-using T.Web.Areas.Services.AccountService;
 using T.Web.Attribute;
 using T.Web.Extensions;
+using T.Web.Services.AccountService;
 
 namespace T.Web.Controllers
 {
@@ -99,6 +100,52 @@ namespace T.Web.Controllers
 
             return LocalRedirect(Url.Action(nameof(RegisterConfirmation)));
         }
+
+        [HttpGet]
+        [Route("/account/forgot-password")]
+        public async Task<IActionResult> ForgotPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        [Route("/account/forgot-password")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
+        {
+            var result = await _accountService.ForgotPassword(forgotPasswordViewModel);
+
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View(forgotPasswordViewModel);
+            }
+
+
+            return LocalRedirect(Url.Action(nameof(ForgotPasswordConfirmation)));
+        }
+
+        [HttpGet]
+        [Route("/account/reset-password")]
+        public async Task<IActionResult> ResetPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        [Route("/account/reset-password")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest resetPasswordRequest)
+        {
+            var result = await _accountService.ResetPassword(resetPasswordRequest);
+
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View(resetPasswordRequest);
+            }
+
+
+            return LocalRedirect(Url.Action(nameof(ResetPasswordConfirmation)));
+        }
         private ClaimsPrincipal ValidateToken(string jwtToken)
         {
             IdentityModelEventSource.ShowPII = true;
@@ -132,6 +179,19 @@ namespace T.Web.Controllers
         [HttpGet]
         [AllowAnonymous]
         public IActionResult RegisterConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPasswordConfirmation()
         {
             return View();
         }

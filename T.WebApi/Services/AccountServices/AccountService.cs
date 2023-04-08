@@ -81,13 +81,12 @@ namespace T.WebApi.Services.AccountServices
                 return new ServiceErrorResponse<string>($"Unable to load user with ID '{userId}'.");
             }
 
-            var decodedToken = WebEncoders.Base64UrlDecode(token);
-            string normalToken = Encoding.UTF8.GetString(decodedToken);
+            string normalToken = DecodeToken(token);
 
             var result = await _userManager.ConfirmEmailAsync(user, normalToken);
 
             if (result.Succeeded)
-                return new ServiceSuccessResponse<string>(_configuration.GetSection("Url:ApiUrl").Value);
+                return new ServiceSuccessResponse<string>(_configuration.GetSection("Url:ClientUrl").Value);
 
             return new ServiceErrorResponse<string>("Email did not confirm");
         }
@@ -103,8 +102,8 @@ namespace T.WebApi.Services.AccountServices
             if (user == null)
                 return new ServiceErrorResponse<string>("Tài khoản không tồn tại");
 
-
-            var validToken = await GenerateEncodeToken(user);
+            var confirmEmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var validToken = EncodeToken(confirmEmailToken);
 
             string url = $"{_configuration["Url:ClientUrl"]}/account/reset-password?email={email}&token={validToken}";
 
@@ -156,7 +155,8 @@ namespace T.WebApi.Services.AccountServices
 
                     message = "Tài khoản của bạn chưa được xác thực. Hệ thống đã gửi email đến cho bạn, vui lòng kiểm tra email của bạn và làm theo hướng dẫn để hoàn tất quá trình xác thực.\r\n";
 
-                    var encodeToken = await GenerateEncodeToken(user);
+                    var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var encodeToken = EncodeToken(confirmEmailToken);
                     string url = $"{_configuration["Url:ApiUrl"]}/api/user/confirmemail?userid={user.Id}&token={encodeToken}";
 
                     EmailDto emailDto = new EmailDto
@@ -311,7 +311,8 @@ namespace T.WebApi.Services.AccountServices
                 }
             }
 
-            var encodeToken = await GenerateEncodeToken(user);
+            var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodeToken = EncodeToken(confirmEmailToken);
             string url = $"{_configuration["Url:ApiUrl"]}/api/account/confirmemail?userid={user.Id}&token={encodeToken}";
 
             EmailDto emailDto = new EmailDto
@@ -347,8 +348,8 @@ namespace T.WebApi.Services.AccountServices
                 return new ServiceErrorResponse<string>("Mật khẩu phải trùng khớp");
 
 
-            var decodedToken = WebEncoders.Base64UrlDecode(model.Token);
-            string normalToken = Encoding.UTF8.GetString(decodedToken);
+
+            string normalToken = DecodeToken(model.Token);
 
             try
             {
@@ -368,10 +369,9 @@ namespace T.WebApi.Services.AccountServices
             }
         }
 
-        public async Task<string> GenerateEncodeToken(User user)
+        public string EncodeToken(string normalToken)
         {
-            var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodedEmailToken = Encoding.UTF8.GetBytes(confirmEmailToken);
+            var encodedEmailToken = Encoding.UTF8.GetBytes(normalToken);
             return  WebEncoders.Base64UrlEncode(encodedEmailToken); 
         }
         public string DecodeToken(string encodeToken)
