@@ -38,7 +38,7 @@ builder.Services.Configure<JwtOptions>(jwtSection);
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
     options.LoginPath = "/account/login/";
-    options.AccessDeniedPath = "/";
+    options.AccessDeniedPath = "/Error/{0}";
 });
 
 builder.Services.AddSession(options =>
@@ -66,6 +66,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.MapControllerRoute(
     name: "default",
