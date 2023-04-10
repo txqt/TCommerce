@@ -33,15 +33,15 @@ namespace T.WebApi.Database.ConfigurationDatabase
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
-        //public DbSet<Product> Product { get; set; }
-        //public DbSet<Category> Category { get; set; }
-        //public DbSet<Picture> Picture { get; set; }
-        //public DbSet<ProductAttribute> ProductAttribute { get; set; }
-        //public DbSet<ProductAttributeMapping> Product_ProductAttribute_Mapping { get; set; }
-        //public DbSet<ProductAttributeValue> ProductAttributeValue { get; set; }
-        //public DbSet<ProductCategory> Product_ProductCategory_Mapping { get; set; }
-        //public DbSet<ProductPicture> Product_ProductPicture_Mapping { get; set; }
-        //public DbSet<ProductReview> ProductReview{ get; set; }
-        //public DbSet<ProductReviewHelpfulness> ProductReviewHelpfulness { get; set; }
+        public DbSet<Product> Product { get; set; }
+        public DbSet<Category> Category { get; set; }
+        public DbSet<Picture> Picture { get; set; }
+        public DbSet<ProductAttribute> ProductAttribute { get; set; }
+        public DbSet<ProductAttributeMapping> Product_ProductAttribute_Mapping { get; set; }
+        public DbSet<ProductAttributeValue> ProductAttributeValue { get; set; }
+        public DbSet<ProductCategory> Product_ProductCategory_Mapping { get; set; }
+        public DbSet<ProductPicture> Product_ProductPicture_Mapping { get; set; }
+        public DbSet<ProductReview> ProductReview { get; set; }
+        public DbSet<ProductReviewHelpfulness> ProductReviewHelpfulness { get; set; }
     }
 }

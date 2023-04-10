@@ -118,7 +118,7 @@ namespace T.WebApi.Services.AccountServices
 
             try
             {
-                _emailService.SendEmailAsync(emailDto);
+                await _emailService.SendEmailAsync(emailDto);
             }
             catch
             {
@@ -169,7 +169,7 @@ namespace T.WebApi.Services.AccountServices
                     };
                     try
                     {
-                        _emailService.SendEmailAsync(emailDto);
+                        await _emailService.SendEmailAsync(emailDto);
                     }
                     catch
                     {

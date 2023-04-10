@@ -41,11 +41,10 @@ namespace T.Web.Controllers
         }
 
         [HttpPost]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel, string? returnUrl)
         {
             if (!ModelState.IsValid)
-                return Redirect("/");
+                return View(loginViewModel);
 
             var loginResponse = await _accountService.Login(loginViewModel);
 
@@ -55,7 +54,9 @@ namespace T.Web.Controllers
                 return View(loginViewModel);
             }
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             var userPrincipal = ValidateToken(loginResponse.Data.AccessToken);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
@@ -86,9 +87,12 @@ namespace T.Web.Controllers
             return View();
         }
         [HttpPost]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(registerRequest);
+            }
             var result = await _accountService.Register(registerRequest);
 
             if (!result.Success)
@@ -109,9 +113,12 @@ namespace T.Web.Controllers
         }
         [HttpPost]
         [Route("/account/forgot-password")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(forgotPasswordViewModel);
+            }
             var result = await _accountService.ForgotPassword(forgotPasswordViewModel);
 
             if (!result.Success)
@@ -132,9 +139,12 @@ namespace T.Web.Controllers
         }
         [HttpPost]
         [Route("/account/reset-password")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest resetPasswordRequest)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(resetPasswordRequest);
+            }
             var result = await _accountService.ResetPassword(resetPasswordRequest);
 
             if (!result.Success)

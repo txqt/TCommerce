@@ -21,7 +21,6 @@ builder.Services.AddTransient(sp => new HttpClient
 });
 builder.Services.AddTransient<IDatabaseControl, DatabaseControl>();
 builder.Services.AddTransient<IAccountService, AccountService>();
-builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,

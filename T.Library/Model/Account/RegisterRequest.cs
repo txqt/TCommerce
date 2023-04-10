@@ -13,11 +13,11 @@ namespace T.Library.Model
     {
         [Display(Name = "Tên")]
         [Required]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
         [Display(Name = "Họ")]
         [Required]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         [Display(Name = "Ngày sinh")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]
@@ -32,7 +32,7 @@ namespace T.Library.Model
         [Display(Name = "Số điện thoại")]
         [StringLength(10, ErrorMessage = "Số điện thoại phải 10 kí tự")]
         [RegularExpression("^(?!0+$)(\\+\\d{1,3}[- ]?)?(?!0+$)\\d{10,15}$", ErrorMessage = "Phải nhập đúng định dạng số điện thoại")]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [DataType(DataType.Text)]
         [Display(Name = "Tên tài khoản")]
