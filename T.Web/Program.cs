@@ -10,6 +10,7 @@ using T.Web.Attribute;
 using T.Web.CusomMiddleware;
 using T.Web.Services.AccountService;
 using T.Web.Services.Database;
+using T.Web.Services.ProductService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddTransient(sp => new HttpClient
 });
 builder.Services.AddTransient<IDatabaseControl, DatabaseControl>();
 builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,

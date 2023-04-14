@@ -208,6 +208,123 @@ namespace T.WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Category");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AllowCustomersToSelectPageSize = false,
+                            CategoryTemplateId = 0,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IncludeInTopMenu = false,
+                            LimitedToStores = false,
+                            ManuallyPriceRange = false,
+                            Name = "Thời trang",
+                            PageSize = 0,
+                            ParentCategoryId = 0,
+                            PictureId = 0,
+                            PriceFrom = 0m,
+                            PriceRangeFiltering = false,
+                            PriceTo = 0m,
+                            Published = false,
+                            ShowOnHomepage = false,
+                            SubjectToAcl = false,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AllowCustomersToSelectPageSize = false,
+                            CategoryTemplateId = 0,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IncludeInTopMenu = false,
+                            LimitedToStores = false,
+                            ManuallyPriceRange = false,
+                            Name = "Điện tử",
+                            PageSize = 0,
+                            ParentCategoryId = 0,
+                            PictureId = 0,
+                            PriceFrom = 0m,
+                            PriceRangeFiltering = false,
+                            PriceTo = 0m,
+                            Published = false,
+                            ShowOnHomepage = false,
+                            SubjectToAcl = false,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AllowCustomersToSelectPageSize = false,
+                            CategoryTemplateId = 0,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IncludeInTopMenu = false,
+                            LimitedToStores = false,
+                            ManuallyPriceRange = false,
+                            Name = "Điện gia dụng",
+                            PageSize = 0,
+                            ParentCategoryId = 0,
+                            PictureId = 0,
+                            PriceFrom = 0m,
+                            PriceRangeFiltering = false,
+                            PriceTo = 0m,
+                            Published = false,
+                            ShowOnHomepage = false,
+                            SubjectToAcl = false,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AllowCustomersToSelectPageSize = false,
+                            CategoryTemplateId = 0,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IncludeInTopMenu = false,
+                            LimitedToStores = false,
+                            ManuallyPriceRange = false,
+                            Name = "Âm thanh",
+                            PageSize = 0,
+                            ParentCategoryId = 0,
+                            PictureId = 0,
+                            PriceFrom = 0m,
+                            PriceRangeFiltering = false,
+                            PriceTo = 0m,
+                            Published = false,
+                            ShowOnHomepage = false,
+                            SubjectToAcl = false,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AllowCustomersToSelectPageSize = false,
+                            CategoryTemplateId = 0,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IncludeInTopMenu = false,
+                            LimitedToStores = false,
+                            ManuallyPriceRange = false,
+                            Name = "Phụ kiện",
+                            PageSize = 0,
+                            ParentCategoryId = 0,
+                            PictureId = 0,
+                            PriceFrom = 0m,
+                            PriceRangeFiltering = false,
+                            PriceTo = 0m,
+                            Published = false,
+                            ShowOnHomepage = false,
+                            SubjectToAcl = false,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("T.Library.Model.Orders.ShoppingCartItem", b =>
@@ -330,7 +447,6 @@ namespace T.WebApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdminComment")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("AllowUserReviews")
@@ -367,7 +483,6 @@ namespace T.WebApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("FullDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("HasDiscountsApplied")
@@ -389,9 +504,7 @@ namespace T.WebApi.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ManufacturerPartNumber")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("MarkAsNew")
                         .HasColumnType("bit");
@@ -403,18 +516,13 @@ namespace T.WebApi.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("MetaDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MetaKeywords")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MetaTitle")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -455,16 +563,13 @@ namespace T.WebApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ShortDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("ShowOnHomepage")
                         .HasColumnType("bit");
 
                     b.Property<string>("Sku")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
@@ -487,6 +592,710 @@ namespace T.WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Product");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Áo thun nam",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 200000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Áo thun nam hàng hiệu",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Áo khoác nữ",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 500000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Áo khoác dành cho nữ thời trang",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Quần jean nam",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 400000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Quần jean nam hàng hiệu",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Váy đầm dự tiệc",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 1000000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Váy đầm dự tiệc sang trọng",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Giày thể thao nam",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 800000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Giày thể thao nam Adidas",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Giày cao gót nữ",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 700000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Giày cao gót nữ đẹp",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Túi xách nữ",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 600000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Túi xách nữ hàng hiệu",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Mũ len nam",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 100000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Mũ len nam giữ ấm",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 9,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Khẩu trang y tế",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 5000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Khẩu trang y tế 3 lớp",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 10,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Balo laptop",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 900000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Balo laptop chống sốc",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 11,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Tủ lạnh",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 15000000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Tủ lạnh side by side LG",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 12,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Máy giặt",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 10000000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Máy giặt Samsung",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 13,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Điều hòa",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 8000000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Điều hòa Panasonic Inverter",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 14,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Tivi OLED",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 30000000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Tivi OLED Sony 65 inch",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 15,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Máy ảnh DSLR",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 15000000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Máy ảnh Canon EOS 90D",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 16,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Loa bluetooth",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 2000000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Loa bluetooth JBL Flip 5",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 17,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Tai nghe true wireless",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 5000000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Tai nghe true wireless Apple AirPods Pro",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        },
+                        new
+                        {
+                            Id = 18,
+                            AllowUserReviews = false,
+                            ApprovedRatingSum = 0,
+                            ApprovedTotalReviews = 0,
+                            AvailableForPreOrder = false,
+                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DisableBuyButton = false,
+                            DisableWishlistButton = false,
+                            DisplayOrder = 0,
+                            HasDiscountsApplied = false,
+                            HasTierPrices = false,
+                            Height = 0m,
+                            IsFreeShipping = false,
+                            IsShipEnabled = false,
+                            Length = 0m,
+                            MarkAsNew = false,
+                            Name = "Chuột gaming",
+                            NotApprovedRatingSum = 0,
+                            NotApprovedTotalReviews = 0,
+                            NotReturnable = false,
+                            OldPrice = 0m,
+                            OrderMaximumQuantity = 0,
+                            OrderMinimumQuantity = 0,
+                            Price = 1000000m,
+                            ProductType = 0,
+                            ProductTypeId = 0,
+                            Published = false,
+                            ShortDescription = "Chuột gaming",
+                            ShowOnHomepage = false,
+                            StockQuantity = 0,
+                            UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            VendorId = 0,
+                            VisibleIndividually = false,
+                            Weight = 0m,
+                            Width = 0m
+                        });
                 });
 
             modelBuilder.Entity("T.Library.Model.ProductAttribute", b =>
@@ -501,7 +1310,6 @@ namespace T.WebApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -529,7 +1337,6 @@ namespace T.WebApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("DefaultValue")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Deleted")
@@ -548,11 +1355,9 @@ namespace T.WebApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("TextPrompt")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ValidationFileAllowedExtensions")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ValidationFileMaximumSize")
@@ -570,7 +1375,7 @@ namespace T.WebApi.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductAttributeMapping");
+                    b.ToTable("Product_ProductAttribute_Mapping");
                 });
 
             modelBuilder.Entity("T.Library.Model.ProductAttributeValue", b =>
@@ -667,7 +1472,171 @@ namespace T.WebApi.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductCategory");
+                    b.ToTable("Product_ProductCategory_Mapping");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 8
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 9
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CategoryId = 1,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 10
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CategoryId = 2,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 11
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CategoryId = 3,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 12
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CategoryId = 3,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 13
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CategoryId = 2,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 14
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CategoryId = 2,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 15
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CategoryId = 4,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 16
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CategoryId = 4,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 17
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CategoryId = 2,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsFeaturedProduct = false,
+                            ProductId = 18
+                        });
                 });
 
             modelBuilder.Entity("T.Library.Model.ProductPicture", b =>
@@ -696,7 +1665,7 @@ namespace T.WebApi.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductPicture");
+                    b.ToTable("Product_ProductPicture_Mapping");
                 });
 
             modelBuilder.Entity("T.Library.Model.ProductReview", b =>
@@ -735,18 +1704,15 @@ namespace T.WebApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ReplyText")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReviewText")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StoreId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
+using T.Library.Model.Response;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
 
@@ -8,6 +9,7 @@ namespace T.WebApi.Services.AccountServices
     public interface IProductService
     {
         Task<PagedList<Product>> GetAll(ProductParameters productParameters);
+        Task<ServiceResponse<Product>> Get(int id);
     }
     public class ProductService : IProductService
     {
@@ -37,6 +39,22 @@ namespace T.WebApi.Services.AccountServices
                 //list_product.Shuffle();
                 return PagedList<Product>
                             .ToPagedList(list_product, productParameters.PageNumber, productParameters.PageSize);
+            }
+        }
+
+        public async Task<ServiceResponse<Product>> Get(int id)
+        {
+            using (_context)
+            {
+                var product = await _context.Product
+                    .FirstOrDefaultAsync(x => x.Id == id);
+                await _context.SaveChangesAsync();
+                var response = new ServiceResponse<Product>
+                {
+                    Data = product,
+                    Success = true
+                };
+                return response;
             }
         }
     }

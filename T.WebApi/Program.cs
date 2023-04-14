@@ -38,6 +38,15 @@ builder.Services.AddCustomOptions(builder.Configuration);
 builder.Services.Configure<ApiBehaviorOptions>(options
     => options.SuppressModelStateInvalidFilter = true);
 
+builder.Services.AddCors(policy =>
+{
+    policy.AddPolicy("CorsPolicy", opt => opt
+    .AllowAnyOrigin()
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .WithExposedHeaders("X-Pagination"));
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -49,17 +58,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//// Sử dụng JwtBlacklistMiddleware
 
-//app.Use(async (context, next) =>
-//{
-//    var middleware = app.Services.GetRequiredService<JwtBlacklistMiddleware>();
-
-
-//    await middleware.InvokeAsync(context);
-//});
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors("CorsPolicy");
 app.UseMiddleware<TokenManagerMiddleware>();
 app.MapControllers();
 

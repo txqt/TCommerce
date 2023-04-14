@@ -59,7 +59,7 @@ namespace T.Web.Controllers
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1),
                 IsPersistent = loginViewModel.RememberMe
             };
             // Lưu trữ giá trị vào session

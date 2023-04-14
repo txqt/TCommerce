@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using T.Library.Model;
 using T.Library.Model.Users;
+using T.WebApi.Extensions;
 
 namespace T.WebApi.Database.ConfigurationDatabase
 {
@@ -31,6 +32,8 @@ namespace T.WebApi.Database.ConfigurationDatabase
             }
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            modelBuilder.Seed();
         }
 
         public DbSet<Product> Product { get; set; }
