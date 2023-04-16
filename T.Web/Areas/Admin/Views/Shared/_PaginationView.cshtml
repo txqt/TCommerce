@@ -27,11 +27,11 @@
                 @if (Model.MetaData.TotalPages > 1)
                 {
                     <li class="paginate_button page-item previous @(Model.MetaData.HasPrevious ?"":"disabled")" id="dataTable_previous">
-                        <a href="?pageNumber=0" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">Start</a>
+                        <a href="@Url.Action(Model.ActionName, Model.ControllerName, new { pageNumber = 0, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy })" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">Start</a>
                     </li>
 
                     <li class="paginate_button page-item previous @(Model.MetaData.HasPrevious ?"":"disabled") " id="dataTable_previous">
-                        <a href="?pageNumber=@(Model.MetaData.CurrentPage - 1)" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+                        <a href="@Url.Action(Model.ActionName, Model.ControllerName, new { pageNumber = Model.MetaData.CurrentPage - 1, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy })" aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
                     </li>
 
                     @if (showEllipsesStart)
@@ -41,7 +41,7 @@
                     @for (int i = startPageNumber; i <= endPageNumber; i++)
                     {
                         <li class="paginate_button page-item @(i == Model.MetaData.CurrentPage ? "active" : "")">
-                            <a href="?pageNumber=@i" aria-controls="dataTable" data-dt-idx="@i" tabindex="0" class="page-link">@i</a>
+                            <a href="@Url.Action(Model.ActionName, Model.ControllerName, new { pageNumber = @i, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy })" aria-controls="dataTable" data-dt-idx="@i" tabindex="0" class="page-link">@i</a>
                         </li>
                         index = i;
                     }
@@ -50,10 +50,10 @@
                         <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
                     }
                     <li class="paginate_button page-item next @(Model.MetaData.HasNext ? "" : "disabled")" id="dataTable_next">
-                        <a href="?pageNumber=@(Model.MetaData.CurrentPage + 1)" aria-controls="dataTable" data-dt-idx="@index + 1" tabindex="0" class="page-link">Next</a>
+                        <a href="@Url.Action(Model.ActionName, Model.ControllerName, new { pageNumber = Model.MetaData.CurrentPage + 1, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy })" aria-controls="dataTable" data-dt-idx="@index + 1" tabindex="0" class="page-link">Next</a>
                     </li>
                     <li class="paginate_button page-item next @(Model.MetaData.HasNext ? "" : "disabled")" id="dataTable_next">
-                        <a href="?pageNumber=@(Model.MetaData.TotalPages)" aria-controls="dataTable" data-dt-idx="@index + 2" tabindex="0" class="page-link">End</a>
+                        <a href="@Url.Action(Model.ActionName, Model.ControllerName, new { pageNumber = Model.MetaData.TotalPages, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy })" aria-controls="dataTable" data-dt-idx="@index + 2" tabindex="0" class="page-link">End</a>
                     </li>
                 }
             </ul>

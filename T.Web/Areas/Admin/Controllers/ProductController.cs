@@ -15,6 +15,9 @@ namespace T.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(ProductParameters productParameters)
         {
+            ViewBag.SearchText = productParameters != null ? productParameters.searchText : null;
+            ViewBag.OrderBy = productParameters != null ? productParameters.OrderBy : null;
+            ViewBag.PageSize = productParameters != null ? productParameters.PageSize : default;
             var result = await _productService.GetAll(productParameters);
             return View(result);
         }

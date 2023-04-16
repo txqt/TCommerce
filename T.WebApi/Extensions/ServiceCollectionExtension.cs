@@ -20,6 +20,7 @@ using T.Library.Model.JwtToken;
 using T.WebApi.Services;
 using StackExchange.Redis;
 using Microsoft.Extensions.Configuration;
+using T.WebApi.Services.ProductServices;
 
 namespace T.WebApi.Extensions
 {

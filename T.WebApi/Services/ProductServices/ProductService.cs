@@ -4,7 +4,7 @@ using T.Library.Model.Response;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
 
-namespace T.WebApi.Services.AccountServices
+namespace T.WebApi.Services.ProductServices
 {
     public interface IProductService
     {
@@ -17,7 +17,7 @@ namespace T.WebApi.Services.AccountServices
 
         public ProductService(DatabaseContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         public async Task<PagedList<Product>> GetAll(ProductParameters productParameters)
