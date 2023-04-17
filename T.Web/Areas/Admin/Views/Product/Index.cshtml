@@ -41,11 +41,21 @@
                         <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">Name</th>
-                                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 296.2px;">Price</th>
-                                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 141.2px;">Old Price</th>
-                                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 66.2px;">Stock Quantity</th>
-                                    <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Created date: activate to sort column ascending" style="width: 133.2px;">Start Date</th>
+                                    <th class="sorting @(ViewBag.OrderBy == "name" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
+                                        <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "name" ? "name desc" : "name" })">Name</a>
+                                    </th>
+                                    <th class="sorting @(ViewBag.OrderBy == "price" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Price: activate to sort column ascending" style="width: 195.2px;">
+                                        <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "price" ? "price desc" : "price" })">Price</a>
+                                    </th>
+                                    <th class="sorting @(ViewBag.OrderBy == "oldprice" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Old Price: activate to sort column ascending" style="width: 195.2px;">
+                                        <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "OldPrice" ? "OldPrice desc" : "OldPrice" })">Old Price</a>
+                                    </th>
+                                    <th class="sorting @(ViewBag.OrderBy == "stockquantity" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Stock Quantity: activate to sort column ascending" style="width: 195.2px;">
+                                        <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "StockQuantity" ? "StockQuantity desc" : "StockQuantity" })">Stock Quantity</a>
+                                    </th>
+                                    <th class="sorting @(ViewBag.OrderBy == "CreatedOnUtc" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Created date: activate to sort column ascending" style="width: 133.2px;">
+                                        <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "CreatedOnUtc" ? "CreatedOnUtc desc" : "CreatedOnUtc" })">Created Date</a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tfoot>
@@ -91,11 +101,11 @@
                     </div>
                 </div>
                 @await Html.PartialAsync("_PaginationView", new PagingViewModel(){
-                        MetaData = Model.MetaData,
-                        ControllerName = "Product",
-                        ActionName = "Index",
-                        dataHtml = "#dataTable"
-                    }
+                MetaData = Model.MetaData,
+                ControllerName = "Product",
+                ActionName = "Index",
+                dataHtml = "#dataTable"
+                }
                 )
 
             </div>
@@ -129,7 +139,22 @@
         });
     });
 
-    function getProduct(url){
+    $('#dataTable').on('click', 'a', function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                $('#dataTable').html($(data).find('#dataTable').html());
+                $('#dataTable_info').html($(data).find('#dataTable_info').html());
+                $('.pagination').html($(data).find('.pagination').html());
+            }
+        });
+    });
+
+    function getProduct(url) {
         $.ajax({
             url: url,
             type: 'GET',
