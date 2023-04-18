@@ -1,14 +1,16 @@
-﻿namespace T.Library.Model
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace T.Library.Model
 {
     /// <summary>
     /// Represents a product
     /// </summary>
     public partial class Product : BaseEntity
     {
-        /// <summary>
-        /// Gets or sets the product type identifier
-        /// </summary>
-        public int ProductTypeId { get; set; }
+        ///// <summary>
+        ///// Gets or sets the product type identifier
+        ///// </summary>
+        //public int ProductTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the values indicating whether this product is visible in catalog or search results.
@@ -20,17 +22,17 @@
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        public string Name { get; set; }
+        [Required]public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the short description
         /// </summary>
-        public string ShortDescription { get; set; }
+        [Required] public string ShortDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the full description
         /// </summary>
-        public string FullDescription { get; set; }
+        [Required] public string FullDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the admin comment
@@ -40,7 +42,7 @@
         /// <summary>
         /// Gets or sets a vendor identifier
         /// </summary>
-        public int VendorId { get; set; }
+        //public int VendorId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show the product on home page
@@ -68,34 +70,10 @@
         public bool AllowUserReviews { get; set; }
 
         /// <summary>
-        /// Gets or sets the rating sum (approved reviews)
-        /// </summary>
-        public int ApprovedRatingSum { get; set; }
-
-        /// <summary>
-        /// Gets or sets the rating sum (not approved reviews)
-        /// </summary>
-        public int NotApprovedRatingSum { get; set; }
-
-        /// <summary>
-        /// Gets or sets the total rating votes (approved reviews)
-        /// </summary>
-        public int ApprovedTotalReviews { get; set; }
-
-        /// <summary>
-        /// Gets or sets the total rating votes (not approved reviews)
-        /// </summary>
-        public int NotApprovedTotalReviews { get; set; }
-
-        /// <summary>
         /// Gets or sets the SKU
         /// </summary>
         public string Sku { get; set; }
 
-        /// <summary>
-        /// Gets or sets the manufacturer part number
-        /// </summary>
-        public string ManufacturerPartNumber { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the product is gift card
@@ -122,7 +100,7 @@
         /// </summary>
         public bool IsFreeShipping { get; set; }
 
-        public int StockQuantity { get; set; }
+        [Required] public int StockQuantity { get; set; }
 
         /// <summary>
         /// Gets or sets the order minimum quantity
@@ -162,14 +140,16 @@
         /// <summary>
         /// Gets or sets the price
         /// </summary>
+        [Required]
         public decimal Price { get; set; }
 
         /// <summary>
         /// Gets or sets the old price
         /// </summary>
+        [Required]
         public decimal OldPrice { get; set; }
 
-        public bool MarkAsNew { get; set; }
+        public bool MarkAsNew { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the start date and time of the new product (set product as "New" from date). Leave empty to ignore this property
@@ -188,7 +168,7 @@
         /// if this property is set to false, then we do not need to load tier prices navigation property
         /// </remarks>
         /// </summary>
-        public bool HasTierPrices { get; set; }
+        //public bool HasTierPrices { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this product has discounts applied
@@ -197,27 +177,27 @@
         /// if this property is set to false, then we do not need to load Applied Discounts navigation property
         /// </remarks>
         /// </summary>
-        public bool HasDiscountsApplied { get; set; }
+        //public bool HasDiscountsApplied { get; set; }
 
         /// <summary>
         /// Gets or sets the weight
         /// </summary>
-        public decimal Weight { get; set; }
+        public decimal Weight { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the length
         /// </summary>
-        public decimal Length { get; set; }
+        public decimal Length { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the width
         /// </summary>
-        public decimal Width { get; set; }
+        public decimal Width { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the height
         /// </summary>
-        public decimal Height { get; set; }
+        public decimal Height { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the available start date and time
@@ -251,14 +231,14 @@
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
 
-        /// <summary>
-        /// Gets or sets the product type
-        /// </summary>
-        public ProductType ProductType
-        {
-            get => (ProductType)ProductTypeId;
-            set => ProductTypeId = (int)value;
-        }
+        ///// <summary>
+        ///// Gets or sets the product type
+        ///// </summary>
+        //public ProductType ProductType
+        //{
+        //    get => (ProductType)ProductTypeId;
+        //    set => ProductTypeId = (int)value;
+        //}
 
 
         /// <summary>

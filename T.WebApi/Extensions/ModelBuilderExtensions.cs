@@ -13,126 +13,144 @@ namespace T.WebApi.Extensions
                   Id = 1,
                   Name = "Áo thun nam",
                   Price = 200000,
-                  ShortDescription = "Áo thun nam hàng hiệu"
+                  ShortDescription = "Áo thun nam hàng hiệu",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 2,
                   Name = "Áo khoác nữ",
                   Price = 500000,
-                  ShortDescription = "Áo khoác dành cho nữ thời trang"
+                  ShortDescription = "Áo khoác dành cho nữ thời trang",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 3,
                   Name = "Quần jean nam",
                   Price = 400000,
-                  ShortDescription = "Quần jean nam hàng hiệu"
+                  ShortDescription = "Quần jean nam hàng hiệu",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 4,
                   Name = "Váy đầm dự tiệc",
                   Price = 1000000,
-                  ShortDescription = "Váy đầm dự tiệc sang trọng"
+                  ShortDescription = "Váy đầm dự tiệc sang trọng",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 5,
                   Name = "Giày thể thao nam",
                   Price = 800000,
-                  ShortDescription = "Giày thể thao nam Adidas"
+                  ShortDescription = "Giày thể thao nam Adidas",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 6,
                   Name = "Giày cao gót nữ",
                   Price = 700000,
-                  ShortDescription = "Giày cao gót nữ đẹp"
+                  ShortDescription = "Giày cao gót nữ đẹp",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 7,
                   Name = "Túi xách nữ",
                   Price = 600000,
-                  ShortDescription = "Túi xách nữ hàng hiệu"
+                  ShortDescription = "Túi xách nữ hàng hiệu",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 8,
                   Name = "Mũ len nam",
                   Price = 100000,
-                  ShortDescription = "Mũ len nam giữ ấm"
+                  ShortDescription = "Mũ len nam giữ ấm",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 9,
                   Name = "Khẩu trang y tế",
                   Price = 5000,
-                  ShortDescription = "Khẩu trang y tế 3 lớp"
+                  ShortDescription = "Khẩu trang y tế 3 lớp",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 10,
                   Name = "Balo laptop",
                   Price = 900000,
-                  ShortDescription = "Balo laptop chống sốc"
+                  ShortDescription = "Balo laptop chống sốc",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 11,
                   Name = "Tủ lạnh",
                   Price = 15000000,
-                  ShortDescription = "Tủ lạnh side by side LG"
+                  ShortDescription = "Tủ lạnh side by side LG",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 12,
                   Name = "Máy giặt",
                   Price = 10000000,
-                  ShortDescription = "Máy giặt Samsung"
+                  ShortDescription = "Máy giặt Samsung",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 13,
                   Name = "Điều hòa",
                   Price = 8000000,
-                  ShortDescription = "Điều hòa Panasonic Inverter"
+                  ShortDescription = "Điều hòa Panasonic Inverter",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 14,
                   Name = "Tivi OLED",
                   Price = 30000000,
-                  ShortDescription = "Tivi OLED Sony 65 inch"
+                  ShortDescription = "Tivi OLED Sony 65 inch",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 15,
                   Name = "Máy ảnh DSLR",
                   Price = 15000000,
-                  ShortDescription = "Máy ảnh Canon EOS 90D"
+                  ShortDescription = "Máy ảnh Canon EOS 90D",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 16,
                   Name = "Loa bluetooth",
                   Price = 2000000,
-                  ShortDescription = "Loa bluetooth JBL Flip 5"
+                  ShortDescription = "Loa bluetooth JBL Flip 5",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 17,
                   Name = "Tai nghe true wireless",
                   Price = 5000000,
-                  ShortDescription = "Tai nghe true wireless Apple AirPods Pro"
+                  ShortDescription = "Tai nghe true wireless Apple AirPods Pro",
+                  FullDescription = "Full Description"
               },
               new Product
               {
                   Id = 18,
                   Name = "Chuột gaming",
                   Price = 1000000,
-                  ShortDescription = "Chuột gaming"
+                  ShortDescription = "Chuột gaming",
+                  FullDescription = "Full Description"
               }
             );
 

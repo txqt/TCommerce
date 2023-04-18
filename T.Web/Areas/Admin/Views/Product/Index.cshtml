@@ -1,7 +1,7 @@
 ﻿@model PagingResponse<Product>
 <!-- Page Heading -->
 <h1 class="h3 mb-2 text-gray-800">Tables</h1>
-<p class="mb-4"> DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the <a target="_blank" href="https://datatables.net">official DataTables documentation</a>. </p>
+<a class="btn btn-info" href="@Url.Action("CreateProduct", "Product")">New</a>
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
@@ -56,6 +56,9 @@
                                     <th class="sorting @(ViewBag.OrderBy == "CreatedOnUtc" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Created date: activate to sort column ascending" style="width: 133.2px;">
                                         <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "CreatedOnUtc" ? "CreatedOnUtc desc" : "CreatedOnUtc" })">Created Date</a>
                                     </th>
+                                    <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="" style="width: 133.2px;">
+                                        <a href="#" class="sorting_header_link">Edit</a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tfoot>
@@ -65,6 +68,7 @@
                                     <th rowspan="1" colspan="1">Old Price</th>
                                     <th rowspan="1" colspan="1">StockQuantity</th>
                                     <th rowspan="1" colspan="1">Created Date</th>
+                                    <th rowspan="1" colspan="1">Edit</th>
                                 </tr>
                             </tfoot>
                             <tbody>
@@ -81,6 +85,7 @@
                                                 <td>@item.OldPrice</td>
                                                 <td>@item.StockQuantity</td>
                                                 <td>@item.CreatedOnUtc</td>
+                                                <td><a class="btn btn-info" href="@Url.Action("Edit","Product", new{ productId = item.Id})"></a></td>
                                             </tr>
                                             count++;
                                         }
@@ -89,6 +94,7 @@
                                     {
                                         <tr class="odd">
                                             <td class="sorting_1">No data</td>
+                                            <td>No data</td>
                                             <td>No data</td>
                                             <td>No data</td>
                                             <td>No data</td>
@@ -139,7 +145,7 @@
         });
     });
 
-    $('#dataTable').on('click', 'a', function (e) {
+    $('#dataTable').on('click', 'th a', function (e) {
         e.preventDefault();
         var url = $(this).attr('href');
         $.ajax({

@@ -2,12 +2,14 @@
 using System.Drawing;
 using System.Text.Json;
 using T.Library.Model;
+using T.Library.Model.Response;
 
 namespace T.Web.Services.ProductService
 {
     public interface IProductService
     {
         Task<PagingResponse<Product>> GetAll(ProductParameters productParameters);
+        Task<ServiceResponse<bool>> CreateProduct(Product product);
     }
     public class ProductService : IProductService
     {
@@ -17,6 +19,12 @@ namespace T.Web.Services.ProductService
         {
             _options = options;
             _httpClient = httpClient;
+        }
+
+        public async Task<ServiceResponse<bool>> CreateProduct(Product product)
+        {
+            var result = await _httpClient.PostAsJsonAsync($"api/product/create-product", product);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
         public async Task<PagingResponse<Product>> GetAll(ProductParameters productParameters)

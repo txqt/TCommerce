@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using T.Library.Model;
 using T.Library.Model.Response;
+using T.WebApi.Attribute;
 using T.WebApi.Services.ProductServices;
 
 namespace T.WebApi.Controllers
@@ -16,6 +17,7 @@ namespace T.WebApi.Controllers
         {
             _productService = productService;
         }
+
         [HttpGet("get-all")]
         public async Task<ActionResult<List<Product>>> GetAll([FromQuery] ProductParameters productParameters)
         {
@@ -23,10 +25,23 @@ namespace T.WebApi.Controllers
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(products.MetaData));
             return Ok(products);
         }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<Product>>> Get(int id)
         {
             return await _productService.Get(id);
+        }
+
+        [HttpPost("create-product")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> CreateProduct(Product product)
+        {
+            var result = await _productService.CreateProduct(product);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
     }
 }

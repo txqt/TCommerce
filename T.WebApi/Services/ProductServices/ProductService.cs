@@ -10,6 +10,7 @@ namespace T.WebApi.Services.ProductServices
     {
         Task<PagedList<Product>> GetAll(ProductParameters productParameters);
         Task<ServiceResponse<Product>> Get(int id);
+        Task<ServiceResponse<bool>> CreateProduct(Product product);
     }
     public class ProductService : IProductService
     {
@@ -48,13 +49,28 @@ namespace T.WebApi.Services.ProductServices
             {
                 var product = await _context.Product
                     .FirstOrDefaultAsync(x => x.Id == id);
-                await _context.SaveChangesAsync();
+
                 var response = new ServiceResponse<Product>
                 {
                     Data = product,
                     Success = true
                 };
                 return response;
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> CreateProduct(Product product)
+        {
+            using(_context)
+            {
+                product.CreatedOnUtc = DateTime.Now;
+                _context.Product.Add(product);
+                var result = await _context.SaveChangesAsync();
+                if (result == 0)
+                {
+                    return new ServiceErrorResponse<bool>("Create product failed");
+                }
+                return new ServiceSuccessResponse<bool>();
             }
         }
     }
