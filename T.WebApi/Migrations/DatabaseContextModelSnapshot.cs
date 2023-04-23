@@ -395,10 +395,6 @@ namespace T.WebApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductAttributeId");
-
-                    b.HasIndex("ProductAttributeValueId");
-
                     b.HasIndex("ShoppingCartItemId");
 
                     b.ToTable("ShoppingCartItemAttributeValue");
@@ -1148,6 +1144,15 @@ namespace T.WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProductAttribute");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Deleted = false,
+                            Description = "Thuộc tính màu sắc của sản phẩm",
+                            Name = "Màu sắc"
+                        });
                 });
 
             modelBuilder.Entity("T.Library.Model.ProductAttributeMapping", b =>
@@ -1204,6 +1209,206 @@ namespace T.WebApi.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("Product_ProductAttribute_Mapping");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 8
+                        },
+                        new
+                        {
+                            Id = 9,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 9
+                        },
+                        new
+                        {
+                            Id = 10,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 10
+                        },
+                        new
+                        {
+                            Id = 11,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 11
+                        },
+                        new
+                        {
+                            Id = 12,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 12
+                        },
+                        new
+                        {
+                            Id = 13,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 13
+                        },
+                        new
+                        {
+                            Id = 14,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 14
+                        },
+                        new
+                        {
+                            Id = 15,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 15
+                        },
+                        new
+                        {
+                            Id = 16,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 16
+                        },
+                        new
+                        {
+                            Id = 17,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 17
+                        },
+                        new
+                        {
+                            Id = 18,
+                            AttributeControlTypeId = 0,
+                            ConditionAttributeSelected = 0,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            IsRequired = false,
+                            ProductAttributeId = 1,
+                            ProductId = 18
+                        });
                 });
 
             modelBuilder.Entity("T.Library.Model.ProductAttributeValue", b =>
@@ -1221,9 +1426,7 @@ namespace T.WebApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ColorSquaresRgb")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
@@ -1268,7 +1471,125 @@ namespace T.WebApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductAttributeMappingId");
+
                     b.ToTable("ProductAttributeValue");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AssociatedProductId = 0,
+                            AttributeValueTypeId = 0,
+                            Cost = 0m,
+                            CustomerEntersQty = false,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            ImageSquaresPictureId = 0,
+                            IsPreSelected = false,
+                            Name = "Đỏ",
+                            PictureId = 0,
+                            PriceAdjustment = 0m,
+                            PriceAdjustmentUsePercentage = false,
+                            ProductAttributeMappingId = 1,
+                            Quantity = 0,
+                            WeightAdjustment = 0m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AssociatedProductId = 0,
+                            AttributeValueTypeId = 0,
+                            Cost = 0m,
+                            CustomerEntersQty = false,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            ImageSquaresPictureId = 0,
+                            IsPreSelected = false,
+                            Name = "Xanh",
+                            PictureId = 0,
+                            PriceAdjustment = 0m,
+                            PriceAdjustmentUsePercentage = false,
+                            ProductAttributeMappingId = 1,
+                            Quantity = 0,
+                            WeightAdjustment = 0m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AssociatedProductId = 0,
+                            AttributeValueTypeId = 0,
+                            Cost = 0m,
+                            CustomerEntersQty = false,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            ImageSquaresPictureId = 0,
+                            IsPreSelected = false,
+                            Name = "Vàng",
+                            PictureId = 0,
+                            PriceAdjustment = 0m,
+                            PriceAdjustmentUsePercentage = false,
+                            ProductAttributeMappingId = 1,
+                            Quantity = 0,
+                            WeightAdjustment = 0m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AssociatedProductId = 0,
+                            AttributeValueTypeId = 0,
+                            Cost = 0m,
+                            CustomerEntersQty = false,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            ImageSquaresPictureId = 0,
+                            IsPreSelected = false,
+                            Name = "Tím",
+                            PictureId = 0,
+                            PriceAdjustment = 0m,
+                            PriceAdjustmentUsePercentage = false,
+                            ProductAttributeMappingId = 2,
+                            Quantity = 0,
+                            WeightAdjustment = 0m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AssociatedProductId = 0,
+                            AttributeValueTypeId = 0,
+                            Cost = 0m,
+                            CustomerEntersQty = false,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            ImageSquaresPictureId = 0,
+                            IsPreSelected = false,
+                            Name = "Đen",
+                            PictureId = 0,
+                            PriceAdjustment = 0m,
+                            PriceAdjustmentUsePercentage = false,
+                            ProductAttributeMappingId = 2,
+                            Quantity = 0,
+                            WeightAdjustment = 0m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AssociatedProductId = 0,
+                            AttributeValueTypeId = 0,
+                            Cost = 0m,
+                            CustomerEntersQty = false,
+                            Deleted = false,
+                            DisplayOrder = 0,
+                            ImageSquaresPictureId = 0,
+                            IsPreSelected = false,
+                            Name = "Vàng",
+                            PictureId = 0,
+                            PriceAdjustment = 0m,
+                            PriceAdjustmentUsePercentage = false,
+                            ProductAttributeMappingId = 2,
+                            Quantity = 0,
+                            WeightAdjustment = 0m
+                        });
                 });
 
             modelBuilder.Entity("T.Library.Model.ProductCategory", b =>
@@ -1757,27 +2078,11 @@ namespace T.WebApi.Migrations
 
             modelBuilder.Entity("T.Library.Model.Orders.ShoppingCartItemAttributeValue", b =>
                 {
-                    b.HasOne("T.Library.Model.ProductAttribute", "ProductAttribute")
-                        .WithMany()
-                        .HasForeignKey("ProductAttributeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("T.Library.Model.ProductAttributeValue", "ProductAttributeValue")
-                        .WithMany()
-                        .HasForeignKey("ProductAttributeValueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("T.Library.Model.Orders.ShoppingCartItem", "ShoppingCartItem")
                         .WithMany("ShoppingCartItemAttributeValues")
                         .HasForeignKey("ShoppingCartItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ProductAttribute");
-
-                    b.Navigation("ProductAttributeValue");
 
                     b.Navigation("ShoppingCartItem");
                 });
@@ -1785,12 +2090,6 @@ namespace T.WebApi.Migrations
             modelBuilder.Entity("T.Library.Model.ProductAttributeMapping", b =>
                 {
                     b.HasOne("T.Library.Model.ProductAttribute", "ProductAttribute")
-                        .WithMany("ProductAttributeMappings")
-                        .HasForeignKey("ProductAttributeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("T.Library.Model.ProductAttributeValue", "ProductAttributeValue")
                         .WithMany("ProductAttributeMappings")
                         .HasForeignKey("ProductAttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1805,8 +2104,17 @@ namespace T.WebApi.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("ProductAttribute");
+                });
 
-                    b.Navigation("ProductAttributeValue");
+            modelBuilder.Entity("T.Library.Model.ProductAttributeValue", b =>
+                {
+                    b.HasOne("T.Library.Model.ProductAttributeMapping", "ProductAttributeMappings")
+                        .WithMany("ProductAttributeValue")
+                        .HasForeignKey("ProductAttributeMappingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductAttributeMappings");
                 });
 
             modelBuilder.Entity("T.Library.Model.ProductCategory", b =>
@@ -1900,9 +2208,9 @@ namespace T.WebApi.Migrations
                     b.Navigation("ProductAttributeMappings");
                 });
 
-            modelBuilder.Entity("T.Library.Model.ProductAttributeValue", b =>
+            modelBuilder.Entity("T.Library.Model.ProductAttributeMapping", b =>
                 {
-                    b.Navigation("ProductAttributeMappings");
+                    b.Navigation("ProductAttributeValue");
                 });
 
             modelBuilder.Entity("T.Library.Model.ProductReview", b =>

@@ -21,8 +21,10 @@ builder.Services.AddTransient(sp => new HttpClient
     BaseAddress = new Uri(builder.Configuration.GetSection("Url:ApiUrl").Value)
 });
 builder.Services.AddTransient<IDatabaseControl, DatabaseControl>();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IProductAttributeService, ProductAttributeService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,
@@ -38,13 +40,15 @@ builder.Services.Configure<JwtOptions>(jwtSection);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    options.LoginPath = "/account/login/";
-    options.AccessDeniedPath = "/Error/{0}";
+    options.LoginPath = "/login";
+    options.LogoutPath = "/logout";
 });
 
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromHours(jwtOptions.AccessTokenExpirationInHours);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 builder.Services.AddHttpContextAccessor();

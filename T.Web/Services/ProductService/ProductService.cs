@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using System.Drawing;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using T.Library.Model;
 using T.Library.Model.Response;
+using T.Library.Model.ViewsModel;
 
 namespace T.Web.Services.ProductService
 {
@@ -10,21 +12,40 @@ namespace T.Web.Services.ProductService
     {
         Task<PagingResponse<Product>> GetAll(ProductParameters productParameters);
         Task<ServiceResponse<bool>> CreateProduct(Product product);
+        Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product);
+        Task<ServiceResponse<Product>> Get(int id);
     }
     public class ProductService : IProductService
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _options;
-        public ProductService(JsonSerializerOptions options, HttpClient httpClient)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             _options = options;
             _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
+            var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            Console.WriteLine(accessToken);
         }
 
         public async Task<ServiceResponse<bool>> CreateProduct(Product product)
         {
-            var result = await _httpClient.PostAsJsonAsync($"api/product/create-product", product);
+            var result = await _httpClient.PostAsJsonAsync($"api/product/create", product);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product)
+        {
+            var result = await _httpClient.PostAsJsonAsync($"api/product/edit", product);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<Product>> Get(int id)
+        {
+            var result = await _httpClient.GetAsync($"api/product/{id}");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<Product>>();
         }
 
         public async Task<PagingResponse<Product>> GetAll(ProductParameters productParameters)

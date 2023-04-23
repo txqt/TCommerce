@@ -85,7 +85,7 @@
                                                 <td>@item.OldPrice</td>
                                                 <td>@item.StockQuantity</td>
                                                 <td>@item.CreatedOnUtc</td>
-                                                <td><a class="btn btn-info" href="@Url.Action("Edit","Product", new{ productId = item.Id})"></a></td>
+                                                <td><a class="btn btn-info" href="@Url.Action("EditProduct","Product", new{ productId = item.Id})">Edit</a></td>
                                             </tr>
                                             count++;
                                         }

@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
 using T.Library.Model.Response;
+using T.Library.Model.ViewsModel;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
 
@@ -11,14 +13,17 @@ namespace T.WebApi.Services.ProductServices
         Task<PagedList<Product>> GetAll(ProductParameters productParameters);
         Task<ServiceResponse<Product>> Get(int id);
         Task<ServiceResponse<bool>> CreateProduct(Product product);
+        Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product);
+        Task<ServiceResponse<bool>> DeleteProduct(int productId);
     }
     public class ProductService : IProductService
     {
         private readonly DatabaseContext _context;
-
-        public ProductService(DatabaseContext context)
+        private readonly IMapper _mapper;
+        public ProductService(DatabaseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<PagedList<Product>> GetAll(ProductParameters productParameters)
@@ -47,7 +52,9 @@ namespace T.WebApi.Services.ProductServices
         {
             using (_context)
             {
-                var product = await _context.Product
+                var product = await _context.Product.Where(x=>x.Deleted == false)
+                    .Include(x => x.AttributeMappings)
+                    .ThenInclude(x => x.ProductAttributeValue)
                     .FirstOrDefaultAsync(x => x.Id == id);
 
                 var response = new ServiceResponse<Product>
@@ -72,6 +79,49 @@ namespace T.WebApi.Services.ProductServices
                 }
                 return new ServiceSuccessResponse<bool>();
             }
+        }
+
+        public async Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product)
+        {
+            var productTable = await _context.Product.FirstOrDefaultAsync(p => p.Id == product.Id);
+            if (productTable == null)
+            {
+                return new ServiceErrorResponse<bool>("Product not found");
+            }
+
+            
+
+            try
+            {
+                _mapper.Map(product, productTable);
+                var result = await _context.SaveChangesAsync();
+                if (result == 0)
+                {
+                    return new ServiceErrorResponse<bool>("Edit product failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
+            }
+
+            return new ServiceSuccessResponse<bool>();
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteProduct(int productId)
+        {
+            var product = await _context.Product.FirstOrDefaultAsync(x => x.Id == productId);
+
+            if (product == null || product.Deleted == true) { throw new Exception($"Cannot find product: {productId}"); }
+            product.Deleted = true;
+
+            _context.Product.Update(product);
+            var result = await _context.SaveChangesAsync();
+            if (result == 0)
+            {
+                return new ServiceErrorResponse<bool>("Delete product failed");
+            }
+            return new ServiceSuccessResponse<bool>();
         }
     }
 }

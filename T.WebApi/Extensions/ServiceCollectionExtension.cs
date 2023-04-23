@@ -154,6 +154,7 @@ namespace T.WebApi.Extensions
             services.AddTransient<ITokenManager, TokenManager>();
             services.AddTransient<IEmailSender, SendMailService>();
             services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IProductAttributeService, ProductAttributeService>();
             services.AddScoped<ValidationFilterAttribute>();
             return services;
         }

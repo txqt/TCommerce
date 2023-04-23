@@ -13,8 +13,8 @@ namespace T.WebApi.Database.ConfigurationDatabase
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).HasMaxLength(400).IsRequired();
-            builder.Property(x => x.ColorSquaresRgb).IsRequired().HasMaxLength(400);
-            builder.HasMany(x => x.ProductAttributeMappings).WithOne(x => x.ProductAttributeValue).HasForeignKey(x => x.ProductAttributeId);
+            //builder.Property(x => x.ColorSquaresRgb).IsRequired().HasMaxLength(400);
+            //builder.HasOne(x => x.ProductAttributeMappings).WithMany(x => x.ProductAttributeValue).HasForeignKey(x => x.ProductAttributeId);
         }
     }
 }

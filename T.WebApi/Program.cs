@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +34,7 @@ builder.Services.AddIdentityConfig();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddCustomOptions(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 //add this line for custom validate model
 builder.Services.Configure<ApiBehaviorOptions>(options

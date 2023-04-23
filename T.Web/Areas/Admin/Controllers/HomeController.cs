@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using T.Library.Model.Enum;
+using T.Web.Attribute;
+using T.Web.Controllers;
 
 namespace T.Web.Areas.Identity.Controllers
 {
     [Area("Admin")]
     [Route("/admin/home/[action]")]
-    public class HomeController : Controller
+    [CustomAuthorizationFilter(RoleName.Admin)]
+    public class HomeController : BaseController
     {
         public IActionResult Index()
         {

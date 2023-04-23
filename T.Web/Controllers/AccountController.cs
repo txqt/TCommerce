@@ -37,7 +37,11 @@ namespace T.Web.Controllers
         public async Task<IActionResult> Login()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return View();
+            var loginVM = new LoginViewModel()
+            {
+                RememberMe = true
+            };
+            return View(loginVM);
         }
 
         [HttpPost]
@@ -82,7 +86,7 @@ namespace T.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Register()
+        public IActionResult Register()
         {
             return View();
         }

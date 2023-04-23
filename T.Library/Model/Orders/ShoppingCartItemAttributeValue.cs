@@ -16,8 +16,6 @@ namespace T.Library.Model.Orders
         public int ProductAttributeId { get; set; }
         public int ProductAttributeValueId { get; set; }
         public ShoppingCartItem ShoppingCartItem { get; set; }
-        public ProductAttribute ProductAttribute { get; set; }
-        public ProductAttributeValue ProductAttributeValue { get; set; }
 
     }
 }

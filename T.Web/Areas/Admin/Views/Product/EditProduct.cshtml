@@ -1,22 +1,19 @@
-﻿@model T.Library.Model.Product
+﻿@model T.Library.Model.ViewsModel.ProductUpdateViewModel
 
 @{
-    ViewData["Title"] = "CreateProduct";
+    ViewData["Title"] = "EditProduct";
 }
 
-<h1>CreateProduct</h1>
+<h1>EditProduct</h1>
 
 <h4>Product</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="CreateProduct" method="post">
+    <div class="col-md-6">
+        <form asp-action="EditProduct">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="VisibleIndividually" /> @Html.DisplayNameFor(model => model.VisibleIndividually)
-                </label>
+            <div class="form-group" hidden>
+                <input asp-for="Id" class="form-control" />
             </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -33,7 +30,7 @@
                 <input asp-for="FullDescription" class="form-control" />
                 <span asp-validation-for="FullDescription" class="text-danger"></span>
             </div>
-            
+
 
             <div class="form-group">
                 <label asp-for="StockQuantity" class="control-label"></label>
@@ -57,19 +54,19 @@
                 </label>
             </div>
 
-                <div id="mark-as-new" style="display:none">
-                    <div class="form-group">
-                        <label asp-for="MarkAsNewStartDateTimeUtc" class="control-label"></label>
-                        <input asp-for="MarkAsNewStartDateTimeUtc" class="form-control" />
-                        <span asp-validation-for="MarkAsNewStartDateTimeUtc" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="MarkAsNewEndDateTimeUtc" class="control-label"></label>
-                        <input asp-for="MarkAsNewEndDateTimeUtc" class="form-control" />
-                        <span asp-validation-for="MarkAsNewEndDateTimeUtc" class="text-danger"></span>
-                    </div>
+            <div id="mark-as-new" style="display:none">
+                <div class="form-group">
+                    <label asp-for="MarkAsNewStartDateTimeUtc" class="control-label"></label>
+                    <input asp-for="MarkAsNewStartDateTimeUtc" class="form-control" />
+                    <span asp-validation-for="MarkAsNewStartDateTimeUtc" class="text-danger"></span>
                 </div>
-            
+                <div class="form-group">
+                    <label asp-for="MarkAsNewEndDateTimeUtc" class="control-label"></label>
+                    <input asp-for="MarkAsNewEndDateTimeUtc" class="form-control" />
+                    <span asp-validation-for="MarkAsNewEndDateTimeUtc" class="text-danger"></span>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label asp-for="DisplayOrder" class="control-label"></label>
                 <input asp-for="DisplayOrder" class="form-control" value="0" />
@@ -78,6 +75,11 @@
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model => model.Published)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="VisibleIndividually" /> @Html.DisplayNameFor(model => model.VisibleIndividually)
                 </label>
             </div>
             <div id="accordion">
@@ -208,25 +210,34 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            
+            <div class="form-group" style="margin-top:16px">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
+    </div>
+    <div class="col-md-6">
+        <div id="accordion-2">
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h5 class="mb-0">
+                        <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse-2" aria-expanded="true" aria-controls="collapse-2">
+                            Thuộc tính sản phẩm
+                        </button>
+                    </h5>
+                </div>
+
+                <div id="collapse-2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion-2">
+                    <div class="card-body">
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
-<script>
-    $('#markasnewcheckbox').change(function () {
-        if ($(this).is(":checked")) {
-            $('#mark-as-new').css('display', 'block');
-        } else {
-            $('#mark-as-new').css('display', 'none');
-        }
-    });
-
-</script>
 
