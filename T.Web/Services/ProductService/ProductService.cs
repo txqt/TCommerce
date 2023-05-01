@@ -13,7 +13,11 @@ namespace T.Web.Services.ProductService
         Task<PagingResponse<Product>> GetAll(ProductParameters productParameters);
         Task<ServiceResponse<bool>> CreateProduct(Product product);
         Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product);
+        Task<ServiceResponse<bool>> DeleteProduct(int id);
         Task<ServiceResponse<Product>> Get(int id);
+        Task<ServiceResponse<List<ProductAttribute>>> GetAllAttribute(int id);
+        Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValue(int productAttributeMappingId);
+        
     }
     public class ProductService : IProductService
     {
@@ -30,9 +34,17 @@ namespace T.Web.Services.ProductService
             Console.WriteLine(accessToken);
         }
 
+        
+
         public async Task<ServiceResponse<bool>> CreateProduct(Product product)
         {
             var result = await _httpClient.PostAsJsonAsync($"api/product/create", product);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteProduct(int id)
+        {
+            var result = await _httpClient.DeleteAsync($"api/product/delete/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
@@ -73,6 +85,18 @@ namespace T.Web.Services.ProductService
             };
 
             return pagingResponse;
+        }
+
+        public async Task<ServiceResponse<List<ProductAttribute>>> GetAllAttribute(int id)
+        {
+            var result = await _httpClient.GetAsync($"api/product/{id}/attributes");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttribute>>>();
+        }
+
+        public async Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValue(int productAttributeMappingId)
+        {
+            var result = await _httpClient.GetAsync($"api/product/product-attribute-mapping/{productAttributeMappingId}/value");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttributeValue>>>();
         }
     }
 }

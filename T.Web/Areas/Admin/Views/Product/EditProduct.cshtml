@@ -227,9 +227,66 @@
                     </h5>
                 </div>
 
-                <div id="collapse-2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion-2">
+                <div id="collapse-2" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion-2">
                     <div class="card-body">
+                        @*<div id="attribute-data"></div>*@
 
+                        <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                            <thead>
+                                <tr role="row">
+                                    <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
+                                        Name
+                                    </th>
+                                    <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
+                                        Description
+                                    </th>
+                                    <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
+                                        Picture
+                                    </th>
+                                    <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th rowspan="1" colspan="1">Name</th>
+                                    <th rowspan="1" colspan="1">Description</th>
+                                    <th rowspan="1" colspan="1">Picture</th>
+                                    <th rowspan="1" colspan="1">Action</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                @{
+                                    if (Model.AttributeMappings != null || Model.AttributeMappings.Count > 0)
+                                    {
+                                        int count = 0;
+                                        foreach (var item in Model.AttributeMappings)
+                                        {
+
+                                            <tr class="@(count % 2 == 0 ? "even" : "odd")">
+                                                <td class="sorting_1">@item.ProductAttribute.Name</td>
+                                                <td>@item.ProductAttribute.Description</td>
+                                                <td>@item.Id</td>
+                                                <td>
+                                                    <a class="btn btn-info" href="@Url.Action("EditProductAttributeValue", "Product", new {productAttributeMappingId = item.Id})">Edit</a>
+                                                </td>
+                                            </tr>
+                                            count++;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr class="odd">
+                                            <td class="sorting_1">No data</td>
+                                            <td>No data</td>
+                                            <td>No data</td>
+                                            <td>No data</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -241,3 +298,28 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@*<script>
+    $(document).ready(function () {
+        var productId = 123; // Thay đổi ID sản phẩm ở đây
+        var url = '@Url.Action("GetAllAttribute", "Product")';
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: { productId: '@Model.Id' },
+            dataType: "json",
+            success: function (data) {
+                // Xử lý kết quả trả về và hiển thị nó lên trang web
+                var list = "<ul>";
+                $.each(data, function (index, item) {
+                    list += "<li>" + item.name + "</li>";
+                });
+                list += "</ul>";
+                $("#attribute-data").html(list);
+            },
+            error: function (xhr, status, error) {
+                // Xử lý lỗi nếu có
+                console.log("Error: " + error);
+            }
+        });
+    });
+</script>*@

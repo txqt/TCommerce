@@ -11,7 +11,7 @@ using T.WebApi.Services.ProductServices;
 
 namespace T.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/product")]
     [ApiController]
     [CustomAuthorizationFilter(RoleName.Admin)]
     public class ProductController : ControllerBase
@@ -73,5 +73,21 @@ namespace T.WebApi.Controllers
             }
             return Ok(result);
         }
+
+        [AllowAnonymous]
+        [HttpGet("{id}/attributes")]
+        public async Task<ActionResult> GetAllAttribute(int id)
+        {
+            var result = await _productService.GetAllProductAttribute(id);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        
+
+        
     }
 }

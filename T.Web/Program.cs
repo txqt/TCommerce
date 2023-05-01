@@ -25,6 +25,7 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IProductAttributeService, ProductAttributeService>();
+builder.Services.AddTransient<IProductAttributeMappingService, ProductAttributeMappingService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,

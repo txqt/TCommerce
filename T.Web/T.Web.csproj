@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="wwwroot\img\undraw_posting_photo.svg" />
     <None Include="wwwroot\img\undraw_profile.svg" />
     <None Include="wwwroot\img\undraw_profile_1.svg" />

@@ -15,6 +15,7 @@ namespace T.WebApi.Services.ProductServices
         Task<ServiceResponse<bool>> CreateProduct(Product product);
         Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product);
         Task<ServiceResponse<bool>> DeleteProduct(int productId);
+        Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttribute(int id);
     }
     public class ProductService : IProductService
     {
@@ -52,9 +53,9 @@ namespace T.WebApi.Services.ProductServices
         {
             using (_context)
             {
-                var product = await _context.Product.Where(x=>x.Deleted == false)
+                var product = await _context.Product.Where(x => x.Deleted == false)
                     .Include(x => x.AttributeMappings)
-                    .ThenInclude(x => x.ProductAttributeValue)
+                    .ThenInclude(x => x.ProductAttribute)
                     .FirstOrDefaultAsync(x => x.Id == id);
 
                 var response = new ServiceResponse<Product>
@@ -68,7 +69,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> CreateProduct(Product product)
         {
-            using(_context)
+            using (_context)
             {
                 product.CreatedOnUtc = DateTime.Now;
                 _context.Product.Add(product);
@@ -89,7 +90,7 @@ namespace T.WebApi.Services.ProductServices
                 return new ServiceErrorResponse<bool>("Product not found");
             }
 
-            
+
 
             try
             {
@@ -123,5 +124,22 @@ namespace T.WebApi.Services.ProductServices
             }
             return new ServiceSuccessResponse<bool>();
         }
+
+        public async Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttribute(int id)
+        {
+            var result = await _context.Product_ProductAttribute_Mapping
+                    .Where(pam => pam.ProductId == id)
+                    .Select(pam => pam.ProductAttribute)
+                    .ToListAsync();
+
+            if (result.Count == 0 || result is null)
+                return new ServiceErrorResponse<List<ProductAttribute>>();
+
+            return new ServiceSuccessResponse<List<ProductAttribute>>(result);
+        }
+
+        
+
+        
     }
 }

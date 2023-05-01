@@ -32,7 +32,8 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new {  id=item.Id  }) |
+                    <a class="btn btn-info" asp-controller="ProductAttribute" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    |
                     <a class="btn btn-danger" asp-controller="ProductAttribute" asp-action="DeleteConfirmed" asp-route-id="@item.Id" onclick="return confirm('Are you sure to delete this ?')">Delete</a>
                 </td>
             </tr>
