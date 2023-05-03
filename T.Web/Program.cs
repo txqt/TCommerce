@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Configuration;
 using System.Text;
@@ -41,8 +42,8 @@ builder.Services.Configure<JwtOptions>(jwtSection);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    options.LoginPath = "/login";
-    options.LogoutPath = "/logout";
+    options.LoginPath = "/account/login";
+    options.LogoutPath = "/account/logout";
 });
 
 builder.Services.AddSession(options =>
@@ -51,6 +52,15 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+//builder.Services.AddMvc(
+//    opt =>
+//        {
+//            opt.EnableEndpointRouting = false;
+//            var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+//            opt.Filters.Add(new AuthorizeFilter(policy));
+//        }
+//    ).AddXmlSerializerFormatters();
 
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();

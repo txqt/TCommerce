@@ -1,0 +1,141 @@
+﻿@model IEnumerable<T.Web.Areas.Admin.Models.ProductAttributeMappingModel>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<table class="table" id="data-table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductAttributeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductAttributeName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TextPrompt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsRequired)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DisplayOrder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ValidationMinLength)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ValidationMaxLength)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ValidationFileAllowedExtensions)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ValidationFileMaximumSize)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DefaultValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Deleted)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @*@foreach (var item in Model)
+        {
+        <tr>
+        <td>
+        @Html.DisplayFor(modelItem => item.ProductId)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.ProductAttributeId)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.ProductAttributeName)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.TextPrompt)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.IsRequired)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.DisplayOrder)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.ValidationMinLength)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.ValidationMaxLength)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.ValidationFileAllowedExtensions)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.ValidationFileMaximumSize)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.DefaultValue)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.Id)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.Deleted)
+        </td>
+        <td>
+        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        </td>
+        </tr>
+        }*@
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        //LoadList();
+        $('#data-table').DataTable({
+            "ajax": {
+                "url": "@Url.Action("GetListProductMapping","Product", new { productId = 1})",
+                "type": "GET",
+                "datatype": "json",
+                "dataSrc": function (d) {
+                    return d
+                }
+            },
+            "columns": [
+                { "data": "productAttributeName" },
+                { "data": "textPrompt" },
+                { "data": "isRequired" },
+                { "data": "displayOrder" }
+            ]
+        });
+    });
+    function LoadList() {
+        var empdata = [];
+        $.ajax({
+            url: '@Url.Action("GetListProductMapping","Product", new { productId = 1})',
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                console.log(data)
+                //$.each(data, function (key, value) {
+                //    empdata.push([value.ProductAttributeName, value.TextPrompt, value.IsRequired, value.DisplayOrder])
+                //})
+            }
+        });
+
+    }
+
+</script>

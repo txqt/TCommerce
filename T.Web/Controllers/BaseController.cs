@@ -12,11 +12,20 @@ namespace T.Web.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var sessions = context.HttpContext.Session.GetString("jwt");
-            if (sessions == null)
+            // Lấy thông tin đăng nhập của user
+            var user = context.HttpContext.User;
+
+            // Kiểm tra xem user đã đăng nhập hay chưa
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            if (!user.Identity.IsAuthenticated)
             {
                 context.Result = new RedirectToActionResult("Login", "Account", null);
             }
+            //var sessions = context.HttpContext.Session.GetString("jwt");
+            //if (sessions == null)
+            //{
+            //    context.Result = new RedirectToActionResult("Login", "Account", null);
+            //}
             base.OnActionExecuting(context);
         }
     }

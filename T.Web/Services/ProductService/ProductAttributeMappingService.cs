@@ -34,7 +34,7 @@ namespace T.Web.Services.ProductService
         }
         public async Task<ServiceResponse<bool>> AddProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
         {
-            var result = await _httpClient.PostAsJsonAsync($"api/product-attribute-mapping/add-product-attribute-mapping", productAttributeMapping);
+            var result = await _httpClient.PostAsJsonAsync($"api/product-attribute-mapping/add-or-edit-product-attribute-mapping", productAttributeMapping);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 

@@ -34,13 +34,14 @@ namespace T.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login(string returnUrl)
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             var loginVM = new LoginViewModel()
             {
                 RememberMe = true
             };
+            ViewBag.ReturnUrl = returnUrl;
             return View(loginVM);
         }
 

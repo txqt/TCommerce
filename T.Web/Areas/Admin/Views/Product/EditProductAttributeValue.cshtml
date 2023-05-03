@@ -1,17 +1,8 @@
 ﻿@model ProductAttributeMappingModel
 
-<form method="post" asp-action="EditProductAttributeValue">
-    <h3 class="text-info">Thêm thuộc tính vào sản phẩm</h3>
-    <input asp-for="Id" class="form-control" hidden/>
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group">
-        <label for="exampleFormControlSelect1">Chọn thuộc tính cho sản phẩm</label>
-        <select class="form-control" id="exampleFormControlSelect1" asp-items="Model.AvailableProductAttributes" asp-for="ProductAttributeId">
-        </select>
-        <input hidden class="form-control" asp-for="ProductId" value="@Model.ProductId"/>
-    </div>
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
+@(await Html.PartialAsync("_AddOrUpdateProductAttributeMapping", Model))
+
+
 @*<table class="table">
     <thead>
         <tr>

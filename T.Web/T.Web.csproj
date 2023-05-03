@@ -1850,4 +1850,8 @@
     <None Include="wwwroot\vendor\jquery\jquery.slim.min.map" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\PrepareModel\" />
+  </ItemGroup>
+
 </Project>

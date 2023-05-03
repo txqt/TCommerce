@@ -15,7 +15,7 @@ namespace T.Web.Areas.Admin.Controllers
     [Area("Admin")]
     [Route("/admin/product/[action]")]
     [CustomAuthorizationFilter(RoleName.Admin)]
-    public class ProductController : BaseController
+    public class ProductController : Controller
     {
         private readonly IProductService _productService;
         private readonly IProductAttributeService _productAttributeService;
@@ -121,27 +121,8 @@ namespace T.Web.Areas.Admin.Controllers
             var product = (await _productService.Get(productAttributeMapping.ProductId)).Data
                 ?? throw new ArgumentException("No product found with the specified id");
 
-            ProductAttributeMappingModel model = null;
+            var model = await _productService.PrepareProductAttributeMappingModelAsync(null, product, productAttributeMapping);
 
-            if (productAttributeMapping != null)
-            {
-                //fill in model values from the entity
-                model ??= new ProductAttributeMappingModel
-                {
-                    Id = productAttributeMapping.Id
-                };
-
-                model.ProductAttributeName = (await _productAttributeService.Get(productAttributeMapping.ProductAttributeId)).Data.Name;
-            }
-
-            model.ProductId = product.Id;
-
-            //prepare available product attributes
-            model.AvailableProductAttributes = (await _productAttributeService.GetAll()).Select(productAttribute => new SelectListItem
-            {
-                Text = productAttribute.Name,
-                Value = productAttribute.Id.ToString()
-            }).ToList();
             return View(model);
         }
         [HttpPost]
@@ -158,27 +139,10 @@ namespace T.Web.Areas.Admin.Controllers
                 ?? throw new ArgumentException("No product found with the specified id");
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this attribute");
-            if (productAttributeMapping != null)
-            {
-                //fill in model values from the entity
-                model ??= new ProductAttributeMappingModel
-                {
-                    Id = productAttributeMapping.Id
-                };
 
-                model.ProductAttributeName = (await _productAttributeService.Get(productAttributeMapping.ProductAttributeId)).Data.Name;
-            }
+            model = await _productService.PrepareProductAttributeMappingModelAsync(model, product, productAttributeMapping);
 
-            model.ProductId = product.Id;
-
-            //prepare available product attributes
-            model.AvailableProductAttributes = (await _productAttributeService.GetAll()).Select(productAttribute => new SelectListItem
-            {
-                Text = productAttribute.Name,
-                Value = productAttribute.Id.ToString()
-            }).ToList();
-
-            if ((await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
+            if (!(await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
                 .Any(x => x.ProductAttributeId == model.ProductAttributeId || x.Id != productAttributeMapping.Id))
             {
                 return View(model);
@@ -195,6 +159,23 @@ namespace T.Web.Areas.Admin.Controllers
             }
 
             return RedirectToAction("EditProductAttributeValue", new { productAttributeMappingId = productAttributeMapping.Id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProductAttributeList()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetListProductMapping(int productId)
+        {
+            var product = (await _productService.Get(productId)).Data
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            var model = await _productService.PrepareProductAttributeMappingListModelAsync(product);
+
+            return Json(model);
         }
     }
 }

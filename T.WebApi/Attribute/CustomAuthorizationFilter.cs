@@ -52,7 +52,10 @@ namespace T.WebApi.Attribute
                     }
                 }
             }
-
+            if (user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == RoleName.Admin))
+            {
+                return;
+            }
             // Kiểm tra xem user có quyền truy cập vào tài nguyên này hay không
             if (!user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == _role))
             {

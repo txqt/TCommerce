@@ -47,12 +47,17 @@ namespace T.Web.Attribute
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                     string? name = item.GetRawConstantValue().ToString();
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-                    if (!user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == name))
+                    if (!user.HasClaim(c => c.Type == ClaimTypes.Role && item.Name == name))
                     {
                         context.Result = new ForbidResult();
                         return;
                     }
                 }
+            }
+
+            if (user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == RoleName.Admin))
+            {
+                return;
             }
 
             // Kiểm tra xem user có quyền truy cập vào tài nguyên này hay không

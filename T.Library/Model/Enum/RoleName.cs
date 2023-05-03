@@ -8,10 +8,8 @@ namespace T.Library.Model.Enum
 {
     public class RoleName
     {
-
         public const string Admin = "Admin";
         public const string Shipper = "Shipper";
         public const string Customer = "Customer";
-
     }
 }

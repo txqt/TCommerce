@@ -1,10 +1,17 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.CodeAnalysis;
 using System.Drawing;
+using System.IO;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using T.Library.Model;
+using T.Library.Model.Paging;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
+using T.Web.Areas.Admin.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace T.Web.Services.ProductService
 {
@@ -17,24 +24,32 @@ namespace T.Web.Services.ProductService
         Task<ServiceResponse<Product>> Get(int id);
         Task<ServiceResponse<List<ProductAttribute>>> GetAllAttribute(int id);
         Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValue(int productAttributeMappingId);
-        
+        Task<ProductAttributeMappingModel> PrepareProductAttributeMappingModelAsync(ProductAttributeMappingModel model,
+            Product product, ProductAttributeMapping productAttributeMapping);
+        Task<List<ProductAttributeMappingModel>> PrepareProductAttributeMappingListModelAsync(
+            Product product);
     }
     public class ProductService : IProductService
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _options;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        private readonly IProductAttributeService _productAttributeService;
+        private readonly IProductAttributeMappingService _productAttributeMappingService;
+        private readonly IMapper _mapper;
+        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService, IMapper mapper)
         {
             _options = options;
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
             var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            Console.WriteLine(accessToken);
+            _productAttributeService = productAttributeService;
+            _productAttributeMappingService = productAttributeMappingService;
+            _mapper = mapper;
         }
 
-        
+
 
         public async Task<ServiceResponse<bool>> CreateProduct(Product product)
         {
@@ -97,6 +112,65 @@ namespace T.Web.Services.ProductService
         {
             var result = await _httpClient.GetAsync($"api/product/product-attribute-mapping/{productAttributeMappingId}/value");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttributeValue>>>();
+        }
+
+        public async Task<List<ProductAttributeMappingModel>> PrepareProductAttributeMappingListModelAsync(Product product)
+        {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+
+            //get product attribute mappings
+
+            var result = (await _productAttributeMappingService
+                                .GetProductAttributeMappingByProductId(product.Id)).Data;
+
+            var pamList = _mapper.Map<List<ProductAttributeMappingModel>>(result);
+
+            //var pamList = result.Select(x => new ProductAttributeMappingModel
+            //                    {
+            //                        Id = x.Id,
+            //                        ProductId = x.ProductId,
+            //                        ProductAttributeId = x.ProductId,
+            //                        ProductAttributeName = x.ProductAttribute.Name,
+            //                        AvailableProductAttributes = null,
+            //                        TextPrompt = x.TextPrompt,
+            //                        IsRequired = x.IsRequired,
+            //                        DisplayOrder = x.DisplayOrder,
+            //                        ValidationMinLength = x.ValidationMinLength,
+            //                        ValidationMaxLength = x.ValidationMaxLength,
+            //                        ValidationFileAllowedExtensions = x.ValidationFileAllowedExtensions,
+            //                        ValidationFileMaximumSize = x.ValidationFileMaximumSize,
+            //                        DefaultValue = x.DefaultValue,
+            //                    }).ToList();
+
+
+            return pamList;
+        }
+
+        public async Task<ProductAttributeMappingModel> PrepareProductAttributeMappingModelAsync(ProductAttributeMappingModel model, Product product, ProductAttributeMapping productAttributeMapping)
+        {
+            if (productAttributeMapping != null)
+            {
+                //fill in model values from the entity
+                model ??= new ProductAttributeMappingModel
+                {
+                    Id = productAttributeMapping.Id
+                };
+                _mapper.Map(productAttributeMapping, model);
+                model.ProductAttributeName = (await _productAttributeService.Get(productAttributeMapping.ProductAttributeId)).Data.Name;
+                
+            }
+
+            model.ProductId = product.Id;
+
+            //prepare available product attributes
+            model.AvailableProductAttributes = (await _productAttributeService.GetAll()).Select(productAttribute => new SelectListItem
+            {
+                Text = productAttribute.Name,
+                Value = productAttribute.Id.ToString()
+            }).ToList();
+
+            return model;
         }
     }
 }

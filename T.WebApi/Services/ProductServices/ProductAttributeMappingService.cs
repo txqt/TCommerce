@@ -10,7 +10,7 @@ namespace T.WebApi.Services.ProductServices
     {
         Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id);
         Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int id);
-        Task<ServiceResponse<bool>> AddProductAttributeMapping(ProductAttributeMapping productAttributeMapping);
+        Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping);
         Task<ServiceResponse<List<ProductAttributeValue>>> GetAllValueProductAttribute(int productAttributeMappingId);
     }
     public class ProductAttributeMappingService : IProductAttributeMappingService
@@ -37,21 +37,26 @@ namespace T.WebApi.Services.ProductServices
                 return response;
             }
         }
-        public async Task<ServiceResponse<bool>> AddProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
+        public async Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
         {
             var pamList = await _context.Product_ProductAttribute_Mapping
                     .Where(pam => pam.ProductId == productAttributeMapping.ProductId && pam.ProductAttributeId == productAttributeMapping.ProductAttributeId)
                     .FirstOrDefaultAsync();
-
+            
             if (pamList != null)
-                return new ServiceErrorResponse<bool>("This product already has this attribute");
+            {
+                productAttributeMapping.Id = 0;
+                _mapper.Map(productAttributeMapping, pamList);
+            }
+            else
+            {
+                _context.Product_ProductAttribute_Mapping.Add(productAttributeMapping);
+            }
 
-
-            _context.Product_ProductAttribute_Mapping.Add(productAttributeMapping);
             var result = await _context.SaveChangesAsync();
             if (result == 0)
             {
-                return new ServiceErrorResponse<bool>("Create product mapping failed");
+                return new ServiceErrorResponse<bool>("Add or edit product mapping failed");
             }
             return new ServiceSuccessResponse<bool>();
         }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using T.Library.Model.Enum;
+using T.Web.Attribute;
 using T.Web.Models;
 
 namespace T.Web.Controllers
@@ -18,6 +20,7 @@ namespace T.Web.Controllers
             return View();
         }
 
+        [CustomAuthorizationFilter(RoleName.Customer)]
         public IActionResult Privacy()
         {
             return View();

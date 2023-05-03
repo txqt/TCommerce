@@ -40,9 +40,8 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
-                                    <form class="user" method="post" role="form">
+                                    <form class="user" method="post" role="form" asp-route-returnUrl="@ViewBag.ReturnUrl">
                                         <div asp-validation-summary="All" class="text-danger"></div>
-                                        <input type="hidden" name="returnUrl" value="@Context.Session.GetString("ReturnUrl")" />
                                         <div class="form-group">
                                             <input asp-for="UserNameOrEmail" type="text" class="form-control form-control-user"
                                                    id="exampleInputEmail" aria-describedby="emailHelp"
@@ -80,6 +79,9 @@
                                     </div>
                                     <div class="text-center">
                                         <a class="small" asp-controller="account" asp-action="register">Create an Account!</a>
+                                    </div> 
+                                    <div class="text-center">
+                                        <a class="small" asp-controller="Home" asp-action="Index">Back to home!</a>
                                     </div>
                                 </div>
                             </div>
