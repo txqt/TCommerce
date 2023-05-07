@@ -158,7 +158,15 @@ namespace T.Web.Services.ProductService
                 };
                 _mapper.Map(productAttributeMapping, model);
                 model.ProductAttributeName = (await _productAttributeService.Get(productAttributeMapping.ProductAttributeId)).Data.Name;
-                
+                model.ProductAttributeId = productAttributeMapping.ProductAttributeId;
+                model.TextPrompt = productAttributeMapping.TextPrompt;
+                model.IsRequired = productAttributeMapping.IsRequired;
+                model.DisplayOrder = productAttributeMapping.DisplayOrder;
+                model.ValidationMinLength = productAttributeMapping.ValidationMinLength;
+                model.ValidationMaxLength = productAttributeMapping.ValidationMaxLength;
+                model.ValidationFileAllowedExtensions = productAttributeMapping.ValidationFileAllowedExtensions;
+                model.ValidationFileMaximumSize = productAttributeMapping.ValidationFileMaximumSize;
+                model.DefaultValue = productAttributeMapping.DefaultValue;
             }
 
             model.ProductId = product.Id;

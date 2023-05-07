@@ -1,7 +1,7 @@
-﻿@model ProductAttributeMappingModel
+﻿@model ProductAttributeValueModel
 
 <p>
-    <a href="@Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.ProductId })">Create New</a>
+    @*<a href="@Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.ProductId })">Create New</a>*@
 </p>
 
 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -11,19 +11,25 @@
                 <thead>
                     <tr role="row">
                         <th>
-                            @Html.DisplayNameFor(model => model.ProductAttributeName)
+                            @Html.DisplayNameFor(model => model.Name)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.TextPrompt)
+                            @Html.DisplayNameFor(model => model.PriceAdjustment)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.IsRequired)
+                            @Html.DisplayNameFor(model => model.WeightAdjustment)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.DisplayOrder)
+                            @Html.DisplayNameFor(model => model.IsPreSelected)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.PictureThumbnailUrl)
                         </th>
                         <th>
                             Edit
+                        </th>
+                        <th>
+                            Delete
                         </th>
                     </tr>
                 </thead>
@@ -39,7 +45,7 @@
     $(document).ready(function () {
         $('#dataTable').DataTable({
             "ajax": {
-                "url": "@Url.Action("GetListProductMapping","Product", new { productId = Model.ProductId})",
+                "url": "@Url.Action("GetListProductMapping","Product", new { productId = 1})",
                 "type": "GET",
                 "datatype": "json",
             },
@@ -60,7 +66,7 @@
                     "data": null,
                     "render": function (data, type, row) {
                         if (type === "display") {
-                            var editUrl = "@Url.Action("EditProductAttributeMapping", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.id);
+                            var editUrl = "@Url.Action("EditProductAttributeValue", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.productAttributeId);
                             return '<a href="' + editUrl + '">Edit</a>';
                         }
                         return data;

@@ -94,7 +94,11 @@ namespace T.WebApi.Services.ProductServices
 
             try
             {
-                _mapper.Map(product, productTable);
+                var productMapped = _mapper.Map(product, productTable);
+                if (_context.IsRecordUnchanged(productTable, productMapped))
+                {
+                    return new ServiceErrorResponse<bool>("Data is unchanged");
+                }
                 var result = await _context.SaveChangesAsync();
                 if (result == 0)
                 {
@@ -138,8 +142,8 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<List<ProductAttribute>>(result);
         }
 
-        
 
-        
+
+
     }
 }

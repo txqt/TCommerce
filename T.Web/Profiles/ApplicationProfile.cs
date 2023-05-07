@@ -9,7 +9,21 @@ namespace T.Web.Profiles
     {
         public ApplicationProfile()
         {
-            CreateMap<Product, ProductUpdateViewModel>().ReverseMap();
+            CreateMap<Product, ProductUpdateViewModel>()
+                //.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                //.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                //.ForMember(dest => dest.FullDescription, opt => opt.MapFrom(src => src.FullDescription))
+                //.ForMember(dest => dest.ShortDescription, opt => opt.MapFrom(src => src.ShortDescription))
+                //.ForMember(dest => dest.StockQuantity, opt => opt.MapFrom(src => src.StockQuantity))
+                //.ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                //.ForMember(dest => dest.OldPrice, opt => opt.MapFrom(src => src.OldPrice))
+                //.ForMember(dest => dest.MarkAsNew, opt => opt.MapFrom(src => src.MarkAsNew))
+                //.ForMember(dest => dest.MarkAsNewStartDateTimeUtc, opt => opt.MapFrom(src => src.MarkAsNewStartDateTimeUtc))
+                //.ForMember(dest => dest.MarkAsNewEndDateTimeUtc, opt => opt.MapFrom(src => src.MarkAsNewEndDateTimeUtc))
+                //.ForMember(dest => dest.DisplayOrder, opt => opt.MapFrom(src => src.DisplayOrder))
+                //.ForMember(dest => dest.Published, opt => opt.MapFrom(src => src.Published))
+                //.ForMember(dest => dest.VisibleIndividually, opt => opt.MapFrom(src => src.VisibleIndividually))
+                .ReverseMap();
             CreateMap<ProductAttributeMapping, ProductAttributeMappingModel>()
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -23,10 +37,24 @@ namespace T.Web.Profiles
                 .ForMember(dest => dest.ValidationFileMaximumSize, opt => opt.MapFrom(src => src.ValidationFileMaximumSize))
                 .ForMember(dest => dest.DefaultValue, opt => opt.MapFrom(src => src.DefaultValue))
                 //.ForMember(dest => dest.ValidationRulesString, opt => opt.MapFrom(src => src.ValidationRulesString))
-                .ForMember(dest => dest.ProductAttributeName, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductAttributeName, opt => opt.MapFrom(src => src.ProductAttribute.Name))
                 .ForSourceMember(dest => dest.ProductAttribute, opt => opt.DoNotValidate())
-                .ReverseMap()
-                ;
+                .ReverseMap();
+            CreateMap<ProductAttributeValue, ProductAttributeValueModel>()
+                .ForMember(dest => dest.ProductAttributeMappingId, opt => opt.MapFrom(src => src.ProductAttributeMappingId))
+                .ForMember(dest => dest.AttributeValueTypeId, opt => opt.MapFrom(src => src.AttributeValueTypeId))
+                .ForMember(dest => dest.AssociatedProductId, opt => opt.MapFrom(src => src.AssociatedProductId))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.ColorSquaresRgb, opt => opt.MapFrom(src => src.ColorSquaresRgb))
+                .ForMember(dest => dest.PriceAdjustment, opt => opt.MapFrom(src => src.PriceAdjustment))
+                .ForMember(dest => dest.PriceAdjustmentUsePercentage, opt => opt.MapFrom(src => src.PriceAdjustmentUsePercentage))
+                .ForMember(dest => dest.WeightAdjustment, opt => opt.MapFrom(src => src.WeightAdjustment))
+                .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => src.Cost))
+                .ForMember(dest => dest.CustomerEntersQty, opt => opt.MapFrom(src => src.CustomerEntersQty))
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(dest => dest.IsPreSelected, opt => opt.MapFrom(src => src.IsPreSelected))
+                .ForMember(dest => dest.DisplayOrder, opt => opt.MapFrom(src => src.DisplayOrder))
+                .ReverseMap();
         }
     }
 }

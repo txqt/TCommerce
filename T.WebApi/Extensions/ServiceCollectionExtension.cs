@@ -156,6 +156,7 @@ namespace T.WebApi.Extensions
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IProductAttributeService, ProductAttributeService>();
             services.AddTransient<IProductAttributeMappingService, ProductAttributeMappingService>();
+            services.AddTransient<IProductAttributeValueService, ProductAttributeValueService>();
             services.AddScoped<ValidationFilterAttribute>();
             return services;
         }

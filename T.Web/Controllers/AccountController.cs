@@ -62,15 +62,31 @@ namespace T.Web.Controllers
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
             var userPrincipal = ValidateToken(loginResponse.Data.AccessToken);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-            var authProperties = new AuthenticationProperties
-            {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1),
-                IsPersistent = loginViewModel.RememberMe
-            };
-            // Lưu trữ giá trị vào session
-            HttpContext.Session.SetString("jwt", loginResponse.Data.AccessToken);
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
+            ClaimsPrincipal principal = ValidateToken(loginResponse.Data.AccessToken);
+
+            Claim expirationClaim = principal.Claims.FirstOrDefault(c => c.Type == "exp");
+            if (expirationClaim != null && long.TryParse(expirationClaim.Value, out long expiration))
+            {
+                DateTimeOffset expirationDateTime = DateTimeOffset.FromUnixTimeSeconds(expiration);
+
+                TimeSpan timeRemaining = expirationDateTime - DateTimeOffset.Now;
+
+                int remainingMinutes = (int)timeRemaining.TotalMinutes;
+
+                var authProperties = new AuthenticationProperties
+                {
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(remainingMinutes),
+                    IsPersistent = loginViewModel.RememberMe
+                };
+
+                // Lưu trữ giá trị vào session
+                HttpContext.Session.SetString("jwt", loginResponse.Data.AccessToken);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
+            }
+
+
 
             if (returnUrl != null)
                 return RedirectToLocal(returnUrl);

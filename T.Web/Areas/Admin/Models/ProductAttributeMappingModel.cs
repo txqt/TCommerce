@@ -19,10 +19,13 @@ namespace T.Web.Areas.Admin.Models
 
         public int ProductId { get; set; }
         public int ProductAttributeId { get; set; }
+        [Display(Name = "Tên thuộc tính")]
         public string ProductAttributeName { get; set; }
         public IList<SelectListItem> AvailableProductAttributes { get; set; }
         public string TextPrompt { get; set; }
+        [Display(Name = "Bắt buộc")]
         public bool IsRequired { get; set; }
+        [Display(Name = "Thứ tự hiển thị")]
         public int DisplayOrder { get; set; }
         [UIHint("Int32Nullable")]
         public int? ValidationMinLength { get; set; }

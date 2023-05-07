@@ -27,7 +27,6 @@ namespace T.Web.Services.ProductService
             _httpContextAccessor = httpContextAccessor;
             var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            Console.WriteLine(accessToken);
         }
 
         public async Task<ServiceResponse<bool>> Create(ProductAttribute productAttribute)

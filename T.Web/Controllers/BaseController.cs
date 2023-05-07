@@ -28,5 +28,10 @@ namespace T.Web.Controllers
             //}
             base.OnActionExecuting(context);
         }
+
+        protected void SetStatusMessage(string message)
+        {
+            TempData["StatusMessage"] = message;
+        }
     }
 }

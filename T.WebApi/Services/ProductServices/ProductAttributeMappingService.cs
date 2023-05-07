@@ -3,6 +3,8 @@ using T.Library.Model;
 using Microsoft.EntityFrameworkCore;
 using T.WebApi.Database.ConfigurationDatabase;
 using AutoMapper;
+using StackExchange.Redis;
+using T.WebApi.Extensions;
 
 namespace T.WebApi.Services.ProductServices
 {
@@ -39,20 +41,35 @@ namespace T.WebApi.Services.ProductServices
         }
         public async Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
         {
-            var pamList = await _context.Product_ProductAttribute_Mapping
-                    .Where(pam => pam.ProductId == productAttributeMapping.ProductId && pam.ProductAttributeId == productAttributeMapping.ProductAttributeId)
+            var pamInTable = await _context.Product_ProductAttribute_Mapping
+                    .Where(pam => pam.ProductId == productAttributeMapping.ProductId && pam.Id == productAttributeMapping.Id)
                     .FirstOrDefaultAsync();
-            
-            if (pamList != null)
+
+            if (pamInTable != null)
             {
-                productAttributeMapping.Id = 0;
-                _mapper.Map(productAttributeMapping, pamList);
+                pamInTable.ProductAttributeId = productAttributeMapping.ProductAttributeId;
+                pamInTable.TextPrompt = productAttributeMapping.TextPrompt;
+                pamInTable.IsRequired = productAttributeMapping.IsRequired;
+                pamInTable.DisplayOrder = productAttributeMapping.DisplayOrder;
+
+                if (_context.IsRecordUnchanged(pamInTable, productAttributeMapping))
+                {
+                    return new ServiceErrorResponse<bool>("Data is unchanged");
+                }
             }
             else
             {
-                _context.Product_ProductAttribute_Mapping.Add(productAttributeMapping);
-            }
+                var _productAttributeMapping = new ProductAttributeMapping()
+                {
+                    ProductAttributeId = productAttributeMapping.ProductAttributeId,
+                    IsRequired = productAttributeMapping.IsRequired,
+                    ProductId = productAttributeMapping.ProductId,
+                    DisplayOrder = productAttributeMapping.DisplayOrder,
+                };
 
+                _context.Product_ProductAttribute_Mapping.Add(_productAttributeMapping);
+            }
+            
             var result = await _context.SaveChangesAsync();
             if (result == 0)
             {
@@ -86,6 +103,7 @@ namespace T.WebApi.Services.ProductServices
             using (_context)
             {
                 var productAttributeMapping = await _context.Product_ProductAttribute_Mapping.Where(x => x.Deleted == false && x.ProductId == id)
+                    .Include(x => x.ProductAttribute)
                     .ToListAsync();
 
                 var response = new ServiceResponse<List<ProductAttributeMapping>>

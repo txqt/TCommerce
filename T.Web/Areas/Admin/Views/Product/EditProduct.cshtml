@@ -4,13 +4,15 @@
     ViewData["Title"] = "EditProduct";
 }
 
-<h1>EditProduct</h1>
-
-<h4>Product</h4>
+<h1>Sửa sản phẩm @Model.Name</h1>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 <hr />
 <div class="row">
-    <div class="col-md-6">
-        <form asp-action="EditProduct">
+    <div class="col-md-12">
+        <partial name="_AlertMessage"></partial>
+        <form asp-action="EditProduct" style="background-color: #fff; padding: 20px; border-radius: 10px">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group" hidden>
                 <input asp-for="Id" class="form-control" />
@@ -216,7 +218,7 @@
             </div>
         </form>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-12" style="margin-top: 36px">
         <div id="accordion-2">
             <div class="card">
                 <div class="card-header" id="headingTwo">
@@ -228,64 +230,7 @@
                 </div>
                 <div id="collapse-2" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion-2">
                     <div class="card-body">
-                        @*<div id="attribute-data"></div>*@
-
-                        <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
-                            <thead>
-                                <tr role="row">
-                                    <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
-                                        Name
-                                    </th>
-                                    <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
-                                        Description
-                                    </th>
-                                    <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
-                                        Picture
-                                    </th>
-                                    <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
-                                        Action
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th rowspan="1" colspan="1">Name</th>
-                                    <th rowspan="1" colspan="1">Description</th>
-                                    <th rowspan="1" colspan="1">Picture</th>
-                                    <th rowspan="1" colspan="1">Action</th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                @{
-                                    if (Model.AttributeMappings != null || Model.AttributeMappings.Count > 0)
-                                    {
-                                        int count = 0;
-                                        foreach (var item in Model.AttributeMappings)
-                                        {
-
-                                            <tr class="@(count % 2 == 0 ? "even" : "odd")">
-                                                <td class="sorting_1">@item.ProductAttribute.Name</td>
-                                                <td>@item.ProductAttribute.Description</td>
-                                                <td>@item.Id</td>
-                                                <td>
-                                                    <a class="btn btn-info" href="@Url.Action("EditProductAttributeValue", "Product", new {productAttributeMappingId = item.Id})">Edit</a>
-                                                </td>
-                                            </tr>
-                                            count++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr class="odd">
-                                            <td class="sorting_1">No data</td>
-                                            <td>No data</td>
-                                            <td>No data</td>
-                                            <td>No data</td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
+                        @(await Html.PartialAsync("_ProductAttributeMappingList", new ProductAttributeMappingModel{ProductId = Model.Id}))
                     </div>
                 </div>
             </div>
@@ -293,9 +238,7 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @*<script>
     $(document).ready(function () {

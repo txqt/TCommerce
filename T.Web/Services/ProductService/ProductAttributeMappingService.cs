@@ -10,7 +10,7 @@ namespace T.Web.Services.ProductService
     {
         Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMapping(int id);
         Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductId(int id);
-        Task<ServiceResponse<bool>> AddProductAttributeMapping(ProductAttributeMapping productAttributeMapping);
+        Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping);
 
     }
     public class ProductAttributeMappingService : IProductAttributeMappingService
@@ -32,7 +32,7 @@ namespace T.Web.Services.ProductService
             var result = await _httpClient.GetAsync($"api/product-attribute-mapping/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<ProductAttributeMapping>>();
         }
-        public async Task<ServiceResponse<bool>> AddProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
+        public async Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
         {
             var result = await _httpClient.PostAsJsonAsync($"api/product-attribute-mapping/add-or-edit-product-attribute-mapping", productAttributeMapping);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();

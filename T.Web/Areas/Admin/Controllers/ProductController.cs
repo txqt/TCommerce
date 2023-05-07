@@ -15,12 +15,14 @@ namespace T.Web.Areas.Admin.Controllers
     [Area("Admin")]
     [Route("/admin/product/[action]")]
     [CustomAuthorizationFilter(RoleName.Admin)]
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         private readonly IProductService _productService;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeMappingService _productAttributeMappingService;
         private readonly IMapper _mapper;
+        [TempData]
+        public string StatusMessage { get; set; }
         public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService)
         {
             _productService = productService;
@@ -86,7 +88,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             if (!result.Success)
             {
-                ModelState.AddModelError(string.Empty, result.Message);
+                SetStatusMessage($"{result.Message}");
                 return View(product);
             }
 
@@ -113,7 +115,57 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditProductAttributeValue(int productAttributeMappingId)
+        public virtual async Task<IActionResult> ProductAttributeMappingCreate(int productId)
+        {
+            //try to get a product with the specified id
+            var product = (await _productService.Get(productId)).Data
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            //prepare model
+            var model = await _productService.PrepareProductAttributeMappingModelAsync(new ProductAttributeMappingModel(), product, null);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProductAttributeMappingCreate(ProductAttributeMappingModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var product = (await _productService.Get(model.ProductId)).Data
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            if ((await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
+                .Any(x => x.ProductAttributeId == model.ProductAttributeId))
+            {
+                SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
+                model = await _productService.PrepareProductAttributeMappingModelAsync(model, product, null);
+                return View(model);
+            }
+
+            var productAttributeMapping = _mapper.Map<ProductAttributeMapping>(model);
+
+            var result = await _productAttributeMappingService.AddOrUpdateProductAttributeMapping(productAttributeMapping);
+
+            if (!result.Success)
+            {
+                SetStatusMessage($"{result.Message}");
+                return View(model);
+            }
+
+            productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
+                .Where(x=>x.ProductAttributeId == model.ProductAttributeId).FirstOrDefault()
+                ?? throw new ArgumentException("No product attribute mapping found with the specified id");
+
+            SetStatusMessage($"Thêm thành công !");
+            return RedirectToAction("EditProductAttributeMapping", new { productAttributeMappingId = productAttributeMapping.Id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditProductAttributeMapping(int productAttributeMappingId)
         {
             var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMappingId)).Data
                 ?? throw new ArgumentException("No product attribute mapping found with the specified id");
@@ -125,8 +177,9 @@ namespace T.Web.Areas.Admin.Controllers
 
             return View(model);
         }
+
         [HttpPost]
-        public async Task<IActionResult> EditProductAttributeValue(ProductAttributeMappingModel model)
+        public async Task<IActionResult> EditProductAttributeMapping(ProductAttributeMappingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -140,25 +193,29 @@ namespace T.Web.Areas.Admin.Controllers
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this attribute");
 
-            model = await _productService.PrepareProductAttributeMappingModelAsync(model, product, productAttributeMapping);
+            
 
-            if (!(await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
-                .Any(x => x.ProductAttributeId == model.ProductAttributeId || x.Id != productAttributeMapping.Id))
+            if ((await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
+                .Any(x => x.ProductAttributeId == model.ProductAttributeId && x.Id != productAttributeMapping.Id))
             {
+                SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
+                model = await _productService.PrepareProductAttributeMappingModelAsync(model, product, productAttributeMapping);
                 return View(model);
             }
             
-            productAttributeMapping = _mapper.Map<ProductAttributeMappingModel, ProductAttributeMapping>(model);
+            productAttributeMapping = _mapper.Map(model, productAttributeMapping);
 
-            var result = await _productAttributeMappingService.AddProductAttributeMapping(productAttributeMapping);
+            var result = await _productAttributeMappingService.AddOrUpdateProductAttributeMapping(productAttributeMapping);
 
             if (!result.Success)
             {
-                ModelState.AddModelError(string.Empty, result.Message);
+                SetStatusMessage($"{result.Message}");
+                model = await _productService.PrepareProductAttributeMappingModelAsync(model, product, productAttributeMapping);
                 return View(model);
             }
 
-            return RedirectToAction("EditProductAttributeValue", new { productAttributeMappingId = productAttributeMapping.Id });
+            SetStatusMessage($"Sửa thành công !");
+            return RedirectToAction("EditProductAttributeMapping", new { productAttributeMappingId = productAttributeMapping.Id });
         }
 
         [HttpGet]
@@ -175,7 +232,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             var model = await _productService.PrepareProductAttributeMappingListModelAsync(product);
 
-            return Json(model);
+            return Json(new {data = model});
         }
     }
 }
