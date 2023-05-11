@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using T.Library.Model;
 
 namespace T.Web.Areas.Admin.Models
 {
-    public class ProductAttributeValueModel
+    public class ProductAttributeValueModel : BaseEntity
     {
         #region Ctor
 
@@ -65,7 +66,7 @@ namespace T.Web.Areas.Admin.Models
 
         public IList<ProductPictureModel> ProductPictureModels { get; set; }
 
-
+        public int PictureId { get; set; }
         #endregion
     }
 }

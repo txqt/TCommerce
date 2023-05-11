@@ -33,7 +33,7 @@
         /// <summary>
         /// Gets or sets the picture virtual path
         /// </summary>
-        public string? VirtualPath { get; set; }
+        public string? UrlPath { get; set; }
 
         public List<ProductPicture>? ProductPictures { get; set; }
     }

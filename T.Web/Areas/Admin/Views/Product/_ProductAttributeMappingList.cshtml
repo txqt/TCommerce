@@ -25,6 +25,9 @@
                         <th>
                             Edit
                         </th>
+                        <th>
+                            Delete  
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,6 +65,16 @@
                         if (type === "display") {
                             var editUrl = "@Url.Action("EditProductAttributeMapping", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.id);
                             return '<a href="' + editUrl + '">Edit</a>';
+                        }
+                        return data;
+                    }
+                },
+                {
+                    "data": null,
+                    "render": function (data, type, row) {
+                        if (type === "display") {
+                            var editUrl = "@Url.Action("EditProductAttributeMapping", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.id);
+                            return '<a href="' + editUrl + '">Delete</a>';
                         }
                         return data;
                     }

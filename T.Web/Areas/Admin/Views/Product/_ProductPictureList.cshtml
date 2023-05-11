@@ -1,0 +1,145 @@
+﻿@model ProductPictureModel
+
+<div class="border border-primary" hidden>
+    <input class="collapse"
+           type="file"
+           id="selectfileupload"
+           onchange="AutoUploadPhoto()" />
+
+    @*<span class="btn btn-primary" onclick="ClickButtoUpload()">Upload Hình ảnh</span>*@
+
+
+    <div id="box-photo-upload" class="d-flex flex-wrap photo-upload" data-id="@Model.ProductId">
+    </div>
+
+</div>
+
+<style>
+    #dataTable-img tbody tr:nth-child(odd) {
+        background-color: #f9f9f9; /* Màu nền cho hàng lẻ */
+    }
+
+    #dataTable-img tbody tr:nth-child(even) {
+        background-color: #ffffff; /* Màu nền cho hàng chẵn */
+    }
+</style>
+<p>
+    <span class="btn btn-primary" onclick="ClickButtoUpload()">Upload Hình ảnh</span>
+</p>
+
+<div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+    <div class="row">
+        <div class="col-sm-12" style="overflow-x: auto;">
+            <table class="table table-bordered dataTable" id="dataTable-img" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                <thead>
+                    <tr role="row">
+                        <th>
+                            Picture
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DisplayOrder)
+                        </th>
+                        <th>
+                            Delete
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function AutoUploadPhoto() {
+        var formFiles = $("#selectfileupload").prop("files");
+        var formData = new FormData();
+        for (var i = 0; i < formFiles.length; i++) {
+            formData.append("formFiles", formFiles[i]);
+        }
+        var id = $("#box-photo-upload").data("id");
+
+        $.ajax({
+            url: "/admin/product/AddProductImage/" + id,
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                // Xử lý kết quả thành công
+                console.log(result);
+                LoadPhotos();
+            },
+            error: function (xhr, status, error) {
+                // Xử lý lỗi
+                console.error(error);
+            }
+        });
+    }
+    function ClickButtoUpload() {
+        $("#selectfileupload").click();
+    }
+    function setClickDeletePhoto() {
+        $("#box-photo-upload .photodetail span").click(function () {
+            if (confirm("Có chắc chắn xóa ảnh?") != true) return;
+            var spanButton = $(this);
+            var id = spanButton.data("id");
+            var formData = new FormData();
+            formData.append("id", id);
+            var urlDeletePhoto = "@Url.Action("DeletePhoto")";
+            $.ajax({
+                data: formData,
+                cache: false,
+                url: urlDeletePhoto,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    // ... xu ly du lieu lay duoc
+                    LoadPhotos();
+
+                }
+            });
+
+        });
+    }
+    function LoadPhotos() {
+
+        var urlListPhoto = "@Url.Action("ListPhotos", "Product", new {id = Model.ProductId})"
+        $('#dataTable-img').DataTable().destroy();
+        $('#dataTable-img').DataTable({
+            lengthMenu: [5, 10, 25, 50],
+            pageLength: 5,
+            searching: false,
+            ajax: {
+                url: urlListPhoto,
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                {
+                    data: "pictureUrl",
+                    render: function (data) {
+                        return '<img src="' + data + '" style="max-width: 200px;height: auto; "/>';
+                    }
+                },
+                { data: "displayOrder" },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === "display") {
+                            var editUrl = "";
+                            return '<a class="btn btn-danger d-flex justify-content-center align-items-center" href="' + editUrl + '">Delete</a>';
+                        }
+                        return data;
+                    }
+                }
+            ]
+        });
+    }
+    $(document).ready(function () {
+        LoadPhotos();
+    });
+</script>

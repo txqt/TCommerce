@@ -22,12 +22,11 @@ namespace T.Web.Services.ProductService
         Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product);
         Task<ServiceResponse<bool>> DeleteProduct(int id);
         Task<ServiceResponse<Product>> Get(int id);
+        Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
         Task<ServiceResponse<List<ProductAttribute>>> GetAllAttribute(int id);
         Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValue(int productAttributeMappingId);
-        Task<ProductAttributeMappingModel> PrepareProductAttributeMappingModelAsync(ProductAttributeMappingModel model,
-            Product product, ProductAttributeMapping productAttributeMapping);
-        Task<List<ProductAttributeMappingModel>> PrepareProductAttributeMappingListModelAsync(
-            Product product);
+        Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
+
     }
     public class ProductService : IProductService
     {
@@ -49,7 +48,27 @@ namespace T.Web.Services.ProductService
             _mapper = mapper;
         }
 
+        public async Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId)
+        {
+            using (var content = new MultipartFormDataContent())
+            {
+                foreach (var image in ListImages)
+                {
+                    var fileContent = new StreamContent(image.OpenReadStream());
+                    fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                    {
+                        Name = "formFiles",
+                        FileName = image.FileName
+                    };
+                    content.Add(fileContent);
+                }
 
+                var result = await _httpClient.PostAsync($"api/product/{productId}/add-new-picture", content);
+                result.EnsureSuccessStatusCode();
+
+                return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            }
+        }
 
         public async Task<ServiceResponse<bool>> CreateProduct(Product product)
         {
@@ -114,71 +133,10 @@ namespace T.Web.Services.ProductService
             return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttributeValue>>>();
         }
 
-        public async Task<List<ProductAttributeMappingModel>> PrepareProductAttributeMappingListModelAsync(Product product)
+        public async Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId)
         {
-            if (product == null)
-                throw new ArgumentNullException(nameof(product));
-
-            //get product attribute mappings
-
-            var result = (await _productAttributeMappingService
-                                .GetProductAttributeMappingByProductId(product.Id)).Data;
-
-            var pamList = _mapper.Map<List<ProductAttributeMappingModel>>(result);
-
-            //var pamList = result.Select(x => new ProductAttributeMappingModel
-            //                    {
-            //                        Id = x.Id,
-            //                        ProductId = x.ProductId,
-            //                        ProductAttributeId = x.ProductId,
-            //                        ProductAttributeName = x.ProductAttribute.Name,
-            //                        AvailableProductAttributes = null,
-            //                        TextPrompt = x.TextPrompt,
-            //                        IsRequired = x.IsRequired,
-            //                        DisplayOrder = x.DisplayOrder,
-            //                        ValidationMinLength = x.ValidationMinLength,
-            //                        ValidationMaxLength = x.ValidationMaxLength,
-            //                        ValidationFileAllowedExtensions = x.ValidationFileAllowedExtensions,
-            //                        ValidationFileMaximumSize = x.ValidationFileMaximumSize,
-            //                        DefaultValue = x.DefaultValue,
-            //                    }).ToList();
-
-
-            return pamList;
-        }
-
-        public async Task<ProductAttributeMappingModel> PrepareProductAttributeMappingModelAsync(ProductAttributeMappingModel model, Product product, ProductAttributeMapping productAttributeMapping)
-        {
-            if (productAttributeMapping != null)
-            {
-                //fill in model values from the entity
-                model ??= new ProductAttributeMappingModel
-                {
-                    Id = productAttributeMapping.Id
-                };
-                _mapper.Map(productAttributeMapping, model);
-                model.ProductAttributeName = (await _productAttributeService.Get(productAttributeMapping.ProductAttributeId)).Data.Name;
-                model.ProductAttributeId = productAttributeMapping.ProductAttributeId;
-                model.TextPrompt = productAttributeMapping.TextPrompt;
-                model.IsRequired = productAttributeMapping.IsRequired;
-                model.DisplayOrder = productAttributeMapping.DisplayOrder;
-                model.ValidationMinLength = productAttributeMapping.ValidationMinLength;
-                model.ValidationMaxLength = productAttributeMapping.ValidationMaxLength;
-                model.ValidationFileAllowedExtensions = productAttributeMapping.ValidationFileAllowedExtensions;
-                model.ValidationFileMaximumSize = productAttributeMapping.ValidationFileMaximumSize;
-                model.DefaultValue = productAttributeMapping.DefaultValue;
-            }
-
-            model.ProductId = product.Id;
-
-            //prepare available product attributes
-            model.AvailableProductAttributes = (await _productAttributeService.GetAll()).Select(productAttribute => new SelectListItem
-            {
-                Text = productAttribute.Name,
-                Value = productAttribute.Id.ToString()
-            }).ToList();
-
-            return model;
+            var result = await _httpClient.GetAsync($"api/product/{productId}/all-pictures");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductPicture>>>();
         }
     }
 }

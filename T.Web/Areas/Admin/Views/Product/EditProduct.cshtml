@@ -50,11 +50,14 @@
                 <input asp-for="OldPrice" class="form-control" />
                 <span asp-validation-for="OldPrice" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" id="markasnewcheckbox" asp-for="MarkAsNew" /> @Html.DisplayNameFor(model => model.MarkAsNew)
-                </label>
+             <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" id="markasnewcheckbox" asp-for="MarkAsNew" /> @Html.DisplayNameFor(model => model.MarkAsNew)
+                    </label>
+                </div>
             </div>
+            
 
             <div id="mark-as-new" style="display:none">
                 <div class="form-group">
@@ -74,16 +77,22 @@
                 <input asp-for="DisplayOrder" class="form-control" value="0" />
                 <span asp-validation-for="DisplayOrder" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model => model.Published)
-                </label>
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model => model.Published)
+                    </label>
+                </div>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="VisibleIndividually" /> @Html.DisplayNameFor(model => model.VisibleIndividually)
-                </label>
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="VisibleIndividually" /> @Html.DisplayNameFor(model => model.VisibleIndividually)
+                    </label>
+                </div>
             </div>
+            
+            
             <div id="accordion">
                 <div class="card">
                     <div class="card-header" id="headingOne">
@@ -236,32 +245,34 @@
             </div>
         </div>
     </div>
+    <div class="col-md-12" style="margin-top: 36px">
+        <div id="accordion-3">
+            <div class="card">
+                <div class="card-header" id="headingThree">
+                    <h5 class="mb-0">
+                        <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse-3" aria-expanded="true" aria-controls="collapse-3">
+                            Hình ảnh
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapse-3" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion-3">
+                    <div class="card-body">
+                        @(await Html.PartialAsync("_ProductPictureList", new ProductPictureModel{ProductId = Model.Id}))
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
 
-@*<script>
-    $(document).ready(function () {
-        var productId = 123; // Thay đổi ID sản phẩm ở đây
-        var url = '@Url.Action("GetAllAttribute", "Product")';
-        $.ajax({
-            type: "GET",
-            url: url,
-            data: { productId: '@Model.Id' },
-            dataType: "json",
-            success: function (data) {
-                // Xử lý kết quả trả về và hiển thị nó lên trang web
-                var list = "<ul>";
-                $.each(data, function (index, item) {
-                    list += "<li>" + item.name + "</li>";
-                });
-                list += "</ul>";
-                $("#attribute-data").html(list);
-            },
-            error: function (xhr, status, error) {
-                // Xử lý lỗi nếu có
-                console.log("Error: " + error);
-            }
-        });
+<script>
+    $('#markasnewcheckbox').change(function () {
+        if ($(this).is(":checked")) {
+            $('#mark-as-new').css('display', 'block');
+        } else {
+            $('#mark-as-new').css('display', 'none');
+        }
     });
-</script>*@
+</script>

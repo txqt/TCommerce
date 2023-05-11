@@ -32,4 +32,9 @@
     <ProjectReference Include="..\T.Library\T.Library.csproj" />
   </ItemGroup>
 
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\uploads\" />
+	</ItemGroup>
+
 </Project>

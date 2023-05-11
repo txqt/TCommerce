@@ -11,6 +11,7 @@ namespace T.Web.Services.ProductService
         Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMapping(int id);
         Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductId(int id);
         Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping);
+        Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValuesAsync(int productAttributeMappingId);
 
     }
     public class ProductAttributeMappingService : IProductAttributeMappingService
@@ -42,6 +43,12 @@ namespace T.Web.Services.ProductService
         {
             var result = await _httpClient.GetAsync($"api/product-attribute-mapping/get-by-product-id/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttributeMapping>>>();
+        }
+
+        public async Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValuesAsync(int productAttributeMappingId)
+        {
+            var result = await _httpClient.GetAsync($"api/product-attribute-mapping/{productAttributeMappingId}/value");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttributeValue>>>();
         }
     }
 }

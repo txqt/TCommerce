@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Dynamic;
 using T.Library.Model;
 using T.Library.Model.Enum;
@@ -8,6 +10,7 @@ using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
 using T.Web.Controllers;
+using T.Web.Services.PrepareModel;
 using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers
@@ -20,15 +23,21 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly IProductService _productService;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeMappingService _productAttributeMappingService;
+        private readonly IProductAttributeValueService _productAttributeValueService;
         private readonly IMapper _mapper;
+        private readonly IPrepareModelService _prepareModelService;
         [TempData]
         public string StatusMessage { get; set; }
-        public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService)
+        public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService, 
+            IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService, 
+            IPrepareModelService prepareModelService)
         {
             _productService = productService;
             _mapper = mapper;
             _productAttributeService = productAttributeService;
             _productAttributeMappingService = productAttributeMappingService;
+            _productAttributeValueService = productAttributeValueService;
+            _prepareModelService = prepareModelService;
         }
 
         public async Task<IActionResult> Index(ProductParameters productParameters)
@@ -122,7 +131,7 @@ namespace T.Web.Areas.Admin.Controllers
                 ?? throw new ArgumentException("No product found with the specified id");
 
             //prepare model
-            var model = await _productService.PrepareProductAttributeMappingModelAsync(new ProductAttributeMappingModel(), product, null);
+            var model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(new ProductAttributeMappingModel(), product, null);
 
             return View(model);
         }
@@ -142,7 +151,7 @@ namespace T.Web.Areas.Admin.Controllers
                 .Any(x => x.ProductAttributeId == model.ProductAttributeId))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
-                model = await _productService.PrepareProductAttributeMappingModelAsync(model, product, null);
+                model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(model, product, null);
                 return View(model);
             }
 
@@ -173,7 +182,7 @@ namespace T.Web.Areas.Admin.Controllers
             var product = (await _productService.Get(productAttributeMapping.ProductId)).Data
                 ?? throw new ArgumentException("No product found with the specified id");
 
-            var model = await _productService.PrepareProductAttributeMappingModelAsync(null, product, productAttributeMapping);
+            var model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(null, product, productAttributeMapping);
 
             return View(model);
         }
@@ -199,7 +208,7 @@ namespace T.Web.Areas.Admin.Controllers
                 .Any(x => x.ProductAttributeId == model.ProductAttributeId && x.Id != productAttributeMapping.Id))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
-                model = await _productService.PrepareProductAttributeMappingModelAsync(model, product, productAttributeMapping);
+                model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(model, product, productAttributeMapping);
                 return View(model);
             }
             
@@ -210,7 +219,7 @@ namespace T.Web.Areas.Admin.Controllers
             if (!result.Success)
             {
                 SetStatusMessage($"{result.Message}");
-                model = await _productService.PrepareProductAttributeMappingModelAsync(model, product, productAttributeMapping);
+                model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(model, product, productAttributeMapping);
                 return View(model);
             }
 
@@ -230,9 +239,54 @@ namespace T.Web.Areas.Admin.Controllers
             var product = (await _productService.Get(productId)).Data
                 ?? throw new ArgumentException("No product found with the specified id");
 
-            var model = await _productService.PrepareProductAttributeMappingListModelAsync(product);
+            var model = await _prepareModelService.PrepareProductAttributeMappingListModelAsync(product);
 
             return Json(new {data = model});
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetValueProductMapping(int productAttributeMapping)
+        {
+            var productAttributeMappingResponse = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMapping)).Data
+                ?? throw new ArgumentException("Not found with the specified id");
+
+            var model = await _prepareModelService.PrepareProductAttributeValueListModelAsync(productAttributeMappingResponse);
+
+            return Json(new { data = model });
+        }
+
+        [HttpPost("{productId}")]
+        [AllowAnonymous]
+        public async Task<ActionResult> AddProductImage(List<IFormFile> formFiles, int productId)
+        {
+            var result = await _productService.AddProductImage(formFiles, productId);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ListPhotos(int id)
+        {
+            //prepare picture models
+            var productPictures = (await _productService.GetProductPicturesByProductIdAsync(id)).Data;
+
+            var listphotos = productPictures.Select(productPicture => new ProductPictureModel
+            {
+                Id = productPicture.Id,
+                ProductId = productPicture.ProductId,
+                PictureId = productPicture.PictureId,
+                PictureUrl = productPicture.Picture.UrlPath,
+                DisplayOrder = productPicture.DisplayOrder
+            }).ToList();
+
+            return Json(
+                new
+                {
+                    data = listphotos
+                });
         }
     }
 }

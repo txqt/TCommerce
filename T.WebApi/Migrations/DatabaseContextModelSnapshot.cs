@@ -426,7 +426,7 @@ namespace T.WebApi.Migrations
                     b.Property<string>("TitleAttribute")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VirtualPath")
+                    b.Property<string>("UrlPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

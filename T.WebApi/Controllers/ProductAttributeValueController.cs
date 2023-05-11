@@ -17,7 +17,12 @@ namespace T.WebApi.Controllers
         [HttpGet("get-by-mapping-id/{productAttributeMappingId}")]
         public async Task<IActionResult> GetProductAttributeValuesAsync(int productAttributeMappingId)
         {
-            return Ok(await _productAttributeValueService.GetProductAttributeValuesAsync(productAttributeMappingId));
+            var result = await _productAttributeValueService.GetProductAttributeValuesAsync(productAttributeMappingId);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
     }

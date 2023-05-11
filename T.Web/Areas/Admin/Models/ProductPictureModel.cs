@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using T.Library.Model;
 
 namespace T.Web.Areas.Admin.Models
 {
-    public class ProductPictureModel
+    public class ProductPictureModel : BaseEntity
     {
         #region Properties
 

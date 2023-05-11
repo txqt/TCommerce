@@ -11,6 +11,7 @@ using T.Web.Attribute;
 using T.Web.CusomMiddleware;
 using T.Web.Services.AccountService;
 using T.Web.Services.Database;
+using T.Web.Services.PrepareModel;
 using T.Web.Services.ProductService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,8 @@ builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IProductAttributeService, ProductAttributeService>();
 builder.Services.AddTransient<IProductAttributeMappingService, ProductAttributeMappingService>();
+builder.Services.AddTransient<IProductAttributeValueService, ProductAttributeValueService>();
+builder.Services.AddTransient<IPrepareModelService, PrepareModelService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,
@@ -52,15 +55,6 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
-//builder.Services.AddMvc(
-//    opt =>
-//        {
-//            opt.EnableEndpointRouting = false;
-//            var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-//            opt.Filters.Add(new AuthorizeFilter(policy));
-//        }
-//    ).AddXmlSerializerFormatters();
 
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
