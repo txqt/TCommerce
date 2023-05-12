@@ -25,9 +25,11 @@
         background-color: #ffffff; /* Màu nền cho hàng chẵn */
     }
 </style>
-<p>
-    <span class="btn btn-primary" onclick="ClickButtoUpload()">Upload Hình ảnh</span>
+<p class="d-flex justify-content-between">
+    <span class="btn btn-primary" onclick="ClickButtoUpload()">Upload Hình Ảnh</span>
+    <span class="btn btn-danger" onclick="DeleteAllImages()">Xóa Tất Cả Ảnh</span>
 </p>
+
 
 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
     <div class="row">
@@ -143,6 +145,29 @@
             ]
         });
     }
+    function DeleteAllImages() {
+        // Hiển thị hộp thoại "confirm"
+        if (confirm("Bạn có chắc chắn muốn xóa tất cả ảnh?")) {
+            $.ajax({
+                url: "@Url.Action("DeleteAllPhotos", "Product")", // Đường dẫn xử lý yêu cầu xóa tất cả ảnh
+                type: "POST",
+                data: { productId: @Model.ProductId }, // Dữ liệu gửi kèm (nếu cần)
+                success: function (response) {
+                    // Xử lý phản hồi từ API
+                    if (response.success) {
+                        LoadPhotos(); // Tải lại danh sách hình ảnh sau khi xóa thành công
+                    } else {
+                        alert(response.message); // Hiển thị thông báo lỗi
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText); // Hiển thị lỗi trong console
+                    alert("Đã xảy ra lỗi trong quá trình xóa ảnh."); // Hiển thị thông báo lỗi
+                }
+            });
+        }
+    }
+
     $(document).ready(function () {
         LoadPhotos();
     });

@@ -1,7 +1,7 @@
 ﻿@model ProductAttributeMappingModel
 
 <p>
-    <a href="@Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.ProductId })">Create New</a>
+    <a href="@Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.ProductId })">Tạo mới</a>
 </p>
 
 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -64,7 +64,7 @@
                     "render": function (data, type, row) {
                         if (type === "display") {
                             var editUrl = "@Url.Action("EditProductAttributeMapping", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.id);
-                            return '<a href="' + editUrl + '">Edit</a>';
+                            return '<a class="btn btn-info" href="' + editUrl + '">Edit</a>';
                         }
                         return data;
                     }
@@ -74,7 +74,7 @@
                     "render": function (data, type, row) {
                         if (type === "display") {
                             var editUrl = "@Url.Action("EditProductAttributeMapping", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.id);
-                            return '<a href="' + editUrl + '">Delete</a>';
+                            return '<a class="btn btn-danger" href="' + editUrl + '">Delete</a>';
                         }
                         return data;
                     }

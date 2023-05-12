@@ -5,7 +5,7 @@ using System.Linq.Dynamic.Core;
 
 namespace T.WebApi.Extensions
 {
-    public static class RepositoryProductExtensions
+    public static class RepositoryExtensions
     {
         public static IQueryable<Product> Search(this IQueryable<Product> products, string searchTerm)
         {
@@ -16,6 +16,14 @@ namespace T.WebApi.Extensions
                                     p.ShortDescription.ToLower().Contains(lowerCaseSearchTerm) || 
                                     p.FullDescription.ToLower().Contains(lowerCaseSearchTerm));
         }
+        public static IQueryable<Product> FindProductByIdAsync(this IQueryable<Product> products, int productId)
+        {
+            if (productId < 0)
+                return products;
+
+            return products.Where(x => x.Deleted == false && x.Id == productId);
+        }
+
         public static IQueryable<Product> Sort(this IQueryable<Product> products, string orderByQueryString)
         {
             if (string.IsNullOrWhiteSpace(orderByQueryString))

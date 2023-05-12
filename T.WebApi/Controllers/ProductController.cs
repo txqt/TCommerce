@@ -94,7 +94,6 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("{productId}/add-new-picture")]
-        [AllowAnonymous]
         public async Task<ActionResult> AddProductImage(List<IFormFile> formFiles, int productId)
         {
             var result = await _productService.AddProductImage(formFiles, productId);
@@ -106,11 +105,20 @@ namespace T.WebApi.Controllers
         }
 
         [HttpDelete("{productId}/delete-picture/{pictureId}")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        [AllowAnonymous]
-        public async Task<ActionResult> DeleteProduct(int productId, int pictureId)
+        public async Task<ActionResult> DeletePictureProduct(int productId, int pictureId)
         {
             var result = await _productService.DeleteProductImage(productId, pictureId);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpDelete("{productId}/delete-all-picture")]
+        public async Task<ActionResult> DeleteAllPictureProduct(int productId)
+        {
+            var result = await _productService.DeleteAllProductImage(productId);
             if (!result.Success)
             {
                 return BadRequest(result);

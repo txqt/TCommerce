@@ -27,6 +27,7 @@ namespace T.Web.Services.ProductService
         Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValue(int productAttributeMappingId);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
         Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId);
+        Task<ServiceResponse<bool>> DeleteAllProductImage(int productId);
 
     }
     public class ProductService : IProductService
@@ -74,6 +75,12 @@ namespace T.Web.Services.ProductService
         public async Task<ServiceResponse<bool>> CreateProduct(Product product)
         {
             var result = await _httpClient.PostAsJsonAsync($"api/product/create", product);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteAllProductImage(int productId)
+        {
+            var result = await _httpClient.DeleteAsync($"api/product/{productId}/delete-all-picture");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 

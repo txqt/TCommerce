@@ -256,7 +256,6 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost("{productId}")]
-        [AllowAnonymous]
         public async Task<ActionResult> AddProductImage(List<IFormFile> formFiles, int productId)
         {
             var result = await _productService.AddProductImage(formFiles, productId);
@@ -268,7 +267,6 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> ListPhotos(int id)
         {
             var product = (await _productService.Get(id)).Data
@@ -288,6 +286,17 @@ namespace T.Web.Areas.Admin.Controllers
         {
 
             var result = await _productService.DeleteProductImage(productId, pictureId);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAllPhotos(int productId)
+        {
+            var result = await _productService.DeleteAllProductImage(productId);
             if (!result.Success)
             {
                 return Json(new { success = false, message = result.Message });

@@ -20,6 +20,7 @@ namespace T.WebApi.Services.ProductServices
         Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttribute(int id);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
         Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId);
+        Task<ServiceResponse<bool>> DeleteAllProductImage(int productId);
     }
     public class ProductService : IProductService
     {
@@ -260,6 +261,41 @@ namespace T.WebApi.Services.ProductServices
                     .Include(x => x.AttributeMappings)
                     .ThenInclude(x => x.ProductAttribute)
                     .FirstOrDefaultAsync(x => x.Id == productId);
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteAllProductImage(int productId)
+        {
+            try
+            {
+                var apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
+
+                var product = await _context.Product.FindProductByIdAsync(productId).FirstOrDefaultAsync()
+                ?? throw new ArgumentException("No product found with the specified id");
+
+                var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.ProductId == product.Id).ToListAsync()
+                    ?? throw new ArgumentException("This product is not mapped to this picture");
+
+                foreach(var item in productPicture)
+                {
+                    var picture = await _context.Picture.FirstOrDefaultAsync(x => x.Id == item.PictureId)
+                    ?? throw new ArgumentException("No picture found with the specified id");
+                    var fileName = picture.UrlPath.Replace(apiUrl + "/uploads/", "");
+                    var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", fileName);
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                    }
+
+                    _context.Picture.Remove(picture);
+                    await _context.SaveChangesAsync();
+                }
+
+                return new ServiceSuccessResponse<bool>() { Message = "Remove the mapped image with this product successfully" };
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResponse<bool>() { Message = ex.Message, Success = false };
+            }
         }
     }
 }
