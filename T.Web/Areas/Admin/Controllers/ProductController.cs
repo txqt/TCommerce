@@ -268,25 +268,31 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> ListPhotos(int id)
         {
-            //prepare picture models
-            var productPictures = (await _productService.GetProductPicturesByProductIdAsync(id)).Data;
+            var product = (await _productService.Get(id)).Data
+                ?? throw new ArgumentException("No product found with the specified id");
 
-            var listphotos = productPictures.Select(productPicture => new ProductPictureModel
-            {
-                Id = productPicture.Id,
-                ProductId = productPicture.ProductId,
-                PictureId = productPicture.PictureId,
-                PictureUrl = productPicture.Picture.UrlPath,
-                DisplayOrder = productPicture.DisplayOrder
-            }).ToList();
+            var listphotos = await _prepareModelService.PrepareProductPictureModelAsync(product);
 
             return Json(
                 new
                 {
                     data = listphotos
                 });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeletePhoto(int productId, int pictureId)
+        {
+
+            var result = await _productService.DeleteProductImage(productId, pictureId);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
         }
     }
 }

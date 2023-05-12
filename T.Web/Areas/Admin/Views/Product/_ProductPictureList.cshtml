@@ -4,7 +4,9 @@
     <input class="collapse"
            type="file"
            id="selectfileupload"
-           onchange="AutoUploadPhoto()" />
+           onchange="AutoUploadPhoto()"
+           multiple="multiple"
+           accept=".jpg, .png" />
 
     @*<span class="btn btn-primary" onclick="ClickButtoUpload()">Upload Hình ảnh</span>*@
 
@@ -81,32 +83,32 @@
     function ClickButtoUpload() {
         $("#selectfileupload").click();
     }
-    function setClickDeletePhoto() {
-        $("#box-photo-upload .photodetail span").click(function () {
-            if (confirm("Có chắc chắn xóa ảnh?") != true) return;
-            var spanButton = $(this);
-            var id = spanButton.data("id");
-            var formData = new FormData();
-            formData.append("id", id);
-            var urlDeletePhoto = "@Url.Action("DeletePhoto")";
-            $.ajax({
-                data: formData,
-                cache: false,
-                url: urlDeletePhoto,
-                type: "POST",
-                contentType: false,
-                processData: false,
-                success: function (data) {
-                    // ... xu ly du lieu lay duoc
-                    LoadPhotos();
+    // Sự kiện click cho nút xóa ảnh
+    $('#dataTable-img').on('click', '.deleteImageBtn', function () {
+        var pictureId = $(this).data('pictureid'); // Lấy pictureId từ thuộc tính data của nút
 
+        // Hiển thị hộp thoại "confirm"
+        if (confirm("Bạn có chắc chắn muốn xóa ảnh này?")) {
+            $.ajax({
+                url: "@Url.Action("DeletePhoto", "Product")",
+                type: "POST",
+                data: { productId: @Model.ProductId, pictureId: pictureId },
+                success: function (response) {
+                    // Xử lý phản hồi từ API
+                    if (response.success) {
+                        LoadPhotos();
+                    } else {
+                        alert(response.message); // Hiển thị thông báo lỗi
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText); // Hiển thị lỗi trong console
+                    alert("Đã xảy ra lỗi trong quá trình xóa ảnh."); // Hiển thị thông báo lỗi
                 }
             });
-
-        });
-    }
+        }
+    });
     function LoadPhotos() {
-
         var urlListPhoto = "@Url.Action("ListPhotos", "Product", new {id = Model.ProductId})"
         $('#dataTable-img').DataTable().destroy();
         $('#dataTable-img').DataTable({
@@ -130,8 +132,10 @@
                     data: null,
                     render: function (data, type, row) {
                         if (type === "display") {
-                            var editUrl = "";
-                            return '<a class="btn btn-danger d-flex justify-content-center align-items-center" href="' + editUrl + '">Delete</a>';
+                            var pictureId = row.pictureId; // Lấy pictureId từ dữ liệu hàng
+
+                            var removeUrl = "";
+                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center deleteImageBtn" data-pictureid="' + pictureId + '">Delete</button>';
                         }
                         return data;
                     }

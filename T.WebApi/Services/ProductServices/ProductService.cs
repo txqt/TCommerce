@@ -19,6 +19,7 @@ namespace T.WebApi.Services.ProductServices
         Task<ServiceResponse<bool>> DeleteProduct(int productId);
         Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttribute(int id);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
+        Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId);
     }
     public class ProductService : IProductService
     {
@@ -62,10 +63,7 @@ namespace T.WebApi.Services.ProductServices
         {
             using (_context)
             {
-                var product = await _context.Product.Where(x => x.Deleted == false)
-                    .Include(x => x.AttributeMappings)
-                    .ThenInclude(x => x.ProductAttribute)
-                    .FirstOrDefaultAsync(x => x.Id == id);
+                var product = await FindProductByIdAsync(id);
 
                 var response = new ServiceResponse<Product>
                 {
@@ -170,13 +168,16 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId)
         {
+            var product = await FindProductByIdAsync(productId)
+                ?? throw new ArgumentException("No product found with the specified id");
+
             using (_context)
             {
                 try
                 {
                     var apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
 
-                    string path = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads");
+                    string path = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/");
                     if (!Directory.Exists(path))
                     {
                         Directory.CreateDirectory(path);
@@ -185,7 +186,11 @@ namespace T.WebApi.Services.ProductServices
                     {
                         if (imageFile.Length > 0)
                         {
-                            var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads", imageFile.FileName);
+                            var uniqueFileName = Path.GetRandomFileName();
+                            var fileExtension = Path.GetExtension(imageFile.FileName);
+                            var newFileName = uniqueFileName + fileExtension;
+
+                            var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", newFileName);
                             using (var fileStream = new FileStream(file, FileMode.Create))
                             {
                                 await imageFile.CopyToAsync(fileStream);
@@ -193,7 +198,7 @@ namespace T.WebApi.Services.ProductServices
 
                             var picture = new Picture
                             {
-                                UrlPath = apiUrl + "/uploads/" + imageFile.FileName
+                                UrlPath = apiUrl + "/uploads/" + newFileName
                             };
                             _context.Picture.Add(picture);
                             await _context.SaveChangesAsync();
@@ -214,6 +219,47 @@ namespace T.WebApi.Services.ProductServices
                     return new ServiceResponse<bool>() { Message = ex.Message, Success = false };
                 }
             }
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId)
+        {
+            try
+            {
+                var apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
+
+                var product = await FindProductByIdAsync(productId)
+                ?? throw new ArgumentException("No product found with the specified id");
+
+                var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.ProductId == product.Id && x.PictureId == pictureId).FirstOrDefaultAsync()
+                    ?? throw new ArgumentException("This product is not mapped to this picture");
+
+                var picture = await _context.Picture.FirstOrDefaultAsync(x => x.Id == productPicture.PictureId)
+                    ?? throw new ArgumentException("No picture found with the specified id");
+
+                var fileName = picture.UrlPath.Replace(apiUrl + "/uploads/", "");
+                var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", fileName);
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                _context.Picture.Remove(picture);
+                await _context.SaveChangesAsync();
+
+                return new ServiceSuccessResponse<bool>() { Message = "Remove the mapped image with this product successfully" };
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResponse<bool>() { Message = ex.Message, Success = false };
+            }
+        }
+
+        public async Task<Product> FindProductByIdAsync(int productId)
+        {
+            return await _context.Product.Where(x => x.Deleted == false)
+                    .Include(x => x.AttributeMappings)
+                    .ThenInclude(x => x.ProductAttribute)
+                    .FirstOrDefaultAsync(x => x.Id == productId);
         }
     }
 }

@@ -104,5 +104,18 @@ namespace T.WebApi.Controllers
             }
             return Ok(result);
         }
+
+        [HttpDelete("{productId}/delete-picture/{pictureId}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [AllowAnonymous]
+        public async Task<ActionResult> DeleteProduct(int productId, int pictureId)
+        {
+            var result = await _productService.DeleteProductImage(productId, pictureId);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }

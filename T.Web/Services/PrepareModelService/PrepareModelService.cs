@@ -18,6 +18,7 @@ namespace T.Web.Services.PrepareModel
         Task<List<ProductAttributeValueModel>> PrepareProductAttributeValueListModelAsync(ProductAttributeMapping productAttributeMapping);
         Task<ProductAttributeValueModel> PrepareProductAttributeValueModelAsync(ProductAttributeValueModel model,
             ProductAttributeMapping productAttributeMapping, ProductAttributeValue productAttributeValue);
+        Task<List<ProductPictureModel>> PrepareProductPictureModelAsync(Product product);
     }
     public class PrepareModelService : IPrepareModelService
     {
@@ -145,6 +146,30 @@ namespace T.Web.Services.PrepareModel
                 PictureUrl = productPicture.Picture.UrlPath,
                 DisplayOrder = productPicture.DisplayOrder
             }).ToList();
+
+            return model;
+        }
+
+        public async Task<List<ProductPictureModel>> PrepareProductPictureModelAsync(Product product)
+        {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+
+            var model = new List<ProductPictureModel>();
+
+            var productPictures = (await _productService.GetProductPicturesByProductIdAsync(product.Id)).Data;
+
+            if (productPictures != null)
+            {
+                model = productPictures.Select(productPicture => new ProductPictureModel
+                {
+                    Id = productPicture.Id,
+                    ProductId = productPicture.ProductId,
+                    PictureId = productPicture.PictureId,
+                    PictureUrl = productPicture.Picture.UrlPath,
+                    DisplayOrder = productPicture.DisplayOrder
+                }).ToList();
+            }
 
             return model;
         }
