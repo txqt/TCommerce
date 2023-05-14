@@ -1,0 +1,11 @@
+﻿@model ProductAttributeValueModel
+@{
+    Layout = "_EmptyLayout";
+}
+<div style="background-color: #fff; padding: 20px; border-radius: 10px">
+    <h3 class="text-info">Sửa giá trị thuộc tính vào sản phẩm</h3>
+    <form method="post" >
+        @(await Html.PartialAsync("_AddOrUpdateProductAttributeValue", Model))
+    </form>
+    <hr />
+</div>

@@ -73,7 +73,7 @@ namespace T.WebApi.Services.ProductServices
             var result = await _context.SaveChangesAsync();
             if (result == 0)
             {
-                return new ServiceErrorResponse<bool>("Add or edit product mapping failed");
+                return new ServiceErrorResponse<bool>("Add or edit product value failed");
             }
             return new ServiceSuccessResponse<bool>();
         }

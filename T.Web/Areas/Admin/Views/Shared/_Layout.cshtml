@@ -102,7 +102,24 @@
     <script src="~/js/sb-admin-2.min.js"></script>
     @RenderSection("Scripts", required: false)
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-    
+    <script>
+        function openPopup(url) {
+            var screenWidth = window.screen.availWidth;
+            var screenHeight = window.screen.availHeight;
+
+            var popupWidth = 600;
+            var popupHeight = screenHeight / 2;
+
+            var leftPosition = (screenWidth - popupWidth) / 2;
+            var topPosition = 0;
+
+            var popupFeatures = 'width=' + popupWidth + ',height=' + popupHeight + ',left=' + leftPosition + ',top=' + topPosition + ',scrollbars=yes';
+
+            var popupWindow = window.open(url, 'Popup', popupFeatures);
+            popupWindow.focus();
+            return false;
+        }
+    </script>
 </body>
 
 </html>

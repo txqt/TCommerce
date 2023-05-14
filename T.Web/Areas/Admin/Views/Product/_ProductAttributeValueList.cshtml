@@ -2,7 +2,7 @@
 
 <h3 class="text-info">Danh sách giá thị của thuộc tính này</h3>
 <p>
-    <a href="@*@Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.ProductId })*@">Create New</a>
+    <a class="btn btn-success" href="@*@Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.ProductId })*@">Tạo mới</a>
 </p>
 
 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -69,8 +69,8 @@
                     data: null,
                     render: function (data, type, row) {
                         if (type === "display") {
-                            var editUrl = "@Url.Action("EditProductAttributeMapping", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.id);
-                            return '<a href="' + editUrl + '">Edit</a>';
+                            var editUrl = "@Url.Action("EditProductAttributeValue", "Product", new { id = "__id__" })".replace("__id__", row.id);
+                            return '<button class="btn btn-info" onclick="openPopup(\'' + editUrl + '\')">Edit</button>';
                         }
                         return data;
                     }
@@ -80,7 +80,7 @@
                     render: function (data, type, row) {
                         if (type === "display") {
                             var editUrl = "@Url.Action("EditProductAttributeMapping", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.id);
-                            return '<a href="' + editUrl + '">Delete</a>';
+                            return '<a class="btn btn-danger" href="' + editUrl + '">Delete</a>';
                         }
                         return data;
                     }
@@ -88,4 +88,5 @@
             ]
         });
     });
+    
 </script>

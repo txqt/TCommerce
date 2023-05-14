@@ -1,0 +1,66 @@
+﻿@model ProductAttributeValueModel
+
+<partial name="_AlertMessage"></partial>
+
+<input asp-for="Id" class="form-control" hidden />
+<input hidden class="form-control" asp-for="ProductAttributeMappingId" value="@Model.ProductAttributeMappingId" />
+<input asp-for="DisplayColorSquaresRgb" type="hidden" />
+
+@if (ViewBag.RefreshPage == true)
+{
+    <script>
+        window.close();
+        window.opener.location.reload();
+    </script>
+}
+
+<div class="form-group">
+    <label for="@Html.DisplayNameFor(model => model.Name)">@Html.DisplayNameFor(model => model.Name)</label>
+    <input style="min-width: 100px; width: 300px" type="text" class="form-control" asp-for="Name" id="@Html.DisplayNameFor(model => model.Name)" placeholder="@Html.DisplayNameFor(model => model.Name)">
+</div>
+<div class="form-group">
+    <label for="@Html.DisplayNameFor(model => model.Name)">@Html.DisplayNameFor(model => model.PriceAdjustment)</label>
+    <input style="min-width: 100px; width: 300px" type="number" min="0" class="form-control" asp-for="PriceAdjustment" id="@Html.DisplayNameFor(model => model.Name)" placeholder="@Html.DisplayNameFor(model => model.Name)">
+</div>
+<div class="form-group">
+    <div class="form-check">
+        <input type="checkbox" asp-for="PriceAdjustmentUsePercentage" class="form-check-input" id="@Html.DisplayNameFor(model => model.PriceAdjustmentUsePercentage)">
+        <label class="form-check-label" for="@Html.DisplayNameFor(model => model.PriceAdjustmentUsePercentage)">@Html.DisplayNameFor(model => model.PriceAdjustmentUsePercentage)</label>
+    </div>
+</div>
+<div class="form-group">
+    <label for="@Html.DisplayNameFor(model => model.WeightAdjustment)">@Html.DisplayNameFor(model => model.WeightAdjustment)</label>
+    <input style="min-width: 100px; width: 300px" type="number" min="0" class="form-control" asp-for="WeightAdjustment" id="@Html.DisplayNameFor(model => model.WeightAdjustment)" aria-describedby="@Html.DisplayNameFor(model => model.WeightAdjustment)" placeholder="@Html.DisplayNameFor(model => model.WeightAdjustment)">
+</div>
+<div class="form-group">
+    <div class="form-check">
+        <input type="checkbox" asp-for="IsPreSelected" class="form-check-input" id="@Html.DisplayNameFor(model => model.IsPreSelected)">
+        <label class="form-check-label" for="@Html.DisplayNameFor(model => model.IsPreSelected)">@Html.DisplayNameFor(model => model.IsPreSelected)</label>
+    </div>
+</div>
+<div class="form-group">
+    <label for="@Html.DisplayNameFor(model => model.DisplayOrder)">@Html.DisplayNameFor(model => model.DisplayOrder)</label>
+    <input style="min-width: 100px; width: 300px" type="number" min="0" class="form-control" asp-for="DisplayOrder" id="@Html.DisplayNameFor(model => model.DisplayOrder)" aria-describedby="emailHelp" placeholder="@Html.DisplayNameFor(model => model.DisplayOrder)">
+</div>
+<div class="form-group row">
+    <div class="col-sm-3">
+        <label for="@Html.DisplayNameFor(model => model.PictureIds)">@Html.DisplayNameFor(model => model.PictureIds)</label>
+    </div>
+    <div class="col-sm-9">
+        <div class="attribute-picture-selection-block clearfix">
+            @foreach (var picture in Model.ProductPictureModels)
+            {
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" name="@Html.NameFor(x => x.PictureIds)" value="@picture.PictureId" id="id_image_@picture.PictureId" @(Model.PictureIds.Contains(picture.PictureId) ? "checked" : "")>
+                        <img src="@picture.PictureUrl" alt="" title="" width="75" class="mb-1">
+                    </label>
+                </div>
+            }
+        </div>
+        <span asp-validation-for="PictureIds"></span>
+    </div>
+</div>
+<button type="submit" class="btn btn-primary mt-2">Save</button>
+
+

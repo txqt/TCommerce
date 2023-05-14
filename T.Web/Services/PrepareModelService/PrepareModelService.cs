@@ -111,10 +111,8 @@ namespace T.Web.Services.PrepareModel
                 model ??= new ProductAttributeValueModel
                 {
                     ProductAttributeMappingId = productAttributeValue.ProductAttributeMappingId,
-                    AssociatedProductId = productAttributeValue.AssociatedProductId,
                     Name = productAttributeValue.Name,
                     ColorSquaresRgb = productAttributeValue.ColorSquaresRgb,
-                    ImageSquaresPictureId = productAttributeValue.ImageSquaresPictureId,
                     PriceAdjustment = productAttributeValue.PriceAdjustment,
                     PriceAdjustmentUsePercentage = productAttributeValue.PriceAdjustmentUsePercentage,
                     WeightAdjustment = productAttributeValue.WeightAdjustment,
@@ -125,8 +123,6 @@ namespace T.Web.Services.PrepareModel
                     DisplayOrder = productAttributeValue.DisplayOrder,
                     PictureId = productAttributeValue.PictureId
                 };
-
-                model.AssociatedProductName = ((await _productService.Get(productAttributeValue.AssociatedProductId))).Data?.Name;
 
             }
 

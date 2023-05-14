@@ -7,7 +7,8 @@ namespace T.Web.Services.ProductService
 {
     public interface IProductAttributeValueService
     {
-        Task<List<ProductAttributeValue>> GetProductAttributeValuesAsync(int productAttributeMappingId);
+        Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id);
+        Task<ServiceResponse<bool>> AddOrUpdateProductAttributeValue(ProductAttributeValue productAttributeValue);
     }
     public class ProductAttributeValueService : IProductAttributeValueService
     {
@@ -22,10 +23,17 @@ namespace T.Web.Services.ProductService
             var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
-        public async Task<List<ProductAttributeValue>> GetProductAttributeValuesAsync(int productAttributeMappingId)
+
+        public async Task<ServiceResponse<bool>> AddOrUpdateProductAttributeValue(ProductAttributeValue productAttributeValue)
         {
-            var result = await _httpClient.GetAsync($"api/product-attribute-value/get-by-mapping-id/{productAttributeMappingId}");
-            return await result.Content.ReadFromJsonAsync<List<ProductAttributeValue>>();
+            var result = await _httpClient.PostAsJsonAsync($"api/product-attribute-value/add-or-edit-product-attribute-value", productAttributeValue);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id)
+        {
+            var result = await _httpClient.GetAsync($"api/product-attribute-value/{id}");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<ProductAttributeValue>>();
         }
     }
 }

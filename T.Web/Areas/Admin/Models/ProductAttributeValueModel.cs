@@ -19,24 +19,11 @@ namespace T.Web.Areas.Admin.Models
 
         public int ProductAttributeMappingId { get; set; }
 
-        public int AttributeValueTypeId { get; set; }
-
-        public string AttributeValueTypeName { get; set; }
-
-        public int AssociatedProductId { get; set; }
-
-        public string AssociatedProductName { get; set; }
-
         public string Name { get; set; }
 
         public string ColorSquaresRgb { get; set; }
 
         public bool DisplayColorSquaresRgb { get; set; }
-
-        [UIHint("Picture")]
-        public int ImageSquaresPictureId { get; set; }
-
-        public bool DisplayImageSquaresPicture { get; set; }
 
         public decimal PriceAdjustment { get; set; }
 
@@ -59,7 +46,7 @@ namespace T.Web.Areas.Admin.Models
         public bool IsPreSelected { get; set; }
 
         public int DisplayOrder { get; set; }
-
+        [Display(Name = "Danh sách hình ảnh")]
         public IList<int> PictureIds { get; set; }
 
         public string PictureThumbnailUrl { get; set; }

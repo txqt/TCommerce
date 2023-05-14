@@ -42,8 +42,6 @@ namespace T.Web.Profiles
                 .ReverseMap();
             CreateMap<ProductAttributeValue, ProductAttributeValueModel>()
                 .ForMember(dest => dest.ProductAttributeMappingId, opt => opt.MapFrom(src => src.ProductAttributeMappingId))
-                .ForMember(dest => dest.AttributeValueTypeId, opt => opt.MapFrom(src => src.AttributeValueTypeId))
-                .ForMember(dest => dest.AssociatedProductId, opt => opt.MapFrom(src => src.AssociatedProductId))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.ColorSquaresRgb, opt => opt.MapFrom(src => src.ColorSquaresRgb))
                 .ForMember(dest => dest.PriceAdjustment, opt => opt.MapFrom(src => src.PriceAdjustment))

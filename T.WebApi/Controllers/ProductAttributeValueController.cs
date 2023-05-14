@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using T.Library.Model;
 using T.WebApi.Services.ProductServices;
 
 namespace T.WebApi.Controllers
@@ -14,10 +15,10 @@ namespace T.WebApi.Controllers
             _productAttributeValueService = productAttributeValueService;
         }
 
-        [HttpGet("get-by-mapping-id/{productAttributeMappingId}")]
-        public async Task<IActionResult> GetProductAttributeValuesAsync(int productAttributeMappingId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProductAttributeValuesByIdAsync(int id)
         {
-            var result = await _productAttributeValueService.GetProductAttributeValuesAsync(productAttributeMappingId);
+            var result = await _productAttributeValueService.GetProductAttributeValuesByIdAsync(id);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -25,5 +26,15 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost("add-or-edit-product-attribute-value")]
+        public async Task<ActionResult> AddProductAttributeMapping(ProductAttributeValue productAttributeValue)
+        {
+            var result = await _productAttributeValueService.AddOrUpdateProductAttributeValue(productAttributeValue);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }

@@ -12,16 +12,6 @@ namespace T.Library.Model
         public int ProductAttributeMappingId { get; set; }
 
         /// <summary>
-        /// Gets or sets the attribute value type identifier
-        /// </summary>
-        public int AttributeValueTypeId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the associated product identifier (used only with AttributeValueType.AssociatedToProduct)
-        /// </summary>
-        public int AssociatedProductId { get; set; }
-
-        /// <summary>
         /// Gets or sets the product attribute name
         /// </summary>
         public string Name { get; set; }
@@ -30,11 +20,6 @@ namespace T.Library.Model
         /// Gets or sets the color RGB value (used with "Color squares" attribute type)
         /// </summary>
         public string ColorSquaresRgb { get; set; }
-
-        /// <summary>
-        /// Gets or sets the picture ID for image square (used with "Image squares" attribute type)
-        /// </summary>
-        public int ImageSquaresPictureId { get; set; }
 
         /// <summary>
         /// Gets or sets the price adjustment (used only with AttributeValueType.Simple)
