@@ -227,6 +227,73 @@ namespace T.Web.Areas.Admin.Controllers
             return RedirectToAction("EditProductAttributeMapping", new { productAttributeMappingId = productAttributeMapping.Id });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteProductAttributeMapping(int pamId)
+        {
+
+            var result = await _productAttributeMappingService.DeleteProductAttrbuteMapping(pamId);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
+        }
+
+        [HttpGet]
+        public virtual async Task<IActionResult> ProductAttributeValueCreate(int productAttributeMappingId)
+        {
+            //try to get a product attribute mapping with the specified id
+            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMappingId)).Data
+                ?? throw new ArgumentException("No product attribute mapping found with the specified id");
+
+            //try to get a product with the specified id
+            var product = await _productService.GetProductPicturesByProductIdAsync(productAttributeMapping.ProductId)
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            //prepare model
+            var model = await _prepareModelService.PrepareProductAttributeValueModelAsync(new ProductAttributeValueModel(), productAttributeMapping, null);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProductAttributeValueCreate(ProductAttributeValueModel model)
+        {
+            //try to get a product attribute mapping with the specified id
+            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(model.ProductAttributeMappingId)).Data;
+            if (productAttributeMapping == null)
+                return RedirectToAction(nameof(Index));
+
+            //try to get a product with the specified id
+            var product = await _productService.Get(productAttributeMapping.ProductId)
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            if (ModelState.IsValid)
+            {
+                //fill entity from model
+                var productAttributeValue = _mapper.Map<ProductAttributeValue>(model);
+                productAttributeValue.Quantity = model.CustomerEntersQty ? 1 : model.Quantity;
+                var result = await _productAttributeValueService.AddOrUpdateProductAttributeValue(productAttributeValue);
+
+                if (!result.Success)
+                {
+                    SetStatusMessage($"{result.Message}");
+                    model = await _prepareModelService.PrepareProductAttributeValueModelAsync(model, productAttributeMapping, productAttributeValue);
+                    return View(model);
+                }
+
+                SetStatusMessage($"Sửa thành công");
+                ViewBag.RefreshPage = true;
+
+                return View(model);
+            }
+
+            //prepare model
+            model = await _prepareModelService.PrepareProductAttributeValueModelAsync(model, productAttributeMapping, null);
+
+            //if we got this far, something failed, redisplay form
+            return View(model);
+        }
 
         [HttpGet]
         public async Task<IActionResult> EditProductAttributeValue(int id)

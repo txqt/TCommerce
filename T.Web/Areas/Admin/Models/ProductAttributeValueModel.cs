@@ -19,11 +19,14 @@ namespace T.Web.Areas.Admin.Models
 
         public int ProductAttributeMappingId { get; set; }
 
+        [Display(Name = "Tên giá trị")]
         public string Name { get; set; }
 
         public string ColorSquaresRgb { get; set; }
 
         public bool DisplayColorSquaresRgb { get; set; }
+
+        [Display(Name = "Điều chỉnh giá")]
 
         public decimal PriceAdjustment { get; set; }
 
@@ -32,6 +35,7 @@ namespace T.Web.Areas.Admin.Models
 
         public bool PriceAdjustmentUsePercentage { get; set; }
 
+        [Display(Name = "Điều chỉnh trọng lượng")]
         public decimal WeightAdjustment { get; set; }
 
         //used only on the values list page
@@ -41,8 +45,10 @@ namespace T.Web.Areas.Admin.Models
 
         public bool CustomerEntersQty { get; set; }
 
+        [Display(Name = "Số lượng")]
         public int Quantity { get; set; }
 
+        [Display(Name = "Được chọn trước ?")]
         public bool IsPreSelected { get; set; }
 
         public int DisplayOrder { get; set; }

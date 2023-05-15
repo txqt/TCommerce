@@ -22,6 +22,7 @@ using StackExchange.Redis;
 using Microsoft.Extensions.Configuration;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.ProductService;
+using T.WebApi.Services.CategoryServices;
 
 namespace T.WebApi.Extensions
 {
@@ -158,6 +159,7 @@ namespace T.WebApi.Extensions
             services.AddTransient<IProductAttributeService, ProductAttributeService>();
             services.AddTransient<IProductAttributeMappingService, ProductAttributeMappingService>();
             services.AddTransient<IProductAttributeValueService, ProductAttributeValueService>();
+            services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IPictureService, PictureService>();
             services.AddScoped<ValidationFilterAttribute>();
             return services;

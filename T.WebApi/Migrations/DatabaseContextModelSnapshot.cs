@@ -1419,12 +1419,6 @@ namespace T.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AssociatedProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AttributeValueTypeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ColorSquaresRgb")
                         .HasColumnType("nvarchar(max)");
 
@@ -1438,9 +1432,6 @@ namespace T.WebApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ImageSquaresPictureId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsPreSelected")
@@ -1479,13 +1470,10 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 1,
-                            AssociatedProductId = 0,
-                            AttributeValueTypeId = 0,
                             Cost = 0m,
                             CustomerEntersQty = false,
                             Deleted = false,
                             DisplayOrder = 0,
-                            ImageSquaresPictureId = 0,
                             IsPreSelected = false,
                             Name = "Đỏ",
                             PictureId = 0,
@@ -1498,13 +1486,10 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 2,
-                            AssociatedProductId = 0,
-                            AttributeValueTypeId = 0,
                             Cost = 0m,
                             CustomerEntersQty = false,
                             Deleted = false,
                             DisplayOrder = 0,
-                            ImageSquaresPictureId = 0,
                             IsPreSelected = false,
                             Name = "Xanh",
                             PictureId = 0,
@@ -1517,13 +1502,10 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 3,
-                            AssociatedProductId = 0,
-                            AttributeValueTypeId = 0,
                             Cost = 0m,
                             CustomerEntersQty = false,
                             Deleted = false,
                             DisplayOrder = 0,
-                            ImageSquaresPictureId = 0,
                             IsPreSelected = false,
                             Name = "Vàng",
                             PictureId = 0,
@@ -1536,13 +1518,10 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 4,
-                            AssociatedProductId = 0,
-                            AttributeValueTypeId = 0,
                             Cost = 0m,
                             CustomerEntersQty = false,
                             Deleted = false,
                             DisplayOrder = 0,
-                            ImageSquaresPictureId = 0,
                             IsPreSelected = false,
                             Name = "Tím",
                             PictureId = 0,
@@ -1555,13 +1534,10 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 5,
-                            AssociatedProductId = 0,
-                            AttributeValueTypeId = 0,
                             Cost = 0m,
                             CustomerEntersQty = false,
                             Deleted = false,
                             DisplayOrder = 0,
-                            ImageSquaresPictureId = 0,
                             IsPreSelected = false,
                             Name = "Đen",
                             PictureId = 0,
@@ -1574,13 +1550,10 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 6,
-                            AssociatedProductId = 0,
-                            AttributeValueTypeId = 0,
                             Cost = 0m,
                             CustomerEntersQty = false,
                             Deleted = false,
                             DisplayOrder = 0,
-                            ImageSquaresPictureId = 0,
                             IsPreSelected = false,
                             Name = "Vàng",
                             PictureId = 0,

@@ -14,6 +14,7 @@ namespace T.WebApi.Services.ProductServices
         Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int id);
         Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping);
         Task<ServiceResponse<List<ProductAttributeValue>>> GetAllValueProductAttribute(int productAttributeMappingId);
+        Task<ServiceResponse<bool>> DeleteProductAttributeMapping(int id);
     }
     public class ProductAttributeMappingService : IProductAttributeMappingService
     {
@@ -113,6 +114,22 @@ namespace T.WebApi.Services.ProductServices
                 };
                 return response;
             }
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteProductAttributeMapping(int id)
+        {
+            try
+            {
+                var pam = await _context.Product_ProductAttribute_Mapping.Where(x => x.Id == id).FirstOrDefaultAsync();
+                var result = _context.Product_ProductAttribute_Mapping.Remove(pam);
+                await _context.SaveChangesAsync();
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch(Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
+            }
+
         }
     }
 }

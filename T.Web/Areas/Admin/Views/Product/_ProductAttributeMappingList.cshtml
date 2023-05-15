@@ -7,7 +7,7 @@
 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
     <div class="row">
         <div class="col-sm-12" style="overflow-x: auto;">
-            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+            <table class="table table-bordered dataTable" id="dataTable-pam" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
                 <thead>
                     <tr role="row">
                         <th>
@@ -40,7 +40,37 @@
 
 <script>
     $(document).ready(function () {
-        $('#dataTable').DataTable({
+        LoadTable();
+    });
+
+    $('#dataTable-pam').on('click', '.deletePamBtn', function () {
+        var pamId = $(this).data('pamid'); // Lấy pamId từ thuộc tính data của nút
+
+        // Hiển thị hộp thoại "confirm"
+        if (confirm("Bạn có chắc chắn muốn xóa?")) {
+            $.ajax({
+                url: "@Url.Action("DeleteProductAttributeMapping", "Product")",
+                type: "POST",
+                data: {pamId: pamId},
+                success: function (response) {
+                    // Xử lý phản hồi từ API
+                    if (response.success) {
+                        LoadTable();
+                    } else {
+                        alert(response.message); // Hiển thị thông báo lỗi
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText); // Hiển thị lỗi trong console
+                    alert("Đã xảy ra lỗi trong quá trình xóa liên kết thuộc tính với sản phẩm."); // Hiển thị thông báo lỗi
+                }
+            });
+        }
+    });
+
+    function LoadTable(){
+        $('#dataTable-pam').DataTable().destroy();
+        $('#dataTable-pam').DataTable({
             "ajax": {
                 "url": "@Url.Action("GetListProductMapping","Product", new { productId = Model.ProductId})",
                 "type": "GET",
@@ -72,14 +102,15 @@
                 {
                     "data": null,
                     "render": function (data, type, row) {
+
+                        var pamId = row.id
                         if (type === "display") {
-                            var editUrl = "@Url.Action("EditProductAttributeMapping", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.id);
-                            return '<a class="btn btn-danger" href="' + editUrl + '">Delete</a>';
+                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center deletePamBtn" data-pamid="' + pamId + '">Delete</button>';
                         }
                         return data;
                     }
                 }
             ]
         });
-    });
+    }
 </script>

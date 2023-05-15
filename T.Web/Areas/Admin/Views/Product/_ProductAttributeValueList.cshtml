@@ -2,7 +2,10 @@
 
 <h3 class="text-info">Danh sách giá thị của thuộc tính này</h3>
 <p>
-    <a class="btn btn-success" href="@*@Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.ProductId })*@">Tạo mới</a>
+    @{
+        var createUrl = Url.Action("ProductAttributeValueCreate", "Product", new { productAttributeMappingId = Model.ProductAttributeMappingId });
+    }
+    <button class="btn btn-success" onclick="openPopup('@createUrl')" ">Tạo mới</button>
 </p>
 
 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -79,8 +82,8 @@
                     data: null,
                     render: function (data, type, row) {
                         if (type === "display") {
-                            var editUrl = "@Url.Action("EditProductAttributeMapping", "Product", new { productAttributeMappingId = "__id__" })".replace("__id__", row.id);
-                            return '<a class="btn btn-danger" href="' + editUrl + '">Delete</a>';
+                            var removeUrl = "@Url.Action("EditProductAttributeValue", "Product", new { id = "__id__" })".replace("__id__", row.id);
+                            return '<a class="btn btn-danger" href="' + removeUrl + '">Delete</a>';
                         }
                         return data;
                     }

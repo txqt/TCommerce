@@ -46,21 +46,6 @@
         public int PictureId { get; set; }
 
         /// <summary>
-        /// Gets or sets the page size
-        /// </summary>
-        public int PageSize { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether customers can select the page size
-        /// </summary>
-        public bool AllowCustomersToSelectPageSize { get; set; }
-
-        /// <summary>
-        /// Gets or sets the available customer selectable page size options
-        /// </summary>
-        public string? PageSizeOptions { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether to show the category on home page
         /// </summary>
         public bool ShowOnHomepage { get; set; }
@@ -74,11 +59,6 @@
         /// Gets or sets a value indicating whether the entity is subject to ACL
         /// </summary>
         public bool SubjectToAcl { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
-        /// </summary>
-        public bool LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published

@@ -100,7 +100,8 @@ namespace T.Web.Services.PrepareModel
             return pamList;
         }
 
-        public async Task<ProductAttributeValueModel> PrepareProductAttributeValueModelAsync(ProductAttributeValueModel model, ProductAttributeMapping productAttributeMapping, ProductAttributeValue productAttributeValue)
+        public async Task<ProductAttributeValueModel> PrepareProductAttributeValueModelAsync(ProductAttributeValueModel model,
+            ProductAttributeMapping productAttributeMapping, ProductAttributeValue productAttributeValue)
         {
             if (productAttributeMapping == null)
                 throw new ArgumentNullException(nameof(productAttributeMapping));
