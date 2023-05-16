@@ -9,6 +9,7 @@ namespace T.Web.Services.ProductService
     {
         Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id);
         Task<ServiceResponse<bool>> AddOrUpdateProductAttributeValue(ProductAttributeValue productAttributeValue);
+        Task<ServiceResponse<bool>> DeleteProductAttrbuteValue(int id);
     }
     public class ProductAttributeValueService : IProductAttributeValueService
     {
@@ -27,6 +28,12 @@ namespace T.Web.Services.ProductService
         public async Task<ServiceResponse<bool>> AddOrUpdateProductAttributeValue(ProductAttributeValue productAttributeValue)
         {
             var result = await _httpClient.PostAsJsonAsync($"api/product-attribute-value/add-or-edit-product-attribute-value", productAttributeValue);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteProductAttrbuteValue(int id)
+        {
+            var result = await _httpClient.DeleteAsync($"api/product-attribute-value/delete/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 

@@ -10,7 +10,6 @@ namespace T.Web.Areas.Admin.Models
         public ProductAttributeValueModel()
         {
             ProductPictureModels = new List<ProductPictureModel>();
-            PictureIds = new List<int>();
         }
 
         #endregion
@@ -52,11 +51,10 @@ namespace T.Web.Areas.Admin.Models
         public bool IsPreSelected { get; set; }
 
         public int DisplayOrder { get; set; }
-        [Display(Name = "Danh sách hình ảnh")]
-        public IList<int> PictureIds { get; set; }
 
         public string PictureThumbnailUrl { get; set; }
 
+        [Display(Name ="Danh sách hình ảnh")]
         public IList<ProductPictureModel> ProductPictureModels { get; set; }
 
         public int PictureId { get; set; }

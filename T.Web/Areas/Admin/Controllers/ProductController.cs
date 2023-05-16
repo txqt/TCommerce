@@ -362,6 +362,18 @@ namespace T.Web.Areas.Admin.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteProductAttributeValue(int pavId)
+        {
+
+            var result = await _productAttributeValueService.DeleteProductAttrbuteValue(pavId);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetListProductMapping(int productId)
         {
@@ -384,7 +396,7 @@ namespace T.Web.Areas.Admin.Controllers
             return Json(new { data = model });
         }
 
-        [HttpPost("{productId}")]
+        [HttpPost]
         public async Task<ActionResult> AddProductImage(List<IFormFile> formFiles, int productId)
         {
             var result = await _productService.AddProductImage(formFiles, productId);

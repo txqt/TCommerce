@@ -10,6 +10,7 @@ namespace T.WebApi.Services.ProductServices
     {
         Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id);
         Task<ServiceResponse<bool>> AddOrUpdateProductAttributeValue(ProductAttributeValue productAttributeValue);
+        Task<ServiceResponse<bool>> DeleteProductAttributeValue(int id);
     }
     public class ProductAttributeValueService : IProductAttributeValueService
     {
@@ -72,6 +73,21 @@ namespace T.WebApi.Services.ProductServices
                 return new ServiceErrorResponse<bool>("Add or edit product mapping failed");
             }
             return new ServiceSuccessResponse<bool>();
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteProductAttributeValue(int id)
+        {
+            try
+            {
+                var pav = await _context.ProductAttributeValue.Where(x => x.Id == id).FirstOrDefaultAsync();
+                var result = _context.ProductAttributeValue.Remove(pav);
+                await _context.SaveChangesAsync();
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
+            }
         }
 
         public async Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id)
