@@ -27,7 +27,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPost("add-or-edit-product-attribute-value")]
+        [HttpPost(APIRoutes.AddOrEdit)]
         public async Task<ActionResult> AddProductAttributeMapping(ProductAttributeValue productAttributeValue)
         {
             var result = await _productAttributeValueService.AddOrUpdateProductAttributeValue(productAttributeValue);

@@ -27,7 +27,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<ServiceResponse<bool>> AddOrUpdateProductAttributeValue(ProductAttributeValue productAttributeValue)
         {
-            var result = await _httpClient.PostAsJsonAsync($"api/product-attribute-value/add-or-edit-product-attribute-value", productAttributeValue);
+            var result = await _httpClient.PostAsJsonAsync($"api/product-attribute-value/{APIRoutes.AddOrEdit}", productAttributeValue);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 

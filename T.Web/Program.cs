@@ -10,6 +10,7 @@ using T.Library.Model.JwtToken;
 using T.Web.Attribute;
 using T.Web.CusomMiddleware;
 using T.Web.Services.AccountService;
+using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.ProductService;
@@ -30,6 +31,7 @@ builder.Services.AddTransient<IProductAttributeService, ProductAttributeService>
 builder.Services.AddTransient<IProductAttributeMappingService, ProductAttributeMappingService>();
 builder.Services.AddTransient<IProductAttributeValueService, ProductAttributeValueService>();
 builder.Services.AddTransient<IPrepareModelService, PrepareModelService>();
+builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,

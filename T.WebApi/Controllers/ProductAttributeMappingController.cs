@@ -19,7 +19,7 @@ namespace T.WebApi.Controllers
             _productAttributeMappingService = productAttributeMappingService;
         }
 
-        [HttpPost("add-or-edit-product-attribute-mapping")]
+        [HttpPost(APIRoutes.AddOrEdit)]
         public async Task<ActionResult> AddProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
         {
             var result = await _productAttributeMappingService.AddOrUpdateProductAttributeMapping(productAttributeMapping);

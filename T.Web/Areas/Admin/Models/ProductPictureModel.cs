@@ -14,6 +14,7 @@ namespace T.Web.Areas.Admin.Models
 
         public string PictureUrl { get; set; }
 
+        [Display(Name = "Thứ tự hiển thị")]
         public int DisplayOrder { get; set; }
 
         public string OverrideAltAttribute { get; set; }

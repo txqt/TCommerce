@@ -55,7 +55,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<List<ProductAttribute>> GetAll()
         {
-            var response = await _httpClient.GetAsync($"api/product-attribute/get-all");
+            var response = await _httpClient.GetAsync($"api/product-attribute/{APIRoutes.GetAll}");
 
             response.EnsureSuccessStatusCode();
 

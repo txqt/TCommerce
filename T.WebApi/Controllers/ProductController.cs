@@ -23,7 +23,7 @@ namespace T.WebApi.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("get-all")]
+        [HttpGet(APIRoutes.GetAll)]
         public async Task<ActionResult<List<Product>>> GetAll([FromQuery] ProductParameters productParameters)
         {
             var products = await _productService.GetAll(productParameters);
@@ -38,7 +38,7 @@ namespace T.WebApi.Controllers
             return await _productService.Get(id);
         }
 
-        [HttpPost("create")]
+        [HttpPost(APIRoutes.Create)]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> CreateProduct(Product product)
         {

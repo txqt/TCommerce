@@ -1,7 +1,7 @@
-﻿@model IEnumerable<T.Library.Model.ProductAttribute>
+﻿@model ProductAttribute
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách thuộc tính";
 }
 
 <h1>Product Attribute List</h1>
@@ -9,7 +9,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table" id="dataTable-product-attribute">
     <thead>
         <tr>
             <th>
@@ -19,24 +19,75 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    <a class="btn btn-info" asp-controller="ProductAttribute" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    |
-                    <a class="btn btn-danger" asp-controller="ProductAttribute" asp-action="DeleteConfirmed" asp-route-id="@item.Id" onclick="return confirm('Are you sure to delete this ?')">Delete</a>
-                </td>
-            </tr>
-        }
     </tbody>
 </table>
+
+<script>
+    $(document).ready(function () {
+        LoadTable();
+    });
+
+    $('#dataTable-product-attribute').on('click', '.deletePaBtn', function () {
+        var paid = $(this).data('paid'); // Lấy paId từ thuộc tính data của nút
+
+        // Hiển thị hộp thoại "confirm"
+        if (confirm("Bạn có chắc chắn muốn xóa?")) {
+            $.ajax({
+                url: "@Url.Action("DeleteConfirmed", "ProductAttribute")",
+                type: "POST",
+                data: { id: paid },
+                success: function (response) {
+                    // Xử lý phản hồi từ API
+                    if (response.success) {
+                        LoadTable();
+                    } else {
+                        alert(response.message); // Hiển thị thông báo lỗi
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText); // Hiển thị lỗi trong console
+                    alert("Đã xảy ra lỗi trong quá trình xóa liên kết thuộc tính với sản phẩm."); // Hiển thị thông báo lỗi
+                }
+            });
+        }
+    });
+
+    function LoadTable() {
+        $('#dataTable-product-attribute').DataTable().destroy();
+        $('#dataTable-product-attribute').DataTable({
+            ajax: {
+                url: "@Url.Action("GetAll", "ProductAttribute")",
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "name" },
+                { data: "description" },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        if (type === "display") {
+                            var editUrl = "@Url.Action("Edit", "ProductAttribute", new { id = "__id__" })".replace("__id__", row.id);
+                            return '<button class="btn btn-info" onclick="openPopup(\'' + editUrl + '\')">Edit</button>';
+                        }
+                        return data;
+                    }
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        var paid = row.id
+                        if (type === "display") {
+                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center deletePaBtn" data-paid="' + paid + '">Delete</button>';
+                        }
+                        return data;
+                    }
+                }
+            ]
+        });
+    }
+</script>

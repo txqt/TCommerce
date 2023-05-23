@@ -9,7 +9,7 @@ namespace T.WebApi.Services.CategoryServices
     public interface ICategoryService
     {
         Task<List<Category>> GetAllAsync();
-        Task<ServiceResponse<ProductAttribute>> Get(int id);
+        Task<ServiceResponse<Category>> Get(int id);
         Task<ServiceResponse<bool>> CreateOrEditAsync(Category category);
         Task<ServiceResponse<bool>> DeleteAsync(int id);
     }
@@ -27,14 +27,31 @@ namespace T.WebApi.Services.CategoryServices
         {
             using (_context)
             {
-                var categoryTable = await _context.Category.FirstOrDefaultAsync(x=>x.Id == category.Id);
-                if(categoryTable == null)
+                var categoryTable = await _context.Category.FirstOrDefaultAsync(x => x.Id == category.Id);
+                if (categoryTable == null)
                 {
+                    category.CreatedOnUtc = DateTime.Now;
                     _context.Category.Add(category);
                 }
                 else
                 {
-                    categoryTable = _mapper.Map<Category>(category);
+                    categoryTable.Name = category.Name;
+                    categoryTable.Description = category.Description;
+                    categoryTable.MetaKeywords = category.MetaKeywords;
+                    categoryTable.MetaDescription = category.MetaDescription;
+                    categoryTable.MetaTitle = category.MetaTitle;
+                    categoryTable.ParentCategoryId = category.ParentCategoryId;
+                    categoryTable.PictureId = category.PictureId;
+                    categoryTable.ShowOnHomepage = category.ShowOnHomepage;
+                    categoryTable.IncludeInTopMenu = category.IncludeInTopMenu;
+                    categoryTable.Published = category.Published;
+                    categoryTable.DisplayOrder = category.DisplayOrder;
+                    categoryTable.CreatedOnUtc = category.CreatedOnUtc;
+                    categoryTable.UpdatedOnUtc = category.UpdatedOnUtc;
+                    categoryTable.PriceRangeFiltering = category.PriceRangeFiltering;
+                    categoryTable.PriceFrom = category.PriceFrom;
+                    categoryTable.PriceTo = category.PriceTo;
+                    categoryTable.ManuallyPriceRange = category.ManuallyPriceRange;
                 }
                 var result = await _context.SaveChangesAsync();
                 if (result == 0)
@@ -45,19 +62,42 @@ namespace T.WebApi.Services.CategoryServices
             }
         }
 
-        public Task<ServiceResponse<bool>> DeleteAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id);
+                _context.Category.Remove(category);
+                await _context.SaveChangesAsync();
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(message: ex.Message);
+            }
         }
 
-        public Task<ServiceResponse<ProductAttribute>> Get(int id)
+        public async Task<ServiceResponse<Category>> Get(int id)
         {
-            throw new NotImplementedException();
+            using (_context)
+            {
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id);
+
+                var response = new ServiceResponse<Category>
+                {
+                    Data = category,
+                    Success = true
+                };
+                return response;
+            }
         }
 
-        public Task<List<Category>> GetAllAsync()
+        public async Task<List<Category>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            using (_context)
+            {
+                return await _context.Category.ToListAsync();
+            }
         }
     }
 }

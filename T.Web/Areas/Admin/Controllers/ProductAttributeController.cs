@@ -19,10 +19,16 @@ namespace T.Web.Areas.Admin.Controllers
             _productAttributeService = productAttributeService;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
+        {
+            return View(new ProductAttribute());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
         {
             var result = await _productAttributeService.GetAll();
-            return View(result);
+            return Json(new { data = result });
         }
 
         [HttpGet]
@@ -89,11 +95,10 @@ namespace T.Web.Areas.Admin.Controllers
 
             if (!result.Success)
             {
-                ModelState.AddModelError(string.Empty, result.Message);
-                return View();
+                return Json(new { success = false, message = result.Message });
             }
 
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = result.Message });
         }
     }
 }

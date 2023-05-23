@@ -133,12 +133,6 @@ namespace T.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("AllowCustomersToSelectPageSize")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("CategoryTemplateId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedOnUtc")
                         .HasColumnType("datetime2");
 
@@ -154,9 +148,6 @@ namespace T.WebApi.Migrations
                     b.Property<bool>("IncludeInTopMenu")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("LimitedToStores")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("ManuallyPriceRange")
                         .HasColumnType("bit");
 
@@ -170,12 +161,7 @@ namespace T.WebApi.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PageSize")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PageSizeOptions")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ParentCategoryId")
@@ -199,9 +185,6 @@ namespace T.WebApi.Migrations
                     b.Property<bool>("ShowOnHomepage")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("SubjectToAcl")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("UpdatedOnUtc")
                         .HasColumnType("datetime2");
 
@@ -213,16 +196,12 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 1,
-                            AllowCustomersToSelectPageSize = false,
-                            CategoryTemplateId = 0,
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
-                            LimitedToStores = false,
                             ManuallyPriceRange = false,
                             Name = "Thời trang",
-                            PageSize = 0,
                             ParentCategoryId = 0,
                             PictureId = 0,
                             PriceFrom = 0m,
@@ -230,22 +209,17 @@ namespace T.WebApi.Migrations
                             PriceTo = 0m,
                             Published = false,
                             ShowOnHomepage = false,
-                            SubjectToAcl = false,
                             UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
-                            AllowCustomersToSelectPageSize = false,
-                            CategoryTemplateId = 0,
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
-                            LimitedToStores = false,
                             ManuallyPriceRange = false,
                             Name = "Điện tử",
-                            PageSize = 0,
                             ParentCategoryId = 0,
                             PictureId = 0,
                             PriceFrom = 0m,
@@ -253,22 +227,17 @@ namespace T.WebApi.Migrations
                             PriceTo = 0m,
                             Published = false,
                             ShowOnHomepage = false,
-                            SubjectToAcl = false,
                             UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
-                            AllowCustomersToSelectPageSize = false,
-                            CategoryTemplateId = 0,
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
-                            LimitedToStores = false,
                             ManuallyPriceRange = false,
                             Name = "Điện gia dụng",
-                            PageSize = 0,
                             ParentCategoryId = 0,
                             PictureId = 0,
                             PriceFrom = 0m,
@@ -276,22 +245,17 @@ namespace T.WebApi.Migrations
                             PriceTo = 0m,
                             Published = false,
                             ShowOnHomepage = false,
-                            SubjectToAcl = false,
                             UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 4,
-                            AllowCustomersToSelectPageSize = false,
-                            CategoryTemplateId = 0,
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
-                            LimitedToStores = false,
                             ManuallyPriceRange = false,
                             Name = "Âm thanh",
-                            PageSize = 0,
                             ParentCategoryId = 0,
                             PictureId = 0,
                             PriceFrom = 0m,
@@ -299,22 +263,17 @@ namespace T.WebApi.Migrations
                             PriceTo = 0m,
                             Published = false,
                             ShowOnHomepage = false,
-                            SubjectToAcl = false,
                             UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 5,
-                            AllowCustomersToSelectPageSize = false,
-                            CategoryTemplateId = 0,
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
-                            LimitedToStores = false,
                             ManuallyPriceRange = false,
                             Name = "Phụ kiện",
-                            PageSize = 0,
                             ParentCategoryId = 0,
                             PictureId = 0,
                             PriceFrom = 0m,
@@ -322,7 +281,6 @@ namespace T.WebApi.Migrations
                             PriceTo = 0m,
                             Published = false,
                             ShowOnHomepage = false,
-                            SubjectToAcl = false,
                             UpdatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });

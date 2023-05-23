@@ -32,6 +32,7 @@ namespace T.Web.Areas.Admin.Models
         //used only on the values list page
         public string PriceAdjustmentStr { get; set; }
 
+        [Display(Name = "Điều chỉnh giá theo tỷ lệ phần trăm (%)")]
         public bool PriceAdjustmentUsePercentage { get; set; }
 
         [Display(Name = "Điều chỉnh trọng lượng")]
@@ -50,6 +51,7 @@ namespace T.Web.Areas.Admin.Models
         [Display(Name = "Được chọn trước ?")]
         public bool IsPreSelected { get; set; }
 
+        [Display(Name = "Thứ tự hiển thị")]
         public int DisplayOrder { get; set; }
 
         public string PictureThumbnailUrl { get; set; }

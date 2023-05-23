@@ -1,21 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using T.Library.Model;
 
-namespace T.Library.Model
+namespace T.Web.Areas.Admin.Models
 {
-    /// <summary>
-    /// Represents a category
-    /// </summary>
-    public partial class Category : BaseEntity
+    public class CategoryModel : BaseEntity
     {
-        /// <summary>
-        /// Gets or sets the name
-        /// </summary>
-        [Required]
+        [Display(Name = "Tên thể loại")]
         public string? Name { get; set; }
 
+        public string? ParentCategoryName { get; set; }
         /// <summary>
         /// Gets or sets the description
         /// </summary>
+        [Display(Name = "Mô tả")]
         public string? Description { get; set; }
 
         /// <summary>
@@ -61,6 +58,7 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
+        [Display(Name = "Thứ tự hiển thị")]
         public int DisplayOrder { get; set; }
 
         /// <summary>
@@ -92,7 +90,5 @@ namespace T.Library.Model
         /// Gets or sets a value indicating whether the price range should be entered manually
         /// </summary>
         public bool ManuallyPriceRange { get; set; }
-
-        public List<ProductCategory>? ProductCategories { get; set; }
     }
 }

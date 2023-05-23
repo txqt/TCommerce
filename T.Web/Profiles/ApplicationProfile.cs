@@ -53,6 +53,8 @@ namespace T.Web.Profiles
                 .ForMember(dest => dest.IsPreSelected, opt => opt.MapFrom(src => src.IsPreSelected))
                 .ForMember(dest => dest.DisplayOrder, opt => opt.MapFrom(src => src.DisplayOrder))
                 .ReverseMap();
+            CreateMap<Category, CategoryModel>()
+                .ReverseMap();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace T.WebApi.Controllers
             _productAttributeSvc = productAttributeSvc;
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(APIRoutes.GetAll)]
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await _productAttributeSvc.GetAllAsync());
@@ -31,7 +31,7 @@ namespace T.WebApi.Controllers
             return await _productAttributeSvc.Get(id);
         }
 
-        [HttpPost("create")]
+        [HttpPost(APIRoutes.Create)]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateAsync(ProductAttribute productAttribute)
         {

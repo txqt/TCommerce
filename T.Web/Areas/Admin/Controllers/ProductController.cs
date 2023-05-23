@@ -26,8 +26,6 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly IProductAttributeValueService _productAttributeValueService;
         private readonly IMapper _mapper;
         private readonly IPrepareModelService _prepareModelService;
-        [TempData]
-        public string StatusMessage { get; set; }
         public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService, 
             IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService, 
             IPrepareModelService prepareModelService)
