@@ -40,7 +40,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPost("delete/{id}")]
+        [HttpDelete("delete/{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> Delete(int id)
         {

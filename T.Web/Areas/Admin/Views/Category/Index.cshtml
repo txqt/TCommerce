@@ -35,12 +35,11 @@
     });
 
     $('#dataTable-category').on('click', '.deletePaBtn', function () {
-        var categoryId = $(this).data('categoryId'); // Lấy categoryId từ thuộc tính data của nút
-
+        var categoryId = $(this).data('categoryid'); // Lấy categoryid từ thuộc tính data của nút
         // Hiển thị hộp thoại "confirm"
         if (confirm("Bạn có chắc chắn muốn xóa?")) {
             $.ajax({
-                url: "@Url.Action("DeleteConfirmed", "ProductAttribute")",
+                url: "@Url.Action("DeleteCategory", "Category")",
                 type: "POST",
                 data: { id: categoryId },
                 success: function (response) {
@@ -94,7 +93,7 @@
                     render: function (data, type, row) {
                         var categoryId = row.id
                         if (type === "display") {
-                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center deletePaBtn" data-categoryId="' + categoryId + '">Delete</button>';
+                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center deletePaBtn" data-categoryid="' + categoryId + '">Delete</button>';
                         }
                         return data;
                     }

@@ -67,5 +67,17 @@ namespace T.Web.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+
+            var result = await _categoryService.Delete(id);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
+        }
     }
 }
