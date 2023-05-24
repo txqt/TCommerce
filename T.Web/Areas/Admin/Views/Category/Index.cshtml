@@ -82,8 +82,8 @@
                     data: null,
                     render: function (data, type, row) {
                         if (type === "display") {
-                            var editUrl = "@Url.Action("Edit", "ProductAttribute", new { id = "__id__" })".replace("__id__", row.id);
-                            return '<button class="btn btn-info" onclick="openPopup(\'' + editUrl + '\')">Edit</button>';
+                            var editUrl = "@Url.Action("Edit", "Category", new { id = "__id__" })".replace("__id__", row.id);
+                            return '<a class="btn btn-info" href=" '+ editUrl +'" >Edit</a>';
                         }
                         return data;
                     }

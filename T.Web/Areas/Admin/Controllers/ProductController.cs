@@ -26,9 +26,9 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly IProductAttributeValueService _productAttributeValueService;
         private readonly IMapper _mapper;
         private readonly IPrepareModelService _prepareModelService;
-        public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService, 
-            IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService, 
-            IPrepareModelService prepareModelService)
+        public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService,
+          IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService,
+          IPrepareModelService prepareModelService)
         {
             _productService = productService;
             _mapper = mapper;
@@ -75,6 +75,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
         [HttpGet]
         public async Task<IActionResult> EditProduct(int productId)
         {
@@ -101,6 +102,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
         public async Task<IActionResult> Delete(int id)
         {
 
@@ -125,8 +127,8 @@ namespace T.Web.Areas.Admin.Controllers
         public virtual async Task<IActionResult> ProductAttributeMappingCreate(int productId)
         {
             //try to get a product with the specified id
-            var product = (await _productService.Get(productId)).Data
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = (await _productService.Get(productId)).Data ??
+              throw new ArgumentException("No product found with the specified id");
 
             //prepare model
             var model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(new ProductAttributeMappingModel(), product, null);
@@ -142,11 +144,11 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var product = (await _productService.Get(model.ProductId)).Data
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = (await _productService.Get(model.ProductId)).Data ??
+              throw new ArgumentException("No product found with the specified id");
 
             if ((await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
-                .Any(x => x.ProductAttributeId == model.ProductAttributeId))
+              .Any(x => x.ProductAttributeId == model.ProductAttributeId))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
                 model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(model, product, null);
@@ -164,21 +166,24 @@ namespace T.Web.Areas.Admin.Controllers
             }
 
             productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
-                .Where(x=>x.ProductAttributeId == model.ProductAttributeId).FirstOrDefault()
-                ?? throw new ArgumentException("No product attribute mapping found with the specified id");
+              .Where(x => x.ProductAttributeId == model.ProductAttributeId).FirstOrDefault() ??
+              throw new ArgumentException("No product attribute mapping found with the specified id");
 
             SetStatusMessage($"Thêm thành công !");
-            return RedirectToAction("EditProductAttributeMapping", new { productAttributeMappingId = productAttributeMapping.Id });
+            return RedirectToAction("EditProductAttributeMapping", new
+            {
+                productAttributeMappingId = productAttributeMapping.Id
+            });
         }
 
         [HttpGet]
         public async Task<IActionResult> EditProductAttributeMapping(int productAttributeMappingId)
         {
-            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMappingId)).Data
-                ?? throw new ArgumentException("No product attribute mapping found with the specified id");
+            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMappingId)).Data ??
+              throw new ArgumentException("No product attribute mapping found with the specified id");
 
-            var product = (await _productService.Get(productAttributeMapping.ProductId)).Data
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = (await _productService.Get(productAttributeMapping.ProductId)).Data ??
+              throw new ArgumentException("No product found with the specified id");
 
             var model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(null, product, productAttributeMapping);
 
@@ -192,24 +197,22 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 return View(model);
             }
-            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(model.Id)).Data
-                ?? throw new ArgumentException("No product attribute mapping found with the specified id");
+            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(model.Id)).Data ??
+              throw new ArgumentException("No product attribute mapping found with the specified id");
 
-            var product = (await _productService.Get(productAttributeMapping.ProductId)).Data
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = (await _productService.Get(productAttributeMapping.ProductId)).Data ??
+              throw new ArgumentException("No product found with the specified id");
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this attribute");
 
-            
-
             if ((await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
-                .Any(x => x.ProductAttributeId == model.ProductAttributeId && x.Id != productAttributeMapping.Id))
+              .Any(x => x.ProductAttributeId == model.ProductAttributeId && x.Id != productAttributeMapping.Id))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
                 model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(model, product, productAttributeMapping);
                 return View(model);
             }
-            
+
             productAttributeMapping = _mapper.Map(model, productAttributeMapping);
 
             var result = await _productAttributeMappingService.AddOrUpdateProductAttributeMapping(productAttributeMapping);
@@ -222,7 +225,10 @@ namespace T.Web.Areas.Admin.Controllers
             }
 
             SetStatusMessage($"Sửa thành công !");
-            return RedirectToAction("EditProductAttributeMapping", new { productAttributeMappingId = productAttributeMapping.Id });
+            return RedirectToAction("EditProductAttributeMapping", new
+            {
+                productAttributeMappingId = productAttributeMapping.Id
+            });
         }
 
         [HttpPost]
@@ -232,21 +238,29 @@ namespace T.Web.Areas.Admin.Controllers
             var result = await _productAttributeMappingService.DeleteProductAttrbuteMapping(pamId);
             if (!result.Success)
             {
-                return Json(new { success = false, message = result.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = result.Message
+                });
             }
-            return Json(new { success = true, message = result.Message });
+            return Json(new
+            {
+                success = true,
+                message = result.Message
+            });
         }
 
         [HttpGet]
         public virtual async Task<IActionResult> ProductAttributeValueCreate(int productAttributeMappingId)
         {
             //try to get a product attribute mapping with the specified id
-            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMappingId)).Data
-                ?? throw new ArgumentException("No product attribute mapping found with the specified id");
+            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMappingId)).Data ??
+              throw new ArgumentException("No product attribute mapping found with the specified id");
 
             //try to get a product with the specified id
-            var product = await _productService.GetProductPicturesByProductIdAsync(productAttributeMapping.ProductId)
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = await _productService.GetProductPicturesByProductIdAsync(productAttributeMapping.ProductId) ??
+              throw new ArgumentException("No product found with the specified id");
 
             //prepare model
             var model = await _prepareModelService.PrepareProductAttributeValueModelAsync(new ProductAttributeValueModel(), productAttributeMapping, null);
@@ -263,8 +277,8 @@ namespace T.Web.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
 
             //try to get a product with the specified id
-            var product = await _productService.Get(productAttributeMapping.ProductId)
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = await _productService.Get(productAttributeMapping.ProductId) ??
+              throw new ArgumentException("No product found with the specified id");
 
             if (ModelState.IsValid)
             {
@@ -307,8 +321,8 @@ namespace T.Web.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
 
             //try to get a product with the specified id
-            var product = await _productService.GetProductPicturesByProductIdAsync(productAttributeMapping.ProductId)
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = await _productService.GetProductPicturesByProductIdAsync(productAttributeMapping.ProductId) ??
+              throw new ArgumentException("No product found with the specified id");
 
             //prepare model
             var model = await _prepareModelService.PrepareProductAttributeValueModelAsync(null, productAttributeMapping, productAttributeValue);
@@ -330,13 +344,13 @@ namespace T.Web.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
 
             //try to get a product with the specified id
-            var product = await _productService.Get(productAttributeMapping.ProductId)
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = await _productService.Get(productAttributeMapping.ProductId) ??
+              throw new ArgumentException("No product found with the specified id");
 
             if (ModelState.IsValid)
             {
                 //fill entity from model
-                productAttributeValue = _mapper.Map(model ,productAttributeValue);
+                productAttributeValue = _mapper.Map(model, productAttributeValue);
                 productAttributeValue.Quantity = model.CustomerEntersQty ? 1 : model.Quantity;
                 var result = await _productAttributeValueService.AddOrUpdateProductAttributeValue(productAttributeValue);
 
@@ -367,31 +381,45 @@ namespace T.Web.Areas.Admin.Controllers
             var result = await _productAttributeValueService.DeleteProductAttrbuteValue(pavId);
             if (!result.Success)
             {
-                return Json(new { success = false, message = result.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = result.Message
+                });
             }
-            return Json(new { success = true, message = result.Message });
+            return Json(new
+            {
+                success = true,
+                message = result.Message
+            });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetListProductMapping(int productId)
         {
-            var product = (await _productService.Get(productId)).Data
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = (await _productService.Get(productId)).Data ??
+              throw new ArgumentException("No product found with the specified id");
 
             var model = await _prepareModelService.PrepareProductAttributeMappingListModelAsync(product);
 
-            return Json(new {data = model});
+            return Json(new
+            {
+                data = model
+            });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetValueProductMapping(int productAttributeMapping)
         {
-            var productAttributeMappingResponse = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMapping)).Data
-                ?? throw new ArgumentException("Not found with the specified id");
+            var productAttributeMappingResponse = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMapping)).Data ??
+              throw new ArgumentException("Not found with the specified id");
 
             var model = await _prepareModelService.PrepareProductAttributeValueListModelAsync(productAttributeMappingResponse);
 
-            return Json(new { data = model });
+            return Json(new
+            {
+                data = model
+            });
         }
 
         [HttpPost]
@@ -408,16 +436,16 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> ListPhotos(int id)
         {
-            var product = (await _productService.Get(id)).Data
-                ?? throw new ArgumentException("No product found with the specified id");
+            var product = (await _productService.Get(id)).Data ??
+              throw new ArgumentException("No product found with the specified id");
 
             var listphotos = await _prepareModelService.PrepareProductPictureModelAsync(product);
 
             return Json(
-                new
-                {
-                    data = listphotos
-                });
+              new
+              {
+                  data = listphotos
+              });
         }
 
         [HttpPost]
@@ -427,9 +455,17 @@ namespace T.Web.Areas.Admin.Controllers
             var result = await _productService.DeleteProductImage(productId, pictureId);
             if (!result.Success)
             {
-                return Json(new { success = false, message = result.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = result.Message
+                });
             }
-            return Json(new { success = true, message = result.Message });
+            return Json(new
+            {
+                success = true,
+                message = result.Message
+            });
         }
 
         [HttpPost]
@@ -438,9 +474,17 @@ namespace T.Web.Areas.Admin.Controllers
             var result = await _productService.DeleteAllProductImage(productId);
             if (!result.Success)
             {
-                return Json(new { success = false, message = result.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = result.Message
+                });
             }
-            return Json(new { success = true, message = result.Message });
+            return Json(new
+            {
+                success = true,
+                message = result.Message
+            });
         }
     }
 }

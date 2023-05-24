@@ -6,6 +6,7 @@ using T.Library.Model;
 using T.Web.Areas.Admin.Models;
 using T.Web.Services.ProductService;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using T.Web.Services.CategoryService;
 
 namespace T.Web.Services.PrepareModel
 {
@@ -19,6 +20,7 @@ namespace T.Web.Services.PrepareModel
         Task<ProductAttributeValueModel> PrepareProductAttributeValueModelAsync(ProductAttributeValueModel model,
             ProductAttributeMapping productAttributeMapping, ProductAttributeValue productAttributeValue);
         Task<List<ProductPictureModel>> PrepareProductPictureModelAsync(Product product);
+        Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
     }
     public class PrepareModelService : IPrepareModelService
     {
@@ -26,14 +28,43 @@ namespace T.Web.Services.PrepareModel
         private readonly IProductAttributeMappingService _productAttributeMappingService;
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
         public PrepareModelService(IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService,
-            IMapper mapper, IProductService productService)
+            IMapper mapper, IProductService productService, ICategoryService categoryService)
         {
             _productAttributeService = productAttributeService;
             _productAttributeMappingService = productAttributeMappingService;
             _mapper = mapper;
             _productService = productService;
+            _categoryService = categoryService;
         }
+
+        public async Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category)
+        {
+            if(category is not null)
+            {
+                model ??= new CategoryModel()
+                {
+                    Id = category.Id
+                };
+                _mapper.Map(category, model);
+            }
+
+            var listcategory = (await _categoryService.GetAllAsync());
+            listcategory.Insert(0, new Category()
+            {
+                Name = "Không có danh mục cha",
+                Id = -1
+            });
+            model.AvailableCategories = (listcategory).Select(productAttribute => new SelectListItem
+            {
+                Text = productAttribute.Name,
+                Value = productAttribute.Id.ToString()
+            }).ToList();
+
+            return model;
+        }
+
         public async Task<List<ProductAttributeMappingModel>> PrepareProductAttributeMappingListModelAsync(Product product)
         {
             if (product == null)

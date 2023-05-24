@@ -11303,3 +11303,7 @@ body.sidebar-toggled footer.sticky-footer {
 .photodetail:hover span {
     display: block;
 }
+
+.control-label{
+    color: blue;
+}

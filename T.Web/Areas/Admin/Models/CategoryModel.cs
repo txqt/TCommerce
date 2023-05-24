@@ -1,10 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 using T.Library.Model;
 
 namespace T.Web.Areas.Admin.Models
 {
     public class CategoryModel : BaseEntity
     {
+        public CategoryModel()
+        {
+            AvailableCategories = new List<SelectListItem>();
+        }
+
         [Display(Name = "Tên thể loại")]
         public string? Name { get; set; }
 
@@ -43,11 +49,13 @@ namespace T.Web.Areas.Admin.Models
         /// <summary>
         /// Gets or sets a value indicating whether to show the category on home page
         /// </summary>
+        [Display(Name = "Hiển thị trên trang chủ ?")]
         public bool ShowOnHomepage { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to include this category in the top menu
         /// </summary>
+        [Display(Name = "Đưa danh mục này vào menu trên cùng ?")]
         public bool IncludeInTopMenu { get; set; }
 
         /// <summary>
@@ -90,5 +98,7 @@ namespace T.Web.Areas.Admin.Models
         /// Gets or sets a value indicating whether the price range should be entered manually
         /// </summary>
         public bool ManuallyPriceRange { get; set; }
+
+        public IList<SelectListItem> AvailableCategories { get; set; }
     }
 }
