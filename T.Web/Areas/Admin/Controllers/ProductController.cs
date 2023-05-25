@@ -51,26 +51,28 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateProduct()
         {
-            Product product = new Product()
+            ProductModel model = new ProductModel()
             {
                 MarkAsNew = false,
             };
-            return View(product);
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProduct(Product product)
+        public async Task<IActionResult> CreateProduct(ProductModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(product);
+                return View(model);
             }
+            var product = _mapper.Map<Product>(model);
+
             var result = await _productService.CreateProduct(product);
 
             if (!result.Success)
             {
                 ModelState.AddModelError(string.Empty, result.Message);
-                return View(product);
+                return View(model);
             }
 
             return RedirectToAction(nameof(Index));
@@ -80,13 +82,13 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> EditProduct(int productId)
         {
             var result = await _productService.Get(productId);
-            var res = _mapper.Map<ProductUpdateViewModel>(result.Data);
+            var res = _mapper.Map<ProductModel>(result.Data);
             res.AttributeMappings = result.Data.AttributeMappings.ToList();
             return View(res);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditProduct(ProductUpdateViewModel product)
+        public async Task<IActionResult> EditProduct(ProductModel product)
         {
             if (!ModelState.IsValid)
             {

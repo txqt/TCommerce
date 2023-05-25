@@ -72,6 +72,9 @@
                         <th class="sorting @(ViewBag.OrderBy == "CreatedOnUtc" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Created date: activate to sort column ascending" style="width: 133.2px;">
                             <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "CreatedOnUtc" ? "CreatedOnUtc desc" : "CreatedOnUtc" })">Created Date</a>
                         </th>
+                        <th class="sorting @(ViewBag.OrderBy == "UpdatedOnUtc" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Created date: activate to sort column ascending" style="width: 133.2px;">
+                            <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "UpdatedOnUtc" ? "UpdatedOnUtc desc" : "UpdatedOnUtc" })">Updated Date</a>
+                        </th>
                         <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="" style="width: 133.2px;">
                             <a href="#" class="sorting_header_link">Edit</a>
                         </th>
@@ -101,6 +104,7 @@
                                     <td>@item.OldPrice</td>
                                     <td>@item.StockQuantity</td>
                                     <td>@item.CreatedOnUtc</td>
+                                    <td>@item.UpdatedOnUtc</td>
                                     <td style="display: flex; justify-content: space-between">
                                         <a class="btn btn-info" href="@Url.Action("EditProduct","Product", new{ productId = item.Id})">Edit</a>
                                         <a class="btn btn-danger" href="@Url.Action("Delete","Product", new{ id = item.Id})" onclick="return confirm('Are you sure to delete this ?')">Delete</a>

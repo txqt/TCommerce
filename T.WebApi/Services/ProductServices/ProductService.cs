@@ -15,7 +15,7 @@ namespace T.WebApi.Services.ProductServices
         Task<ServiceResponse<Product>> Get(int id);
         Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> CreateProduct(Product product);
-        Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product);
+        Task<ServiceResponse<bool>> EditProduct(ProductModel product);
         Task<ServiceResponse<bool>> DeleteProduct(int productId);
         Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttribute(int id);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
@@ -90,7 +90,7 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product)
+        public async Task<ServiceResponse<bool>> EditProduct(ProductModel product)
         {
             var productTable = await _context.Product.FirstOrDefaultAsync(p => p.Id == product.Id);
             if (productTable == null)
@@ -107,6 +107,7 @@ namespace T.WebApi.Services.ProductServices
                 {
                     return new ServiceErrorResponse<bool>("Data is unchanged");
                 }
+                productTable.UpdatedOnUtc = DateTime.Now;
                 var result = await _context.SaveChangesAsync();
                 if (result == 0)
                 {

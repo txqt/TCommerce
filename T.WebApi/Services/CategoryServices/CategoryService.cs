@@ -47,7 +47,7 @@ namespace T.WebApi.Services.CategoryServices
                     categoryTable.Published = category.Published;
                     categoryTable.DisplayOrder = category.DisplayOrder;
                     categoryTable.CreatedOnUtc = category.CreatedOnUtc;
-                    categoryTable.UpdatedOnUtc = category.UpdatedOnUtc;
+                    categoryTable.UpdatedOnUtc = DateTime.UtcNow;
                     categoryTable.PriceRangeFiltering = category.PriceRangeFiltering;
                     categoryTable.PriceFrom = category.PriceFrom;
                     categoryTable.PriceTo = category.PriceTo;

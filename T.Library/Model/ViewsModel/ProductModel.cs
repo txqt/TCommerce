@@ -7,28 +7,28 @@ using System.Threading.Tasks;
 
 namespace T.Library.Model.ViewsModel
 {
-    public class ProductUpdateViewModel
+    public class ProductModel
     {
         public int Id { get; set; }
-        [Required]
+        [Required, Display(Name = "Tên sản phẩm")]
         public string Name { get; set; }
-        [Required]
+        [Required, Display(Name = "Mổ tả ngắn")]
         public string ShortDescription { get; set; }
-        [Required]
+        [Required, Display(Name = "Mô tả đầy đủ")]
         public string FullDescription { get; set; }
-        [Required]
+        [Required, Display(Name = "Số lượng")]
         public int StockQuantity { get; set; }
-        [Required]
+        [Required, Display(Name = "Giá")]
         public decimal Price { get; set; }
-        [Required]
+        [Required, Display(Name = "Giá cũ")]
         public decimal OldPrice { get; set; }
-
+        [Display(Name = "Đánh dấu là sản phẩm mới")]
         public bool MarkAsNew { get; set; }
-
+        [Display(Name = "Thời gian bắt đầu đánh dấu sản phẩm mới")]
         public DateTime MarkAsNewStartDateTimeUtc { get; set; }
-
+        [Display(Name = "Thời gian kết thúc đánh dấu sản phẩm mới")]
         public DateTime MarkAsNewEndDateTimeUtc { get; set; }
-
+        [Display(Name = "Thứ tự hiển thị")]
         public int DisplayOrder { get; set; }
 
         public bool Published { get; set; }
@@ -36,7 +36,7 @@ namespace T.Library.Model.ViewsModel
         public bool VisibleIndividually { get; set; }
 
         public string AdminComment { get; set; }
-
+        [Display(Name = "Hiện thị ở trang chủ")]
         public bool ShowOnHomepage { get; set; }
 
         public string MetaKeywords { get; set; }

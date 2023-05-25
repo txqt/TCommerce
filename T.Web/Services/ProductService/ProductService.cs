@@ -19,7 +19,7 @@ namespace T.Web.Services.ProductService
     {
         Task<PagingResponse<Product>> GetAll(ProductParameters productParameters);
         Task<ServiceResponse<bool>> CreateProduct(Product product);
-        Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product);
+        Task<ServiceResponse<bool>> EditProduct(ProductModel product);
         Task<ServiceResponse<bool>> DeleteProduct(int id);
         Task<ServiceResponse<Product>> Get(int id);
         Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
@@ -95,7 +95,7 @@ namespace T.Web.Services.ProductService
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public async Task<ServiceResponse<bool>> EditProduct(ProductUpdateViewModel product)
+        public async Task<ServiceResponse<bool>> EditProduct(ProductModel product)
         {
             var result = await _httpClient.PostAsJsonAsync($"api/product/edit", product);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();

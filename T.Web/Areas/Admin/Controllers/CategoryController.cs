@@ -41,7 +41,7 @@ namespace T.Web.Areas.Admin.Controllers
             var listModel = _mapper.Map<List<CategoryModel>>(categoryList);
             foreach(var item in listModel)
             {
-                if(item.ParentCategoryId != 0)
+                if(item.ParentCategoryId > 0)
                 {
                     item.ParentCategoryName = (await _categoryService.Get(item.ParentCategoryId)).Data.Name;
                 }

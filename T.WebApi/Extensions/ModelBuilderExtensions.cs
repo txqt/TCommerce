@@ -161,27 +161,32 @@ namespace T.WebApi.Extensions
               new Category
               {
                   Id = 1,
-                  Name = "Thời trang"
+                  Name = "Thời trang",
+                  CreatedOnUtc = DateTime.UtcNow,
               },
               new Category
               {
                   Id = 2,
-                  Name = "Điện tử"
+                  Name = "Điện tử",
+                  CreatedOnUtc = DateTime.UtcNow,
               },
               new Category
               {
                   Id = 3,
-                  Name = "Điện gia dụng"
+                  Name = "Điện gia dụng",
+                  CreatedOnUtc = DateTime.UtcNow,
               },
               new Category
               {
                   Id = 4,
-                  Name = "Âm thanh"
+                  Name = "Âm thanh",
+                  CreatedOnUtc = DateTime.UtcNow,
               },
               new Category
               {
                   Id = 5,
-                  Name = "Phụ kiện"
+                  Name = "Phụ kiện",
+                  CreatedOnUtc = DateTime.UtcNow,
               }
             );
             #endregion

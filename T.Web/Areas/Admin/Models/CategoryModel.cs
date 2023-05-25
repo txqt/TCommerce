@@ -72,11 +72,13 @@ namespace T.Web.Areas.Admin.Models
         /// <summary>
         /// Gets or sets the date and time of instance creation
         /// </summary>
+        [Display(Name = "Thời gian tạo (Utc)")]
         public DateTime CreatedOnUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of instance update
         /// </summary>
+        [Display(Name = "Thời gian cập nhật (Utc)")]
         public DateTime UpdatedOnUtc { get; set; }
 
         /// <summary>

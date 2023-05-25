@@ -1,4 +1,4 @@
-﻿@model T.Library.Model.Product
+﻿@model ProductModel
 
 @{
     ViewData["Title"] = "CreateProduct";
@@ -9,13 +9,12 @@
 <h4>Product</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="CreateProduct" method="post">
+    <div class="col-md-12">
+        <partial name="_AlertMessage"></partial>
+        <form asp-action="CreateProduct" style="background-color: #fff; padding: 20px; border-radius: 10px">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="VisibleIndividually" /> @Html.DisplayNameFor(model => model.VisibleIndividually)
-                </label>
+            <div class="form-group" hidden>
+                <input asp-for="Id" class="form-control" />
             </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -24,15 +23,16 @@
             </div>
             <div class="form-group">
                 <label asp-for="ShortDescription" class="control-label"></label>
-                <input asp-for="ShortDescription" class="form-control" />
+                <textarea asp-for="ShortDescription" class="form-control"></textarea>
                 <span asp-validation-for="ShortDescription" class="text-danger"></span>
+
             </div>
             <div class="form-group">
                 <label asp-for="FullDescription" class="control-label"></label>
-                <input asp-for="FullDescription" class="form-control" />
+                <textarea asp-for="FullDescription" class="form-control"></textarea>
                 <span asp-validation-for="FullDescription" class="text-danger"></span>
             </div>
-            
+
 
             <div class="form-group">
                 <label asp-for="StockQuantity" class="control-label"></label>
@@ -50,35 +50,49 @@
                 <input asp-for="OldPrice" class="form-control" />
                 <span asp-validation-for="OldPrice" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" id="markasnewcheckbox" asp-for="MarkAsNew" /> @Html.DisplayNameFor(model => model.MarkAsNew)
-                </label>
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" id="markasnewcheckbox" asp-for="MarkAsNew" /> @Html.DisplayNameFor(model => model.MarkAsNew)
+                    </label>
+                </div>
             </div>
 
-                <div id="mark-as-new" style="display:none">
-                    <div class="form-group">
-                        <label asp-for="MarkAsNewStartDateTimeUtc" class="control-label"></label>
-                        <input asp-for="MarkAsNewStartDateTimeUtc" class="form-control" />
-                        <span asp-validation-for="MarkAsNewStartDateTimeUtc" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="MarkAsNewEndDateTimeUtc" class="control-label"></label>
-                        <input asp-for="MarkAsNewEndDateTimeUtc" class="form-control" />
-                        <span asp-validation-for="MarkAsNewEndDateTimeUtc" class="text-danger"></span>
-                    </div>
+
+            <div id="mark-as-new" style="display:none">
+                <div class="form-group">
+                    <label asp-for="MarkAsNewStartDateTimeUtc" class="control-label"></label>
+                    <input asp-for="MarkAsNewStartDateTimeUtc" class="form-control" />
+                    <span asp-validation-for="MarkAsNewStartDateTimeUtc" class="text-danger"></span>
                 </div>
-            
+                <div class="form-group">
+                    <label asp-for="MarkAsNewEndDateTimeUtc" class="control-label"></label>
+                    <input asp-for="MarkAsNewEndDateTimeUtc" class="form-control" />
+                    <span asp-validation-for="MarkAsNewEndDateTimeUtc" class="text-danger"></span>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label asp-for="DisplayOrder" class="control-label"></label>
                 <input asp-for="DisplayOrder" class="form-control" value="0" />
                 <span asp-validation-for="DisplayOrder" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model => model.Published)
-                </label>
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model => model.Published)
+                    </label>
+                </div>
             </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="VisibleIndividually" /> @Html.DisplayNameFor(model => model.VisibleIndividually)
+                    </label>
+                </div>
+            </div>
+
+
             <div id="accordion">
                 <div class="card">
                     <div class="card-header" id="headingOne">
@@ -207,8 +221,9 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="form-group" style="margin-top:16px">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -217,6 +232,12 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts
+    {
+    @await Html.PartialAsync("_Summernote", new Summernote("#ShortDescription"))
+    @await Html.PartialAsync("_Summernote", new Summernote("#FullDescription", false))
+}
 
 <script>
     $('#markasnewcheckbox').change(function () {

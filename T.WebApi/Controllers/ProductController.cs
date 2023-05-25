@@ -52,7 +52,7 @@ namespace T.WebApi.Controllers
 
         [HttpPost("edit")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> EditProduct(ProductUpdateViewModel product)
+        public async Task<ActionResult> EditProduct(ProductModel product)
         {
             var result = await _productService.EditProduct(product);
             if (!result.Success)

@@ -19,6 +19,12 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.CreatedOnUtc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedOnUtc)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.DisplayOrder)
             </th>
             <th></th>
@@ -70,13 +76,25 @@
                 {
                     data: null,
                     render: function (data, type, row) {
-                        if (row.parentCategoryId !== 0) {
+                        if (row.parentCategoryId > 0) {
                             return row.name + " >>> " + row.parentCategoryName;
                         }
                         return row.name;
                     }
                 },
                 { data: "description" },
+                {
+                    data: "createdOnUtc",
+                    render: function (data) {
+                        return moment(data).format("DD/MM/YYYY HH:mm:ss");
+                    }
+                },
+                {
+                    data: "updatedOnUtc",
+                    render: function (data) {
+                        return moment(data).format("DD/MM/YYYY HH:mm:ss");
+                    }
+                },
                 { data: "displayOrder" },
                 {
                     data: null,

@@ -9,7 +9,7 @@ namespace T.Web.Profiles
     {
         public ApplicationProfile()
         {
-            CreateMap<Product, ProductUpdateViewModel>()
+            CreateMap<Product, ProductModel>()
                 //.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 //.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 //.ForMember(dest => dest.FullDescription, opt => opt.MapFrom(src => src.FullDescription))
