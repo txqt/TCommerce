@@ -160,6 +160,7 @@ namespace T.WebApi.Extensions
             services.AddTransient<IProductAttributeMappingService, ProductAttributeMappingService>();
             services.AddTransient<IProductAttributeValueService, ProductAttributeValueService>();
             services.AddTransient<ICategoryService, CategoryService>();
+            services.AddTransient<IProductCategoryService, ProductCategoryService>();
             services.AddTransient<IPictureService, PictureService>();
             services.AddScoped<ValidationFilterAttribute>();
             return services;

@@ -32,6 +32,7 @@ builder.Services.AddTransient<IProductAttributeMappingService, ProductAttributeM
 builder.Services.AddTransient<IProductAttributeValueService, ProductAttributeValueService>();
 builder.Services.AddTransient<IPrepareModelService, PrepareModelService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
+builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,
