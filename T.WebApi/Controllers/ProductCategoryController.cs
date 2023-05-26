@@ -31,19 +31,19 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("{productId}/by-productId")]
-        public async Task<ActionResult<ServiceResponse<ProductCategory>>> GetByProductId(int productId)
+        public async Task<ActionResult<ServiceResponse<List<ProductCategory>>>> GetByProductId(int productId)
         {
             return await _productCategoryService.GetbyProductId(productId);
         }
 
         [HttpGet("{categoryId}/by-categoryId")]
-        public async Task<ActionResult<ServiceResponse<ProductCategory>>> GetByCategoryId(int categoryId)
+        public async Task<ActionResult<ServiceResponse<List<ProductCategory>>>> GetByCategoryId(int categoryId)
         {
             return await _productCategoryService.GetbyCategoryId(categoryId);
         }
 
         [HttpPost(APIRoutes.AddOrEdit)]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        //[ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> CreateOrEdit(ProductCategory productCategory)
         {
             var result = await _productCategoryService.CreateOrEditAsync(productCategory);

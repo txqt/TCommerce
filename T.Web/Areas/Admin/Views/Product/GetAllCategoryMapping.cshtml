@@ -1,0 +1,42 @@
+﻿@model IEnumerable<T.Library.Model.ProductCategory>
+
+@{
+    ViewData["Title"] = "GetAllCategoryMapping";
+}
+
+<h1>GetAllCategoryMapping</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div>
+    <label for="tags">Chọn tag sản phẩm:</label>
+    <input type="text" id="tagInput" />
+    <ul id="tagList">
+        @foreach (var tag in Model)
+        {
+            <li><button class="tagButton" data-tag-id="@tag.Id">lmao<span class="removeTag">X</span></button></li>
+        }
+    </ul>
+</div>
+
+<script>
+    // Xử lý sự kiện khi người dùng chọn tag
+    $('#tagList').on('click', '.tagButton', function () {
+        var tagId = $(this).data('tag-id');
+        var tagName = $(this).text().trim();
+        var selectedTag = '<button class="selectedTagButton" data-tag-id="' + tagId + '">' + tagName + ' <span class="removeTag">X</span></button>';
+
+        // Kiểm tra xem tag đã được chọn trước đó chưa
+        if (!$('.selectedTagButton[data-tag-id="' + tagId + '"]').length) {
+            // Thêm tag đã chọn vào danh sách các tag đã chọn
+            $('#selectedTagList').append(selectedTag);
+        }
+    });
+
+    // Xử lý sự kiện khi người dùng xóa tag đã chọn
+    $('#selectedTagList').on('click', '.removeTag', function () {
+        $(this).closest('.selectedTagButton').remove();
+    });
+</script>

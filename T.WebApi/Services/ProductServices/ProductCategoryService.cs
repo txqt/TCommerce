@@ -11,8 +11,8 @@ namespace T.WebApi.Services.ProductServices
     {
         Task<List<ProductCategory>> GetAllAsync();
         Task<ServiceResponse<ProductCategory>> Get(int id);
-        Task<ServiceResponse<ProductCategory>> GetbyProductId(int id);
-        Task<ServiceResponse<ProductCategory>> GetbyCategoryId(int id);
+        Task<ServiceResponse<List<ProductCategory>>> GetbyProductId(int id);
+        Task<ServiceResponse<List<ProductCategory>>> GetbyCategoryId(int id);
         Task<ServiceResponse<bool>> CreateOrEditAsync(ProductCategory productCategory);
         Task<ServiceResponse<bool>> DeleteAsync(int id);
     }
@@ -92,13 +92,13 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<ProductCategory>> GetbyCategoryId(int id)
+        public async Task<ServiceResponse<List<ProductCategory>>> GetbyCategoryId(int id)
         {
             using (_context)
             {
-                var category = await _context.Product_ProductCategory_Mapping.FirstOrDefaultAsync(x => x.CategoryId == id);
+                var category = await _context.Product_ProductCategory_Mapping.Where(x => x.CategoryId == id).ToListAsync();
 
-                var response = new ServiceResponse<ProductCategory>
+                var response = new ServiceResponse<List<ProductCategory>>
                 {
                     Data = category,
                     Success = true
@@ -107,13 +107,13 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<ProductCategory>> GetbyProductId(int id)
+        public async Task<ServiceResponse<List<ProductCategory>>> GetbyProductId(int id)
         {
             using (_context)
             {
-                var category = await _context.Product_ProductCategory_Mapping.FirstOrDefaultAsync(x => x.ProductId == id);
+                var category = await _context.Product_ProductCategory_Mapping.Where(x => x.ProductId == id).ToListAsync();
 
-                var response = new ServiceResponse<ProductCategory>
+                var response = new ServiceResponse<List<ProductCategory>>
                 {
                     Data = category,
                     Success = true

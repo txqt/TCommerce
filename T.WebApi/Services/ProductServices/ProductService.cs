@@ -102,11 +102,12 @@ namespace T.WebApi.Services.ProductServices
 
             try
             {
-                var productMapped = _mapper.Map(product, productTable);
+                var productMapped = _mapper.Map<Product>(product);
                 if (_context.IsRecordUnchanged(productTable, productMapped))
                 {
                     return new ServiceErrorResponse<bool>("Data is unchanged");
                 }
+                productTable = _mapper.Map(product, productTable);
                 productTable.UpdatedOnUtc = DateTime.Now;
                 var result = await _context.SaveChangesAsync();
                 if (result == 0)

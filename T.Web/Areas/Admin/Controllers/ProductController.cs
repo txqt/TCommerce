@@ -10,6 +10,7 @@ using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
 using T.Web.Controllers;
+using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.ProductService;
 
@@ -26,9 +27,11 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly IProductAttributeValueService _productAttributeValueService;
         private readonly IMapper _mapper;
         private readonly IPrepareModelService _prepareModelService;
+        private readonly IProductCategoryService _productCategoryService;
+        private readonly ICategoryService _categoryService;
         public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService,
           IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService,
-          IPrepareModelService prepareModelService)
+          IPrepareModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryService categoryService)
         {
             _productService = productService;
             _mapper = mapper;
@@ -36,6 +39,8 @@ namespace T.Web.Areas.Admin.Controllers
             _productAttributeMappingService = productAttributeMappingService;
             _productAttributeValueService = productAttributeValueService;
             _prepareModelService = prepareModelService;
+            _productCategoryService = productCategoryService;
+            _categoryService = categoryService;
         }
 
         public async Task<IActionResult> Index(ProductParameters productParameters)
@@ -486,6 +491,87 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 success = true,
                 message = result.Message
+            });
+        }
+
+        public async Task<IActionResult> GetListCategoryMapping(ProductCategoryModel productCategoryModel)
+        {
+            var product = (await _productService.Get(productCategoryModel.ProductId)).Data ??
+              throw new ArgumentException("No product found with the specified id");
+
+            var productCategoryList = (await _productCategoryService.GetByProductId(product.Id)).Data;
+
+            var model = _mapper.Map<List<ProductCategoryModel>>(productCategoryList);
+
+            foreach(var item in model)
+            {
+                item.CategoryName = (await _categoryService.Get(item.CategoryId)).Data.Name;
+            }
+
+            return Json(new
+            {
+                data = model
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditProductCategory(int productCategoryId)
+        {
+            var productCategory = (await _productCategoryService.Get(productCategoryId)).Data ??
+              throw new ArgumentException("No product category mapping found with the specified id");
+
+            var category = (await _categoryService.Get(productCategory.CategoryId)).Data ??
+              throw new ArgumentException("No category found with the specified id");
+
+            var product = (await _productService.Get(productCategory.ProductId)).Data ??
+              throw new ArgumentException("No product found with the specified id");
+
+            var model = await _prepareModelService.PrepareProductCategoryMappingModelAsync(null, product, category, productCategory);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProductCategory(ProductCategoryModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var productCategory = (await _productCategoryService.Get(model.Id)).Data ??
+              throw new ArgumentException("No product category mapping found with the specified id");
+
+            var category = (await _categoryService.Get(productCategory.CategoryId)).Data ??
+              throw new ArgumentException("No category found with the specified id");
+
+            var product = (await _productService.Get(productCategory.ProductId)).Data ??
+              throw new ArgumentException("No product found with the specified id");
+
+            ModelState.AddModelError(string.Empty, "This product has mapped with this category");
+
+            if ((await _productCategoryService.GetByProductId(product.Id)).Data
+              .Any(x => x.CategoryId == category.Id && x.Id != productCategory.Id))
+            {
+                SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thể loại này");
+                model = await _prepareModelService.PrepareProductCategoryMappingModelAsync(model, product, category, productCategory);
+                return View(model);
+            }
+
+            productCategory = _mapper.Map(model, productCategory);
+
+            var result = await _productCategoryService.AddOrEdit(productCategory);
+
+            if (!result.Success)
+            {
+                SetStatusMessage($"{result.Message}");
+                model = await _prepareModelService.PrepareProductCategoryMappingModelAsync(model, product, category, productCategory);
+                return View(model);
+            }
+
+            SetStatusMessage($"Sửa thành công !");
+            return RedirectToAction("EditProductCategory", new
+            {
+                productCategoryId = productCategory.Id
             });
         }
     }

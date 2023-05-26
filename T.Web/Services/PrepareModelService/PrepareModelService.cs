@@ -21,6 +21,8 @@ namespace T.Web.Services.PrepareModel
             ProductAttributeMapping productAttributeMapping, ProductAttributeValue productAttributeValue);
         Task<List<ProductPictureModel>> PrepareProductPictureModelAsync(Product product);
         Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
+        Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
+            Product product, Category category, ProductCategory productCategory);
     }
     public class PrepareModelService : IPrepareModelService
     {
@@ -29,14 +31,16 @@ namespace T.Web.Services.PrepareModel
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly IProductCategoryService productCategoryService;
         public PrepareModelService(IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService,
-            IMapper mapper, IProductService productService, ICategoryService categoryService)
+            IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService)
         {
             _productAttributeService = productAttributeService;
             _productAttributeMappingService = productAttributeMappingService;
             _mapper = mapper;
             _productService = productService;
             _categoryService = categoryService;
+            this.productCategoryService = productCategoryService;
         }
 
         public async Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category)
@@ -173,6 +177,35 @@ namespace T.Web.Services.PrepareModel
                 PictureId = productPicture.PictureId,
                 PictureUrl = productPicture.Picture.UrlPath,
                 DisplayOrder = productPicture.DisplayOrder
+            }).ToList();
+
+            return model;
+        }
+
+        public async Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model, 
+            Product product, Category category, ProductCategory productCategory)
+        {
+            if (productCategory != null)
+            {
+                //fill in model values from the entity
+                model ??= new ProductCategoryModel
+                {
+                    Id = productCategory.Id
+                };
+                _mapper.Map(productCategory, model);
+                model.CategoryName = (await _categoryService.Get(productCategory.CategoryId)).Data.Name;
+                model.CategoryId = productCategory.CategoryId;
+                model.IsFeaturedProduct = productCategory.IsFeaturedProduct;
+                model.DisplayOrder = productCategory.DisplayOrder;
+            }
+
+            model.ProductId = product.Id;
+
+            //prepare available product attributes
+            model.AvailableCategories = (await _categoryService.GetAllAsync()).Select(productAttribute => new SelectListItem
+            {
+                Text = productAttribute.Name,
+                Value = productAttribute.Id.ToString()
             }).ToList();
 
             return model;

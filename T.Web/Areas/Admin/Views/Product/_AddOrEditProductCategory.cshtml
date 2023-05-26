@@ -1,0 +1,22 @@
+﻿@model ProductCategoryModel
+
+<partial name="_AlertMessage"></partial>
+
+<input asp-for="Id" class="form-control" hidden />
+<input hidden class="form-control" asp-for="ProductId" value="@Model.ProductId" />
+<div class="form-group">
+    <label>Chọn thể loại cho sản phẩm</label>
+    <select class="form-control" id="@Html.DisplayNameFor(model => model.CategoryName)" asp-items="Model.AvailableCategories" asp-for="CategoryId">
+    </select>
+</div>
+<div class="form-group">
+    <label for="@Html.DisplayNameFor(model => model.DisplayOrder)">@Html.DisplayNameFor(model => model.DisplayOrder)</label>
+    <input style="min-width: 100px; width: 300px" type="number" min="0" class="form-control" asp-for="DisplayOrder" id="@Html.DisplayNameFor(model => model.DisplayOrder)" aria-describedby="emailHelp" placeholder="@Html.DisplayNameFor(model => model.DisplayOrder)">
+</div>
+<div class="form-group">
+    <div class="form-check">
+        <input type="checkbox" asp-for="IsFeaturedProduct" class="form-check-input" id="@Html.DisplayNameFor(model => model.IsFeaturedProduct)">
+        <label class="form-check-label" for="@Html.DisplayNameFor(model => model.IsFeaturedProduct)">@Html.DisplayNameFor(model => model.IsFeaturedProduct)</label>
+    </div>
+</div>
+<button type="submit" class="btn btn-primary mt-2">Save</button>

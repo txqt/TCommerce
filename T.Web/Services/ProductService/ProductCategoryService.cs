@@ -8,8 +8,8 @@ namespace T.Web.Services.ProductService
     {
         Task<List<ProductCategory>> GetAllAsync();
         Task<ServiceResponse<ProductCategory>> Get(int id);
-        Task<ServiceResponse<ProductCategory>> GetByProductId(int productId);
-        Task<ServiceResponse<ProductCategory>> GetByCategoryId(int categoryId);
+        Task<ServiceResponse<List<ProductCategory>>> GetByProductId(int productId);
+        Task<ServiceResponse<List<ProductCategory>>> GetByCategoryId(int categoryId);
         Task<ServiceResponse<bool>> AddOrEdit(ProductCategory productCategory);
         Task<ServiceResponse<bool>> Delete(int id);
     }
@@ -46,16 +46,16 @@ namespace T.Web.Services.ProductService
             return await result.Content.ReadFromJsonAsync<List<ProductCategory>>();
         }
 
-        public async Task<ServiceResponse<ProductCategory>> GetByCategoryId(int categoryId)
+        public async Task<ServiceResponse<List<ProductCategory>>> GetByCategoryId(int categoryId)
         {
-            var result = await _httpClient.GetAsync($"api/product-category/{categoryId}/by-productId");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<ProductCategory>>();
+            var result = await _httpClient.GetAsync($"api/product-category/{categoryId}/by-categoryId");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductCategory>>>();
         }
 
-        public async Task<ServiceResponse<ProductCategory>> GetByProductId(int productId)
+        public async Task<ServiceResponse<List<ProductCategory>>> GetByProductId(int productId)
         {
-            var result = await _httpClient.GetAsync($"api/product-category/{productId}/by-categoryId");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<ProductCategory>>();
+            var result = await _httpClient.GetAsync($"api/product-category/{productId}/by-productId");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductCategory>>>();
         }
     }
 }

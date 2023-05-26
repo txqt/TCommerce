@@ -55,6 +55,8 @@ namespace T.Web.Profiles
                 .ReverseMap();
             CreateMap<Category, CategoryModel>()
                 .ReverseMap();
+            CreateMap<ProductCategory, ProductCategoryModel>()
+                .ReverseMap();
         }
     }
 }
