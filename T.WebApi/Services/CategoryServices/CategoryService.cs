@@ -3,6 +3,7 @@ using T.Library.Model;
 using Microsoft.EntityFrameworkCore;
 using T.WebApi.Database.ConfigurationDatabase;
 using AutoMapper;
+using T.WebApi.Extensions;
 
 namespace T.WebApi.Services.CategoryServices
 {
@@ -35,6 +36,10 @@ namespace T.WebApi.Services.CategoryServices
                 }
                 else
                 {
+                    if (_context.IsRecordUnchanged(categoryTable, category))
+                    {
+                        return new ServiceErrorResponse<bool>("Data is unchanged");
+                    }
                     categoryTable.Name = category.Name;
                     categoryTable.Description = category.Description;
                     categoryTable.MetaKeywords = category.MetaKeywords;
@@ -46,7 +51,6 @@ namespace T.WebApi.Services.CategoryServices
                     categoryTable.IncludeInTopMenu = category.IncludeInTopMenu;
                     categoryTable.Published = category.Published;
                     categoryTable.DisplayOrder = category.DisplayOrder;
-                    categoryTable.CreatedOnUtc = category.CreatedOnUtc;
                     categoryTable.UpdatedOnUtc = DateTime.UtcNow;
                     categoryTable.PriceRangeFiltering = category.PriceRangeFiltering;
                     categoryTable.PriceFrom = category.PriceFrom;
