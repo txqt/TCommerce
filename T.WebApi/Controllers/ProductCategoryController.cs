@@ -43,7 +43,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost(APIRoutes.AddOrEdit)]
-        //[ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> CreateOrEdit(ProductCategory productCategory)
         {
             var result = await _productCategoryService.CreateOrEditAsync(productCategory);
@@ -54,7 +54,6 @@ namespace T.WebApi.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> Delete(int id)
         {
             var result = await _productCategoryService.DeleteAsync(id);

@@ -55,7 +55,13 @@ namespace T.Web.Profiles
                 .ReverseMap();
             CreateMap<Category, CategoryModel>()
                 .ReverseMap();
-            CreateMap<ProductCategory, ProductCategoryModel>()
+            CreateMap<ProductCategoryModel, ProductCategory>()
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
+                .ForMember(dest => dest.IsFeaturedProduct, opt => opt.MapFrom(src => src.IsFeaturedProduct))
+                .ForMember(dest => dest.DisplayOrder, opt => opt.MapFrom(src => src.DisplayOrder))
+                .ForMember(dest => dest.Category, opt => opt.Ignore())
+                .ForMember(dest => dest.Product, opt => opt.Ignore())
                 .ReverseMap();
         }
     }

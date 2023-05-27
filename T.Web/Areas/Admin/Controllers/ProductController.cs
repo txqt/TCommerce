@@ -558,6 +558,10 @@ namespace T.Web.Areas.Admin.Controllers
             }
 
             productCategory = _mapper.Map(model, productCategory);
+            //productCategory.ProductId = model.Id;
+            //productCategory.CategoryId = model.CategoryId;
+            //productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
+            //productCategory.DisplayOrder = model.DisplayOrder;
 
             var result = await _productCategoryService.AddOrEdit(productCategory);
 
