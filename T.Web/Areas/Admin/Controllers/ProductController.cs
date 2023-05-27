@@ -505,7 +505,9 @@ namespace T.Web.Areas.Admin.Controllers
 
             foreach(var item in model)
             {
-                item.CategoryName = (await _categoryService.Get(item.CategoryId)).Data.Name;
+                var category = (await _categoryService.Get(item.CategoryId)).Data;
+                item.CategoryName = category.ParentCategoryId > 0 ? category.Name 
+                    + " >>> " + (await _categoryService.Get(category.ParentCategoryId)).Data.Name : category.Name;
             }
 
             return Json(new
