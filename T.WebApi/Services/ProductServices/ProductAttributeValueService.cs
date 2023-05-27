@@ -28,6 +28,10 @@ namespace T.WebApi.Services.ProductServices
 
             if (pavTable != null)
             {
+                if (_context.IsRecordUnchanged(pavTable, productAttributeValue))
+                {
+                    return new ServiceErrorResponse<bool>("Data is unchanged");
+                }
                 pavTable.ProductAttributeMappingId = productAttributeValue.ProductAttributeMappingId;
                 pavTable.Name = productAttributeValue.Name;
                 pavTable.ColorSquaresRgb = productAttributeValue.ColorSquaresRgb;
@@ -40,11 +44,6 @@ namespace T.WebApi.Services.ProductServices
                 pavTable.IsPreSelected = productAttributeValue.IsPreSelected;
                 pavTable.DisplayOrder = productAttributeValue.DisplayOrder;
                 pavTable.PictureId = productAttributeValue.PictureId;
-
-                if (_context.IsRecordUnchanged(pavTable, productAttributeValue))
-                {
-                    return new ServiceErrorResponse<bool>("Data is unchanged");
-                }
             }
             else
             {
