@@ -48,15 +48,16 @@ namespace T.WebApi.Services.ProductServices
 
             if (pamInTable != null)
             {
+                if (_context.IsRecordUnchanged(pamInTable, productAttributeMapping))
+                {
+                    return new ServiceErrorResponse<bool>("Data is unchanged");
+                }
+
                 pamInTable.ProductAttributeId = productAttributeMapping.ProductAttributeId;
                 pamInTable.TextPrompt = productAttributeMapping.TextPrompt;
                 pamInTable.IsRequired = productAttributeMapping.IsRequired;
                 pamInTable.DisplayOrder = productAttributeMapping.DisplayOrder;
 
-                if (_context.IsRecordUnchanged(pamInTable, productAttributeMapping))
-                {
-                    return new ServiceErrorResponse<bool>("Data is unchanged");
-                }
             }
             else
             {

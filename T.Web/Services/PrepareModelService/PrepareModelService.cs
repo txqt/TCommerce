@@ -22,7 +22,7 @@ namespace T.Web.Services.PrepareModel
         Task<List<ProductPictureModel>> PrepareProductPictureModelAsync(Product product);
         Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
         Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
-            Product product, Category category, ProductCategory productCategory);
+            Product product, ProductCategory productCategory);
     }
     public class PrepareModelService : IPrepareModelService
     {
@@ -183,7 +183,7 @@ namespace T.Web.Services.PrepareModel
         }
 
         public async Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model, 
-            Product product, Category category, ProductCategory productCategory)
+            Product product, ProductCategory productCategory)
         {
             if (productCategory != null)
             {

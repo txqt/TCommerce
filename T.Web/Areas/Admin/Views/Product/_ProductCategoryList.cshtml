@@ -1,7 +1,7 @@
 ﻿@model ProductCategoryModel
 
 <p>
-    <a href="@Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.ProductId })">Tạo mới</a>
+    <a href="@Url.Action("ProductCategoryMappingCreate", "Product", new { productId = Model.ProductId })">Tạo mới</a>
 </p>
 
 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -41,25 +41,25 @@
     });
 
     $('#dataTable-product-category').on('click', '.deletePCBtn', function () {
-        var pcId = $(this).data('pcId'); // Lấy pcId từ thuộc tính data của nút
+        var pcId = $(this).data('pcid'); // Lấy pcId từ thuộc tính data của nút
 
         // Hiển thị hộp thoại "confirm"
         if (confirm("Bạn có chắc chắn muốn xóa?")) {
             $.ajax({
-                url: "@Url.Action("DeleteProductAttributeMapping", "Product")",
+                url: "@Url.Action("DeleteProductCategory", "Product")",
                 type: "POST",
                 data: { productCategoryId: pcId },
                 success: function (response) {
                     // Xử lý phản hồi từ API
                     if (response.success) {
-                        LoadTable();
+                        LoadProductCategoryTable();
                     } else {
                         alert(response.message); // Hiển thị thông báo lỗi
                     }
                 },
                 error: function (xhr, status, error) {
                     console.log(xhr.responseText); // Hiển thị lỗi trong console
-                    alert("Đã xảy ra lỗi trong quá trình xóa liên kết thuộc tính với sản phẩm."); // Hiển thị thông báo lỗi
+                    alert("Đã xảy ra lỗi trong quá trình xóa."); // Hiển thị thông báo lỗi
                 }
             });
         }
@@ -101,7 +101,7 @@
 
                         var pcId = row.id
                         if (type === "display") {
-                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center deletePCBtn" data-pamid="' + pcId + '">Delete</button>';
+                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center deletePCBtn" data-pcId="' + pcId + '">Delete</button>';
                         }
                         return data;
                     }
