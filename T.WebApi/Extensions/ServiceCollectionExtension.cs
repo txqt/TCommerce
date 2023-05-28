@@ -23,6 +23,7 @@ using Microsoft.Extensions.Configuration;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.ProductService;
 using T.WebApi.Services.CategoryServices;
+using T.WebApi.Services.UserServices;
 
 namespace T.WebApi.Extensions
 {
@@ -162,6 +163,7 @@ namespace T.WebApi.Extensions
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IProductCategoryService, ProductCategoryService>();
             services.AddTransient<IPictureService, PictureService>();
+            services.AddTransient<IUserService, UserService>();
             services.AddScoped<ValidationFilterAttribute>();
             return services;
         }

@@ -17,14 +17,15 @@ namespace T.Library.Model.Users
         [MaxLength(30)]
         [Required(ErrorMessage = "Phải nhập họ")]
         public string? LastName { get; set; }
+
         [Required(ErrorMessage = "Phải nhập ngày tháng năm sinh")]
         public DateTime Dob { get; set; } // date of birth
-        //public List<Order> Orders { get; set; }
-        //public List<Cart> Carts { get; set; }
         public string? AvatarPath { get; set; }
+
         public string? RefreshToken { get; set; }
+
         public DateTime RefreshTokenExpiryTime { get; set; }
-        public bool Banned { get; set; } = false;
+
         public DateTime CreatedDate { get; set; }
 
     }

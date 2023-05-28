@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using T.Library.Model;
+using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
 
 namespace T.WebApi.Profiles
@@ -43,6 +44,9 @@ namespace T.WebApi.Profiles
                 .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
                 .ForMember(dest => dest.AvailableStartDateTimeUtc, opt => opt.MapFrom(src => src.AvailableStartDateTimeUtc))
                 .ForMember(dest => dest.AvailableEndDateTimeUtc, opt => opt.MapFrom(src => src.AvailableEndDateTimeUtc))
+                .ReverseMap();
+
+            CreateMap<User, UserModel>()
                 .ReverseMap();
         }
     }

@@ -196,7 +196,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedOnUtc = new DateTime(2023, 5, 25, 4, 22, 42, 604, DateTimeKind.Utc).AddTicks(7785),
+                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9348),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -214,7 +214,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedOnUtc = new DateTime(2023, 5, 25, 4, 22, 42, 604, DateTimeKind.Utc).AddTicks(7788),
+                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9351),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -232,7 +232,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedOnUtc = new DateTime(2023, 5, 25, 4, 22, 42, 604, DateTimeKind.Utc).AddTicks(7789),
+                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9353),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -250,7 +250,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedOnUtc = new DateTime(2023, 5, 25, 4, 22, 42, 604, DateTimeKind.Utc).AddTicks(7790),
+                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9355),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -268,7 +268,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedOnUtc = new DateTime(2023, 5, 25, 4, 22, 42, 604, DateTimeKind.Utc).AddTicks(7791),
+                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9356),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -1873,9 +1873,6 @@ namespace T.WebApi.Migrations
 
                     b.Property<string>("AvatarPath")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Banned")
-                        .HasColumnType("bit");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()

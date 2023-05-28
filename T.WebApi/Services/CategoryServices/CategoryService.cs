@@ -17,11 +17,12 @@ namespace T.WebApi.Services.CategoryServices
     public class CategoryService : ICategoryService
     {
         private readonly DatabaseContext _context;
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
 
-        public CategoryService(DatabaseContext context)
+        public CategoryService(DatabaseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResponse<bool>> CreateOrEditAsync(Category category)
