@@ -237,5 +237,10 @@ namespace T.Web.Services.PrepareModel
 
             return model;
         }
+
+        public Task<UserModel> PrepareUserModelAsync(UserModel model, User user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
