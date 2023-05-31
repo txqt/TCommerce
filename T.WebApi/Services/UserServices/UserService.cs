@@ -13,7 +13,7 @@ namespace T.WebApi.Services.UserServices
     public interface IUserService
     {
         Task<List<UserModel>> GetAllAsync();
-        Task<ServiceResponse<User>> Get(int id);
+        Task<ServiceResponse<UserModel>> Get(int id);
         Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model);
         Task<ServiceResponse<bool>> DeleteAsync(int id);
     }
@@ -86,14 +86,36 @@ namespace T.WebApi.Services.UserServices
             }
         }
 
-        public Task<ServiceResponse<bool>> DeleteAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(id.ToString()); ;
+
+            if (user == null || user.Deleted == true) { throw new Exception($"Cannot find user: {id}"); }
+            user.Deleted = true;
+
+            await _userManager.UpdateAsync(user);
+            var result = await _context.SaveChangesAsync();
+            if (result == 0)
+            {
+                return new ServiceErrorResponse<bool>("Delete user failed");
+            }
+            return new ServiceSuccessResponse<bool>();
         }
 
-        public Task<ServiceResponse<User>> Get(int id)
+        public async Task<ServiceResponse<UserModel>> Get(int id)
         {
-            throw new NotImplementedException();
+            using (_context)
+            {
+                var user = await _userManager.FindByIdAsync(id.ToString());
+
+                var model = _mapper.Map<UserModel>(user);
+                var response = new ServiceResponse<UserModel>
+                {
+                    Data = model,
+                    Success = true
+                };
+                return response;
+            }
         }
 
         public async Task<List<UserModel>> GetAllAsync()

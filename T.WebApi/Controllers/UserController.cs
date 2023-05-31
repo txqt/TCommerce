@@ -28,7 +28,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<User>>> Get(int id)
+        public async Task<ActionResult<ServiceResponse<UserModel>>> Get(int id)
         {
             return await _userService.Get(id);
         }

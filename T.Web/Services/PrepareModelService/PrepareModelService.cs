@@ -7,6 +7,8 @@ using T.Web.Areas.Admin.Models;
 using T.Web.Services.ProductService;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Web.Services.CategoryService;
+using T.Library.Model.ViewsModel;
+using T.Library.Model.Users;
 
 namespace T.Web.Services.PrepareModel
 {
@@ -23,6 +25,7 @@ namespace T.Web.Services.PrepareModel
         Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
         Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
             Product product, ProductCategory productCategory);
+        Task<UserModel> PrepareUserModelAsync(UserModel model, User user);
     }
     public class PrepareModelService : IPrepareModelService
     {
