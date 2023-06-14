@@ -365,6 +365,7 @@ FodyWeavers.xsd
 .svn*
 
 /Migration/
+/mailssave/
 
 /startbootstrap-sb-admin-2-gh-pages
 /startbootstrap-sb-admin-2-gh-pages.zip
