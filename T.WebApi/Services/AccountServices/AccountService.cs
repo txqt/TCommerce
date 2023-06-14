@@ -27,7 +27,7 @@ namespace T.WebApi.Services.AccountServices
         Task<ServiceResponse<bool>> Register(RegisterRequest request);
         Task<bool> Logout(Guid userId);
         Task<ServiceResponse<string>> ConfirmEmail(string userId, string token);
-        Task<ServiceResponse<string>> ForgotPassword(string email);
+        Task<ServiceResponse<string>> SendChangePasswordEmail(string email);
         Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest model);
         Task<ServiceResponse<string>> ChangePassword(ChangePasswordRequest model);
     }
@@ -97,7 +97,7 @@ namespace T.WebApi.Services.AccountServices
             return await _userManager.FindByNameAsync(userName);
         }
 
-        public async Task<ServiceResponse<string>> ForgotPassword(string email)
+        public async Task<ServiceResponse<string>> SendChangePasswordEmail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -148,7 +148,8 @@ namespace T.WebApi.Services.AccountServices
 
             if (user.RequirePasswordChange)
             {
-                await ForgotPassword(user.Email);
+                await SendChangePasswordEmail(user.Email);
+                return new LoginResponse<AuthResponseDto>() { Message = "Tài khoản của bạn cần đổi mật khẩu, vui lòng kiểm tra mail", Success = false };
             }
 
             
@@ -353,7 +354,8 @@ namespace T.WebApi.Services.AccountServices
             if (model.NewPassword != model.ConfirmPassword)
                 return new ServiceErrorResponse<string>("Mật khẩu phải trùng khớp");
 
-
+            user.RequirePasswordChange = false;
+            await _context.SaveChangesAsync();
 
             string normalToken = DecodeToken(model.Token);
 

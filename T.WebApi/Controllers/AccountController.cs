@@ -115,7 +115,7 @@ namespace T.WebApi.Controllers
             if (string.IsNullOrEmpty(email))
                 return NotFound(new ServiceErrorResponse<string>("Chưa nhập email"));
 
-            var result = await _accountService.ForgotPassword(email);
+            var result = await _accountService.SendChangePasswordEmail(email);
 
             if (result.Success)
                 return Ok(result); // 200
