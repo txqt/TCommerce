@@ -152,7 +152,6 @@ namespace T.WebApi.Services.AccountServices
             }
 
             
-
             if (result.IsNotAllowed)
             {
                 var message = "Tài khoản của bạn đã bị chặn và không thể đăng nhập vào hệ thống";

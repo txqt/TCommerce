@@ -8,6 +8,7 @@ using T.WebApi.Extensions;
 using Microsoft.AspNetCore.Identity;
 using T.Library.Model.ViewsModel;
 using App.Utilities;
+using System.Text;
 
 namespace T.WebApi.Services.UserServices
 {
@@ -48,6 +49,9 @@ namespace T.WebApi.Services.UserServices
 
                 if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber) != null)
                     return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
+
+                model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
+                model.RequirePasswordChange = true;
 
                 var userTable = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.Id);
                 if (userTable == null)
@@ -177,6 +181,21 @@ namespace T.WebApi.Services.UserServices
             {
                 return await _roleManager.Roles.ToListAsync();
             }
+        }
+
+        public string GenerateRandomPassword(int length)
+        {
+            const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()";
+            StringBuilder password = new StringBuilder();
+            Random random = new Random();
+
+            for (int i = 0; i < length; i++)
+            {
+                int randomIndex = random.Next(validChars.Length);
+                password.Append(validChars[randomIndex]);
+            }
+
+            return password.ToString();
         }
     }
 }

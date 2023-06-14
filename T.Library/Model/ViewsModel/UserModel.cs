@@ -52,6 +52,8 @@ namespace T.Library.Model.ViewsModel
 
         public DateTime CreatedDate { get; set; }
 
+        public bool RequirePasswordChange { get; set; }
+
         public UserModel()
         {
             RoleNames = new List<string>();
