@@ -29,6 +29,7 @@ namespace T.WebApi.Services.AccountServices
         Task<ServiceResponse<string>> ConfirmEmail(string userId, string token);
         Task<ServiceResponse<string>> ForgotPassword(string email);
         Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest model);
+        Task<ServiceResponse<string>> ChangePassword(ChangePasswordRequest model);
     }
     public class AccountService : IAccountService
     {
@@ -143,6 +144,11 @@ namespace T.WebApi.Services.AccountServices
                 {
                     result = await _signInManager.PasswordSignInAsync(user.UserName, login.Password, login.RememberMe, lockoutOnFailure: true);
                 }
+            }
+
+            if (user.RequirePasswordChange)
+            {
+                await ForgotPassword(user.Email);
             }
 
             
@@ -379,6 +385,27 @@ namespace T.WebApi.Services.AccountServices
         {
             var decodedToken = WebEncoders.Base64UrlDecode(encodeToken);
             return Encoding.UTF8.GetString(decodedToken);
+        }
+
+        public async Task<ServiceResponse<string>> ChangePassword(ChangePasswordRequest model)
+        {
+            var userId = model.UserId;
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new ServiceErrorResponse<string>($"Unable to load user with ID '{userId}'.");
+            }
+
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (!changePasswordResult.Succeeded)
+            {
+                return new ServiceErrorResponse<string>(changePasswordResult.Errors.Select(x => x.Description).FirstOrDefault().ToString());
+            }
+            else
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                return new ServiceSuccessResponse<string>("Your Password has been reset");
+            }
         }
     }
 }

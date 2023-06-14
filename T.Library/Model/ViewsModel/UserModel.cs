@@ -32,13 +32,13 @@ namespace T.Library.Model.ViewsModel
         public string UserName { get; set; }
 
         [Display(Name = "Mật khẩu")]
-        [Required(ErrorMessage = "Vui lòng nhập {0}")]
+        //[Required(ErrorMessage = "Vui lòng nhập {0}")]
 
         public string Password { get; set; }
 
         [Display(Name = "Nhập lại mật khẩu")]
         [Compare("Password", ErrorMessage = "Mật khẩu nhập lại không đúng")]
-        [Required(ErrorMessage = "Vui lòng nhập {0}")]
+        //[Required(ErrorMessage = "Vui lòng nhập {0}")]
 
         public string ConfirmPassword { get; set; }
 

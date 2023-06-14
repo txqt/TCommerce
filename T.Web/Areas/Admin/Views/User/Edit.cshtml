@@ -1,59 +1,67 @@
-﻿@model CategoryModel
+﻿@model UserViewModel
 
 @{
-    ViewData["Title"] = "Sửa thể loại";
+    ViewData["Title"] = "Sửa người dùng";
 }
 
-<h1>Sửa thể loại</h1>
+<h1>Sửa người dùng</h1>
     
 <hr />
 <div class="row">
-    <partial name="_AlertMessage"></partial>
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input asp-for="Id" hidden />
+            @Html.AntiForgeryToken()
+
             <div class="form-group">
-                <label>Chọn thể loại cha</label>
-                <div class="dropdown">
-                    <select class="form-control dropdown-toggle" data-toggle="dropdown" asp-items="Model.AvailableCategories" asp-for="ParentCategoryId">
-                    </select>
-                    <div class="dropdown-menu">
-                        <!-- Nội dung các mục trong dropdown -->
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>@*
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="control-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>*@
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.RoleNames)
+                @foreach (var role in Model.AvailableRoles)
+                {
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="RoleNames" value="@role.Value" @(Model.RoleNames.Contains(role.Value) ? "checked" : "")> @role.Text
+                        </label>
                     </div>
-                </div>
+                }
             </div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control" ></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="ShowOnHomepage" /> @Html.DisplayNameFor(model => model.ShowOnHomepage)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="IncludeInTopMenu" /> @Html.DisplayNameFor(model => model.IncludeInTopMenu)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="DisplayOrder" class="control-label"></label>
-                <input asp-for="DisplayOrder" class="form-control" />
-                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Edit" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>

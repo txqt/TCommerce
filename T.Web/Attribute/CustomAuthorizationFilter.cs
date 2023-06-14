@@ -31,25 +31,21 @@ namespace T.Web.Attribute
             // Lấy thông tin đăng nhập của user
             var user = context.HttpContext.User;
 
+            if (_roles == null || _roles.Length == 0)
+            {
+                if (!user.Identity.IsAuthenticated)
+                {
+                    context.Result = new UnauthorizedResult();
+                    return;
+                }
+                return;
+            }
+
             // Kiểm tra xem user đã đăng nhập hay chưa
             if (!user.Identity.IsAuthenticated)
             {
                 context.Result = new UnauthorizedResult();
                 return;
-            }
-
-            if (_roles == null || _roles.Length == 0)
-            {
-                var roleNames = typeof(RoleName).GetFields();
-                foreach (var item in roleNames)
-                {
-                    string? name = item.GetRawConstantValue().ToString();
-                    if (!user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == name))
-                    {
-                        context.Result = new ForbidResult();
-                        return;
-                    }
-                }
             }
 
             // Kiểm tra xem user có vai trò "Admin" hay không

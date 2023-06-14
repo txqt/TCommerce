@@ -70,43 +70,43 @@ namespace T.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Edit(int id)
-        //{
-        //    var category = (await _userService.Get(id)).Data ??
-        //        throw new ArgumentException("No category found with the specified id");
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var user = (await _userService.Get(id)).Data ??
+                throw new ArgumentException("No user found with the specified id");
 
-        //    var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModel(), category);
+            var model = await _prepareModelService.PrepareUserModelAsync(new UserViewModel(), user);
 
-        //    return View(model);
-        //}
+            return View(model);
+        }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Edit(CategoryModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+        [HttpPost]
+        public async Task<IActionResult> Edit(UserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
-        //    var category = (await _userService.Get(model.Id)).Data ??
-        //        throw new ArgumentException("No category found with the specified id");
+            var user = (await _userService.Get(model.Id)).Data ??
+                throw new ArgumentException("No user found with the specified id");
 
-        //    category = _mapper.Map(model, category);
+            user = _mapper.Map(model, user);
 
-        //    var result = await _userService.AddOrEdit(category);
-        //    if (!result.Success)
-        //    {
-        //        SetStatusMessage($"{result.Message}");
-        //        model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
-        //        return View(model);
-        //    }
+            var result = await _userService.CreateOrEditAsync(user);
+            if (!result.Success)
+            {
+                SetStatusMessage($"{result.Message}");
+                model = await _prepareModelService.PrepareUserModelAsync(model, user);
+                return View(model);
+            }
 
-        //    SetStatusMessage("Sửa thành công");
-        //    model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
+            SetStatusMessage("Sửa thành công");
+            model = await _prepareModelService.PrepareUserModelAsync(model, user);
 
-        //    return View(model);
-        //}
+            return View(model);
+        }
 
         //[HttpPost]
         //public async Task<IActionResult> DeleteUser(int id)

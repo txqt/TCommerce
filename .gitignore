@@ -364,7 +364,7 @@ FodyWeavers.xsd
 
 .svn*
 
-T.WebApi/Migrations/*
+/Migration/
 
 /startbootstrap-sb-admin-2-gh-pages
 /startbootstrap-sb-admin-2-gh-pages.zip

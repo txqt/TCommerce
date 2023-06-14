@@ -26,7 +26,7 @@ namespace T.Web.Services.PrepareModel
         Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
         Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
             Product product, ProductCategory productCategory);
-        Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, User user);
+        Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, UserModel user);
     }
     public class PrepareModelService : IPrepareModelService
     {
@@ -241,7 +241,7 @@ namespace T.Web.Services.PrepareModel
             return model;
         }
 
-        public async Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, User user)
+        public async Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, UserModel user)
         {
             if (user is not null)
             {

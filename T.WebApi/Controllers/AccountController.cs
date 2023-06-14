@@ -135,5 +135,24 @@ namespace T.WebApi.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpPost("change-password")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> ChangePasword(ChangePasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var result = await _accountService.ChangePassword(model);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
     }
 }

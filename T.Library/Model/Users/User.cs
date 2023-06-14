@@ -28,6 +28,8 @@ namespace T.Library.Model.Users
 
         public DateTime CreatedDate { get; set; }
 
+        public bool RequirePasswordChange { get; set; }
+
         public bool Deleted { get; set; }
     }
 }

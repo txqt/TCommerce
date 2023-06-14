@@ -13,7 +13,7 @@ namespace T.Web.Services.UserService
     {
         Task<List<UserModel>> GetAllAsync();
         Task<List<Role>> GetAllRolesAsync();
-        Task<ServiceResponse<UserModel>> Get(int id);
+        Task<ServiceResponse<UserModel>> Get(Guid id);
         Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model);
         Task<ServiceResponse<bool>> DeleteAsync(int id);
     }
@@ -42,7 +42,7 @@ namespace T.Web.Services.UserService
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public async Task<ServiceResponse<UserModel>> Get(int id)
+        public async Task<ServiceResponse<UserModel>> Get(Guid id)
         {
             var result = await _httpClient.GetAsync($"api/user/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<UserModel>>();
