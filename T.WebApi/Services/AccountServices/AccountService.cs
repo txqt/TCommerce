@@ -273,6 +273,10 @@ namespace T.WebApi.Services.AccountServices
             {
                 return new ServiceErrorResponse<bool>("Tài khoản đã tồn tại");
             }
+
+            if (!AppUtilities.IsValidEmail(request.Email))
+                return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
+
             if (await _userManager.FindByEmailAsync(request.Email) != null)
             {
                 return new ServiceErrorResponse<bool>("Email đã tồn tại");
@@ -280,9 +284,6 @@ namespace T.WebApi.Services.AccountServices
 
             if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) != null)
                 return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
-
-            if (!AppUtilities.IsValidEmail(request.Email))
-                return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
             user = new User()
             {

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Web.Services.CategoryService;
 using T.Library.Model.ViewsModel;
 using T.Library.Model.Users;
+using T.Web.Services.UserService;
 
 namespace T.Web.Services.PrepareModel
 {
@@ -25,7 +26,7 @@ namespace T.Web.Services.PrepareModel
         Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
         Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
             Product product, ProductCategory productCategory);
-        Task<UserModel> PrepareUserModelAsync(UserModel model, User user);
+        Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, User user);
     }
     public class PrepareModelService : IPrepareModelService
     {
@@ -34,9 +35,10 @@ namespace T.Web.Services.PrepareModel
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly IUserService _userService;
         private readonly IProductCategoryService productCategoryService;
         public PrepareModelService(IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService,
-            IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService)
+            IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService, IUserService userService)
         {
             _productAttributeService = productAttributeService;
             _productAttributeMappingService = productAttributeMappingService;
@@ -44,6 +46,7 @@ namespace T.Web.Services.PrepareModel
             _productService = productService;
             _categoryService = categoryService;
             this.productCategoryService = productCategoryService;
+            _userService = userService;
         }
 
         public async Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category)
@@ -238,9 +241,24 @@ namespace T.Web.Services.PrepareModel
             return model;
         }
 
-        public Task<UserModel> PrepareUserModelAsync(UserModel model, User user)
+        public async Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, User user)
         {
-            throw new NotImplementedException();
+            if (user is not null)
+            {
+                model ??= new UserViewModel()
+                {
+                    Id = user.Id
+                };
+                _mapper.Map(user, model);
+            }
+
+            model.AvailableRoles = (await _userService.GetAllRolesAsync()).Select(role => new SelectListItem
+            {
+                Text = role.Name,
+                Value = role.Name
+            }).ToList();
+
+            return model;
         }
     }
 }

@@ -13,20 +13,32 @@ namespace T.WebApi.Controllers
     public class ProductAttributeMappingController : ControllerBase
     {
         private readonly IProductAttributeMappingService _productAttributeMappingService;
+        private readonly IProductService _productService;
+        private readonly IProductAttributeService _productAttributeService;
 
-        public ProductAttributeMappingController(IProductAttributeMappingService productAttributeMappingService)
+        public ProductAttributeMappingController(IProductAttributeMappingService productAttributeMappingService, IProductService productService, IProductAttributeService productAttributeService)
         {
             _productAttributeMappingService = productAttributeMappingService;
+            _productService = productService;
+            _productAttributeService = productAttributeService;
         }
 
         [HttpPost(APIRoutes.AddOrEdit)]
         public async Task<ActionResult> AddProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
         {
+            //try to get a product with the specified id
+            var product = (await _productService.Get(productAttributeMapping.ProductId)).Data ??
+              throw new ArgumentException("No product found with the specified id");
+
+            var productAttribute = (await _productAttributeService.Get(productAttributeMapping.ProductAttributeId)).Data ??
+                throw new ArgumentException("No product attribute found with the specified id");
+
             var result = await _productAttributeMappingService.AddOrUpdateProductAttributeMapping(productAttributeMapping);
             if (!result.Success)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 

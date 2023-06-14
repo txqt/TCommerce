@@ -12,69 +12,63 @@ using T.Web.Services.UserService;
 namespace T.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Route("/admin/category/[action]")]
+    [Route("/admin/user/[action]")]
     [CustomAuthorizationFilter(RoleName.Admin)]
     public class UserController : BaseController
     {
-        //private readonly IUserService _userService;
-        //private readonly IMapper _mapper;
-        //private readonly IPrepareModelService _prepareModelService;
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
+        private readonly IPrepareModelService _prepareModelService;
 
-        //public UserController(IUserService userService, IMapper mapper, IPrepareModelService prepareModelService)
-        //{
-        //    _userService = userService;
-        //    _mapper = mapper;
-        //    _prepareModelService = prepareModelService;
-        //}
+        public UserController(IUserService userService, IMapper mapper, IPrepareModelService prepareModelService)
+        {
+            _userService = userService;
+            _mapper = mapper;
+            _prepareModelService = prepareModelService;
+        }
 
-        //public IActionResult Index()
-        //{
-        //    return View(new CategoryModel());
-        //}
+        public IActionResult Index()
+        {
+            return View(new UserModel());
+        }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllAsync()
-        //{
-        //    var categoryList = await _userService.GetAllAsync();
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var userList = await _userService.GetAllAsync();
 
-        //    var listModel = _mapper.Map<List<CategoryModel>>(categoryList);
-        //    foreach (var item in listModel)
-        //    {
-        //        if (item.ParentCategoryId > 0)
-        //        {
-        //            item.ParentCategoryName = (await _userService.Get(item.ParentCategoryId)).Data.Name;
-        //        }
-        //    }
+            return Json(new { data = userList });
+        }
 
-        //    return Json(new { data = listModel });
-        //}
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            var model = await _prepareModelService.PrepareUserModelAsync(new UserViewModel(), null);
 
-        //[HttpGet]
-        //public async Task<IActionResult> Create()
-        //{
-        //    var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModel(), null);
+            return View(model);
+        }
 
-        //    return View(model);
-        //}
+        [HttpPost]
+        public async Task<IActionResult> Create(UserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model = await _prepareModelService.PrepareUserModelAsync(new UserViewModel(), null);
+                return View(model);
+            }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Create(UserModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+            var userModel = _mapper.Map<UserModel>(model);
 
-        //    var result = await _userService.CreateOrEditAsync(model);
+            var result = await _userService.CreateOrEditAsync(userModel);
 
-        //    if (!result.Success)
-        //    {
-        //        ModelState.AddModelError(string.Empty, result.Message);
-        //        return View(model);
-        //    }
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View(model);
+            }
 
-        //    return RedirectToAction(nameof(Index));
-        //}
+            return RedirectToAction(nameof(Index));
+        }
 
         //[HttpGet]
         //public async Task<IActionResult> Edit(int id)
@@ -115,7 +109,7 @@ namespace T.Web.Areas.Admin.Controllers
         //}
 
         //[HttpPost]
-        //public async Task<IActionResult> DeleteCategory(int id)
+        //public async Task<IActionResult> DeleteUser(int id)
         //{
 
         //    var result = await _userService.Delete(id);

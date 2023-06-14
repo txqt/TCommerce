@@ -28,7 +28,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<UserModel>>> Get(int id)
+        public async Task<ActionResult<ServiceResponse<UserModel>>> Get(Guid id)
         {
             return await _userService.Get(id);
         }
@@ -53,6 +53,12 @@ namespace T.WebApi.Controllers
                 return BadRequest(result);
 
             return Ok(result);
+        }
+
+        [HttpGet("all-roles")]
+        public async Task<ActionResult> GetAllRoles()
+        {
+            return Ok(await _userService.GetAllRolesAsync());
         }
     }
 }

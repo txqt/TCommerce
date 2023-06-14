@@ -55,6 +55,8 @@ namespace T.Web.Profiles
                 .ReverseMap();
             CreateMap<Category, CategoryModel>()
                 .ReverseMap();
+            CreateMap<UserModel, UserViewModel>()
+                .ReverseMap();
             CreateMap<ProductCategoryModel, ProductCategory>()
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))

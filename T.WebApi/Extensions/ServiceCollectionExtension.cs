@@ -181,7 +181,7 @@ namespace T.WebApi.Extensions
         public static IServiceCollection AddIdentityConfig(this IServiceCollection services)
         {
             services.AddIdentity<User, Library.Model.Users.Role>()
-                .AddEntityFrameworkStores<DatabaseContext>().AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<DatabaseContext>()
                 .AddDefaultTokenProviders()
                 .AddPasswordValidator<CustomPasswordValidator<User>>();
             services.Configure<IdentityOptions>(options =>

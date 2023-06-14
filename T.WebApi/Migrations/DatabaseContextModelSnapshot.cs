@@ -196,7 +196,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9348),
+                            CreatedOnUtc = new DateTime(2023, 6, 11, 13, 3, 4, 965, DateTimeKind.Utc).AddTicks(7834),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -214,7 +214,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9351),
+                            CreatedOnUtc = new DateTime(2023, 6, 11, 13, 3, 4, 965, DateTimeKind.Utc).AddTicks(7837),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -232,7 +232,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9353),
+                            CreatedOnUtc = new DateTime(2023, 6, 11, 13, 3, 4, 965, DateTimeKind.Utc).AddTicks(7838),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -250,7 +250,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9355),
+                            CreatedOnUtc = new DateTime(2023, 6, 11, 13, 3, 4, 965, DateTimeKind.Utc).AddTicks(7839),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -268,7 +268,7 @@ namespace T.WebApi.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedOnUtc = new DateTime(2023, 5, 28, 15, 7, 54, 498, DateTimeKind.Utc).AddTicks(9356),
+                            CreatedOnUtc = new DateTime(2023, 6, 11, 13, 3, 4, 965, DateTimeKind.Utc).AddTicks(7840),
                             Deleted = false,
                             DisplayOrder = 0,
                             IncludeInTopMenu = false,
@@ -1880,6 +1880,9 @@ namespace T.WebApi.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("Dob")
                         .HasColumnType("datetime2");

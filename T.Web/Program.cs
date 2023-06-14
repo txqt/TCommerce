@@ -14,6 +14,7 @@ using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.ProductService;
+using T.Web.Services.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ builder.Services.AddTransient<IProductAttributeValueService, ProductAttributeVal
 builder.Services.AddTransient<IPrepareModelService, PrepareModelService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
+builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,

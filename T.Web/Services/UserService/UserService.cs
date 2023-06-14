@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using T.Library.Model.ViewsModel;
+using System.Net.Http.Headers;
 
 namespace T.Web.Services.UserService
 {
     public interface IUserService
     {
         Task<List<UserModel>> GetAllAsync();
+        Task<List<Role>> GetAllRolesAsync();
         Task<ServiceResponse<UserModel>> Get(int id);
         Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model);
         Task<ServiceResponse<bool>> DeleteAsync(int id);
@@ -18,34 +20,44 @@ namespace T.Web.Services.UserService
     public class UserService : IUserService
     {
         private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(HttpClient httpClient)
+        public UserService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
+            var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
         public async Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model)
         {
-            var result = await _httpClient.PostAsJsonAsync($"api/category/{APIRoutes.AddOrEdit}", model);
+            var result = await _httpClient.PostAsJsonAsync($"api/user/{APIRoutes.AddOrEdit}", model);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
         public async Task<ServiceResponse<bool>> DeleteAsync(int id)
         {
-            var result = await _httpClient.DeleteAsync($"api/category/delete/{id}");
+            var result = await _httpClient.DeleteAsync($"api/user/delete/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
         public async Task<ServiceResponse<UserModel>> Get(int id)
         {
-            var result = await _httpClient.GetAsync($"api/category/{id}");
+            var result = await _httpClient.GetAsync($"api/user/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<UserModel>>();
         }
 
         public async Task<List<UserModel>> GetAllAsync()
         {
-            var result = await _httpClient.GetAsync($"api/category/{APIRoutes.GetAll}");
+            var result = await _httpClient.GetAsync($"api/user/{APIRoutes.GetAll}");
             return await result.Content.ReadFromJsonAsync<List<UserModel>>();
+        }
+
+        public async Task<List<Role>> GetAllRolesAsync()
+        {
+            var result = await _httpClient.GetAsync($"api/user/all-roles");
+            return await result.Content.ReadFromJsonAsync<List<Role>>();
         }
     }
 }

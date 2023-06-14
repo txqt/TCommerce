@@ -9,17 +9,18 @@ namespace T.Web.Attribute
 {
     public class CustomAuthorizationFilter : AuthorizeAttribute, IAuthorizationFilter
     {
-        private readonly string _role;
-        public CustomAuthorizationFilter(string role)
+        private readonly string[] _roles;
+
+        public CustomAuthorizationFilter(params string[] roles)
         {
-            _role = role;
+            _roles = roles;
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             // Kiểm tra xem Action hoặc Controller có bị đánh dấu với [AllowAnonymous] không
             bool allowAnonymous = context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousAttribute))
-            || context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousFilter));
+                || context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousFilter));
             if (allowAnonymous)
             {
                 return;
@@ -31,23 +32,19 @@ namespace T.Web.Attribute
             var user = context.HttpContext.User;
 
             // Kiểm tra xem user đã đăng nhập hay chưa
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
             if (!user.Identity.IsAuthenticated)
             {
                 context.Result = new UnauthorizedResult();
                 return;
             }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
-            if (_role == null)
+            if (_roles == null || _roles.Length == 0)
             {
-                var rolenames = typeof(RoleName).GetFields();
-                foreach (var item in rolenames)
+                var roleNames = typeof(RoleName).GetFields();
+                foreach (var item in roleNames)
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     string? name = item.GetRawConstantValue().ToString();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-                    if (!user.HasClaim(c => c.Type == ClaimTypes.Role && item.Name == name))
+                    if (!user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == name))
                     {
                         context.Result = new ForbidResult();
                         return;
@@ -55,17 +52,29 @@ namespace T.Web.Attribute
                 }
             }
 
+            // Kiểm tra xem user có vai trò "Admin" hay không
             if (user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == RoleName.Admin))
             {
                 return;
             }
 
-            // Kiểm tra xem user có quyền truy cập vào tài nguyên này hay không
-            if (!user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == _role))
+            bool hasRequiredRole = false;
+            foreach (var role in _roles)
+            {
+                if (user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == role))
+                {
+                    hasRequiredRole = true;
+                    break;
+                }
+            }
+
+            // Kiểm tra xem user có vai trò cần thiết hay không
+            if (!hasRequiredRole)
             {
                 context.Result = new ForbidResult();
                 return;
             }
         }
     }
+
 }

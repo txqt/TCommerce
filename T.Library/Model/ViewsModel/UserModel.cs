@@ -26,7 +26,7 @@ namespace T.Library.Model.ViewsModel
 
         public string Email { get; set; }
 
-        [Display(Name = "User Name")]
+        [Display(Name = "Tên đăng nhập")]
         [Required(ErrorMessage = "Vui lòng nhập {0}")]
 
         public string UserName { get; set; }
@@ -46,13 +46,15 @@ namespace T.Library.Model.ViewsModel
 
         public string PhoneNumber { get; set; }
 
-        public List<string> Roles { get; set; }
+        public IList<string> RoleNames { get; set; }
+
+        public DateTime Dob { get; set; } // date of birth
 
         public DateTime CreatedDate { get; set; }
 
         public UserModel()
         {
-            Roles = new List<string>();
+            RoleNames = new List<string>();
         }
     }
 }
