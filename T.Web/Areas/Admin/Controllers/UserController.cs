@@ -86,6 +86,7 @@ namespace T.Web.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
+                model = await _prepareModelService.PrepareUserModelAsync(new UserViewModel(), null);
                 return View(model);
             }
 

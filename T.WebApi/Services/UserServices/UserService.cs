@@ -39,21 +39,22 @@ namespace T.WebApi.Services.UserServices
         {
             using (_context)
             {
+                var userTable = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.Id);
+
                 if (!AppUtilities.IsValidEmail(model.Email))
                     return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
-                if (await _userManager.FindByEmailAsync(model.Email) != null)
+                if ((await _userManager.FindByEmailAsync(model.Email) != null) && userTable.Email != model.Email)
                 {
                     return new ServiceErrorResponse<bool>("Email đã tồn tại");
                 }
 
-                if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber) != null)
+                if ((await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber) != null) && userTable.PhoneNumber != model.PhoneNumber)
                     return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
                 model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
-                model.RequirePasswordChange = true;
 
-                var userTable = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.Id);
+                
                 if (userTable == null)
                 {
                     var user = new User();
@@ -63,6 +64,7 @@ namespace T.WebApi.Services.UserServices
                     user.PhoneNumber = model.PhoneNumber;
                     user.UserName = model.UserName;
                     user.CreatedDate = AppExtensions.GetDateTimeNow();
+                    user.RequirePasswordChange = true;
                     var result = await _userManager.CreateAsync(user, model.Password);
 
                     if (model.RoleNames != null && model.RoleNames.Any())
@@ -97,7 +99,7 @@ namespace T.WebApi.Services.UserServices
                     userTable.LastName = model.LastName;
                     userTable.PhoneNumber = model.PhoneNumber;
                     userTable.UserName = model.UserName;
-
+                    userTable.RequirePasswordChange = true;
                     if (model.RoleNames != null && model.RoleNames.Any())
                     {
                         var userRoles = await _userManager.GetRolesAsync(userTable);
