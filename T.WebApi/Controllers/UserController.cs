@@ -46,7 +46,7 @@ namespace T.WebApi.Controllers
 
         [HttpDelete("delete/{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             var result = await _userService.DeleteAsync(id);
             if (!result.Success)

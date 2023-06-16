@@ -15,7 +15,7 @@ namespace T.Web.Services.UserService
         Task<List<Role>> GetAllRolesAsync();
         Task<ServiceResponse<UserModel>> Get(Guid id);
         Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model);
-        Task<ServiceResponse<bool>> DeleteAsync(int id);
+        Task<ServiceResponse<bool>> DeleteAsync(Guid id);
     }
     public class UserService : IUserService
     {
@@ -36,7 +36,7 @@ namespace T.Web.Services.UserService
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public async Task<ServiceResponse<bool>> DeleteAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteAsync(Guid id)
         {
             var result = await _httpClient.DeleteAsync($"api/user/delete/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();

@@ -18,7 +18,7 @@ namespace T.WebApi.Services.UserServices
         Task<List<Role>> GetAllRolesAsync();
         Task<ServiceResponse<UserModel>> Get(Guid id);
         Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model);
-        Task<ServiceResponse<bool>> DeleteAsync(int id);
+        Task<ServiceResponse<bool>> DeleteAsync(Guid id);
     }
     public class UserService : IUserService
     {
@@ -44,12 +44,12 @@ namespace T.WebApi.Services.UserServices
                 if (!AppUtilities.IsValidEmail(model.Email))
                     return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
-                if ((await _userManager.FindByEmailAsync(model.Email) != null) && userTable.Email != model.Email)
+                if ((await _userManager.FindByEmailAsync(model.Email) != null) && userTable?.Email != model.Email)
                 {
                     return new ServiceErrorResponse<bool>("Email đã tồn tại");
                 }
 
-                if ((await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber) != null) && userTable.PhoneNumber != model.PhoneNumber)
+                if ((await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber) != null) && userTable?.PhoneNumber != model.PhoneNumber)
                     return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
                 model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
@@ -65,6 +65,7 @@ namespace T.WebApi.Services.UserServices
                     user.UserName = model.UserName;
                     user.CreatedDate = AppExtensions.GetDateTimeNow();
                     user.RequirePasswordChange = true;
+                    user.Deleted = user.Deleted;
                     var result = await _userManager.CreateAsync(user, model.Password);
 
                     if (model.RoleNames != null && model.RoleNames.Any())
@@ -100,6 +101,7 @@ namespace T.WebApi.Services.UserServices
                     userTable.PhoneNumber = model.PhoneNumber;
                     userTable.UserName = model.UserName;
                     userTable.RequirePasswordChange = true;
+                    userTable.Deleted = userTable.Deleted;
                     if (model.RoleNames != null && model.RoleNames.Any())
                     {
                         var userRoles = await _userManager.GetRolesAsync(userTable);
@@ -131,16 +133,17 @@ namespace T.WebApi.Services.UserServices
             }
         }
 
-        public async Task<ServiceResponse<bool>> DeleteAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteAsync(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString()); ;
 
-            if (user == null || user.Deleted == true) { throw new Exception($"Cannot find user: {id}"); }
+            if (user == null) { throw new Exception($"Cannot find user: {id}"); }
+
             user.Deleted = true;
 
-            await _userManager.UpdateAsync(user);
-            var result = await _context.SaveChangesAsync();
-            if (result == 0)
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
             {
                 return new ServiceErrorResponse<bool>("Delete user failed");
             }
@@ -172,7 +175,7 @@ namespace T.WebApi.Services.UserServices
         {
             using (_context)
             {
-                var model = _mapper.Map<List<UserModel>>(await _context.Users.ToListAsync());
+                var model = _mapper.Map<List<UserModel>>(await _context.Users.Where(x=>x.Deleted == false).ToListAsync());
                 return model;
             }
         }
