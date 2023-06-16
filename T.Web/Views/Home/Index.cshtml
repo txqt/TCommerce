@@ -1,9 +1,70 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Client homepage</p>
+<div class="carousel__container">
+    <div class="carousel">
+        <div>
+            <div class="carousel__image">
+                <img src="~/img/download.jpg" alt="Slide 1">
+            </div>
+        </div>
+        <div>
+            <div class="carousel__image">
+                <img src="~/img/pd-content-1667289009-5182.jpg" alt="Slide 2">
+            </div>
+        </div>
+        <div>
+            <div class="carousel__image">
+                <img src="~/img/shop-ao-khoac-nu-can-tho.jpg" alt="Slide 3">
+            </div>
+        </div>
+    </div>
+
+    <button class="carousel__prev-button">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="carousel__next-button">
+        <i class="fas fa-chevron-right"></i>
+    </button>
 </div>
 
+<script>
+    function adjustImageSize() {
+        var carouselHeight = $('.carousel').height();
+        $('.carousel__image img').each(function () {
+            var image = $(this);
+            var imageHeight = image.height();
+            var imageWidth = image.width();
+
+            if (imageHeight > carouselHeight) {
+                image.css('height', carouselHeight);
+                image.css('width', 'auto');
+            } else if (imageWidth > carouselHeight) {
+                image.css('width', '100%');
+                image.css('height', 'auto');
+            } else if (imageHeight < carouselHeight){
+                image.css('height', carouselHeight);
+                image.css('width', 'auto');
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('.carousel').slick();
+
+        $('.carousel__prev-button').click(function () {
+            $('.carousel').slick('slickPrev');
+        });
+
+        $('.carousel__next-button').click(function () {
+            $('.carousel').slick('slickNext');
+        });
+
+        adjustImageSize();
+
+        $(window).resize(function () {
+            adjustImageSize();
+        });
+    });
+</script>
