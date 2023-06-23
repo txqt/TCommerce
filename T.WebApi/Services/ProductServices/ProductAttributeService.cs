@@ -7,11 +7,11 @@ namespace T.WebApi.Services.ProductServices
 {
     public interface IProductAttributeService
     {
-        Task<List<ProductAttribute>> GetAllAsync();
-        Task<ServiceResponse<ProductAttribute>> Get(int id);
+        Task<List<ProductAttribute>> GetAllProductAttributeAsync();
+        Task<ServiceResponse<ProductAttribute>> GetProductAttributeById(int id);
         Task<ServiceResponse<bool>> CreateProductAttributeAsync(ProductAttribute productAttribute);
         Task<ServiceResponse<bool>> EditProductAttributeAsync(ProductAttribute productAttribute);
-        Task<ServiceResponse<bool>> DeleteProductAttributeAsync(int id);
+        Task<ServiceResponse<bool>> DeleteProductAttributeByIdAsync(int id);
     }
     public class ProductAttributeService : IProductAttributeService
     {
@@ -64,7 +64,7 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<ServiceResponse<ProductAttribute>> Get(int id)
+        public async Task<ServiceResponse<ProductAttribute>> GetProductAttributeById(int id)
         {
             using (_context)
             {
@@ -80,7 +80,7 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<List<ProductAttribute>> GetAllAsync()
+        public async Task<List<ProductAttribute>> GetAllProductAttributeAsync()
         {
             using(_context)
             {
@@ -89,7 +89,7 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<bool>> DeleteProductAttributeAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteProductAttributeByIdAsync(int id)
         {
             var product = await _context.ProductAttribute.FirstOrDefaultAsync(x => x.Id == id);
 

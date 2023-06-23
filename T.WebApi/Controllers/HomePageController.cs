@@ -6,15 +6,16 @@ using T.WebApi.Helpers.TokenHelpers;
 
 namespace T.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/home-page")]
     [ApiController]
-    public class HomeController : ControllerBase
+    public class HomePageController : ControllerBase
     {
         private readonly ITokenService _tokenService;
-        public HomeController(ITokenService tokenService)
+        public HomePageController(ITokenService tokenService)
         {
             _tokenService = tokenService;
         }
+
         [HttpGet]
         public async Task<ActionResult<string>> Hello()
         {

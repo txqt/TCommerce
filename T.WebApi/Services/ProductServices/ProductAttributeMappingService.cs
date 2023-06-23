@@ -13,8 +13,8 @@ namespace T.WebApi.Services.ProductServices
         Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id);
         Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int id);
         Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping);
-        Task<ServiceResponse<List<ProductAttributeValue>>> GetAllValueProductAttribute(int productAttributeMappingId);
-        Task<ServiceResponse<bool>> DeleteProductAttributeMapping(int id);
+        Task<ServiceResponse<List<ProductAttributeValue>>> GetAllValueProductAttributeByIdAsync(int productAttributeMappingId);
+        Task<ServiceResponse<bool>> DeleteProductAttributeMappingByIdAsync(int id);
     }
     public class ProductAttributeMappingService : IProductAttributeMappingService
     {
@@ -79,7 +79,7 @@ namespace T.WebApi.Services.ProductServices
             }
             return new ServiceSuccessResponse<bool>();
         }
-        public async Task<ServiceResponse<List<ProductAttributeValue>>> GetAllValueProductAttribute(int productAttributeMappingId)
+        public async Task<ServiceResponse<List<ProductAttributeValue>>> GetAllValueProductAttributeByIdAsync(int productAttributeMappingId)
         {
             var productAttributeValue = await _context.ProductAttributeValue
                                         .Where(pav => pav.ProductAttributeMappingId == productAttributeMappingId)
@@ -117,7 +117,7 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<bool>> DeleteProductAttributeMapping(int id)
+        public async Task<ServiceResponse<bool>> DeleteProductAttributeMappingByIdAsync(int id)
         {
             try
             {

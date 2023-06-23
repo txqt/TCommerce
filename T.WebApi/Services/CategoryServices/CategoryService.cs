@@ -9,10 +9,10 @@ namespace T.WebApi.Services.CategoryServices
 {
     public interface ICategoryService
     {
-        Task<List<Category>> GetAllAsync();
-        Task<ServiceResponse<Category>> Get(int id);
+        Task<List<Category>> GetAllCategoryAsync();
+        Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId);
         Task<ServiceResponse<bool>> CreateOrEditAsync(Category category);
-        Task<ServiceResponse<bool>> DeleteAsync(int id);
+        Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id);
     }
     public class CategoryService : ICategoryService
     {
@@ -67,7 +67,7 @@ namespace T.WebApi.Services.CategoryServices
             }
         }
 
-        public async Task<ServiceResponse<bool>> DeleteAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id)
         {
             try
             {
@@ -82,11 +82,11 @@ namespace T.WebApi.Services.CategoryServices
             }
         }
 
-        public async Task<ServiceResponse<Category>> Get(int id)
+        public async Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId)
         {
             using (_context)
             {
-                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id);
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == categoryId);
 
                 var response = new ServiceResponse<Category>
                 {
@@ -97,7 +97,7 @@ namespace T.WebApi.Services.CategoryServices
             }
         }
 
-        public async Task<List<Category>> GetAllAsync()
+        public async Task<List<Category>> GetAllCategoryAsync()
         {
             using (_context)
             {

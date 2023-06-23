@@ -22,13 +22,13 @@ namespace T.WebApi.Controllers
         [HttpGet(APIRoutes.GetAll)]
         public async Task<IActionResult> GetAllAsync()
         {
-            return Ok(await _productAttributeSvc.GetAllAsync());
+            return Ok(await _productAttributeSvc.GetAllProductAttributeAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<ProductAttribute>>> Get(int id)
         {
-            return await _productAttributeSvc.Get(id);
+            return await _productAttributeSvc.GetProductAttributeById(id);
         }
 
         [HttpPost(APIRoutes.Create)]
@@ -57,7 +57,7 @@ namespace T.WebApi.Controllers
         [HttpDelete("delete/{Id}")]
         public async Task<ActionResult> DeleteProduct(int Id)
         {
-            var result = await _productAttributeSvc.DeleteProductAttributeAsync(Id);
+            var result = await _productAttributeSvc.DeleteProductAttributeByIdAsync(Id);
             if (!result.Success)
             {
                 return BadRequest(result);

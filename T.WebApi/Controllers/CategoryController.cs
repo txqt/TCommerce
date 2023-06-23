@@ -20,13 +20,13 @@ namespace T.WebApi.Controllers
         [HttpGet(APIRoutes.GetAll)]
         public async Task<ActionResult> GetAll() 
         {
-            return Ok(await _categoryService.GetAllAsync());
+            return Ok(await _categoryService.GetAllCategoryAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<Category>>> Get(int id)
         {
-            return await _categoryService.Get(id);
+            return await _categoryService.GetCategoryByIdAsync(id);
         }
 
         [HttpPost(APIRoutes.AddOrEdit)]
@@ -44,7 +44,7 @@ namespace T.WebApi.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> Delete(int id)
         {
-            var result = await _categoryService.DeleteAsync(id);
+            var result = await _categoryService.DeleteCategoryByIdAsync(id);
             if (!result.Success)
                 return BadRequest(result);
 

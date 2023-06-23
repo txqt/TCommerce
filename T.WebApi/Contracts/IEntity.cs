@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Threading.Tasks;
 
 
-    public interface IEntity
-    {
-        Guid Id { get; set; }
-    }
+//    public interface IEntity
+//    {
+//        Guid Id { get; set; }
+//    }
 

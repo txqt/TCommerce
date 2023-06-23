@@ -30,7 +30,7 @@ namespace T.WebApi.Controllers
             var product = (await _productService.Get(productAttributeMapping.ProductId)).Data ??
               throw new ArgumentException("No product found with the specified id");
 
-            var productAttribute = (await _productAttributeService.Get(productAttributeMapping.ProductAttributeId)).Data ??
+            var productAttribute = (await _productAttributeService.GetProductAttributeById(productAttributeMapping.ProductAttributeId)).Data ??
                 throw new ArgumentException("No product attribute found with the specified id");
 
             var result = await _productAttributeMappingService.AddOrUpdateProductAttributeMapping(productAttributeMapping);
@@ -46,7 +46,7 @@ namespace T.WebApi.Controllers
         [HttpGet("{productAttributeMappingId}/value")]
         public async Task<ActionResult> GetAllValueAttribute(int productAttributeMappingId)
         {
-            var result = await _productAttributeMappingService.GetAllValueProductAttribute(productAttributeMappingId);
+            var result = await _productAttributeMappingService.GetAllValueProductAttributeByIdAsync(productAttributeMappingId);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -72,7 +72,7 @@ namespace T.WebApi.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> DeleteProductAttributeMapping(int productAttributeId)
         {
-            var result = await _productAttributeMappingService.DeleteProductAttributeMapping(productAttributeId);
+            var result = await _productAttributeMappingService.DeleteProductAttributeMappingByIdAsync(productAttributeId);
             if (!result.Success)
             {
                 return BadRequest(result);
