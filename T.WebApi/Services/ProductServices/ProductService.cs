@@ -45,7 +45,7 @@ namespace T.WebApi.Services.ProductServices
                 var list_product = new List<Product>();
 
                 list_product = await _context.Product
-                    .Search(productParameters.searchText)
+                    .SearchByString(productParameters.searchText)
                     .Sort(productParameters.OrderBy)//sort by product coloumn 
                     .Include(x => x.ProductPictures)
                     .Where(x => x.Deleted == false)
@@ -271,7 +271,7 @@ namespace T.WebApi.Services.ProductServices
             {
                 var apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
 
-                var product = await _context.Product.FindProductByIdAsync(productId).FirstOrDefaultAsync()
+                var product = await _context.Product.FindByIntId(productId).FirstOrDefaultAsync()
                 ?? throw new ArgumentException("No product found with the specified id");
 
                 var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.ProductId == product.Id).ToListAsync()

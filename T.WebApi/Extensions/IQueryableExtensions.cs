@@ -7,7 +7,7 @@ namespace T.WebApi.Extensions
 {
     public static class IQueryableExtensions
     {
-        public static IQueryable<T> Search<T>(this IQueryable<T> entities, string searchTerm)
+        public static IQueryable<T> SearchByString<T>(this IQueryable<T> entities, string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return entities;
@@ -21,7 +21,7 @@ namespace T.WebApi.Extensions
             );
         }
 
-        public static IQueryable<T> FindById<T>(this IQueryable<T> entities, int id)
+        public static IQueryable<T> FindByIntId<T>(this IQueryable<T> entities, int id)
         {
             if (id < 0)
                 return entities;

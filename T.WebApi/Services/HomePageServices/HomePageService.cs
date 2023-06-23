@@ -6,5 +6,9 @@
     }
     public class HomePageService : IHomePageService
     {
+        public Task<List<string>> GetAllCategoryShowOnHomePage()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
