@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using T.Library.Model;
 using T.Library.Model.Users;
 using T.WebApi.Helpers.TokenHelpers;
+using T.WebApi.Services.HomePageServices;
 
 namespace T.WebApi.Controllers
 {
@@ -11,17 +13,17 @@ namespace T.WebApi.Controllers
     public class HomePageController : ControllerBase
     {
         private readonly ITokenService _tokenService;
-        public HomePageController(ITokenService tokenService)
+        private readonly IHomePageService _homePageService;
+        public HomePageController(ITokenService tokenService, IHomePageService homePageService)
         {
             _tokenService = tokenService;
+            _homePageService = homePageService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<string>> Hello()
+        [HttpGet("all-product-categories")]
+        public async Task<ActionResult<Category>> ShowCategoriesOnHomePage()
         {
-           
-
-            return "Hello";
+            return Ok(await _homePageService.ShowCategoriesOnHomePage());
         }
     }
 }

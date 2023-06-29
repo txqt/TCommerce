@@ -1,14 +1,25 @@
-﻿namespace T.WebApi.Services.HomePageServices
+﻿using Microsoft.EntityFrameworkCore;
+using T.Library.Model;
+using T.WebApi.Database.ConfigurationDatabase;
+
+namespace T.WebApi.Services.HomePageServices
 {
     public interface IHomePageService
     {
-        Task<List<string>> GetAllCategoryShowOnHomePage();
+        Task<List<Category>> ShowCategoriesOnHomePage();
     }
     public class HomePageService : IHomePageService
     {
-        public Task<List<string>> GetAllCategoryShowOnHomePage()
+        private readonly DatabaseContext _context;
+
+        public HomePageService(DatabaseContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task<List<Category>> ShowCategoriesOnHomePage()
+        {
+            return await _context.Category.Where(x=>x.IncludeInTopMenu && x.Published).ToListAsync();
         }
     }
 }

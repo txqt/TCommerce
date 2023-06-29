@@ -1,54 +1,47 @@
-﻿
-
-@*<script>
+﻿<ul class="top-menu">
+    <li>
+        <a href="#">Links</a>
+        <ul>
+            <li><a href="tel:#"><i class="icon-phone"></i>Call: +0123 456 789</a></li>
+            <li><a href="wishlist.html"><i class="icon-heart-o"></i>Wishlist <span>(3)</span></a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li>Xin chào @User.Identity.Name!</li>
+                <li><a href="#" id="logoutLink">Đăng xuất</a></li>
+                @if (User.IsInRole(RoleName.Admin))
+                {
+                    <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin mode</a></li>
+                }
+                
+            }
+            else
+            {
+                <li><a asp-controller="Account" asp-action="Login"><i class="icon-user"></i>Login</a></li>
+            }
+            
+        </ul>
+    </li>
+</ul><!-- End .top-menu -->
+<script>
     $(document).ready(function () {
-        $('#logout-btn').click(function (e) {
+        $('#logoutLink').click(function (e) {
             e.preventDefault();
+
             $.ajax({
+                url: '/Account/Logout',
                 type: 'POST',
-                url: '/account/Logout',
-                success: function () {
+                contentType: 'application/json',
+                success: function (response) {
+                    // Xử lý phản hồi từ action đăng xuất ở đây
+                    // Ví dụ: chuyển hướng người dùng đến trang đăng nhập
                     window.location.href = '/Account/Login';
                 },
-                error: function () {
-                    alert('Đăng xuất không thành công.');
+                error: function (error) {
+                    console.error('Đã xảy ra lỗi:', error);
                 }
             });
         });
     });
-</script>*@
-
-
-@if (User.Identity.IsAuthenticated)
-{
-    <form  asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
-        <ul class="nav navbar-nav navbar-right">
-            <li class="nav-item">
-                <a class="nav-link" asp-controller="Manage" asp-action="Index" title="Manage">Xin chào @User.Identity.Name!</a>
-            </li>
-            <li class="nav-item">
-                <button type="submit" class="btn btn-link navbar-btn navbar-link">Đăng xuất</button>
-            </li>
-        </ul>
-
-    </form>
-    @if (User.IsInRole(RoleName.Admin))
-    {
-        <ul class="nav navbar-nav navbar-right">
-            <li class="nav-item">
-                <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index" title="Admin page">Administration Mode</a>
-            </li>
-        </ul>
-    }
-}
-else
-{
-    <ul class="nav navbar-nav navbar-right">
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Account" asp-action="Register">Đăng ký</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Account" asp-action="Login">Đăng nhập</a>
-        </li>
-    </ul>
-}
+</script>

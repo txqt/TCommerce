@@ -24,6 +24,7 @@ using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.ProductService;
 using T.WebApi.Services.CategoryServices;
 using T.WebApi.Services.UserServices;
+using T.WebApi.Services.HomePageServices;
 
 namespace T.WebApi.Extensions
 {
@@ -132,6 +133,7 @@ namespace T.WebApi.Extensions
             services.AddTransient<IProductCategoryService, ProductCategoryService>();
             services.AddTransient<IPictureService, PictureService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IHomePageService, HomePageService>();
             services.AddScoped<ValidationFilterAttribute>();
 
             return services;
