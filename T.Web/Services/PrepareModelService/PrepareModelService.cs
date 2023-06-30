@@ -10,6 +10,7 @@ using T.Web.Services.CategoryService;
 using T.Library.Model.ViewsModel;
 using T.Library.Model.Users;
 using T.Web.Services.UserService;
+using T.Library.Model.Common;
 
 namespace T.Web.Services.PrepareModel
 {
@@ -37,8 +38,10 @@ namespace T.Web.Services.PrepareModel
         private readonly ICategoryService _categoryService;
         private readonly IUserService _userService;
         private readonly IProductCategoryService productCategoryService;
+        private string apiUrl = null;
+        private readonly IConfiguration _configuration;
         public PrepareModelService(IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService,
-            IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService, IUserService userService)
+            IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService, IUserService userService, IConfiguration configuration)
         {
             _productAttributeService = productAttributeService;
             _productAttributeMappingService = productAttributeMappingService;
@@ -47,11 +50,13 @@ namespace T.Web.Services.PrepareModel
             _categoryService = categoryService;
             this.productCategoryService = productCategoryService;
             _userService = userService;
+            _configuration = configuration;
+            apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
         }
 
         public async Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category)
         {
-            if(category is not null)
+            if (category is not null)
             {
                 model ??= new CategoryModel()
                 {
@@ -181,14 +186,14 @@ namespace T.Web.Services.PrepareModel
                 Id = productPicture.Id,
                 ProductId = productPicture.ProductId,
                 PictureId = productPicture.PictureId,
-                PictureUrl = productPicture.Picture.UrlPath,
+                PictureUrl = apiUrl + productPicture.Picture.UrlPath,
                 DisplayOrder = productPicture.DisplayOrder
             }).ToList();
 
             return model;
         }
 
-        public async Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model, 
+        public async Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
             Product product, ProductCategory productCategory)
         {
             if (productCategory != null)

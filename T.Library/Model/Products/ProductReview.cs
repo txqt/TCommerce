@@ -1,4 +1,6 @@
-﻿namespace T.Library.Model
+﻿using T.Library.Model.Common;
+
+namespace T.Library.Model
 {
     /// <summary>
     /// Represents a product review

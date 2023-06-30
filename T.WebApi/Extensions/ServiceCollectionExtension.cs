@@ -64,7 +64,10 @@ namespace T.WebApi.Extensions
         // Thêm xác thực và phân quyền JWT vào dịch vụ
         public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<JwtOptions>(configuration.GetSection("Authorization"));
+            var jwtSection = configuration.GetSection("Authorization");
+            var jwtOptions = new JwtOptions();
+            jwtSection.Bind(jwtOptions);
+            services.Configure<JwtOptions>(jwtSection);
 
             services.AddAuthorization(options =>
             {
@@ -74,8 +77,8 @@ namespace T.WebApi.Extensions
                     policy.RequireAuthenticatedUser();
                 });
 
-                var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-                    .RequireAuthenticatedUser();
+                var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme);
+                defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
                 options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
             });
 
@@ -94,15 +97,18 @@ namespace T.WebApi.Extensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.AccessTokenKey)),
                     ClockSkew = TimeSpan.Zero,
                 };
 
                 options.Events = new JwtBearerEvents
                 {
-                    // Xử lý token trong WebSocket Hub
                     OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Query["access_token"];
+
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/appHub"))
                         {
@@ -115,6 +121,7 @@ namespace T.WebApi.Extensions
 
             return services;
         }
+
 
         // Thêm các dịch vụ cần thiết
         public static IServiceCollection AddServices(this IServiceCollection services)

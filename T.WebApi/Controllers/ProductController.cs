@@ -94,6 +94,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("{productId}/add-new-picture")]
+        //[AllowAnonymous]
         public async Task<ActionResult> AddProductImage(List<IFormFile> formFiles, int productId)
         {
             var result = await _productService.AddProductImage(formFiles, productId);

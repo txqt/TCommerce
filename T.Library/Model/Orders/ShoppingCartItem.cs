@@ -1,4 +1,6 @@
-﻿namespace T.Library.Model.Orders
+﻿using T.Library.Model.Common;
+
+namespace T.Library.Model.Orders
 {
     /// <summary>
     /// Represents a shopping cart item

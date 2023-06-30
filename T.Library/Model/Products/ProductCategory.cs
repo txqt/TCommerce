@@ -1,4 +1,4 @@
-﻿using T.Library.Model;
+﻿using T.Library.Model.Common;
 
 namespace T.Library.Model
 {

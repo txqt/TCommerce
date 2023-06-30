@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using T.Library.Model;
+using T.Library.Model.Common;
 using T.Library.Model.Enum;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;

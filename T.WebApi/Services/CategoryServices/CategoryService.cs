@@ -1,9 +1,9 @@
 ﻿using T.Library.Model.Response;
-using T.Library.Model;
 using Microsoft.EntityFrameworkCore;
 using T.WebApi.Database.ConfigurationDatabase;
 using AutoMapper;
 using T.WebApi.Extensions;
+using T.Library.Model.Common;
 
 namespace T.WebApi.Services.CategoryServices
 {

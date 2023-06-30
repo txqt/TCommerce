@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
+using T.Library.Model.Common;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Database.ConfigurationDatabase;
@@ -29,6 +30,7 @@ namespace T.WebApi.Services.ProductServices
         private readonly IPictureService _pictureService;
         private readonly IConfiguration _configuration;
         private readonly IHostEnvironment _environment;
+        private string apiUrl;
         public ProductService(DatabaseContext context, IMapper mapper, IPictureService pictureService, IConfiguration configuration, IHostEnvironment environment)
         {
             _context = context;
@@ -36,6 +38,7 @@ namespace T.WebApi.Services.ProductServices
             _pictureService = pictureService;
             _configuration = configuration;
             _environment = environment;
+            apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
         }
 
         public async Task<PagedList<Product>> GetAll(ProductParameters productParameters)
@@ -160,6 +163,10 @@ namespace T.WebApi.Services.ProductServices
                     .Include(x => x.Picture)
                     .ToListAsync();
 
+                foreach (var pp in productPicture)
+                {
+                    pp.Picture.UrlPath = apiUrl + pp.Picture.UrlPath;
+                }
                 var response = new ServiceResponse<List<ProductPicture>>
                 {
                     Data = productPicture,
@@ -178,7 +185,6 @@ namespace T.WebApi.Services.ProductServices
             {
                 try
                 {
-                    var apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
 
                     string path = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/");
                     if (!Directory.Exists(path))
@@ -201,7 +207,7 @@ namespace T.WebApi.Services.ProductServices
 
                             var picture = new Picture
                             {
-                                UrlPath = apiUrl + "/uploads/" + newFileName
+                                UrlPath = "/uploads/" + newFileName
                             };
                             _context.Picture.Add(picture);
                             await _context.SaveChangesAsync();
@@ -228,8 +234,6 @@ namespace T.WebApi.Services.ProductServices
         {
             try
             {
-                var apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
-
                 var product = await FindProductByIdAsync(productId)
                 ?? throw new ArgumentException("No product found with the specified id");
 
@@ -239,7 +243,7 @@ namespace T.WebApi.Services.ProductServices
                 var picture = await _context.Picture.FirstOrDefaultAsync(x => x.Id == productPicture.PictureId)
                     ?? throw new ArgumentException("No picture found with the specified id");
 
-                var fileName = picture.UrlPath.Replace(apiUrl + "/uploads/", "");
+                var fileName = picture.UrlPath.Replace("/uploads/", "");
                 var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", fileName);
                 if (File.Exists(filePath))
                 {
@@ -269,8 +273,6 @@ namespace T.WebApi.Services.ProductServices
         {
             try
             {
-                var apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
-
                 var product = await _context.Product.FindByIntId(productId).FirstOrDefaultAsync()
                 ?? throw new ArgumentException("No product found with the specified id");
 
@@ -281,7 +283,7 @@ namespace T.WebApi.Services.ProductServices
                 {
                     var picture = await _context.Picture.FirstOrDefaultAsync(x => x.Id == item.PictureId)
                     ?? throw new ArgumentException("No picture found with the specified id");
-                    var fileName = picture.UrlPath.Replace(apiUrl + "/uploads/", "");
+                    var fileName = picture.UrlPath.Replace("/uploads/", "");
                     var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", fileName);
                     if (File.Exists(filePath))
                     {

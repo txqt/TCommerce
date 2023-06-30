@@ -66,7 +66,7 @@ namespace T.WebApi.Helpers.TokenHelpers
             issuer: _jwtOptions.Value.Issuer,
             audience: _jwtOptions.Value.Audience,
                 claims: claims,
-                expires: AppExtensions.GetDateTimeNow().AddHours(Convert.ToDouble(_jwtOptions.Value.AccessTokenExpirationInHours)),
+                expires: DateTime.UtcNow.AddHours(Convert.ToDouble(_jwtOptions.Value.AccessTokenExpirationInHours)),
                 signingCredentials: signingCredentials);
 
             return tokenOptions;

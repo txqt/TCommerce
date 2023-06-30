@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using T.Library.Model;
+using T.Library.Model.Common;
 using T.WebApi.Database.ConfigurationDatabase;
 
 namespace T.WebApi.Services.HomePageServices

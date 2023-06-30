@@ -1,6 +1,6 @@
 ﻿using T.Library.Model.Response;
-using T.Library.Model;
 using System.Net.Http.Json;
+using T.Library.Model.Common;
 
 namespace T.Web.Services.CategoryService
 {

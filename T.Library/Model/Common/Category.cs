@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace T.Library.Model
+namespace T.Library.Model.Common
 {
     /// <summary>
     /// Represents a category
@@ -11,27 +11,27 @@ namespace T.Library.Model
         /// Gets or sets the name
         /// </summary>
         [Required]
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the description
         /// </summary>
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the meta keywords
         /// </summary>
-        public string? MetaKeywords { get; set; }
+        public string MetaKeywords { get; set; }
 
         /// <summary>
         /// Gets or sets the meta description
         /// </summary>
-        public string? MetaDescription { get; set; }
+        public string MetaDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the meta title
         /// </summary>
-        public string? MetaTitle { get; set; }
+        public string MetaTitle { get; set; }
 
         /// <summary>
         /// Gets or sets the parent category identifier
@@ -93,6 +93,6 @@ namespace T.Library.Model
         /// </summary>
         public bool ManuallyPriceRange { get; set; }
 
-        public List<ProductCategory>? ProductCategories { get; set; }
+        public List<ProductCategory> ProductCategories { get; set; }
     }
 }

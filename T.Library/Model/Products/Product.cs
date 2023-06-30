@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using T.Library.Model.Common;
 
 namespace T.Library.Model
 {

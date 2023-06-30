@@ -1,4 +1,4 @@
-﻿namespace T.Library.Model
+﻿namespace T.Library.Model.Common
 {
     /// <summary>
     /// Represents the base class for entities

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
-using T.Library.Model;
+using T.Library.Model.Common;
 using T.Library.Model.Users;
 using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Services.HomePageServices;
