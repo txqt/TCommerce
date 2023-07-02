@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using T.Library.Model.Common;
 
-namespace T.Library.Model.BannerItem
+namespace T.Library.Model.Slider
 {
-    public class BannerItem : BaseEntity
+    public enum SliderItemSelectOption
     {
-
+        Newest
     }
 }

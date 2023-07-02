@@ -32,8 +32,8 @@ namespace T.Web.Services.ProductService
     public class ProductService : IProductService
     {
         private readonly HttpClient _httpClient;
-        private readonly JsonSerializerOptions _options;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly JsonSerializerOptions _options;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeMappingService _productAttributeMappingService;
         private readonly IMapper _mapper;

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
+using T.Library.Model.Enum;
 using T.Library.Model.Response;
 using T.WebApi.Attribute;
 using T.WebApi.Services.ProductServices;
@@ -10,6 +11,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/product-attribute-mapping")]
     [ApiController]
+    [CustomAuthorizationFilter(RoleName.Admin)]
     public class ProductAttributeMappingController : ControllerBase
     {
         private readonly IProductAttributeMappingService _productAttributeMappingService;

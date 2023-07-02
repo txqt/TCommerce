@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Common;
+using T.Library.Model.Enum;
 using T.Library.Model.Response;
 using T.WebApi.Attribute;
 using T.WebApi.Services.CategoryServices;
@@ -9,6 +10,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/category")]
     [ApiController]
+    [CustomAuthorizationFilter(RoleName.Admin)]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;

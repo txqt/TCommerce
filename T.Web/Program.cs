@@ -15,6 +15,7 @@ using T.Web.Services.Database;
 using T.Web.Services.HomePageServices;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.ProductService;
+using T.Web.Services.SliderItemService;
 using T.Web.Services.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,7 @@ builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IHomePageService, HomePageService>();
+builder.Services.AddTransient<ISliderItemService, SliderItemService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,

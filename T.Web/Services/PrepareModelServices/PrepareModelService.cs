@@ -11,6 +11,7 @@ using T.Library.Model.ViewsModel;
 using T.Library.Model.Users;
 using T.Web.Services.UserService;
 using T.Library.Model.Common;
+using T.Library.Model.Slider;
 
 namespace T.Web.Services.PrepareModel
 {

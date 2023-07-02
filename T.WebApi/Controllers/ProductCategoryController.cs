@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
+using T.Library.Model.Enum;
 using T.Library.Model.Response;
 using T.WebApi.Attribute;
 using T.WebApi.Services.CategoryServices;
@@ -10,6 +11,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/product-category")]
     [ApiController]
+    [CustomAuthorizationFilter(RoleName.Admin)]
     public class ProductCategoryController : ControllerBase
     {
         private readonly IProductCategoryService _productCategoryService;

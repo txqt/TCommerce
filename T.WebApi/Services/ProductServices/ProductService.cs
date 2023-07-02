@@ -13,6 +13,9 @@ namespace T.WebApi.Services.ProductServices
     public interface IProductService
     {
         Task<PagedList<Product>> GetAll(ProductParameters productParameters);
+        Task<List<Product>> GetAllNewestProduct();
+        Task<List<Product>> GetRandomProduct();
+        Task<string> GetFirstImagePathByProductId(int productId);
         Task<ServiceResponse<Product>> Get(int id);
         Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> CreateProduct(Product product);
@@ -167,6 +170,7 @@ namespace T.WebApi.Services.ProductServices
                 {
                     pp.Picture.UrlPath = apiUrl + pp.Picture.UrlPath;
                 }
+
                 var response = new ServiceResponse<List<ProductPicture>>
                 {
                     Data = productPicture,
@@ -263,17 +267,17 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<Product> FindProductByIdAsync(int productId)
         {
-            return await _context.Product.Where(x => x.Deleted == false)
+            return await _context.Product.FindByIntId(productId).Where(x => x.Deleted == false)
                     .Include(x => x.AttributeMappings)
                     .ThenInclude(x => x.ProductAttribute)
-                    .FirstOrDefaultAsync(x => x.Id == productId);
+                    .FirstOrDefaultAsync();
         }
 
         public async Task<ServiceResponse<bool>> DeleteAllProductImage(int productId)
         {
             try
             {
-                var product = await _context.Product.FindByIntId(productId).FirstOrDefaultAsync()
+                var product = await FindProductByIdAsync(productId)
                 ?? throw new ArgumentException("No product found with the specified id");
 
                 var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.ProductId == product.Id).ToListAsync()
@@ -300,6 +304,49 @@ namespace T.WebApi.Services.ProductServices
             {
                 return new ServiceResponse<bool>() { Message = ex.Message, Success = false };
             }
+        }
+
+        public async Task<List<Product>> GetAllNewestProduct()
+        {
+            DateTime currentDateTimeUtc = DateTime.UtcNow;
+
+            var newProducts = await _context.Product
+                .Where(p => p.MarkAsNew
+                    && (!p.MarkAsNewStartDateTimeUtc.HasValue || p.MarkAsNewStartDateTimeUtc <= currentDateTimeUtc)
+                    && (!p.MarkAsNewEndDateTimeUtc.HasValue || p.MarkAsNewEndDateTimeUtc >= currentDateTimeUtc))
+                .ToListAsync();
+
+            return newProducts;
+        }
+
+        public async Task<List<Product>> GetRandomProduct()
+        {
+            var product = await _context.Product.ToListAsync();
+
+            product.Shuffle();
+
+            return product;
+        }
+
+        public async Task<string> GetFirstImagePathByProductId(int productId)
+        {
+            var product = await FindProductByIdAsync(productId)
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.ProductId == product.Id).Include(x => x.Picture).FirstOrDefaultAsync();
+
+            var fileName = "";
+
+            if (productPicture is null)
+            {
+                fileName = "/uploads/no-pictrue.png";
+            }
+            else
+            {
+                fileName = productPicture.Picture.UrlPath;
+            }
+
+            return apiUrl + fileName;
         }
     }
 }

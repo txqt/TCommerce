@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using T.Library.Model;
+using T.Library.Model.BannerItem;
 using T.Library.Model.Common;
 using T.Library.Model.Users;
 using T.WebApi.Extensions;
@@ -47,5 +48,6 @@ namespace T.WebApi.Database.ConfigurationDatabase
         public DbSet<ProductPicture> Product_ProductPicture_Mapping { get; set; }
         public DbSet<ProductReview> ProductReview { get; set; }
         public DbSet<ProductReviewHelpfulness> ProductReviewHelpfulness { get; set; }
+        public DbSet<SliderItem> SliderItem { get; set; }
     }
 }

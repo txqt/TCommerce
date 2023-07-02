@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
+using T.Library.Model.Enum;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Attribute;
@@ -11,6 +12,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/product-attribute")]
     [ApiController]
+    [CustomAuthorizationFilter(RoleName.Admin)]
     public class ProductAttributeController : ControllerBase
     {
         private readonly IProductAttributeService _productAttributeSvc;
