@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using T.Library.Model;
 using T.Library.Model.Common;
 using T.Library.Model.Enum;
 using T.Library.Model.Slider;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
+using T.Web.Controllers;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.SliderItemService;
 
@@ -13,7 +15,7 @@ namespace T.Web.Areas.Admin.Controllers
     [Area("Admin")]
     [Route("/admin/slider-item/[action]")]
     [CustomAuthorizationFilter(RoleName.Admin)]
-    public class SliderController : Controller
+    public class SliderController : BaseController
     {
         private readonly ISliderItemService _sliderItemService;
         private readonly IMapper _mapper;
@@ -60,6 +62,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
+            SetStatusMessage($"Slider đã thêm");
             return RedirectToAction(nameof(Create));
         }
     }
