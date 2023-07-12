@@ -3,7 +3,6 @@ using T.Library.Model;
 using Microsoft.EntityFrameworkCore;
 using T.WebApi.Database.ConfigurationDatabase;
 using AutoMapper;
-using StackExchange.Redis;
 using T.WebApi.Extensions;
 
 namespace T.WebApi.Services.ProductServices
@@ -12,7 +11,7 @@ namespace T.WebApi.Services.ProductServices
     {
         Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id);
         Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int id);
-        Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping);
+        Task<ServiceResponse<bool>> CreateOrEditProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping);
         Task<ServiceResponse<List<ProductAttributeValue>>> GetAllValueProductAttributeByIdAsync(int productAttributeMappingId);
         Task<ServiceResponse<bool>> DeleteProductAttributeMappingByIdAsync(int id);
     }
@@ -27,7 +26,7 @@ namespace T.WebApi.Services.ProductServices
         }
         public async Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id)
         {
-            using (_context)
+            
             {
                 var productAttributeMapping = await _context.Product_ProductAttribute_Mapping.Where(x => x.Deleted == false)
                     .FirstOrDefaultAsync(x => x.Id == id);
@@ -40,7 +39,7 @@ namespace T.WebApi.Services.ProductServices
                 return response;
             }
         }
-        public async Task<ServiceResponse<bool>> AddOrUpdateProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
+        public async Task<ServiceResponse<bool>> CreateOrEditProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping)
         {
             var pamInTable = await _context.Product_ProductAttribute_Mapping
                     .Where(pam => pam.ProductId == productAttributeMapping.ProductId && pam.Id == productAttributeMapping.Id)
@@ -102,7 +101,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int id)
         {
-            using (_context)
+            
             {
                 var productAttributeMapping = await _context.Product_ProductAttribute_Mapping.Where(x => x.Deleted == false && x.ProductId == id)
                     .Include(x => x.ProductAttribute)

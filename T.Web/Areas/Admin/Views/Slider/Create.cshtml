@@ -1,4 +1,4 @@
-﻿@model T.Library.Model.Slider.SaveSliderItemRequest
+﻿@*@model T.Library.Model.Slider.SaveSliderItemRequest
 
 @{
     ViewData["Title"] = "Create";
@@ -22,7 +22,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="SliderItemQuantity" class="control-label"></label>
-                <input asp-for="SliderItemQuantity" class="form-control" />
+                <input asp-for="SliderItemQuantity" class="form-control" min="1" max="6"/>
                 <span asp-validation-for="SliderItemQuantity" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -39,3 +39,4 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+*@

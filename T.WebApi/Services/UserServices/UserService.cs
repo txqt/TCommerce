@@ -37,7 +37,7 @@ namespace T.WebApi.Services.UserServices
 
         public async Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model)
         {
-            using (_context)
+            
             {
                 var userTable = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.Id);
 
@@ -152,7 +152,7 @@ namespace T.WebApi.Services.UserServices
 
         public async Task<ServiceResponse<UserModel>> Get(Guid id)
         {
-            using (_context)
+            
             {
                 var user = await _userManager.FindByIdAsync(id.ToString());
 
@@ -173,7 +173,7 @@ namespace T.WebApi.Services.UserServices
 
         public async Task<List<UserModel>> GetAllAsync()
         {
-            using (_context)
+            
             {
                 var model = _mapper.Map<List<UserModel>>(await _context.Users.Where(x=>x.Deleted == false).ToListAsync());
                 return model;
@@ -182,7 +182,7 @@ namespace T.WebApi.Services.UserServices
 
         public async Task<List<Role>> GetAllRolesAsync()
         {
-            using (_context)
+            
             {
                 return await _roleManager.Roles.ToListAsync();
             }

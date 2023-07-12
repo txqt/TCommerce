@@ -1,4 +1,6 @@
-﻿namespace T.Library.Model.Common
+﻿using T.Library.Model.BannerItem;
+
+namespace T.Library.Model.Common
 {
     /// <summary>
     /// Represents a picture
@@ -36,5 +38,6 @@
         public string UrlPath { get; set; }
 
         public List<ProductPicture> ProductPictures { get; set; }
+        public List<SlideShow> SlideShows { get; set; }
     }
 }

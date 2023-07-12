@@ -91,7 +91,6 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id)
         {
-            using (_context)
             {
                 var pav = await _context.ProductAttributeValue.Where(x => x.Id == id).FirstOrDefaultAsync();
                 return new ServiceSuccessResponse<ProductAttributeValue>(pav);

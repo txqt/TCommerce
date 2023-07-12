@@ -22,16 +22,16 @@ namespace T.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Seed()
         {
-            var rolenames = typeof(RoleName).GetFields();
-            foreach (var item in rolenames)
-            {
-                string? name = item.GetRawConstantValue().ToString();
-                var ffound = await roleManager.FindByNameAsync(name);
-                if (ffound == null)
-                {
-                    await roleManager.CreateAsync(new Role(name));
-                }
-            }
+            //var rolenames = typeof(RoleName).GetFields();
+            //foreach (var item in rolenames)
+            //{
+            //    string? name = item.GetRawConstantValue().ToString();
+            //    var ffound = await roleManager.FindByNameAsync(name);
+            //    if (ffound == null)
+            //    {
+            //        await roleManager.CreateAsync(new Role(name));
+            //    }
+            //}
 
             var user2 = await _userManager.FindByEmailAsync("hovanthanh12102002@gmail.com");
             if (user2 == null)

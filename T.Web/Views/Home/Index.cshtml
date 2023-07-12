@@ -1,12 +1,15 @@
-﻿@{
+﻿@*@inject ISliderItemService _sliderItemService;*@
+
+@{
     ViewData["Title"] = "Trang chủ";
+    //var sliderModel = await _sliderItemService.GetAllSliderItemAsync();
 }
 <main class="main">
     <div class="intro-section pt-3 pb-3 mb-2">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
-                    <partial name="~/Views/Home/_SliderContainer.cshtml" />
+                    @*@(await Html.PartialAsync("_SliderContainer", sliderModel))*@
                 </div><!-- End .col-lg-8 -->
 
                 <div class="col-lg-4">

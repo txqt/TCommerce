@@ -4,6 +4,7 @@ using T.WebApi.Database.ConfigurationDatabase;
 using AutoMapper;
 using T.WebApi.Extensions;
 using T.Library.Model.Common;
+using T.Library.Model;
 
 namespace T.WebApi.Services.CategoryServices
 {
@@ -11,7 +12,9 @@ namespace T.WebApi.Services.CategoryServices
     {
         Task<List<Category>> GetAllCategoryAsync();
         Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId);
+        Task<ServiceResponse<Category>> GetCategoryByNameAsync(string categoryName);
         Task<ServiceResponse<bool>> CreateOrEditAsync(Category category);
+        Task<ServiceResponse<bool>> CreateCategoriesAsync(List<Category> categories);
         Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id);
     }
     public class CategoryService : ICategoryService
@@ -27,44 +30,42 @@ namespace T.WebApi.Services.CategoryServices
 
         public async Task<ServiceResponse<bool>> CreateOrEditAsync(Category category)
         {
-            using (_context)
+            var categoryTable = await _context.Category.FirstOrDefaultAsync(x => x.Id == category.Id);
+            if (categoryTable == null)
             {
-                var categoryTable = await _context.Category.FirstOrDefaultAsync(x => x.Id == category.Id);
-                if (categoryTable == null)
-                {
-                    category.CreatedOnUtc = DateTime.Now;
-                    _context.Category.Add(category);
-                }
-                else
-                {
-                    if (_context.IsRecordUnchanged(categoryTable, category))
-                    {
-                        return new ServiceErrorResponse<bool>("Data is unchanged");
-                    }
-                    categoryTable.Name = category.Name;
-                    categoryTable.Description = category.Description;
-                    categoryTable.MetaKeywords = category.MetaKeywords;
-                    categoryTable.MetaDescription = category.MetaDescription;
-                    categoryTable.MetaTitle = category.MetaTitle;
-                    categoryTable.ParentCategoryId = category.ParentCategoryId;
-                    categoryTable.PictureId = category.PictureId;
-                    categoryTable.ShowOnHomepage = category.ShowOnHomepage;
-                    categoryTable.IncludeInTopMenu = category.IncludeInTopMenu;
-                    categoryTable.Published = category.Published;
-                    categoryTable.DisplayOrder = category.DisplayOrder;
-                    categoryTable.UpdatedOnUtc = DateTime.UtcNow;
-                    categoryTable.PriceRangeFiltering = category.PriceRangeFiltering;
-                    categoryTable.PriceFrom = category.PriceFrom;
-                    categoryTable.PriceTo = category.PriceTo;
-                    categoryTable.ManuallyPriceRange = category.ManuallyPriceRange;
-                }
-                var result = await _context.SaveChangesAsync();
-                if (result == 0)
-                {
-                    return new ServiceErrorResponse<bool>("Create category failed");
-                }
-                return new ServiceSuccessResponse<bool>();
+                category.CreatedOnUtc = DateTime.Now;
+                _context.Category.Add(category);
             }
+            else
+            {
+                if (_context.IsRecordUnchanged(categoryTable, category))
+                {
+                    return new ServiceErrorResponse<bool>("Data is unchanged");
+                }
+                categoryTable.Name = category.Name;
+                categoryTable.Description = category.Description;
+                categoryTable.MetaKeywords = category.MetaKeywords;
+                categoryTable.MetaDescription = category.MetaDescription;
+                categoryTable.MetaTitle = category.MetaTitle;
+                categoryTable.ParentCategoryId = category.ParentCategoryId;
+                categoryTable.PictureId = category.PictureId;
+                categoryTable.ShowOnHomepage = category.ShowOnHomepage;
+                categoryTable.IncludeInTopMenu = category.IncludeInTopMenu;
+                categoryTable.Published = category.Published;
+                categoryTable.DisplayOrder = category.DisplayOrder;
+                categoryTable.UpdatedOnUtc = DateTime.UtcNow;
+                categoryTable.PriceRangeFiltering = category.PriceRangeFiltering;
+                categoryTable.PriceFrom = category.PriceFrom;
+                categoryTable.PriceTo = category.PriceTo;
+                categoryTable.ManuallyPriceRange = category.ManuallyPriceRange;
+            }
+            var result = await _context.SaveChangesAsync();
+            if (result == 0)
+            {
+                return new ServiceErrorResponse<bool>("Create category failed");
+            }
+            return new ServiceSuccessResponse<bool>();
+
         }
 
         public async Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id)
@@ -84,7 +85,7 @@ namespace T.WebApi.Services.CategoryServices
 
         public async Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId)
         {
-            using (_context)
+            
             {
                 var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == categoryId);
 
@@ -99,10 +100,40 @@ namespace T.WebApi.Services.CategoryServices
 
         public async Task<List<Category>> GetAllCategoryAsync()
         {
-            using (_context)
+            
             {
                 return await _context.Category.ToListAsync();
             }
+        }
+
+        public async Task<ServiceResponse<Category>> GetCategoryByNameAsync(string categoryName)
+        {
+            var category = await _context.Category.FirstOrDefaultAsync(x => x.Name == categoryName);
+
+            var response = new ServiceResponse<Category>
+            {
+                Data = category,
+                Success = true
+            };
+            return response;
+        }
+
+        public async Task<ServiceResponse<bool>> CreateCategoriesAsync(List<Category> categories)
+        {
+            foreach (var c in categories)
+            {
+                c.CreatedOnUtc = DateTime.UtcNow;
+            }
+
+            _context.Category.AddRange(categories);
+
+            var result = await _context.SaveChangesAsync();
+
+            if (result == 0)
+            {
+                return new ServiceErrorResponse<bool>("Create categories failed");
+            }
+            return new ServiceSuccessResponse<bool>();
         }
     }
 }

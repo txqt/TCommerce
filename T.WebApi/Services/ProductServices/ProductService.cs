@@ -16,9 +16,11 @@ namespace T.WebApi.Services.ProductServices
         Task<List<Product>> GetAllNewestProduct();
         Task<List<Product>> GetRandomProduct();
         Task<string> GetFirstImagePathByProductId(int productId);
-        Task<ServiceResponse<Product>> Get(int id);
+        Task<ServiceResponse<Product>> GetByIdAsync(int id);
+        Task<ServiceResponse<Product>> GetByNameAsync(string name);
         Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> CreateProduct(Product product);
+        Task<ServiceResponse<bool>> CreateProducts(List<Product> products);
         Task<ServiceResponse<bool>> EditProduct(ProductModel product);
         Task<ServiceResponse<bool>> DeleteProduct(int productId);
         Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttribute(int id);
@@ -46,7 +48,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<PagedList<Product>> GetAll(ProductParameters productParameters)
         {
-            using (_context)
+            
             {
                 var list_product = new List<Product>();
 
@@ -66,9 +68,9 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<Product>> Get(int id)
+        public async Task<ServiceResponse<Product>> GetByIdAsync(int id)
         {
-            using (_context)
+            
             {
                 var product = await FindProductByIdAsync(id);
 
@@ -83,7 +85,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> CreateProduct(Product product)
         {
-            using (_context)
+            
             {
                 product.CreatedOnUtc = DateTime.Now;
                 _context.Product.Add(product);
@@ -160,7 +162,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId)
         {
-            using (_context)
+            
             {
                 var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.Deleted == false && x.ProductId == productId)
                     .Include(x => x.Picture)
@@ -185,7 +187,7 @@ namespace T.WebApi.Services.ProductServices
             var product = await FindProductByIdAsync(productId)
                 ?? throw new ArgumentException("No product found with the specified id");
 
-            using (_context)
+            
             {
                 try
                 {
@@ -311,7 +313,7 @@ namespace T.WebApi.Services.ProductServices
             DateTime currentDateTimeUtc = DateTime.UtcNow;
 
             var newProducts = await _context.Product
-                .Where(p => p.MarkAsNew
+                .Where(p => p.MarkAsNew && p.Published && !p.Deleted
                     && (!p.MarkAsNewStartDateTimeUtc.HasValue || p.MarkAsNewStartDateTimeUtc <= currentDateTimeUtc)
                     && (!p.MarkAsNewEndDateTimeUtc.HasValue || p.MarkAsNewEndDateTimeUtc >= currentDateTimeUtc))
                 .ToListAsync();
@@ -321,7 +323,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<List<Product>> GetRandomProduct()
         {
-            var product = await _context.Product.ToListAsync();
+            var product = await _context.Product.Where(x=>x.Published && !x.Deleted).ToListAsync();
 
             product.Shuffle();
 
@@ -347,6 +349,37 @@ namespace T.WebApi.Services.ProductServices
             }
 
             return apiUrl + fileName;
+        }
+
+        public async Task<ServiceResponse<bool>> CreateProducts(List<Product> products)
+        {
+            foreach (var product in products)
+            {
+                product.CreatedOnUtc = DateTime.UtcNow;
+            }
+
+            _context.Product.AddRange(products);
+
+            var result = await _context.SaveChangesAsync();
+
+            if (result == 0)
+            {
+                return new ServiceErrorResponse<bool>("Create product failed");
+            }
+            return new ServiceSuccessResponse<bool>();
+        }
+
+        public async Task<ServiceResponse<Product>> GetByNameAsync(string name)
+        {
+            var product = await _context.Product.Where(x=>x.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
+
+            var response = new ServiceResponse<Product>
+            {
+                Data = product,
+                Success = true
+            };
+
+            return response;
         }
     }
 }

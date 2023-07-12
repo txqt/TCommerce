@@ -9,6 +9,7 @@ namespace T.WebApi.Services.ProductServices
     {
         Task<List<ProductAttribute>> GetAllProductAttributeAsync();
         Task<ServiceResponse<ProductAttribute>> GetProductAttributeById(int id);
+        Task<ServiceResponse<ProductAttribute>> GetProductAttributeByName(string name);
         Task<ServiceResponse<bool>> CreateProductAttributeAsync(ProductAttribute productAttribute);
         Task<ServiceResponse<bool>> EditProductAttributeAsync(ProductAttribute productAttribute);
         Task<ServiceResponse<bool>> DeleteProductAttributeByIdAsync(int id);
@@ -23,7 +24,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> CreateProductAttributeAsync(ProductAttribute productAttribute)
         {
-            using (_context)
+            
             {
                 _context.ProductAttribute.Add(productAttribute);
                 var result = await _context.SaveChangesAsync();
@@ -66,7 +67,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<ProductAttribute>> GetProductAttributeById(int id)
         {
-            using (_context)
+            
             {
                 var product = await _context.ProductAttribute.Where(x => x.Deleted == false)
                     .FirstOrDefaultAsync(x => x.Id == id);
@@ -105,6 +106,17 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        
+        public async Task<ServiceResponse<ProductAttribute>> GetProductAttributeByName(string name)
+        {
+            var product = await _context.ProductAttribute.Where(x => x.Deleted == false)
+                    .FirstOrDefaultAsync(x => x.Name == name);
+
+            var response = new ServiceResponse<ProductAttribute>
+            {
+                Data = product,
+                Success = true
+            };
+            return response;
+        }
     }
 }

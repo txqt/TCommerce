@@ -27,9 +27,10 @@ namespace T.WebApi.Services.ProductServices
         }
         public async Task<ServiceResponse<bool>> CreateOrEditAsync(ProductCategory productCategory)
         {
-            using (_context)
+            
             {
                 var productCategoryTable = await _context.Product_ProductCategory_Mapping.FirstOrDefaultAsync(x => x.Id == productCategory.Id);
+
                 if (productCategoryTable == null)
                 {
                     _context.Product_ProductCategory_Mapping.Add(productCategory);
@@ -71,7 +72,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<ProductCategory>> Get(int id)
         {
-            using (_context)
+            
             {
                 var category = await _context.Product_ProductCategory_Mapping.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -86,7 +87,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<List<ProductCategory>> GetAllAsync()
         {
-            using (_context)
+            
             {
                 return await _context.Product_ProductCategory_Mapping.ToListAsync();
             }
@@ -94,7 +95,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<List<ProductCategory>>> GetbyCategoryId(int id)
         {
-            using (_context)
+            
             {
                 var category = await _context.Product_ProductCategory_Mapping.Where(x => x.CategoryId == id).ToListAsync();
 
@@ -109,7 +110,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<List<ProductCategory>>> GetbyProductId(int id)
         {
-            using (_context)
+            
             {
                 var category = await _context.Product_ProductCategory_Mapping.Where(x => x.ProductId == id).ToListAsync();
 

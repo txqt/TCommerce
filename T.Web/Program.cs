@@ -1,21 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using System.Configuration;
-using System.Text;
 using System.Text.Json;
 using T.Library.Model.JwtToken;
-using T.Web.Attribute;
-using T.Web.CusomMiddleware;
 using T.Web.Services.AccountService;
 using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
 using T.Web.Services.HomePageServices;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.ProductService;
-using T.Web.Services.SliderItemService;
 using T.Web.Services.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +29,7 @@ builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IHomePageService, HomePageService>();
-builder.Services.AddTransient<ISliderItemService, SliderItemService>();
+//builder.Services.AddTransient<ISliderItemService, SliderItemService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,

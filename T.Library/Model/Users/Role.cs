@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using T.Library.Model.Security;
 
 namespace T.Library.Model.Users
 {
@@ -13,7 +14,7 @@ namespace T.Library.Model.Users
         [MaxLength(250)]
         [Required]
         public string Description { get; set; }
-
-        public Role(string name) : base(name) { Description = name; }
+        public List<PermissionRecordUserRoleMapping> PermissionRecordUserRoleMappings { get; set; }
+        public Role(string name) : base(name) { Name = name; }
     }
 }

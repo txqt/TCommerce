@@ -1,4 +1,6 @@
-﻿<div class="intro-slider-container slider-container-ratio mb-2 mb-lg-0">
+﻿@*@model List<SlideShow>
+
+<div class="intro-slider-container slider-container-ratio mb-2 mb-lg-0">
     <div class="intro-slider owl-carousel owl-simple owl-dark owl-nav-inside" data-toggle="owl" data-owl-options='{
                                         "nav": false,
                                         "dots": true,
@@ -9,62 +11,86 @@
                                             }
                                         }
                                     }'>
-        <div class="intro-slide">
-            <figure class="slide-image">
-                <picture>
-                    <source media="(max-width: 480px)" srcset="~/images/demos/demo-3/slider/slide-1-480w.jpg">
-                    <img src="~/images/demos/demo-3/slider/slide-1.jpg" alt="Image Desc">
-                </picture>
-            </figure><!-- End .slide-image -->
+        @if (Model is not null)
+        {
+            @foreach (var item in Model)
+            {
+                <div class="intro-slide">
+                    <figure class="slide-image">
+                        <picture style="display: block; width: 100%; height: 100%;">
+                            <source media="(max-width: 480px)" srcset="@item.ImgPath">
+                            <img src="@item.ImgPath" alt="Image Desc" style="width: 100%; height: 100%; object-fit: contain;">
+                        </picture>
+                    </figure><!-- End .slide-image -->
 
-            <div class="intro-content">
-                <h3 class="intro-subtitle text-primary">Daily Deals</h3><!-- End .h3 intro-subtitle -->
-                <h1 class="intro-title">
-                    AirPods <br>Earphones
-                </h1><!-- End .intro-title -->
+                    <div class="intro-content">
+                        <h3 class="intro-subtitle text-primary">Daily Deals</h3><!-- End .h3 intro-subtitle -->
+                        <h1 class="intro-title">
+                            @item.Title
+                        </h1><!-- End .intro-title -->
 
-                <div class="intro-price">
-                    <sup>Today:</sup>
-                    <span class="text-primary">
-                        $247<sup>.99</sup>
-                    </span>
-                </div><!-- End .intro-price -->
+                        <div class="intro-price">
+                            <sup>Today:</sup>
+                            <span class="text-primary">
+                                @item.Price.ToString("N0")
+                            </span>
+                        </div><!-- End .intro-price -->
 
-                <a href="category.html" class="btn btn-primary btn-round">
-                    <span>Click Here</span>
-                    <i class="icon-long-arrow-right"></i>
-                </a>
-            </div><!-- End .intro-content -->
-        </div><!-- End .intro-slide -->
+                        <a href="category.html" class="btn btn-primary btn-round">
+                            <span>Click Here</span>
+                            <i class="icon-long-arrow-right"></i>
+                        </a>
+                    </div><!-- End .intro-content -->
+                </div>
 
-        <div class="intro-slide">
-            <figure class="slide-image">
-                <picture>
-                    <source media="(max-width: 480px)" srcset="~/images/demos/demo-3/slider/slide-2-480w.jpg">
-                    <img src="~/images/demos/demo-3/slider/slide-2.jpg" alt="Image Desc">
-                </picture>
-            </figure><!-- End .slide-image -->
-
-            <div class="intro-content">
-                <h3 class="intro-subtitle text-primary">Deals and Promotions</h3><!-- End .h3 intro-subtitle -->
-                <h1 class="intro-title">
-                    Echo Dot <br>3rd Gen
-                </h1><!-- End .intro-title -->
-
-                <div class="intro-price">
-                    <sup class="intro-old-price">$49,99</sup>
-                    <span class="text-primary">
-                        $29<sup>.99</sup>
-                    </span>
-                </div><!-- End .intro-price -->
-
-                <a href="category.html" class="btn btn-primary btn-round">
-                    <span>Click Here</span>
-                    <i class="icon-long-arrow-right"></i>
-                </a>
-            </div><!-- End .intro-content -->
-        </div><!-- End .intro-slide -->
+                <!-- End .intro-slide -->
+            }
+        }
     </div><!-- End .intro-slider owl-carousel owl-simple -->
 
     <span class="slider-loader"></span><!-- End .slider-loader -->
 </div><!-- End .intro-slider-container -->
+@*<script>
+    $(document).ready(function () {
+        // Gọi action controller và lấy dữ liệu JSON
+        $.ajax({
+            url: "@Url.Action("GetAllSliderItem","Home")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                // Xóa nội dung hiện tại của slider
+                $(".intro-slider").empty();
+
+                // Lặp qua danh sách dữ liệu JSON
+                for (var i = 0; i < data.length; i++) {
+                    // Lấy thông tin từ dữ liệu JSON
+                    var banner = data[i];
+                    var imageUrl = banner.imgPath;
+                    var title = banner.name;
+                    var price = banner.price;
+
+                    // Tạo HTML cho mục slider
+                    var slideHtml = `
+                            <div class="intro-slide">
+                                <figure class="slide-image">
+                                    <img src="${imageUrl}" alt="Image Desc">
+                                </figure>
+                                <div class="intro-content">
+                                    <h1 class="intro-title">${title}</h1>
+                                    <div class="intro-price">
+                                        <span class="text-primary">${price}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                    // Thêm mục slider vào view
+                    $(".intro-slider").append(slideHtml);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(error); // Xử lý lỗi nếu có
+            }
+        });
+    });
+</script>*@

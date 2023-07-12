@@ -1,17 +1,12 @@
 ﻿using AutoMapper;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Text.Json;
 using T.Library.Model;
 using T.Web.Areas.Admin.Models;
 using T.Web.Services.ProductService;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Web.Services.CategoryService;
 using T.Library.Model.ViewsModel;
-using T.Library.Model.Users;
 using T.Web.Services.UserService;
 using T.Library.Model.Common;
-using T.Library.Model.Slider;
 
 namespace T.Web.Services.PrepareModel
 {

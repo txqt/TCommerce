@@ -1,12 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
 using T.Library.Model.Common;
+using T.Library.Model.Enum;
+using T.Library.Model.Security;
+using T.Library.Model.Users;
 
 namespace T.WebApi.Extensions
 {
-    public static class ModelBuilderExtensions
+    public class ModelBuilderExtensions
     {
-        public static void Seed(this ModelBuilder modelBuilder)
+        private readonly RoleManager<Role> _roleManager;
+
+        public ModelBuilderExtensions(RoleManager<Role> roleManager)
+        {
+            _roleManager = roleManager;
+        }
+        public async void Seed(ModelBuilder modelBuilder)
         {
             #region Product Seed
             modelBuilder.Entity<Product>().HasData(
@@ -436,8 +446,9 @@ namespace T.WebApi.Extensions
 
             #region ProductAttributeValue
             modelBuilder.Entity<ProductAttributeValue>().HasData(
-                    new ProductAttributeValue() { 
-                        Id = 1, 
+                    new ProductAttributeValue()
+                    {
+                        Id = 1,
                         ProductAttributeMappingId = 1,
                         Name = "Đỏ"
                     },
@@ -475,6 +486,90 @@ namespace T.WebApi.Extensions
                     }
                 );
             #endregion
+
+            #region Permission
+            modelBuilder.Entity<PermissionRecord>().HasData(
+                new PermissionRecord()
+                {
+                    Id = 1,
+                    Name = "Access admin area",
+                    SystemName = "AccessAdminPanel",
+                    Category = "Standard"
+                },
+                new PermissionRecord()
+                {
+                    Id = 2,
+                    Name = "Admin area: Manage Products",
+                    SystemName = "ManageProducts",
+                    Category = "Manager"
+                },
+                new PermissionRecord()
+                {
+                    Id = 3,
+                    Name = "Admin area: Manage Categories",
+                    SystemName = "ManageCategories",
+                    Category = "Manager"
+                },
+                new PermissionRecord()
+                {
+                    Id = 4,
+                    Name = "Admin area: Manage Attributes",
+                    SystemName = "ManageAttributes",
+                    Category = "Manager"
+                },
+                new PermissionRecord()
+                {
+                    Id = 5,
+                    Name = "Admin area: Manage Customers",
+                    SystemName = "ManageCustomers",
+                    Category = "Manager"
+                }
+            );
+            #endregion
+
+            #region Permission_Roles_Mapping
+            modelBuilder.Entity<PermissionRecordUserRoleMapping>().HasData(
+                new PermissionRecordUserRoleMapping()
+                {
+                    Id = 1,
+                    PermissionRecordId = 1,
+                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                },
+                new PermissionRecordUserRoleMapping()
+                {
+                    Id = 2,
+                    PermissionRecordId = 2,
+                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                },
+                new PermissionRecordUserRoleMapping()
+                {
+                    Id = 3,
+                    PermissionRecordId = 3,
+                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                },
+                new PermissionRecordUserRoleMapping()
+                {
+                    Id = 4,
+                    PermissionRecordId = 4,
+                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                },
+                new PermissionRecordUserRoleMapping()
+                {
+                    Id = 5,
+                    PermissionRecordId = 5,
+                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                }
+            );
+            #endregion
+        }
+        public async Task<Guid?> GetRoleId(RoleManager<Role> roleManager, string roleName)
+        {
+            var role = await roleManager.FindByNameAsync(roleName);
+            if (role != null)
+            {
+                return role.Id;
+            }
+            return null;
         }
     }
 }

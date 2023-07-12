@@ -35,7 +35,7 @@ namespace T.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ServiceResponse<Product>>> Get(int id)
         {
-            return await _productService.Get(id);
+            return await _productService.GetByIdAsync(id);
         }
 
         [HttpPost(APIRoutes.Create)]

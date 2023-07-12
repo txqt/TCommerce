@@ -10,6 +10,7 @@ using T.WebApi.Attribute;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
 using T.WebApi.Services;
+using T.WebApi.Services.DataSeederService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+// Resolve DataSeeder và gọi phương thức Initialize để seed dữ liệu
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dataSeeder = services.GetRequiredService<DataSeeder>();
+    await dataSeeder.Initialize();
 }
 
 app.UseHttpsRedirection();

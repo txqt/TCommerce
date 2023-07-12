@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace T.WebApi.Migrations
 {
     /// <inheritdoc />
@@ -41,6 +39,22 @@ namespace T.WebApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PermissionRecords",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SystemName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PermissionRecords", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,6 +213,28 @@ namespace T.WebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SliderItem",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PictureId = table.Column<int>(type: "int", nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SliderItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SliderItem_Picture_PictureId",
+                        column: x => x.PictureId,
+                        principalTable: "Picture",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Product_ProductCategory_Mapping",
                 columns: table => new
                 {
@@ -321,6 +357,32 @@ namespace T.WebApi.Migrations
                         principalTable: "Product",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PermissionRecordUserRoleMappings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PermissionRecordId = table.Column<int>(type: "int", nullable: false),
+                    UserRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PermissionRecordUserRoleMappings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PermissionRecordUserRoleMappings_PermissionRecords_PermissionRecordId",
+                        column: x => x.PermissionRecordId,
+                        principalTable: "PermissionRecords",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PermissionRecordUserRoleMappings_Roles_UserRoleId",
+                        column: x => x.UserRoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -504,110 +566,15 @@ namespace T.WebApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Category",
-                columns: new[] { "Id", "CreatedOnUtc", "Deleted", "Description", "DisplayOrder", "IncludeInTopMenu", "ManuallyPriceRange", "MetaDescription", "MetaKeywords", "MetaTitle", "Name", "ParentCategoryId", "PictureId", "PriceFrom", "PriceRangeFiltering", "PriceTo", "Published", "ShowOnHomepage", "UpdatedOnUtc" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2023, 6, 29, 21, 37, 23, 284, DateTimeKind.Utc).AddTicks(3446), false, null, 0, false, false, null, null, null, "Thời trang", 0, 0, 0m, false, 0m, false, false, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 2, new DateTime(2023, 6, 29, 21, 37, 23, 284, DateTimeKind.Utc).AddTicks(3451), false, null, 0, false, false, null, null, null, "Điện tử", 0, 0, 0m, false, 0m, false, false, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 3, new DateTime(2023, 6, 29, 21, 37, 23, 284, DateTimeKind.Utc).AddTicks(3452), false, null, 0, false, false, null, null, null, "Điện gia dụng", 0, 0, 0m, false, 0m, false, false, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 4, new DateTime(2023, 6, 29, 21, 37, 23, 284, DateTimeKind.Utc).AddTicks(3453), false, null, 0, false, false, null, null, null, "Âm thanh", 0, 0, 0m, false, 0m, false, false, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 5, new DateTime(2023, 6, 29, 21, 37, 23, 284, DateTimeKind.Utc).AddTicks(3454), false, null, 0, false, false, null, null, null, "Phụ kiện", 0, 0, 0m, false, 0m, false, false, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_PermissionRecordUserRoleMappings_PermissionRecordId",
+                table: "PermissionRecordUserRoleMappings",
+                column: "PermissionRecordId");
 
-            migrationBuilder.InsertData(
-                table: "Product",
-                columns: new[] { "Id", "AdminComment", "AllowUserReviews", "AvailableEndDateTimeUtc", "AvailableForPreOrder", "AvailableStartDateTimeUtc", "CreatedOnUtc", "Deleted", "DisableBuyButton", "DisableWishlistButton", "DisplayOrder", "FullDescription", "Height", "IsFreeShipping", "IsShipEnabled", "Length", "MarkAsNew", "MarkAsNewEndDateTimeUtc", "MarkAsNewStartDateTimeUtc", "MetaDescription", "MetaKeywords", "MetaTitle", "Name", "NotReturnable", "OldPrice", "OrderMaximumQuantity", "OrderMinimumQuantity", "PreOrderAvailabilityStartDateTimeUtc", "Price", "Published", "ShortDescription", "ShowOnHomepage", "Sku", "StockQuantity", "UpdatedOnUtc", "VisibleIndividually", "Weight", "Width" },
-                values: new object[,]
-                {
-                    { 1, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Áo thun nam", false, 0m, 0, 0, null, 200000m, false, "Áo thun nam hàng hiệu", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 2, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Áo khoác nữ", false, 0m, 0, 0, null, 500000m, false, "Áo khoác dành cho nữ thời trang", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 3, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Quần jean nam", false, 0m, 0, 0, null, 400000m, false, "Quần jean nam hàng hiệu", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 4, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Váy đầm dự tiệc", false, 0m, 0, 0, null, 1000000m, false, "Váy đầm dự tiệc sang trọng", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 5, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Giày thể thao nam", false, 0m, 0, 0, null, 800000m, false, "Giày thể thao nam Adidas", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 6, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Giày cao gót nữ", false, 0m, 0, 0, null, 700000m, false, "Giày cao gót nữ đẹp", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 7, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Túi xách nữ", false, 0m, 0, 0, null, 600000m, false, "Túi xách nữ hàng hiệu", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 8, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Mũ len nam", false, 0m, 0, 0, null, 100000m, false, "Mũ len nam giữ ấm", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 9, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Khẩu trang y tế", false, 0m, 0, 0, null, 5000m, false, "Khẩu trang y tế 3 lớp", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 10, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Balo laptop", false, 0m, 0, 0, null, 900000m, false, "Balo laptop chống sốc", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 11, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Tủ lạnh", false, 0m, 0, 0, null, 15000000m, false, "Tủ lạnh side by side LG", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 12, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Máy giặt", false, 0m, 0, 0, null, 10000000m, false, "Máy giặt Samsung", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 13, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Điều hòa", false, 0m, 0, 0, null, 8000000m, false, "Điều hòa Panasonic Inverter", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 14, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Tivi OLED", false, 0m, 0, 0, null, 30000000m, false, "Tivi OLED Sony 65 inch", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 15, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Máy ảnh DSLR", false, 0m, 0, 0, null, 15000000m, false, "Máy ảnh Canon EOS 90D", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 16, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Loa bluetooth", false, 0m, 0, 0, null, 2000000m, false, "Loa bluetooth JBL Flip 5", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 17, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Tai nghe true wireless", false, 0m, 0, 0, null, 5000000m, false, "Tai nghe true wireless Apple AirPods Pro", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m },
-                    { 18, null, false, null, false, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, false, 0, "Full Description", 0m, false, false, 0m, false, null, null, null, null, null, "Chuột gaming", false, 0m, 0, 0, null, 1000000m, false, "Chuột gaming", false, null, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0m, 0m }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ProductAttribute",
-                columns: new[] { "Id", "Deleted", "Description", "Name" },
-                values: new object[] { 1, false, "Thuộc tính màu sắc của sản phẩm", "Màu sắc" });
-
-            migrationBuilder.InsertData(
-                table: "Product_ProductAttribute_Mapping",
-                columns: new[] { "Id", "AttributeControlTypeId", "ConditionAttributeSelected", "DefaultValue", "Deleted", "DisplayOrder", "IsRequired", "ProductAttributeId", "ProductId", "TextPrompt", "ValidationFileAllowedExtensions", "ValidationFileMaximumSize", "ValidationMaxLength", "ValidationMinLength" },
-                values: new object[,]
-                {
-                    { 1, 0, 0, null, false, 0, false, 1, 1, null, null, null, null, null },
-                    { 2, 0, 0, null, false, 0, false, 1, 2, null, null, null, null, null },
-                    { 3, 0, 0, null, false, 0, false, 1, 3, null, null, null, null, null },
-                    { 4, 0, 0, null, false, 0, false, 1, 4, null, null, null, null, null },
-                    { 5, 0, 0, null, false, 0, false, 1, 5, null, null, null, null, null },
-                    { 6, 0, 0, null, false, 0, false, 1, 6, null, null, null, null, null },
-                    { 7, 0, 0, null, false, 0, false, 1, 7, null, null, null, null, null },
-                    { 8, 0, 0, null, false, 0, false, 1, 8, null, null, null, null, null },
-                    { 9, 0, 0, null, false, 0, false, 1, 9, null, null, null, null, null },
-                    { 10, 0, 0, null, false, 0, false, 1, 10, null, null, null, null, null },
-                    { 11, 0, 0, null, false, 0, false, 1, 11, null, null, null, null, null },
-                    { 12, 0, 0, null, false, 0, false, 1, 12, null, null, null, null, null },
-                    { 13, 0, 0, null, false, 0, false, 1, 13, null, null, null, null, null },
-                    { 14, 0, 0, null, false, 0, false, 1, 14, null, null, null, null, null },
-                    { 15, 0, 0, null, false, 0, false, 1, 15, null, null, null, null, null },
-                    { 16, 0, 0, null, false, 0, false, 1, 16, null, null, null, null, null },
-                    { 17, 0, 0, null, false, 0, false, 1, 17, null, null, null, null, null },
-                    { 18, 0, 0, null, false, 0, false, 1, 18, null, null, null, null, null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Product_ProductCategory_Mapping",
-                columns: new[] { "Id", "CategoryId", "Deleted", "DisplayOrder", "IsFeaturedProduct", "ProductId" },
-                values: new object[,]
-                {
-                    { 1, 1, false, 0, false, 1 },
-                    { 2, 1, false, 0, false, 2 },
-                    { 3, 1, false, 0, false, 3 },
-                    { 4, 1, false, 0, false, 4 },
-                    { 5, 1, false, 0, false, 5 },
-                    { 6, 1, false, 0, false, 6 },
-                    { 7, 1, false, 0, false, 7 },
-                    { 8, 1, false, 0, false, 8 },
-                    { 9, 1, false, 0, false, 9 },
-                    { 10, 1, false, 0, false, 10 },
-                    { 11, 2, false, 0, false, 11 },
-                    { 12, 3, false, 0, false, 12 },
-                    { 13, 3, false, 0, false, 13 },
-                    { 14, 2, false, 0, false, 14 },
-                    { 15, 2, false, 0, false, 15 },
-                    { 16, 4, false, 0, false, 16 },
-                    { 17, 4, false, 0, false, 17 },
-                    { 18, 2, false, 0, false, 18 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ProductAttributeValue",
-                columns: new[] { "Id", "ColorSquaresRgb", "Cost", "CustomerEntersQty", "Deleted", "DisplayOrder", "IsPreSelected", "Name", "PictureId", "PriceAdjustment", "PriceAdjustmentUsePercentage", "ProductAttributeMappingId", "Quantity", "WeightAdjustment" },
-                values: new object[,]
-                {
-                    { 1, null, 0m, false, false, 0, false, "Đỏ", 0, 0m, false, 1, 0, 0m },
-                    { 2, null, 0m, false, false, 0, false, "Xanh", 0, 0m, false, 1, 0, 0m },
-                    { 3, null, 0m, false, false, 0, false, "Vàng", 0, 0m, false, 1, 0, 0m },
-                    { 4, null, 0m, false, false, 0, false, "Tím", 0, 0m, false, 2, 0, 0m },
-                    { 5, null, 0m, false, false, 0, false, "Đen", 0, 0m, false, 2, 0, 0m },
-                    { 6, null, 0m, false, false, 0, false, "Vàng", 0, 0m, false, 2, 0, 0m }
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_PermissionRecordUserRoleMappings_UserRoleId",
+                table: "PermissionRecordUserRoleMappings",
+                column: "UserRoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_ProductAttribute_Mapping_ProductAttributeId",
@@ -672,6 +639,11 @@ namespace T.WebApi.Migrations
                 column: "ShoppingCartItemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SliderItem_PictureId",
+                table: "SliderItem",
+                column: "PictureId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
                 table: "UserClaims",
                 column: "UserId");
@@ -703,6 +675,9 @@ namespace T.WebApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "PermissionRecordUserRoleMappings");
+
+            migrationBuilder.DropTable(
                 name: "Product_ProductCategory_Mapping");
 
             migrationBuilder.DropTable(
@@ -721,6 +696,9 @@ namespace T.WebApi.Migrations
                 name: "ShoppingCartItemAttributeValue");
 
             migrationBuilder.DropTable(
+                name: "SliderItem");
+
+            migrationBuilder.DropTable(
                 name: "UserClaims");
 
             migrationBuilder.DropTable(
@@ -733,10 +711,10 @@ namespace T.WebApi.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
-                name: "Category");
+                name: "PermissionRecords");
 
             migrationBuilder.DropTable(
-                name: "Picture");
+                name: "Category");
 
             migrationBuilder.DropTable(
                 name: "Product_ProductAttribute_Mapping");
@@ -746,6 +724,9 @@ namespace T.WebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "ShoppingCartItem");
+
+            migrationBuilder.DropTable(
+                name: "Picture");
 
             migrationBuilder.DropTable(
                 name: "Roles");

@@ -54,11 +54,13 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> CreateProduct()
+        public IActionResult CreateProduct()
         {
             ProductModel model = new ProductModel()
             {
                 MarkAsNew = false,
+                ShowOnHomepage = true,
+                Published = true
             };
             return View(model);
         }

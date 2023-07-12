@@ -19,10 +19,10 @@ namespace T.WebApi.Services.CacheServices
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private string GetCacheKey() { var request = _httpContextAccessor.HttpContext?.Request; var path = request?.Path.HasValue == true ? request.Path.Value : string.Empty; return $"cache_{path}"; }
+        private string GetCacheKeyBySystem() { var request = _httpContextAccessor.HttpContext?.Request; var path = request?.Path.HasValue == true ? request.Path.Value : string.Empty; return $"cache_{path}"; }
         public T GetData<T>(string key)
         {
-            var _key = key != null ? key : GetCacheKey();
+            var _key = key != null ? key : GetCacheKeyBySystem();
             try
             {
                 T item = (T) _memoryCache.Get(_key);
@@ -40,9 +40,9 @@ namespace T.WebApi.Services.CacheServices
 
             try
             {
-                if (!string.IsNullOrEmpty(GetCacheKey()) || key != null)
+                if (!string.IsNullOrEmpty(GetCacheKeyBySystem()) || key != null)
                 {
-                    var res = _memoryCache.Remove(key != null ? key :GetCacheKey());
+                    var res = _memoryCache.Remove(key != null ? key :GetCacheKeyBySystem());
                 }
                 else
                 {
@@ -62,9 +62,9 @@ namespace T.WebApi.Services.CacheServices
 
             try
             {
-                if (!string.IsNullOrEmpty(GetCacheKey()) || key != null)
+                if (!string.IsNullOrEmpty(GetCacheKeyBySystem()) || key != null)
                 {
-                    _memoryCache.Set(key != null ? key : GetCacheKey(), value, expirationTime);
+                    _memoryCache.Set(key != null ? key : GetCacheKeyBySystem(), value, expirationTime);
                 }
                 else
                 {

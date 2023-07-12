@@ -29,13 +29,13 @@ namespace T.WebApi.Controllers
         public async Task<ActionResult> AddProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
         {
             //try to get a product with the specified id
-            var product = (await _productService.Get(productAttributeMapping.ProductId)).Data ??
+            var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)).Data ??
               throw new ArgumentException("No product found with the specified id");
 
             var productAttribute = (await _productAttributeService.GetProductAttributeById(productAttributeMapping.ProductAttributeId)).Data ??
                 throw new ArgumentException("No product attribute found with the specified id");
 
-            var result = await _productAttributeMappingService.AddOrUpdateProductAttributeMapping(productAttributeMapping);
+            var result = await _productAttributeMappingService.CreateOrEditProductAttributeMappingAsync(productAttributeMapping);
             if (!result.Success)
             {
                 return BadRequest(result);

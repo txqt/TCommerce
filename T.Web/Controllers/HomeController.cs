@@ -11,17 +11,28 @@ namespace T.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IHomePageService _homePageService;
+        //private readonly ISliderItemService _sliderItemService;
 
-        public HomeController(ILogger<HomeController> logger, IHomePageService homePageService)
+        public HomeController(ILogger<HomeController> logger, IHomePageService homePageService/*, ISliderItemService sliderItemService*/)
         {
             _logger = logger;
             _homePageService = homePageService;
+            //_sliderItemService = sliderItemService;
         }
 
         public IActionResult Index()
         {
             return View();
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllSliderItemAsync()
+        //{
+        //    var sliderItemList = await _sliderItemService.GetAllSliderItemAsync();
+
+        //    return View(sliderItemList);
+        //}
+
         [HttpGet]
         public async Task<IActionResult> ShowCategoriesOnHomePage()
         {

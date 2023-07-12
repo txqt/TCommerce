@@ -4,28 +4,22 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Data;
 using System.Security.Claims;
 using System.Text;
-using T.Library.Model;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Services.AccountServices;
 using T.WebApi.Attribute;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Caching.Memory;
 using T.WebApi.Services.CacheServices;
 using T.Library.Model.JwtToken;
 using T.WebApi.Services;
-using StackExchange.Redis;
-using Microsoft.Extensions.Configuration;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.ProductService;
 using T.WebApi.Services.CategoryServices;
 using T.WebApi.Services.UserServices;
 using T.WebApi.Services.HomePageServices;
-using T.WebApi.Services.SliderItemServices;
+using T.WebApi.Services.DataSeederService;
 
 namespace T.WebApi.Extensions
 {
@@ -142,7 +136,8 @@ namespace T.WebApi.Extensions
             services.AddTransient<IPictureService, PictureService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IHomePageService, HomePageService>();
-            services.AddTransient<ISliderItemService, SliderItemService>();
+            services.AddTransient<DataSeeder>();
+            //services.AddTransient<ISliderItemService, SliderItemService>();
             services.AddScoped<ValidationFilterAttribute>();
 
             return services;
@@ -162,7 +157,7 @@ namespace T.WebApi.Extensions
         // Thêm cấu hình Identity
         public static IServiceCollection AddIdentityConfig(this IServiceCollection services)
         {
-            services.AddIdentity<User, Library.Model.Users.Role>()
+            services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<DatabaseContext>()
                 .AddDefaultTokenProviders()
                 .AddPasswordValidator<CustomPasswordValidator<User>>();
@@ -189,5 +184,7 @@ namespace T.WebApi.Extensions
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
             return services;
         }
+
+
     }
 }

@@ -2,24 +2,38 @@
 using System.Reflection;
 using System.Text;
 using System.Linq.Dynamic.Core;
+using System;
 
 namespace T.WebApi.Extensions
 {
     public static class IQueryableExtensions
     {
-        public static IQueryable<T> SearchByString<T>(this IQueryable<T> entities, string searchTerm)
+        public static IQueryable<T> SearchByString<T>(this IQueryable<T> items, string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
-                return entities;
+                return items;
 
             var lowerCaseSearchTerm = searchTerm.Trim().ToLower();
-            var propertyInfos = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var searchQuery = new StringBuilder();
 
-            return entities.Where(entity =>
-                propertyInfos.Any(pi => pi.PropertyType == typeof(string) && pi.GetValue(entity) != null &&
-                                        pi.GetValue(entity).ToString().ToLower().Contains(lowerCaseSearchTerm))
-            );
+            foreach (var property in properties)
+            {
+                var propertyType = property.PropertyType;
+                if (propertyType == typeof(string))
+                {
+                    searchQuery.Append($"{property.Name}.ToLower().Contains(\"{lowerCaseSearchTerm}\") || ");
+                }
+            }
+
+            var searchQueryString = searchQuery.ToString().TrimEnd(' ', '|', '|', ' ');
+            if (string.IsNullOrWhiteSpace(searchQueryString))
+                return items;
+
+            return items.Where(searchQueryString);
         }
+
+
 
         public static IQueryable<T> FindByIntId<T>(this IQueryable<T> entities, int id)
         {
