@@ -20,6 +20,8 @@ using T.WebApi.Services.CategoryServices;
 using T.WebApi.Services.UserServices;
 using T.WebApi.Services.HomePageServices;
 using T.WebApi.Services.DataSeederService;
+using T.WebApi.Services.PermissionRecordServices;
+using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 
 namespace T.WebApi.Extensions
 {
@@ -137,7 +139,8 @@ namespace T.WebApi.Extensions
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IHomePageService, HomePageService>();
             services.AddTransient<DataSeeder>();
-            //services.AddTransient<ISliderItemService, SliderItemService>();
+            services.AddTransient<IPermissionRecordService, PermissionRecordService>();
+            services.AddTransient<IPermissionRecordUserRoleMappingService, PermissionRecordUserRoleMappingService>();
             services.AddScoped<ValidationFilterAttribute>();
 
             return services;

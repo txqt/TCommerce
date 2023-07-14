@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using T.Library.Model.Enum;
+using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Users;
 using T.WebApi.Extensions;
 

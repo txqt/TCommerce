@@ -15,6 +15,6 @@ namespace T.Library.Model.Users
         [Required]
         public string Description { get; set; }
         public List<PermissionRecordUserRoleMapping> PermissionRecordUserRoleMappings { get; set; }
-        public Role(string name) : base(name) { Name = name; }
+        public Role(string name) : base(name) { Name = name; Description = name; }
     }
 }

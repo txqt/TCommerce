@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using T.Library.Model.Enum;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using T.Library.Model.Roles.RoleName;
 
 namespace T.Web.Attribute
 {

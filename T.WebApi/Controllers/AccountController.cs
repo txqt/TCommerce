@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using T.Library.Model;
 using T.Library.Model.Account;
-using T.Library.Model.Enum;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
 using T.WebApi.Attribute;
-using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Services.AccountServices;
 
 namespace T.WebApi.Controllers

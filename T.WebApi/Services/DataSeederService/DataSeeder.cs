@@ -3,13 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using T.Library.Model;
 using T.Library.Model.Common;
-using T.Library.Model.Enum;
 using T.Library.Model.Response;
+using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
 using T.WebApi.Services.CategoryServices;
+using T.WebApi.Services.PermissionRecordServices;
+using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.Services.ProductServices;
 
 namespace T.WebApi.Services.DataSeederService
@@ -25,10 +27,12 @@ namespace T.WebApi.Services.DataSeederService
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeMappingService _productAttributeMappingService;
         private readonly IProductAttributeValueService _productAttributeValueService;
+        private readonly IPermissionRecordService _permissionRecordService;
+        private readonly IPermissionRecordUserRoleMappingService _permissionRecordUserRoleMappingService;
         private readonly Func<string, Task<ServiceResponse<Product>>> _getProductByName;
         private readonly Func<string, Task<ServiceResponse<Category>>> _getCategoryByName;
 
-        public DataSeeder(DatabaseContext context, RoleManager<Role> roleManager, UserManager<User> userManager, IProductService productSerivce, ICategoryService categorySerivce, IProductCategoryService productCategorySerivce, IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService)
+        public DataSeeder(DatabaseContext context, RoleManager<Role> roleManager, UserManager<User> userManager, IProductService productSerivce, ICategoryService categorySerivce, IProductCategoryService productCategorySerivce, IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService, IPermissionRecordService permissionRecordService, IPermissionRecordUserRoleMappingService permissionRecordUserRoleMappingService)
         {
             _context = context;
             _roleManager = roleManager;
@@ -41,6 +45,8 @@ namespace T.WebApi.Services.DataSeederService
             _productAttributeService = productAttributeService;
             _productAttributeMappingService = productAttributeMappingService;
             _productAttributeValueService = productAttributeValueService;
+            _permissionRecordService = permissionRecordService;
+            _permissionRecordUserRoleMappingService = permissionRecordUserRoleMappingService;
         }
 
         public async Task Initialize()
@@ -48,10 +54,11 @@ namespace T.WebApi.Services.DataSeederService
             await SeedCategoriesAsync();
             await SeedProductAttributeAsync();
             await SeedProductsAsync();
-            //SeedUser();
-            if (await SeedRoles() && SeedPermission())
+            
+            if (await SeedRoles() && await SeedPermission())
             {
-                SeedPermissionRolesMapping();
+                await SeedPermissionRolesMapping();
+                await SeedUserAsync();
             }
 
         }
@@ -59,21 +66,9 @@ namespace T.WebApi.Services.DataSeederService
         {
             if (!await _context.Category.AnyAsync())
             {
-                Type seedType = typeof(CategoryName);
-                FieldInfo[] fields = seedType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-
-                foreach (FieldInfo field in fields)
+                foreach(var item in CategoriesDataSeed.Instance.GetAll())
                 {
-                    string fieldName = field.Name;
-                    object fieldValue = field.GetValue(null);
-
-                    Category category = new Category
-                    {
-                        Name = fieldValue.ToString(),
-                        CreatedOnUtc = DateTime.UtcNow
-                    };
-
-                    await _categorySerivce.CreateOrEditAsync(category);
+                    await _categorySerivce.CreateOrEditAsync(item);
                 }
             }
         }
@@ -85,39 +80,47 @@ namespace T.WebApi.Services.DataSeederService
 
                 foreach(var item in listProductSeed.GetAll())
                 {
-                    var categoryId = (await _categorySerivce.GetCategoryByNameAsync(item.CategoryName.ToString())).Data.Id;
-                    var productAttributeId = (await _productAttributeService.GetProductAttributeByName(item.ProductAttributeName.ToString())).Data.Id;
-
+                    
                     foreach (var product in item.Products)
                     {
                         await _productService.CreateProduct(product);
 
                         var productId = (await _productService.GetByNameAsync(product.Name)).Data.Id;
 
-                        var productCategoryMapping = new ProductCategory()
+                        foreach(var category in item.Categories)
                         {
-                            CategoryId = categoryId,
-                            ProductId = productId
-                        };
-                        await _productCategorySerivce.CreateOrEditAsync(productCategoryMapping);
+                            var categoryId = (await _categorySerivce.GetCategoryByNameAsync(category.Name.ToString())).Data.Id;
 
-                        var productAttributeMapping = new ProductAttributeMapping()
-                        {
-                            ProductId = productId,
-                            ProductAttributeId = productAttributeId
-                        };
-                        await _productAttributeMappingService.CreateOrEditProductAttributeMappingAsync(productAttributeMapping);
-
-                        var productAttributeMappingId = (await _productAttributeMappingService.GetProductAttributeMappingByProductIdAsync(productId)).Data.Where(x=>x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
-
-                        foreach(var pavName in item.ProductAttributeValues)
-                        {
-                            var productAttributeValue = new ProductAttributeValue()
+                            var productCategoryMapping = new ProductCategory()
                             {
-                                ProductAttributeMappingId = productAttributeMappingId,
-                                Name = pavName,
+                                CategoryId = categoryId,
+                                ProductId = productId
                             };
-                            await _productAttributeValueService.AddOrUpdateProductAttributeValue(productAttributeValue);
+                            await _productCategorySerivce.CreateOrEditAsync(productCategoryMapping);
+                        }
+                        
+                        foreach(var pa in item.ProductAttributes)
+                        {
+                            var productAttributeId = (await _productAttributeService.GetProductAttributeByName(pa.Name.ToString())).Data.Id;
+
+                            var productAttributeMapping = new ProductAttributeMapping()
+                            {
+                                ProductId = productId,
+                                ProductAttributeId = productAttributeId
+                            };
+                            await _productAttributeMappingService.CreateOrEditProductAttributeMappingAsync(productAttributeMapping);
+
+                            var productAttributeMappingId = (await _productAttributeMappingService.GetProductAttributeMappingByProductIdAsync(productId)).Data.Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
+
+                            foreach (var pav in item.ProductAttributeValues)
+                            {
+                                var productAttributeValue = new ProductAttributeValue()
+                                {
+                                    ProductAttributeMappingId = productAttributeMappingId,
+                                    Name = pav.Name,
+                                };
+                                await _productAttributeValueService.AddOrUpdateProductAttributeValue(productAttributeValue);
+                            }
                         }
                     }
                 }
@@ -127,27 +130,16 @@ namespace T.WebApi.Services.DataSeederService
         {
             if (!await _context.ProductAttribute.AnyAsync())
             {
-                Type seedType = typeof(ProductAttributeName);
-                FieldInfo[] fields = seedType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-
-                foreach (FieldInfo field in fields)
+                foreach (var item in ProductAttributesDataSeed.Instance.GetAll())
                 {
-                    string fieldName = field.Name;
-                    object fieldValue = field.GetValue(null);
-
-                    ProductAttribute productAttribute = new ProductAttribute
-                    {
-                        Name = fieldValue.ToString(),
-                    };
-
-                    await _productAttributeService.CreateProductAttributeAsync(productAttribute);
+                    await _productAttributeService.CreateProductAttributeAsync(item);
                 }
             };
             
         }
-        private bool SeedPermission()
+        private async Task<bool> SeedPermission()
         {
-            if (!_context.PermissionRecords.Any())
+            if (await _context.PermissionRecords.AnyAsync())
             {
                 return false;
             }
@@ -155,34 +147,34 @@ namespace T.WebApi.Services.DataSeederService
             {
             new PermissionRecord() {
                   Name = "Access admin area",
-                     SystemName = "AccessAdminPanel",
-                     Category = "Standard"
+                     SystemName = PermissionSystemName.AccessAdminPanel,
+                     Category = "Manager"
                },
                new PermissionRecord() {
                   Name = "Admin area: Manage Products",
-                     SystemName = "ManageProducts",
+                     SystemName = PermissionSystemName.ManageProducts,
                      Category = "Manager"
                },
                new PermissionRecord() {
                   Name = "Admin area: Manage Categories",
-                     SystemName = "ManageCategories",
+                     SystemName = PermissionSystemName.ManageCategories,
                      Category = "Manager"
                },
                new PermissionRecord() {
                   Name = "Admin area: Manage Attributes",
-                     SystemName = "ManageAttributes",
+                     SystemName = PermissionSystemName.ManageAttributes,
                      Category = "Manager"
                },
                new PermissionRecord() {
-                  Name = "Admin area: Manage Customers",
-                     SystemName = "ManageCustomers",
+                  Name = "Admin area: Manage Users",
+                     SystemName = PermissionSystemName.ManageCustomers,
                      Category = "Manager"
                }
          };
             try
             {
-                _context.PermissionRecords.AddRange(permission_list);
-                _context.SaveChanges();
+                await _context.PermissionRecords.AddRangeAsync(permission_list);
+                await _context.SaveChangesAsync();
                 return true;
             }
             catch 
@@ -192,38 +184,30 @@ namespace T.WebApi.Services.DataSeederService
         }
         private async Task SeedPermissionRolesMapping()
         {
-            if (!_context.PermissionRecordUserRoleMappings.Any())
+            if (await _context.PermissionRecordUserRoleMappings.AnyAsync())
             {
                 return;
             }
-            var permission_roles_mapping = new List<PermissionRecordUserRoleMapping>() {
-            new PermissionRecordUserRoleMapping() {
-                  PermissionRecordId = 1,
-                     UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
-               },
-               new PermissionRecordUserRoleMapping() {
-                  PermissionRecordId = 2,
-                     UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
-               },
-               new PermissionRecordUserRoleMapping() {
-                  PermissionRecordId = 3,
-                     UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
-               },
-               new PermissionRecordUserRoleMapping() {
-                  PermissionRecordId = 4,
-                     UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
-               },
-               new PermissionRecordUserRoleMapping() {
-                  PermissionRecordId = 5,
-                     UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
-               }
-         };
-            _context.PermissionRecordUserRoleMappings.AddRange(permission_roles_mapping);
-            _context.SaveChanges();
+
+            foreach (var item in RolePermissionMappingDataSeed.Instance.GetAll())
+            {
+                foreach (var role in item.Roles)
+                {
+                    foreach (var permission in item.PermissionRecords)
+                    {
+                        var rolePermissionMapping = new PermissionRecordUserRoleMapping()
+                        {
+                            PermissionRecordId = (await _permissionRecordService.GetPermissionRecordByNameAsync(permission.Name)).Data.Id,
+                            UserRoleId = await GetRoleId(_roleManager, role.Name)
+                        };
+                        await _permissionRecordUserRoleMappingService.CreateOrEditAsync(rolePermissionMapping);
+                    }
+                }
+            }
         }
         private async Task<bool> SeedRoles()
         {
-            if (_context.Roles.Any())
+            if (await _context.Roles.AnyAsync())
             {
                 return false;
             }
@@ -247,52 +231,24 @@ namespace T.WebApi.Services.DataSeederService
                 return false;
             }
         }
-        private async void SeedUser()
+        private async Task SeedUserAsync()
         {
-            if (_context.Users.Any())
+            if (await _context.Users.AnyAsync())
             {
                 return;
             }
-            var user2 = await _userManager.FindByEmailAsync("hovanthanh12102002@gmail.com");
-            if (user2 == null)
+
+            foreach (var item in UserRoleMappingDataSeed.Instance.GetAll())
             {
-                user2 = new User()
+                foreach(var user in item.Users)
                 {
-                    Id = Guid.NewGuid(),
-
-                    FirstName = "Văn Thành",
-                    LastName = "Hồ",
-                    Email = "hovanthanh12102002@gmail.com",
-                    NormalizedEmail = "hovanthanh12102002@gmail.com",
-                    PhoneNumber = "032232131",
-                    UserName = "thanhhv",
-                    NormalizedUserName = "THANHHV",
-                    CreatedDate = AppExtensions.GetDateTimeNow(),
-                    EmailConfirmed = true // không cần xác thực email nữa , 
-                };
-                await _userManager.CreateAsync(user2, "123321");
-                await _userManager.AddToRoleAsync(user2, RoleName.Admin);
-            }
-
-            var user3 = await _userManager.FindByEmailAsync("hovanthanh@gmail.com");
-            if (user3 == null)
-            {
-                user3 = new User()
-                {
-                    Id = Guid.NewGuid(),
-
-                    FirstName = "Văn Thành",
-                    LastName = "Hồ",
-                    Email = "hovanthanh@gmail.com",
-                    NormalizedEmail = "hovanthanh@gmail.com",
-                    PhoneNumber = "032232131",
-                    UserName = "thanhhv2",
-                    NormalizedUserName = "THANHHV2",
-                    CreatedDate = AppExtensions.GetDateTimeNow(),
-                    EmailConfirmed = true // không cần xác thực email nữa , 
-                };
-                await _userManager.CreateAsync(user3, "123321");
-                await _userManager.AddToRoleAsync(user3, RoleName.Customer);
+                    await _userManager.CreateAsync(user, "123321");
+                    var createdUser = await _userManager.FindByNameAsync(user.UserName);
+                    foreach(var role in item.Roles)
+                    {
+                        await _userManager.AddToRoleAsync(createdUser, role.Name);
+                    }
+                }
             }
         }
         public async Task<Guid?> GetRoleId(RoleManager<Role> roleManager, string roleName)

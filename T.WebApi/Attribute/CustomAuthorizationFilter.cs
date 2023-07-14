@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security;
 using System.Security.Claims;
-using T.Library.Model.Enum;
+using T.Library.Model.Roles.RoleName;
 
 namespace T.WebApi.Attribute
 {

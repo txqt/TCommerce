@@ -103,11 +103,30 @@ namespace T.WebApi.Services.DataSeederService
                             CreatedOnUtc = DateTime.UtcNow,
                         },
                     },
-                    CategoryName = CategoryName.Fashion.ToString(),
-                    ProductAttributeName = ProductAttributeName.Color.ToString(),
-                    ProductAttributeValues = new List<string>()
+                    Categories = CategoriesDataSeed.Instance.GetAll().Where(x=>x.Name == CategoriesDataSeed.Fashion).ToList(),
+                    ProductAttributes = ProductAttributesDataSeed.Instance.GetAll().Where(x=>x.Name == ProductAttributesDataSeed.Color).ToList(),
+                    ProductAttributeValues = new List<ProductAttributeValue>()
                     {
-                        "Đỏ", "Xanh", "Vàng", "Lục", "Lam"
+                       new ProductAttributeValue()
+                       {
+                           Name = "Đỏ"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Xanh"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Vàng"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Lục"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Lam"
+                       }
                     }
                 },
                 new ProductSeedModel()
@@ -151,11 +170,30 @@ namespace T.WebApi.Services.DataSeederService
                             CreatedOnUtc = DateTime.UtcNow,
                         }
                     },
-                    CategoryName = CategoryName.Electronic.ToString(),
-                    ProductAttributeName = ProductAttributeName.Color.ToString(),
-                    ProductAttributeValues = new List<string>()
+                    Categories = CategoriesDataSeed.Instance.GetAll().Where(x=>x.Name == CategoriesDataSeed.Electronic).ToList(),
+                    ProductAttributes = ProductAttributesDataSeed.Instance.GetAll().Where(x=>x.Name == ProductAttributesDataSeed.Color).ToList(),
+                    ProductAttributeValues = new List<ProductAttributeValue>()
                     {
-                        "Đỏ", "Xanh", "Vàng", "Lục", "Lam"
+                       new ProductAttributeValue()
+                       {
+                           Name = "Đỏ"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Xanh"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Vàng"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Lục"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Lam"
+                       }
                     }
                 },
                 new ProductSeedModel()
@@ -199,11 +237,30 @@ namespace T.WebApi.Services.DataSeederService
                             CreatedOnUtc = DateTime.UtcNow,
                         }
                     },
-                    CategoryName = CategoryName.Accessory.ToString(),
-                    ProductAttributeName = ProductAttributeName.Color.ToString(),
-                    ProductAttributeValues = new List<string>()
+                    Categories = CategoriesDataSeed.Instance.GetAll().Where(x=>x.Name == CategoriesDataSeed.Accessory).ToList(),
+                    ProductAttributes = ProductAttributesDataSeed.Instance.GetAll().Where(x=>x.Name == ProductAttributesDataSeed.Color).ToList(),
+                    ProductAttributeValues = new List<ProductAttributeValue>()
                     {
-                        "Đỏ", "Xanh", "Vàng", "Lục", "Lam"
+                       new ProductAttributeValue()
+                       {
+                           Name = "Đỏ"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Xanh"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Vàng"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Lục"
+                       },
+                       new ProductAttributeValue()
+                       {
+                           Name = "Lam"
+                       }
                     }
                 }
             };

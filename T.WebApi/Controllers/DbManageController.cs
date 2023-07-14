@@ -6,7 +6,6 @@ using T.Library.Model;
 using T.WebApi.Database.ConfigurationDatabase;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using T.WebApi.Attribute;
-using T.Library.Model.Enum;
 using Microsoft.Extensions.Caching.Distributed;
 using T.WebApi.Services.CacheServices;
 using System.Data;
@@ -15,6 +14,7 @@ using T.Library.Model.Users;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using T.WebApi.Extensions;
+using T.Library.Model.Roles.RoleName;
 
 namespace T.WebApi.Controllers
 {
