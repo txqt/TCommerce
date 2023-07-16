@@ -17,7 +17,7 @@ namespace T.Library.Model.Security
         /// <summary>
         /// Gets or sets the customer role identifier
         /// </summary>
-        public Guid? UserRoleId { get; set; }
+        public Guid? RoleId { get; set; }
         public Role Role { get; set; }
         public PermissionRecord PermissionRecord { get; set; }
     }

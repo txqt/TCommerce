@@ -8,7 +8,7 @@ namespace T.WebApi.Database.ConfigurationDatabase
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.Property(x => x.Description).IsRequired().HasMaxLength(200);
+            
         }
     }
 }

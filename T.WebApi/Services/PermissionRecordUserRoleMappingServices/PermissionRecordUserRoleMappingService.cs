@@ -32,7 +32,7 @@ namespace T.WebApi.Services.PermissionRecordUserRoleMappingServices
             else
             {
                 mappingTable.PermissionRecordId = permissionRecordUserRoleMapping.Id;
-                mappingTable.UserRoleId = permissionRecordUserRoleMapping.UserRoleId;
+                mappingTable.RoleId = permissionRecordUserRoleMapping.RoleId;
             }
             var result = await _context.SaveChangesAsync();
             if (result == 0)

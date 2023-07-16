@@ -197,8 +197,8 @@ namespace T.WebApi.Services.DataSeederService
                     {
                         var rolePermissionMapping = new PermissionRecordUserRoleMapping()
                         {
-                            PermissionRecordId = (await _permissionRecordService.GetPermissionRecordByNameAsync(permission.Name)).Data.Id,
-                            UserRoleId = await GetRoleId(_roleManager, role.Name)
+                            PermissionRecordId = (await _permissionRecordService.GetPermissionRecordBySystemNameAsync(permission.SystemName)).Data.Id,
+                            RoleId = await GetRoleId(_roleManager, role.Name)
                         };
                         await _permissionRecordUserRoleMappingService.CreateOrEditAsync(rolePermissionMapping);
                     }

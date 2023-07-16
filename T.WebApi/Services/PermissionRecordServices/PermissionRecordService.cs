@@ -11,7 +11,7 @@ namespace T.WebApi.Services.PermissionRecordServices
     {
         Task<List<PermissionRecord>> GetAllPermissionRecordAsync();
         Task<ServiceResponse<PermissionRecord>> GetPermissionRecordByIdAsync(int permissionRecordId);
-        Task<ServiceResponse<PermissionRecord>> GetPermissionRecordByNameAsync(string permissionRecordName);
+        Task<ServiceResponse<PermissionRecord>> GetPermissionRecordBySystemNameAsync(string permissionRecordSystemName);
         Task<ServiceResponse<bool>> CreateOrEditAsync(PermissionRecord permissionRecord);
         Task<ServiceResponse<bool>> DeletePermissionRecordByIdAsync(int id);
     }
@@ -84,9 +84,9 @@ namespace T.WebApi.Services.PermissionRecordServices
             return response;
         }
 
-        public async Task<ServiceResponse<PermissionRecord>> GetPermissionRecordByNameAsync(string permissionRecordName)
+        public async Task<ServiceResponse<PermissionRecord>> GetPermissionRecordBySystemNameAsync(string permissionRecordSystenName)
         {
-            var permissionRecord = await _context.PermissionRecords.FirstOrDefaultAsync(x => x.Name == permissionRecordName);
+            var permissionRecord = await _context.PermissionRecords.FirstOrDefaultAsync(x => x.SystemName == permissionRecordSystenName);
 
             var response = new ServiceResponse<PermissionRecord>
             {

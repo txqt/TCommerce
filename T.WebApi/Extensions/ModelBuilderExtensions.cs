@@ -533,31 +533,31 @@ namespace T.WebApi.Extensions
                 {
                     Id = 1,
                     PermissionRecordId = 1,
-                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                    RoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
                 },
                 new PermissionRecordUserRoleMapping()
                 {
                     Id = 2,
                     PermissionRecordId = 2,
-                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                    RoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
                 },
                 new PermissionRecordUserRoleMapping()
                 {
                     Id = 3,
                     PermissionRecordId = 3,
-                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                    RoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
                 },
                 new PermissionRecordUserRoleMapping()
                 {
                     Id = 4,
                     PermissionRecordId = 4,
-                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                    RoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
                 },
                 new PermissionRecordUserRoleMapping()
                 {
                     Id = 5,
                     PermissionRecordId = 5,
-                    UserRoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
+                    RoleId = await GetRoleId(_roleManager, RoleName.Admin.ToString())
                 }
             );
             #endregion
