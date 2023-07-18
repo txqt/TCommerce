@@ -8,9 +8,15 @@ namespace T.WebApi.Database.ConfigurationDatabase
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.Property(x => x.FirstName).IsRequired().HasMaxLength(200);
-            builder.Property(x => x.LastName).IsRequired().HasMaxLength(200);
+            builder.Property(x => x.UserName).IsRequired().HasMaxLength(100);
+            builder.Property(x => x.FirstName).IsRequired().HasMaxLength(30);
+            builder.Property(x => x.LastName).IsRequired().HasMaxLength(30);
+            builder.Property(x => x.PhoneNumber).IsRequired().HasMaxLength(10);
             builder.Property(x => x.Dob).IsRequired();
+
+            builder.HasIndex(x => x.UserName).IsUnique();
+            builder.HasIndex(x => x.Email).IsUnique();
+            builder.HasIndex(x => x.PhoneNumber).IsUnique();
         }
     }
 }

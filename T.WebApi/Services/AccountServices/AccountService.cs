@@ -273,70 +273,71 @@ namespace T.WebApi.Services.AccountServices
 
         public async Task<ServiceResponse<bool>> Register(RegisterRequest request)
         {
-            var user = await _userManager.FindByNameAsync(request.UserName);
+            //var checkCreatedUser = await _userManager.FindByNameAsync(request.UserName);
 
-            if (user != null)
-            {
-                return new ServiceErrorResponse<bool>("Tài khoản đã tồn tại");
-            }
+            //if (user != null)
+            //{
+            //    return new ServiceErrorResponse<bool>("Tài khoản đã tồn tại");
+            //}
 
             if (!AppUtilities.IsValidEmail(request.Email))
                 return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
-            if (await _userManager.FindByEmailAsync(request.Email) != null)
-            {
-                return new ServiceErrorResponse<bool>("Email đã tồn tại");
-            }
+            //if (await _userManager.FindByEmailAsync(request.Email) != null)
+            //{
+            //    return new ServiceErrorResponse<bool>("Email đã tồn tại");
+            //}
 
-            if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) != null)
-                return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
+            //if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) != null)
+            //    return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
-            user = new User()
-            {
-                Dob = request.Dob,
-                Email = request.Email,
-                NormalizedEmail = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                UserName = request.UserName,
-                PhoneNumber = request.PhoneNumber,
-                CreatedDate = AppExtensions.GetDateTimeNow(),
-            };
-
-            var result = await _userManager.CreateAsync(user, request.Password);
-            if (!result.Succeeded)
-            {
-                var errors = result.Errors.Select(e => e.Description);
-                return new ServiceErrorResponse<bool>(string.Join(", ", errors));
-            }
-            if (result.Succeeded)
-            {
-                var defaultrole = _roleManager.FindByNameAsync(RoleName.Customer).Result;
-                if (defaultrole != null)
-                {
-                    IdentityResult roleresult = await _userManager.AddToRoleAsync(user, defaultrole.Name);
-                }
-            }
-
-            var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodeToken = EncodeToken(confirmEmailToken);
-            string url = $"{_configuration["Url:ApiUrl"]}/api/account/confirmemail?userid={user.Id}&token={encodeToken}";
-
-            EmailDto emailDto = new EmailDto
-            {
-                Subject = "Xác thực email người dùng",
-                Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
-                + $"<h3>Tài khoản: {user.UserName}</h3></br>"
-                + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
-                To = user.Email
-            };
+            
             try
             {
+                var user = new User()
+                {
+                    Dob = request.Dob,
+                    Email = request.Email,
+                    NormalizedEmail = request.Email,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    UserName = request.UserName,
+                    PhoneNumber = request.PhoneNumber,
+                    CreatedDate = AppExtensions.GetDateTimeNow(),
+                };
+
+                var result = await _userManager.CreateAsync(user, request.Password);
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(e => e.Description);
+                    return new ServiceErrorResponse<bool>(string.Join(", ", errors));
+                }
+                if (result.Succeeded)
+                {
+                    var defaultrole = _roleManager.FindByNameAsync(RoleName.Customer).Result;
+                    if (defaultrole != null)
+                    {
+                        IdentityResult roleresult = await _userManager.AddToRoleAsync(user, defaultrole.Name);
+                    }
+                }
+
+                var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var encodeToken = EncodeToken(confirmEmailToken);
+                string url = $"{_configuration["Url:ApiUrl"]}/api/account/confirmemail?userid={user.Id}&token={encodeToken}";
+
+                EmailDto emailDto = new EmailDto
+                {
+                    Subject = "Xác thực email người dùng",
+                    Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
+                    + $"<h3>Tài khoản: {user.UserName}</h3></br>"
+                    + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
+                    To = user.Email
+                };
                 await _emailService.SendEmailAsync(emailDto);
             }
-            catch
+            catch (Exception ex)
             {
-                return new ServiceErrorResponse<bool>("Không thể gửi email xác nhận, vui lòng thử lại hoặc liên hệ bộ phận kỹ thuật");
+                return new ServiceErrorResponse<bool>(ex.Message);
             }
 
             return new ServiceResponse<bool>() { Message = "Vui lòng kiểm tra email để xác nhận !" };
