@@ -273,25 +273,14 @@ namespace T.WebApi.Services.AccountServices
 
         public async Task<ServiceResponse<bool>> Register(RegisterRequest request)
         {
-            //var checkCreatedUser = await _userManager.FindByNameAsync(request.UserName);
-
-            //if (user != null)
-            //{
-            //    return new ServiceErrorResponse<bool>("Tài khoản đã tồn tại");
-            //}
 
             if (!AppUtilities.IsValidEmail(request.Email))
                 return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
-            //if (await _userManager.FindByEmailAsync(request.Email) != null)
-            //{
-            //    return new ServiceErrorResponse<bool>("Email đã tồn tại");
-            //}
+            if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) != null)
+                return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
-            //if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) != null)
-            //    return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
-            
             try
             {
                 var user = new User()

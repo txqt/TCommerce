@@ -22,6 +22,7 @@ using T.WebApi.Services.HomePageServices;
 using T.WebApi.Services.DataSeederService;
 using T.WebApi.Services.PermissionRecordServices;
 using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
+using T.WebApi.IdentityCustom;
 
 namespace T.WebApi.Extensions
 {
@@ -177,6 +178,7 @@ namespace T.WebApi.Extensions
                 options.Lockout.AllowedForNewUsers = true;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
                 options.Lockout.MaxFailedAccessAttempts = 3;
+                options.User.RequireUniqueEmail = true;
             });
 
             return services;
