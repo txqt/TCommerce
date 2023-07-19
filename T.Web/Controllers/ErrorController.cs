@@ -9,18 +9,18 @@ namespace T.Web.Controllers
         [Route("/Error/{statusCode}")]
         public IActionResult Error(int statusCode)
         {
-            var feature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
-            var errorViewModel = new ErrorViewModel
-            {
-                ErrorType = "Lỗi không xác định",
-                ErrorMessage = "Đã xảy ra lỗi khi xử lý yêu cầu của bạn."
-            };
 
-            // Kiểm tra nếu có lỗi xảy ra
-            if (feature != null)
+            var errorViewModel = new ErrorViewModel();
+
+            if(statusCode == 404)
             {
                 errorViewModel.ErrorType = statusCode.ToString();
-                errorViewModel.ErrorMessage = "Đã xảy ra lỗi khi xử lý yêu cầu của bạn.";
+                errorViewModel.ErrorMessage = "Not Found";
+            }
+            else
+            {
+                errorViewModel.ErrorType = statusCode.ToString();
+                errorViewModel.ErrorMessage = "Đã xảy ra lỗi";
             }
 
             return View("Error", errorViewModel);

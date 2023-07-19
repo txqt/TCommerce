@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using System.Net;
 using T.Library.Model.Common;
 
@@ -42,4 +43,5 @@ namespace T.WebApi.Middleware.ErrorHandlings
             }.ToString());
         }
     }
+    
 }

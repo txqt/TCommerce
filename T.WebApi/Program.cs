@@ -76,7 +76,7 @@ app.UseAuthorization();
 
 app.UseCors("CorsPolicy");
 app.UseMiddleware<TokenManagerMiddleware>();
-app.ConfigureCustomExceptionMiddleware();
+//app.ConfigureCustomExceptionMiddleware();
 
 app.MapControllers();
 
