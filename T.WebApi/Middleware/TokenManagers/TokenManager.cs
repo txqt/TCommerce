@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using T.Library.Model.JwtToken;
 
-namespace T.WebApi.Services
+namespace T.WebApi.Middleware.TokenManagers
 {
     public interface ITokenManager
     {

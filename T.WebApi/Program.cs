@@ -9,7 +9,8 @@ using T.Library.Model.Users;
 using T.WebApi.Attribute;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
-using T.WebApi.Services;
+using T.WebApi.Middleware.ErrorHandlings;
+using T.WebApi.Middleware.TokenManagers;
 using T.WebApi.Services.DataSeederService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,6 +76,8 @@ app.UseAuthorization();
 
 app.UseCors("CorsPolicy");
 app.UseMiddleware<TokenManagerMiddleware>();
+app.ConfigureCustomExceptionMiddleware();
+
 app.MapControllers();
 
 app.Run();

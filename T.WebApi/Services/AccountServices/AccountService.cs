@@ -15,6 +15,7 @@ using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
 using T.WebApi.Helpers.TokenHelpers;
+using T.WebApi.Middleware.TokenManagers;
 using T.WebApi.Services.CacheServices;
 
 namespace T.WebApi.Services.AccountServices
@@ -277,12 +278,11 @@ namespace T.WebApi.Services.AccountServices
             if (!AppUtilities.IsValidEmail(request.Email))
                 return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
-            if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) != null)
-                return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
+            //if (await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber) != null)
+            //    return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
 
-            try
-            {
+            
                 var user = new User()
                 {
                     Dob = request.Dob,
@@ -323,11 +323,7 @@ namespace T.WebApi.Services.AccountServices
                     To = user.Email
                 };
                 await _emailService.SendEmailAsync(emailDto);
-            }
-            catch (Exception ex)
-            {
-                return new ServiceErrorResponse<bool>(ex.Message);
-            }
+            
 
             return new ServiceResponse<bool>() { Message = "Vui lòng kiểm tra email để xác nhận !" };
         }

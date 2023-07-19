@@ -45,18 +45,5 @@ namespace T.Web.Controllers
         {
             return View();
         }
-
-        [Route("Error/{statusCode}")]
-        public IActionResult Error(int statusCode)
-        {
-            return View();
-        }
-
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

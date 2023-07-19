@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace T.WebApi.Services
+namespace T.WebApi.Middleware.TokenManagers
 {
     public class TokenManagerMiddleware : IMiddleware
     {

@@ -13,7 +13,6 @@ using T.WebApi.Services.AccountServices;
 using T.WebApi.Attribute;
 using T.WebApi.Services.CacheServices;
 using T.Library.Model.JwtToken;
-using T.WebApi.Services;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.ProductService;
 using T.WebApi.Services.CategoryServices;
@@ -23,6 +22,8 @@ using T.WebApi.Services.DataSeederService;
 using T.WebApi.Services.PermissionRecordServices;
 using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.IdentityCustom;
+using T.WebApi.Middleware.TokenManagers;
+using T.WebApi.Middleware.ErrorHandlings;
 
 namespace T.WebApi.Extensions
 {
