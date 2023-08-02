@@ -4,7 +4,7 @@ using T.Library.Model.Common;
 
 namespace T.Web.Areas.Admin.Models
 {
-    public class ProductAttributeMappingModel:BaseEntity
+    public class ProductAttributeMappingModel : BaseEntity
     {
         #region Ctor
 

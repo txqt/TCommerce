@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace T.Library.Model.Security
 {
-    public static class PermissionSystemName
+    public class PermissionSystemName
     {
-        public static string AccessAdminPanel = "AccessAdminPanel";
-        public static string ManageProducts = "ManageProducts";
-        public static string ManageCategories = "ManageCategories";
-        public static string ManageAttributes = "ManageAttributes";
-        public static string ManageCustomers = "ManageCustomers";
+        public const string AccessAdminPanel = "AccessAdminPanel";
+        public const string ManageProducts = "ManageProducts";
+        public const string ManageCategories = "ManageCategories";
+        public const string ManageAttributes = "ManageAttributes";
+        public const string ManageCustomers = "ManageCustomers";
     }
 }

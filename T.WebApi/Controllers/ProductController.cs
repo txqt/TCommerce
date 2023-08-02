@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using T.Library.Model;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Attribute;
 using T.WebApi.Services.ProductServices;
@@ -24,6 +25,7 @@ namespace T.WebApi.Controllers
 
         [AllowAnonymous]
         [HttpGet(APIRoutes.GetAll)]
+        [AuthorizePermission(PermissionSystemName.ManageProducts)]
         public async Task<ActionResult<List<Product>>> GetAll([FromQuery] ProductParameters productParameters)
         {
             var products = await _productService.GetAll(productParameters);

@@ -251,14 +251,14 @@ namespace T.WebApi.Services.DataSeederService
                 }
             }
         }
-        public async Task<Guid?> GetRoleId(RoleManager<Role> roleManager, string roleName)
+        public async Task<Guid> GetRoleId(RoleManager<Role> roleManager, string roleName)
         {
             var role = await roleManager.FindByNameAsync(roleName);
             if (role != null)
             {
                 return role.Id;
             }
-            return null;
+            return Guid.Empty;
         }
     }
 }
