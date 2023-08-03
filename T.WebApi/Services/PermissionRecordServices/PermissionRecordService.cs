@@ -34,6 +34,11 @@ namespace T.WebApi.Services.PermissionRecordServices
         }
 
 
+        /// <summary>
+        /// Kiểm tra xem một đối tượng PermissionRecord có được phép thực hiện hay không.
+        /// </summary>
+        /// <param name="permissionRecord">Đối tượng PermissionRecord cần kiểm tra.</param>
+        /// <returns>Trả về true nếu có quyền thực hiện, ngược lại trả về false.</returns>
         public async Task<bool> AuthorizeAsync(PermissionRecord permissionRecord)
         {
             if (permissionRecord is null)
@@ -41,6 +46,13 @@ namespace T.WebApi.Services.PermissionRecordServices
 
             return await AuthorizeAsync(permissionRecord.SystemName, (await _userService.GetCurrentUser()).Data);
         }
+
+        /// <summary>
+        /// Kiểm tra xem một người dùng có được phép thực hiện một quyền cụ thể hay không.
+        /// </summary>
+        /// <param name="permissionSystemName">Tên hệ thống của quyền cần kiểm tra.</param>
+        /// <param name="user">Người dùng cần kiểm tra quyền.</param>
+        /// <returns>Trả về true nếu có quyền thực hiện, ngược lại trả về false.</returns>
         public async Task<bool> AuthorizeAsync(string permissionSystemName, User user)
         {
             if (user is null)
@@ -52,13 +64,21 @@ namespace T.WebApi.Services.PermissionRecordServices
             var userRoles = await _userService.GetRolesByUserAsync(user);
             foreach (var role in userRoles)
             {
-                if(await AuthorizeAsync(permissionSystemName, role.Id))
+                if (await AuthorizeAsync(permissionSystemName, role.Id))
                 {
                     return true;
-                } 
+                }
             }
+
             return false;
         }
+
+        /// <summary>
+        /// Kiểm tra xem một role có được phép thực hiện một quyền cụ thể hay không.
+        /// </summary>
+        /// <param name="permissionSystemName">Tên hệ thống của quyền cần kiểm tra.</param>
+        /// <param name="roleId">ID của role cần kiểm tra quyền.</param>
+        /// <returns>Trả về true nếu có quyền thực hiện, ngược lại trả về false.</returns>
         public async Task<bool> AuthorizeAsync(string permissionSystemName, Guid roleId)
         {
             if (permissionSystemName is null)
@@ -73,6 +93,7 @@ namespace T.WebApi.Services.PermissionRecordServices
 
             return false;
         }
+
 
         public async Task<ServiceResponse<bool>> CreateOrEditAsync(PermissionRecord permissionRecord)
         {
