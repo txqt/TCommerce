@@ -143,34 +143,9 @@ namespace T.WebApi.Services.DataSeederService
             {
                 return false;
             }
-            var permission_list = new List<PermissionRecord>() 
-            {
-            new PermissionRecord() {
-                  Name = "Access admin area",
-                     SystemName = PermissionSystemName.AccessAdminPanel,
-                     Category = "Manager"
-               },
-               new PermissionRecord() {
-                  Name = "Admin area: Manage Products",
-                     SystemName = PermissionSystemName.ManageProducts,
-                     Category = "Manager"
-               },
-               new PermissionRecord() {
-                  Name = "Admin area: Manage Categories",
-                     SystemName = PermissionSystemName.ManageCategories,
-                     Category = "Manager"
-               },
-               new PermissionRecord() {
-                  Name = "Admin area: Manage Attributes",
-                     SystemName = PermissionSystemName.ManageAttributes,
-                     Category = "Manager"
-               },
-               new PermissionRecord() {
-                  Name = "Admin area: Manage Users",
-                     SystemName = PermissionSystemName.ManageCustomers,
-                     Category = "Manager"
-               }
-         };
+
+            var permission_list = await _permissionRecordService.GetAllPermissionRecordAsync();
+
             try
             {
                 await _context.PermissionRecords.AddRangeAsync(permission_list);
@@ -189,7 +164,33 @@ namespace T.WebApi.Services.DataSeederService
                 return;
             }
 
-            foreach (var item in RolePermissionMappingDataSeed.Instance.GetAll())
+            var list = new List<RolePermissionMappingSeedModel>()
+            {
+                new RolePermissionMappingSeedModel()
+                {
+                    Roles = new List<Role>()
+                    {
+                        new Role(RoleName.Employee)
+                    },
+                    PermissionRecords = new List<PermissionRecord>()
+                    {
+                        DefaultPermission.AccessAdminPanel,
+                        DefaultPermission.ManageProducts,
+                        DefaultPermission.ManageCategories,
+                        DefaultPermission.ManageAttributes,
+                    }
+                },
+                new RolePermissionMappingSeedModel()
+                {
+                    Roles = new List<Role>()
+                    {
+                        new Role(RoleName.Admin)
+                    },
+                    PermissionRecords = await _permissionRecordService.GetAllPermissionRecordAsync()
+                }
+            };
+
+            foreach (var item in list)
             {
                 foreach (var role in item.Roles)
                 {

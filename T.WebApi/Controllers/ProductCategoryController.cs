@@ -11,7 +11,6 @@ namespace T.WebApi.Controllers
 {
     [Route("api/product-category")]
     [ApiController]
-    [CustomAuthorizationFilter(RoleName.Admin)]
     public class ProductCategoryController : ControllerBase
     {
         private readonly IProductCategoryService _productCategoryService;

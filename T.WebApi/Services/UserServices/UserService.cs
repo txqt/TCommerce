@@ -16,7 +16,9 @@ namespace T.WebApi.Services.UserServices
     {
         Task<List<UserModel>> GetAllAsync();
         Task<List<Role>> GetAllRolesAsync();
+        Task<List<Role>> GetRolesByUserAsync(User user);
         Task<ServiceResponse<UserModel>> Get(Guid id);
+        Task<ServiceResponse<User>> GetCurrentUser();
         Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model);
         Task<ServiceResponse<bool>> DeleteAsync(Guid id);
     }
@@ -26,13 +28,15 @@ namespace T.WebApi.Services.UserServices
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IMapper mapper, DatabaseContext context, UserManager<User> userManager, RoleManager<Role> roleManager)
+        public UserService(IMapper mapper, DatabaseContext context, UserManager<User> userManager, RoleManager<Role> roleManager, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model)
@@ -201,6 +205,34 @@ namespace T.WebApi.Services.UserServices
             }
 
             return password.ToString();
+        }
+
+        public async Task<ServiceResponse<User>> GetCurrentUser()
+        {
+            // Lấy thông tin đối tượng HttpContext từ IHttpContextAccessor.
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            // Lấy tên người dùng (username) của người dùng hiện tại từ HttpContext.
+            string username = httpContext.User.Identity.Name;
+
+            if (string.IsNullOrEmpty(username))
+            {
+                return null;
+            }
+
+            // Tìm người dùng trong UserManager bằng tên người dùng.
+            var user = await _userManager.FindByNameAsync(username);
+
+            return new ServiceResponse<User>() { Success = user != null ? true : false, Data = user };
+        }
+
+        public async Task<List<Role>> GetRolesByUserAsync(User user)
+        {
+            var list_role = from r in _context.Roles
+                    join ur in _context.UserRoles on r.Id equals ur.RoleId
+                    where ur.UserId == user.Id
+                    select r;
+            return await list_role.ToListAsync();
         }
     }
 }
