@@ -20,6 +20,8 @@ namespace T.WebApi.Services.PermissionRecordServices
         Task<ServiceResponse<bool>> CreateOrEditAsync(PermissionRecord permissionRecord);
         Task<ServiceResponse<bool>> DeletePermissionRecordByIdAsync(int id);
         Task<bool> AuthorizeAsync(PermissionRecord permissionRecord);
+        Task<bool> AuthorizeAsync(string permissionSystemName, User user);
+        Task<bool> AuthorizeAsync(string permissionSystemName, Guid roleId);
     }
     public class PermissionRecordService : IPermissionRecordService
     {
