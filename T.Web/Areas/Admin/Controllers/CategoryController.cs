@@ -17,9 +17,9 @@ namespace T.Web.Areas.Admin.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
-        private readonly IPrepareModelService _prepareModelService;
+        private readonly IProductModelService _prepareModelService;
 
-        public CategoryController(ICategoryService categoryService, IMapper mapper, IPrepareModelService prepareModelService)
+        public CategoryController(ICategoryService categoryService, IMapper mapper, IProductModelService prepareModelService)
         {
             _categoryService = categoryService;
             _mapper = mapper;

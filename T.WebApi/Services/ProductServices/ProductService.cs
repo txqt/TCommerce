@@ -6,6 +6,7 @@ using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
+using T.WebApi.Services.IRepositoryServices;
 using T.WebApi.Services.ProductService;
 
 namespace T.WebApi.Services.ProductServices
@@ -21,7 +22,7 @@ namespace T.WebApi.Services.ProductServices
         Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> CreateProduct(Product product);
         Task<ServiceResponse<bool>> CreateProducts(List<Product> products);
-        Task<ServiceResponse<bool>> EditProduct(ProductModel product);
+        Task<ServiceResponse<bool>> EditProduct(Product product);
         Task<ServiceResponse<bool>> DeleteProduct(int productId);
         Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttribute(int id);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
@@ -35,8 +36,9 @@ namespace T.WebApi.Services.ProductServices
         private readonly IPictureService _pictureService;
         private readonly IConfiguration _configuration;
         private readonly IHostEnvironment _environment;
+        private readonly IRepository<Product> _productsRepository;
         private string apiUrl;
-        public ProductService(DatabaseContext context, IMapper mapper, IPictureService pictureService, IConfiguration configuration, IHostEnvironment environment)
+        public ProductService(DatabaseContext context, IMapper mapper, IPictureService pictureService, IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository)
         {
             _context = context;
             _mapper = mapper;
@@ -44,6 +46,7 @@ namespace T.WebApi.Services.ProductServices
             _configuration = configuration;
             _environment = environment;
             apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
+            _productsRepository = productsRepository;
         }
 
         public async Task<PagedList<Product>> GetAll(ProductParameters productParameters)
@@ -98,9 +101,9 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<bool>> EditProduct(ProductModel product)
+        public async Task<ServiceResponse<bool>> EditProduct(Product model)
         {
-            var productTable = await _context.Product.FirstOrDefaultAsync(p => p.Id == product.Id);
+            var productTable = await _context.Product.FirstOrDefaultAsync(p => p.Id == model.Id);
             if (productTable == null)
             {
                 return new ServiceErrorResponse<bool>("Product not found");
@@ -110,18 +113,14 @@ namespace T.WebApi.Services.ProductServices
 
             try
             {
-                var productMapped = _mapper.Map<Product>(product);
-                if (_context.IsRecordUnchanged(productTable, productMapped))
+                if (_context.IsRecordUnchanged(productTable, model))
                 {
                     return new ServiceErrorResponse<bool>("Data is unchanged");
                 }
-                productTable = _mapper.Map(product, productTable);
+
                 productTable.UpdatedOnUtc = DateTime.Now;
-                var result = await _context.SaveChangesAsync();
-                if (result == 0)
-                {
-                    return new ServiceErrorResponse<bool>("Edit product failed");
-                }
+
+                await _productsRepository.UpdateAsync(productTable);
             }
             catch (Exception ex)
             {

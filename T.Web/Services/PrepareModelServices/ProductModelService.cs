@@ -10,7 +10,7 @@ using T.Library.Model.Common;
 
 namespace T.Web.Services.PrepareModel
 {
-    public interface IPrepareModelService
+    public interface IProductModelService
     {
         Task<ProductAttributeMappingModel> PrepareProductAttributeMappingModelAsync(ProductAttributeMappingModel model,
             Product product, ProductAttributeMapping productAttributeMapping);
@@ -23,21 +23,19 @@ namespace T.Web.Services.PrepareModel
         Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
         Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
             Product product, ProductCategory productCategory);
-        Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, UserModel user);
     }
-    public class PrepareModelService : IPrepareModelService
+    public class ProductModelService : IProductModelService
     {
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeMappingService _productAttributeMappingService;
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
-        private readonly IUserService _userService;
         private readonly IProductCategoryService productCategoryService;
         private string apiUrl = null;
         private readonly IConfiguration _configuration;
-        public PrepareModelService(IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService,
-            IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService, IUserService userService, IConfiguration configuration)
+        public ProductModelService(IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService,
+            IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService, IConfiguration configuration)
         {
             _productAttributeService = productAttributeService;
             _productAttributeMappingService = productAttributeMappingService;
@@ -45,7 +43,6 @@ namespace T.Web.Services.PrepareModel
             _productService = productService;
             _categoryService = categoryService;
             this.productCategoryService = productCategoryService;
-            _userService = userService;
             _configuration = configuration;
             apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
         }
@@ -242,24 +239,5 @@ namespace T.Web.Services.PrepareModel
             return model;
         }
 
-        public async Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, UserModel user)
-        {
-            if (user is not null)
-            {
-                model ??= new UserViewModel()
-                {
-                    Id = user.Id
-                };
-                _mapper.Map(user, model);
-            }
-
-            model.AvailableRoles = (await _userService.GetAllRolesAsync()).Select(role => new SelectListItem
-            {
-                Text = role.Name,
-                Value = role.Name
-            }).ToList();
-
-            return model;
-        }
     }
 }

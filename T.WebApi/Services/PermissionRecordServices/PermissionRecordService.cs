@@ -20,6 +20,7 @@ namespace T.WebApi.Services.PermissionRecordServices
         Task<ServiceResponse<bool>> CreateOrEditAsync(PermissionRecord permissionRecord);
         Task<ServiceResponse<bool>> DeletePermissionRecordByIdAsync(int id);
         Task<bool> AuthorizeAsync(PermissionRecord permissionRecord);
+        Task<bool> AuthorizeAsync(string permissionSystemname);
         Task<bool> AuthorizeAsync(string permissionSystemName, User user);
         Task<bool> AuthorizeAsync(string permissionSystemName, Guid roleId);
     }
@@ -47,6 +48,16 @@ namespace T.WebApi.Services.PermissionRecordServices
                 return false;
 
             return await AuthorizeAsync(permissionRecord.SystemName, (await _userService.GetCurrentUser()).Data);
+        }
+        public async Task<bool> AuthorizeAsync(string permissionSystemname)
+        {
+            if (string.IsNullOrEmpty(permissionSystemname))
+                return false;
+
+            if((await GetPermissionRecordBySystemNameAsync(permissionSystemname)) is null)
+                return false;
+
+            return await AuthorizeAsync(permissionSystemname, (await _userService.GetCurrentUser()).Data);
         }
 
         /// <summary>

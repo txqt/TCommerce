@@ -24,6 +24,7 @@ using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.IdentityCustom;
 using T.WebApi.Middleware.TokenManagers;
 using T.WebApi.Middleware.ErrorHandlings;
+using T.WebApi.Services.IRepositoryServices;
 
 namespace T.WebApi.Extensions
 {
@@ -144,6 +145,7 @@ namespace T.WebApi.Extensions
             services.AddTransient<IPermissionRecordService, PermissionRecordService>();
             services.AddTransient<IPermissionRecordUserRoleMappingService, PermissionRecordUserRoleMappingService>();
             services.AddScoped<ValidationFilterAttribute>();
+            services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>)); ;
 
             return services;
         }

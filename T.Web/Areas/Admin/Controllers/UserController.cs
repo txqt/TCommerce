@@ -7,6 +7,7 @@ using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
 using T.Web.Controllers;
 using T.Web.Services.PrepareModel;
+using T.Web.Services.PrepareModelServices;
 using T.Web.Services.UserService;
 
 namespace T.Web.Areas.Admin.Controllers
@@ -18,9 +19,9 @@ namespace T.Web.Areas.Admin.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-        private readonly IPrepareModelService _prepareModelService;
+        private readonly IUserModelService _prepareModelService;
 
-        public UserController(IUserService userService, IMapper mapper, IPrepareModelService prepareModelService)
+        public UserController(IUserService userService, IMapper mapper, IUserModelService prepareModelService)
         {
             _userService = userService;
             _mapper = mapper;

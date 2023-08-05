@@ -1,0 +1,76 @@
+﻿<div class="header-top">
+    <div class="container">
+        <div class="header-left">
+            <div class="header-dropdown">
+                <a href="#">Usd</a>
+                <div class="header-menu">
+                    <ul>
+                        <li><a href="#">Eur</a></li>
+                        <li><a href="#">Usd</a></li>
+                    </ul>
+                </div><!-- End .header-menu -->
+            </div><!-- End .header-dropdown -->
+
+            <div class="header-dropdown">
+                <a href="#">Eng</a>
+                <div class="header-menu">
+                    <ul>
+                        <li><a href="#">English</a></li>
+                        <li><a href="#">French</a></li>
+                        <li><a href="#">Spanish</a></li>
+                    </ul>
+                </div><!-- End .header-menu -->
+            </div><!-- End .header-dropdown -->
+        </div><!-- End .header-left -->
+
+        <div class="header-right">
+            <ul class="top-menu">
+                <li>
+                    <a href="#">Links</a>
+                    <ul>
+                        <li><a href="tel:#"><i class="icon-phone"></i>Call: +0123 456 789</a></li>
+                        <li><a href="wishlist.html"><i class="icon-heart-o"></i>Wishlist <span>(3)</span></a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li>Xin chào @User.Identity.Name!</li>
+                            <li><a href="#" id="logoutLink">Đăng xuất</a></li>
+                            @if (User.IsInRole(RoleName.Admin))
+                            {
+                                <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin mode</a></li>
+                            }
+
+                        }
+                        else
+                        {
+                            <li><a asp-controller="Account" asp-action="Login"><i class="icon-user"></i>Login</a></li>
+                        }
+
+                    </ul>
+                </li>
+            </ul><!-- End .top-menu -->
+            <script>
+                $(document).ready(function () {
+                    $('#logoutLink').click(function (e) {
+                        e.preventDefault();
+
+                        $.ajax({
+                            url: '/Account/Logout',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            success: function (response) {
+                                // Xử lý phản hồi từ action đăng xuất ở đây
+                                // Ví dụ: chuyển hướng người dùng đến trang đăng nhập
+                                window.location.href = '/Account/Login';
+                            },
+                            error: function (error) {
+                                console.error('Đã xảy ra lỗi:', error);
+                            }
+                        });
+                    });
+                });
+            </script>
+        </div><!-- End .header-right -->
+    </div><!-- End .container -->
+</div><!-- End .header-top -->

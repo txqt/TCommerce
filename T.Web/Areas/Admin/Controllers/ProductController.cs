@@ -26,12 +26,12 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly IProductAttributeMappingService _productAttributeMappingService;
         private readonly IProductAttributeValueService _productAttributeValueService;
         private readonly IMapper _mapper;
-        private readonly IPrepareModelService _prepareModelService;
+        private readonly IProductModelService _prepareModelService;
         private readonly IProductCategoryService _productCategoryService;
         private readonly ICategoryService _categoryService;
         public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService,
           IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService,
-          IPrepareModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryService categoryService)
+          IProductModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryService categoryService)
         {
             _productService = productService;
             _mapper = mapper;

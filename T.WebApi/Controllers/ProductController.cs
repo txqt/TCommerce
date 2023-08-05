@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,14 +17,17 @@ namespace T.WebApi.Controllers
     [Route("api/product")]
     [ApiController]
     [CustomAuthorizationFilter(RoleName.Admin)]
+    [AuthorizePermission(PermissionSystemName.ManageProducts)]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
         private readonly IPermissionRecordService _permissionRecordService;
-        public ProductController(IProductService productService, IPermissionRecordService permissionRecordService)
+        private readonly IMapper _mapper;
+        public ProductController(IProductService productService, IPermissionRecordService permissionRecordService, IMapper mapper)
         {
             _productService = productService;
             _permissionRecordService = permissionRecordService;
+            _mapper = mapper;
         }
 
         [AllowAnonymous]
