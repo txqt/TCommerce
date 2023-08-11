@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
+using T.Library.Model.Interface.ProductService;
 
 namespace T.Test
 {
     public class UnitTest1 : IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly WebApplicationFactory<T.WebApi.Services.ProductServices.IProductService> _factory;
+        private readonly WebApplicationFactory<IProductService> _factory;
 
-        public UnitTest1(WebApplicationFactory<T.WebApi.Services.ProductServices.IProductService> factory)
+        public UnitTest1(WebApplicationFactory<IProductService> factory)
         {
             _factory = factory;
         }

@@ -26,6 +26,7 @@ using T.WebApi.Middleware.TokenManagers;
 using T.WebApi.Middleware.ErrorHandlings;
 using T.WebApi.Services.IRepositoryServices;
 
+
 namespace T.WebApi.Extensions
 {
     public static class ServiceCollectionExtension
@@ -76,10 +77,6 @@ namespace T.WebApi.Extensions
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
                 });
-
-                var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme);
-                defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
-                options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
             });
 
             services.AddAuthentication(opt =>
@@ -108,7 +105,6 @@ namespace T.WebApi.Extensions
                     OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Query["access_token"];
-
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/appHub"))
                         {

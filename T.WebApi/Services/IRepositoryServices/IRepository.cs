@@ -5,11 +5,10 @@ namespace T.WebApi.Services.IRepositoryServices
     public interface IRepository<T> where T : class
     {
         DbSet<T> Table { get; }
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetById(int id);
+        Task<IEnumerable<T>> GetAllAsync(bool? includeDeleted = false);
+        Task<T> GetByIdAsync(int id, bool? includeDeleted = false);
         Task CreateAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
     }
-
 }

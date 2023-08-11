@@ -10,7 +10,7 @@ using T.WebApi.Services.AccountServices;
 
 namespace T.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/account")]
     [ApiController]
     [CustomAuthorizationFilter()]
     public class AccountController : ControllerBase

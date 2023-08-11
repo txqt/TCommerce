@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
 using T.Library.Model.Response;
@@ -32,7 +31,7 @@ namespace T.WebApi.Controllers
             var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)).Data ??
               throw new ArgumentException("No product found with the specified id");
 
-            var productAttribute = (await _productAttributeService.GetProductAttributeById(productAttributeMapping.ProductAttributeId)).Data ??
+            var productAttribute = (await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId)).Data ??
                 throw new ArgumentException("No product attribute found with the specified id");
 
             var result = await _productAttributeMappingService.CreateOrEditProductAttributeMappingAsync(productAttributeMapping);

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
 using T.Library.Model.Common;
+ 
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Database.ConfigurationDatabase;
@@ -21,48 +22,62 @@ namespace T.WebApi.Services.ProductServices
         Task<ServiceResponse<Product>> GetByNameAsync(string name);
         Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> CreateProduct(Product product);
-        Task<ServiceResponse<bool>> CreateProducts(List<Product> products);
+        //Task<ServiceResponse<bool>> CreateProducts(List<Product> products);
         Task<ServiceResponse<bool>> EditProduct(Product product);
         Task<ServiceResponse<bool>> DeleteProduct(int productId);
-        Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttribute(int id);
+        Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttributeByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
         Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId);
         Task<ServiceResponse<bool>> DeleteAllProductImage(int productId);
     }
+    /// <summary>
+    /// Product service
+    /// </summary>
     public class ProductService : IProductService
     {
-        private readonly DatabaseContext _context;
-        private readonly IMapper _mapper;
-        private readonly IPictureService _pictureService;
+        #region Fields
+
         private readonly IConfiguration _configuration;
+
         private readonly IHostEnvironment _environment;
+
         private readonly IRepository<Product> _productsRepository;
+
+        private readonly IRepository<ProductAttributeMapping> _productAttributeMappingRepository;
+
+        private readonly IRepository<ProductPicture> _productPictureMappingRepository;
+
+        private readonly IRepository<Picture> _pictureRepository;
+
         private string apiUrl;
-        public ProductService(DatabaseContext context, IMapper mapper, IPictureService pictureService, IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository)
+        #endregion
+
+        #region Ctor
+        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository)
         {
-            _context = context;
-            _mapper = mapper;
-            _pictureService = pictureService;
             _configuration = configuration;
             _environment = environment;
             apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
             _productsRepository = productsRepository;
+            _productAttributeMappingRepository = productAttributeMapping;
+            _productPictureMappingRepository = productPictureMapping;
+            _pictureRepository = pictureRepository;
         }
+        #endregion
 
+        #region Methods
         public async Task<PagedList<Product>> GetAll(ProductParameters productParameters)
         {
-            
+
             {
                 var list_product = new List<Product>();
 
-                list_product = await _context.Product
+                list_product = await _productsRepository.Table
                     .SearchByString(productParameters.searchText)
                     .Sort(productParameters.OrderBy)//sort by product coloumn 
                     .Include(x => x.ProductPictures)
                     .Where(x => x.Deleted == false)
                     .ToListAsync();
-
-
 
                 list_product = list_product.DistinctBy(x => x.Id).ToList();
                 //list_product.Shuffle();
@@ -73,54 +88,29 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<Product>> GetByIdAsync(int id)
         {
-            
+            var response = new ServiceResponse<Product>
             {
-                var product = await FindProductByIdAsync(id);
-
-                var response = new ServiceResponse<Product>
-                {
-                    Data = product,
-                    Success = true
-                };
-                return response;
-            }
+                Data = (await _productsRepository.Table.Include(x=>x.AttributeMappings).FirstOrDefaultAsync(x => x.Id == id)),
+                Success = true
+            };
+            return response;
         }
 
         public async Task<ServiceResponse<bool>> CreateProduct(Product product)
         {
+            product.CreatedOnUtc = DateTime.Now;
             
-            {
-                product.CreatedOnUtc = DateTime.Now;
-                _context.Product.Add(product);
-                var result = await _context.SaveChangesAsync();
-                if (result == 0)
-                {
-                    return new ServiceErrorResponse<bool>("Create product failed");
-                }
-                return new ServiceSuccessResponse<bool>();
-            }
+            await _productsRepository.CreateAsync(product);
+
+            return new ServiceSuccessResponse<bool>();
         }
 
         public async Task<ServiceResponse<bool>> EditProduct(Product model)
         {
-            var productTable = await _context.Product.FirstOrDefaultAsync(p => p.Id == model.Id);
-            if (productTable == null)
-            {
-                return new ServiceErrorResponse<bool>("Product not found");
-            }
-
-
-
             try
             {
-                if (_context.IsRecordUnchanged(productTable, model))
-                {
-                    return new ServiceErrorResponse<bool>("Data is unchanged");
-                }
-
-                productTable.UpdatedOnUtc = DateTime.Now;
-
-                await _productsRepository.UpdateAsync(productTable);
+                model.UpdatedOnUtc = DateTime.Now;
+                await _productsRepository.UpdateAsync(model);
             }
             catch (Exception ex)
             {
@@ -132,24 +122,14 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> DeleteProduct(int productId)
         {
-            var product = await _context.Product.FirstOrDefaultAsync(x => x.Id == productId);
-
-            if (product == null || product.Deleted == true) { throw new Exception($"Cannot find product: {productId}"); }
-            product.Deleted = true;
-
-            _context.Product.Update(product);
-            var result = await _context.SaveChangesAsync();
-            if (result == 0)
-            {
-                return new ServiceErrorResponse<bool>("Delete product failed");
-            }
+            await _productsRepository.DeleteAsync(productId);
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttribute(int id)
+        public async Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttributeByProductIdAsync(int productId)
         {
-            var result = await _context.Product_ProductAttribute_Mapping
-                    .Where(pam => pam.ProductId == id)
+            var result = await _productAttributeMappingRepository.Table
+                    .Where(pam => pam.ProductId == productId)
                     .Select(pam => pam.ProductAttribute)
                     .ToListAsync();
 
@@ -161,9 +141,9 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId)
         {
-            
+
             {
-                var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.Deleted == false && x.ProductId == productId)
+                var productPicture = await _productPictureMappingRepository.Table.Where(x => x.Deleted == false && x.ProductId == productId)
                     .Include(x => x.Picture)
                     .ToListAsync();
 
@@ -183,10 +163,10 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId)
         {
-            var product = await FindProductByIdAsync(productId)
+            var product = await _productsRepository.GetByIdAsync(productId)
                 ?? throw new ArgumentException("No product found with the specified id");
 
-            
+
             {
                 try
                 {
@@ -214,16 +194,14 @@ namespace T.WebApi.Services.ProductServices
                             {
                                 UrlPath = "/uploads/" + newFileName
                             };
-                            _context.Picture.Add(picture);
-                            await _context.SaveChangesAsync();
+                            await _pictureRepository.CreateAsync(picture);
 
                             var productPicture = new ProductPicture
                             {
                                 ProductId = productId,
                                 PictureId = picture.Id
                             };
-                            _context.Product_ProductPicture_Mapping.Add(productPicture);
-                            await _context.SaveChangesAsync();
+                            await _productPictureMappingRepository.CreateAsync(productPicture);
                         }
                     }
                     return new ServiceResponse<bool>() { Message = "File upload successfully", Success = true };
@@ -239,13 +217,13 @@ namespace T.WebApi.Services.ProductServices
         {
             try
             {
-                var product = await FindProductByIdAsync(productId)
+                var product = await _productsRepository.GetByIdAsync(productId)
                 ?? throw new ArgumentException("No product found with the specified id");
 
-                var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.ProductId == product.Id && x.PictureId == pictureId).FirstOrDefaultAsync()
+                var productPicture = await _productPictureMappingRepository.Table.Where(x => x.ProductId == product.Id && x.PictureId == pictureId).FirstOrDefaultAsync()
                     ?? throw new ArgumentException("This product is not mapped to this picture");
 
-                var picture = await _context.Picture.FirstOrDefaultAsync(x => x.Id == productPicture.PictureId)
+                var picture = await _pictureRepository.GetByIdAsync(productPicture.PictureId)
                     ?? throw new ArgumentException("No picture found with the specified id");
 
                 var fileName = picture.UrlPath.Replace("/uploads/", "");
@@ -255,8 +233,7 @@ namespace T.WebApi.Services.ProductServices
                     File.Delete(filePath);
                 }
 
-                _context.Picture.Remove(picture);
-                await _context.SaveChangesAsync();
+                await _pictureRepository.DeleteAsync(pictureId);
 
                 return new ServiceSuccessResponse<bool>() { Message = "Remove the mapped image with this product successfully" };
             }
@@ -266,27 +243,19 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<Product> FindProductByIdAsync(int productId)
-        {
-            return await _context.Product.FindByIntId(productId).Where(x => x.Deleted == false)
-                    .Include(x => x.AttributeMappings)
-                    .ThenInclude(x => x.ProductAttribute)
-                    .FirstOrDefaultAsync();
-        }
-
         public async Task<ServiceResponse<bool>> DeleteAllProductImage(int productId)
         {
             try
             {
-                var product = await FindProductByIdAsync(productId)
+                var product = await _productsRepository.GetByIdAsync(productId)
                 ?? throw new ArgumentException("No product found with the specified id");
 
-                var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.ProductId == product.Id).ToListAsync()
+                var productPicture = await _productPictureMappingRepository.Table.Where(x => x.ProductId == product.Id).ToListAsync()
                     ?? throw new ArgumentException("This product is not mapped to this picture");
 
-                foreach(var item in productPicture)
+                foreach (var item in productPicture)
                 {
-                    var picture = await _context.Picture.FirstOrDefaultAsync(x => x.Id == item.PictureId)
+                    var picture = await _pictureRepository.GetByIdAsync(item.PictureId)
                     ?? throw new ArgumentException("No picture found with the specified id");
                     var fileName = picture.UrlPath.Replace("/uploads/", "");
                     var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", fileName);
@@ -295,8 +264,7 @@ namespace T.WebApi.Services.ProductServices
                         File.Delete(filePath);
                     }
 
-                    _context.Picture.Remove(picture);
-                    await _context.SaveChangesAsync();
+                    await _pictureRepository.DeleteAsync(picture.Id);
                 }
 
                 return new ServiceSuccessResponse<bool>() { Message = "Remove the mapped image with this product successfully" };
@@ -311,7 +279,7 @@ namespace T.WebApi.Services.ProductServices
         {
             DateTime currentDateTimeUtc = DateTime.UtcNow;
 
-            var newProducts = await _context.Product
+            var newProducts = await _productsRepository.Table
                 .Where(p => p.MarkAsNew && p.Published && !p.Deleted
                     && (!p.MarkAsNewStartDateTimeUtc.HasValue || p.MarkAsNewStartDateTimeUtc <= currentDateTimeUtc)
                     && (!p.MarkAsNewEndDateTimeUtc.HasValue || p.MarkAsNewEndDateTimeUtc >= currentDateTimeUtc))
@@ -322,7 +290,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<List<Product>> GetRandomProduct()
         {
-            var product = await _context.Product.Where(x=>x.Published && !x.Deleted).ToListAsync();
+            var product = await _productsRepository.Table.Where(x => x.Published && !x.Deleted).ToListAsync();
 
             product.Shuffle();
 
@@ -331,10 +299,10 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<string> GetFirstImagePathByProductId(int productId)
         {
-            var product = await FindProductByIdAsync(productId)
+            var product = await _productsRepository.GetByIdAsync(productId)
                 ?? throw new ArgumentException("No product found with the specified id");
 
-            var productPicture = await _context.Product_ProductPicture_Mapping.Where(x => x.ProductId == product.Id).Include(x => x.Picture).FirstOrDefaultAsync();
+            var productPicture = await _productPictureMappingRepository.Table.Where(x => x.ProductId == product.Id).Include(x => x.Picture).FirstOrDefaultAsync();
 
             var fileName = "";
 
@@ -350,27 +318,27 @@ namespace T.WebApi.Services.ProductServices
             return apiUrl + fileName;
         }
 
-        public async Task<ServiceResponse<bool>> CreateProducts(List<Product> products)
-        {
-            foreach (var product in products)
-            {
-                product.CreatedOnUtc = DateTime.UtcNow;
-            }
+        //public async Task<ServiceResponse<bool>> CreateProducts(List<Product> products)
+        //{
+        //    foreach (var product in products)
+        //    {
+        //        product.CreatedOnUtc = DateTime.UtcNow;
+        //    }
 
-            _context.Product.AddRange(products);
+        //    _context.Product.AddRange(products);
 
-            var result = await _context.SaveChangesAsync();
+        //    var result = await _context.SaveChangesAsync();
 
-            if (result == 0)
-            {
-                return new ServiceErrorResponse<bool>("Create product failed");
-            }
-            return new ServiceSuccessResponse<bool>();
-        }
+        //    if (result == 0)
+        //    {
+        //        return new ServiceErrorResponse<bool>("Create product failed");
+        //    }
+        //    return new ServiceSuccessResponse<bool>();
+        //}
 
         public async Task<ServiceResponse<Product>> GetByNameAsync(string name)
         {
-            var product = await _context.Product.Where(x=>x.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
+            var product = await _productsRepository.Table.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
 
             var response = new ServiceResponse<Product>
             {
@@ -380,5 +348,7 @@ namespace T.WebApi.Services.ProductServices
 
             return response;
         }
+
+        #endregion
     }
 }
