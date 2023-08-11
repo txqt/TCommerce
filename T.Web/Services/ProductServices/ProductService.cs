@@ -97,7 +97,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<ServiceResponse<bool>> EditProduct(ProductModel product)
         {
-            var result = await _httpClient.PostAsJsonAsync($"api/product/edit", product);
+            var result = await _httpClient.PutAsJsonAsync($"api/product/edit", product);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 

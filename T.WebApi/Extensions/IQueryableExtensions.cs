@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using System.Linq.Dynamic.Core;
 using System;
+using T.Library.Model.Common;
 
 namespace T.WebApi.Extensions
 {
@@ -107,7 +108,17 @@ namespace T.WebApi.Extensions
 
             return entities.Provider.CreateQuery<T>(query);
         }
+        public static IQueryable<T> ApplySoftDeleteFilter<T>(this IQueryable<T> query, bool includeDeleted)
+        where T : class
+        {
+            if (includeDeleted)
+                return query;
 
+            if (typeof(T).GetInterface(nameof(ISoftDeletedEntity)) == null)
+                return query;
+
+            return query.OfType<ISoftDeletedEntity>().Where(entry => !entry.Deleted).Cast<T>();
+        }
     }
 
 }

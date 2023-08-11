@@ -30,7 +30,7 @@ namespace T.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<ProductAttribute>>> Get(int id)
         {
-            return await _productAttributeSvc.GetProductAttributeById(id);
+            return await _productAttributeSvc.GetProductAttributeByIdAsync(id);
         }
 
         [HttpPost(APIRoutes.Create)]
@@ -48,7 +48,7 @@ namespace T.WebApi.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> EditAsync(ProductAttribute productAttribute)
         {
-            var result = await _productAttributeSvc.EditProductAttributeAsync(productAttribute);
+            var result = await _productAttributeSvc.UpdateProductAttributeAsync(productAttribute);
             if (!result.Success)
             {
                 return BadRequest(result);
