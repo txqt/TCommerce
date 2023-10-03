@@ -71,7 +71,6 @@ if (!app.Environment.IsDevelopment())
 }
 //app.ConfigureCustomExceptionMiddleware();
 
-app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -79,6 +78,7 @@ app.UseExceptionHandler("/Error");
 app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

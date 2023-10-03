@@ -34,8 +34,9 @@ namespace T.WebApi.Controllers
         }
 
         #region Product
-        [AllowAnonymous]
         [HttpGet(APIRoutes.GetAll)]
+        [AllowAnonymous]
+
         public async Task<ActionResult<List<Product>>> GetAll([FromQuery] ProductParameters productParameters)
         {
             var products = await _productService.GetAll(productParameters);

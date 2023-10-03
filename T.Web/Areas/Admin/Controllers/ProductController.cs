@@ -1,11 +1,6 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Dynamic;
 using T.Library.Model;
-using T.Library.Model.Interface.ProductService;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
@@ -103,16 +98,12 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var product = (await _productService.GetByIdAsync(model.Id)).Data;
-
-            _mapper.Map(model, product);
-
-            var result = await _productService.EditProduct(product);
+            var result = await _productService.EditProduct(model);
 
             if (!result.Success)
             {
                 SetStatusMessage($"{result.Message}");
-                return View(product);
+                return View(model);
             }
 
             return RedirectToAction(nameof(Index));
@@ -134,7 +125,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAttribute(int productId)
         {
-            var result = await _productService.GetAllProductAttributeByProductIdAsync(productId);
+            var result = await _productService.GetAllAttribute(productId);
             return Json(result.Data);
         }
 

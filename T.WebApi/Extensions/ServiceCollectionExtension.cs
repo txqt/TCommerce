@@ -72,11 +72,17 @@ namespace T.WebApi.Extensions
 
             services.AddAuthorization(options =>
             {
+                // Thêm policy với tên là "Jwt" và yêu cầu tất cả người dùng phải được xác thực bằng JWT
                 options.AddPolicy("Jwt", policy =>
                 {
+                    // Sử dụng scheme xác thực là JwtBearerDefaults.AuthenticationScheme
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    // Yêu cầu tất cả người dùng phải được xác thực
                     policy.RequireAuthenticatedUser();
                 });
+
+                options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                                        .RequireAuthenticatedUser().Build();
             });
 
             services.AddAuthentication(opt =>

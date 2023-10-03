@@ -4,10 +4,7 @@ using T.Web.Areas.Admin.Models;
 using T.Web.Services.ProductService;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Web.Services.CategoryService;
-using T.Library.Model.ViewsModel;
-using T.Web.Services.UserService;
 using T.Library.Model.Common;
-using T.Library.Model.Interface.ProductService;
 
 namespace T.Web.Services.PrepareModel
 {

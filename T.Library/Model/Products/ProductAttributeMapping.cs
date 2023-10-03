@@ -22,7 +22,7 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets a value a text prompt
         /// </summary>
-        public string TextPrompt { get; set; }
+        public string? TextPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is required
@@ -54,7 +54,7 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the validation rule for file allowed extensions (for file upload)
         /// </summary>
-        public string ValidationFileAllowedExtensions { get; set; }
+        public string? ValidationFileAllowedExtensions { get; set; }
 
         /// <summary>
         /// Gets or sets the validation rule for file maximum size in kilobytes (for file upload)
@@ -64,7 +64,7 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the default value (for textbox and multiline textbox)
         /// </summary>
-        public string DefaultValue { get; set; }
+        public string? DefaultValue { get; set; }
 
         public int ConditionAttributeSelected { get; set; }
 
