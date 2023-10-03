@@ -21,7 +21,7 @@ namespace T.Web.Services.ProductService
         Task<ServiceResponse<bool>> CreateProduct(Product product);
         Task<ServiceResponse<bool>> EditProduct(ProductModel product);
         Task<ServiceResponse<bool>> DeleteProduct(int id);
-        Task<ServiceResponse<Product>> Get(int id);
+        Task<ServiceResponse<Product>> GetByIdAsync(int id);
         Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
         Task<ServiceResponse<List<ProductAttribute>>> GetAllAttribute(int id);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
@@ -85,7 +85,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<ServiceResponse<bool>> DeleteProduct(int id)
         {
-            var result = await _httpClient.DeleteAsync($"api/product/delete/{id}");
+            var result = await _httpClient.DeleteAsync($"api/product/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
@@ -97,11 +97,11 @@ namespace T.Web.Services.ProductService
 
         public async Task<ServiceResponse<bool>> EditProduct(ProductModel product)
         {
-            var result = await _httpClient.PutAsJsonAsync($"api/product/edit", product);
+            var result = await _httpClient.PutAsJsonAsync($"api/product", product);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public async Task<ServiceResponse<Product>> Get(int id)
+        public async Task<ServiceResponse<Product>> GetByIdAsync(int id)
         {
             var result = await _httpClient.GetAsync($"api/product/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<Product>>();

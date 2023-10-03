@@ -23,22 +23,22 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        [Required]public string Name { get; set; }
+        [Required]public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the short description
         /// </summary>
-        [Required] public string ShortDescription { get; set; }
+        [Required] public string? ShortDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the full description
         /// </summary>
-        [Required] public string FullDescription { get; set; }
+        [Required] public string? FullDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the admin comment
         /// </summary>
-        public string AdminComment { get; set; }
+        public string? AdminComment { get; set; }
 
         /// <summary>
         /// Gets or sets a vendor identifier
@@ -53,17 +53,17 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the meta keywords
         /// </summary>
-        public string MetaKeywords { get; set; }
+        public string? MetaKeywords { get; set; }
 
         /// <summary>
         /// Gets or sets the meta description
         /// </summary>
-        public string MetaDescription { get; set; }
+        public string? MetaDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the meta title
         /// </summary>
-        public string MetaTitle { get; set; }
+        public string? MetaTitle { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the product allows customer reviews
@@ -73,7 +73,7 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the SKU
         /// </summary>
-        public string Sku { get; set; }
+        public string? Sku { get; set; }
 
 
         /// <summary>

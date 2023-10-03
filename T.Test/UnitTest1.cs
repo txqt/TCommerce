@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
-using T.Library.Model.Interface.ProductService;
+using T.WebApi.Services.ProductServices;
 
 namespace T.Test
 {

@@ -16,22 +16,22 @@ namespace T.Library.Model.Common
         /// <summary>
         /// Gets or sets the description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Gets or sets the meta keywords
         /// </summary>
-        public string MetaKeywords { get; set; }
+        public string? MetaKeywords { get; set; }
 
         /// <summary>
         /// Gets or sets the meta description
         /// </summary>
-        public string MetaDescription { get; set; }
+        public string? MetaDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the meta title
         /// </summary>
-        public string MetaTitle { get; set; }
+        public string? MetaTitle { get; set; }
 
         /// <summary>
         /// Gets or sets the parent category identifier

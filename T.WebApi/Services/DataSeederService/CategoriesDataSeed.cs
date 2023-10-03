@@ -19,6 +19,7 @@ namespace T.WebApi.Services.DataSeederService
                     ShowOnHomepage = true,
                     Published = true,
                     CreatedOnUtc = DateTime.Now,
+                    Description = Fashion.ToString(),
                 },
                 new Category()
                 {
@@ -26,6 +27,7 @@ namespace T.WebApi.Services.DataSeederService
                     ShowOnHomepage = true,
                     Published = true,
                     CreatedOnUtc = DateTime.Now,
+                    Description = Electronic.ToString(),
                 },
                 new Category()
                 {
@@ -33,6 +35,7 @@ namespace T.WebApi.Services.DataSeederService
                     ShowOnHomepage = true,
                     Published = true,
                     CreatedOnUtc = DateTime.Now,
+                    Description = Electric_Appliances.ToString(),
                 },
                 new Category()
                 {
@@ -40,6 +43,7 @@ namespace T.WebApi.Services.DataSeederService
                     ShowOnHomepage = true,
                     Published = true,
                     CreatedOnUtc = DateTime.Now,
+                    Description = Accessory.ToString(),
                 },
             };
         }
