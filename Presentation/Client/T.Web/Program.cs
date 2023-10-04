@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Text.Json;
 using T.Library.Model.JwtToken;
+using T.Web.Common;
 using T.Web.Services.AccountService;
 using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
@@ -15,10 +16,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient(sp => new HttpClient
+builder.Services.AddTransient<JwtHandler>();
+builder.Services.AddHttpClient("", sp =>
 {
-    BaseAddress = new Uri(builder.Configuration.GetSection("Url:ApiUrl").Value)
-});
+    sp.BaseAddress = new Uri(builder.Configuration.GetSection("Url:ApiUrl").Value);
+}).AddHttpMessageHandler<JwtHandler>();
 builder.Services.AddTransient<IDatabaseControl, DatabaseControl>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddTransient<IAccountService, AccountService>();
@@ -69,7 +71,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-//app.ConfigureCustomExceptionMiddleware();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -83,6 +84,7 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
+//app.ConfigureCustomExceptionMiddleware();
 
 app.MapControllerRoute(
     name: "default",

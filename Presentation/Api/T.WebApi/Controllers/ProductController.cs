@@ -70,11 +70,8 @@ namespace T.WebApi.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> EditProduct(ProductModel model)
         {
-            var product = (await _productService.GetByIdAsync(model.Id)).Data;
-
-            _mapper.Map(model, product);
-
-            var result = await _productService.EditProduct(product);
+            
+            var result = await _productService.EditProduct(model);
 
             if (!result.Success)
             {

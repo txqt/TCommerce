@@ -7,6 +7,7 @@ using System.IO;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using T.Library.Model;
+using T.Library.Model.Interface;
 using T.Library.Model.Paging;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
@@ -15,19 +16,9 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace T.Web.Services.ProductService
 {
-    public interface IProductService
+    public interface IProductService : IProductCommon
     {
         Task<PagingResponse<Product>> GetAll(ProductParameters productParameters);
-        Task<ServiceResponse<bool>> CreateProduct(Product product);
-        Task<ServiceResponse<bool>> EditProduct(ProductModel product);
-        Task<ServiceResponse<bool>> DeleteProduct(int id);
-        Task<ServiceResponse<Product>> GetByIdAsync(int id);
-        Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
-        Task<ServiceResponse<List<ProductAttribute>>> GetAllAttribute(int id);
-        Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
-        Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId);
-        Task<ServiceResponse<bool>> DeleteAllProductImage(int productId);
-
     }
     public class ProductService : IProductService
     {
@@ -42,8 +33,8 @@ namespace T.Web.Services.ProductService
             _options = options;
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
-            var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            //var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
+            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _productAttributeService = productAttributeService;
             _productAttributeMappingService = productAttributeMappingService;
             _mapper = mapper;
@@ -150,6 +141,31 @@ namespace T.Web.Services.ProductService
         {
             var result = await _httpClient.GetAsync($"api/product/{productId}/all-pictures");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductPicture>>>();
+        }
+
+        public Task<List<Product>> GetAllNewestProduct()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Product>> GetRandomProduct()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> GetFirstImagePathByProductId(int productId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceResponse<Product>> GetByNameAsync(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttributeByProductIdAsync(int productId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

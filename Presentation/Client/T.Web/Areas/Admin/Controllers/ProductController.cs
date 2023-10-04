@@ -125,7 +125,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAttribute(int productId)
         {
-            var result = await _productService.GetAllAttribute(productId);
+            var result = await _productService.GetAllProductAttributeByProductIdAsync(productId);
             return Json(result.Data);
         }
 

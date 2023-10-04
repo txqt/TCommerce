@@ -11,6 +11,7 @@ namespace T.Web.CusomMiddleware
 {
     public class JwtMiddleware
     {
+
         private readonly RequestDelegate _next;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOptions<JwtOptions> _jwtOptions;
@@ -24,20 +25,20 @@ namespace T.Web.CusomMiddleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var jwtToken = _httpContextAccessor.HttpContext.Session.GetString("jwtToken");
-
-            if (!string.IsNullOrEmpty(jwtToken))
+            if (context.Request.Headers.ContainsKey("Authorization"))
             {
-                // Kiểm tra tính hợp lệ của JWT token
-                if (IsJwtTokenValid(jwtToken))
-                {
-                    context.Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken).ToString();
-                }
-                else
-                {
-                    // Xóa JWT token khỏi session
-                    _httpContextAccessor.HttpContext.Session.Remove("jwtToken");
-                }
+                // Đã có tiêu đề Authorization, không cần làm gì thêm.
+                await _next(context);
+                return;
+            }
+
+            // Kiểm tra xem có JWT trong session không.
+            var jwt = _httpContextAccessor.HttpContext.Session.GetString("jwt");
+
+            if (!string.IsNullOrEmpty(jwt))
+            {
+                // Thêm JWT vào tiêu đề Authorization của yêu cầu.
+                context.Request.Headers.Add("Authorization", "Bearer " + jwt);
             }
 
             await _next(context);

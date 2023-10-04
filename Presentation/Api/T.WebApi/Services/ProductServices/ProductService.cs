@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
 using T.Library.Model.Common;
- 
+using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Database.ConfigurationDatabase;
@@ -12,23 +12,9 @@ using T.WebApi.Services.ProductService;
 
 namespace T.WebApi.Services.ProductServices
 {
-    public interface IProductService
+    public interface IProductService : IProductCommon
     {
         Task<PagedList<Product>> GetAll(ProductParameters productParameters);
-        Task<List<Product>> GetAllNewestProduct();
-        Task<List<Product>> GetRandomProduct();
-        Task<string> GetFirstImagePathByProductId(int productId);
-        Task<ServiceResponse<Product>> GetByIdAsync(int id);
-        Task<ServiceResponse<Product>> GetByNameAsync(string name);
-        Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
-        Task<ServiceResponse<bool>> CreateProduct(Product product);
-        //Task<ServiceResponse<bool>> CreateProducts(List<Product> products);
-        Task<ServiceResponse<bool>> EditProduct(Product product);
-        Task<ServiceResponse<bool>> DeleteProduct(int productId);
-        Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttributeByProductIdAsync(int productId);
-        Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
-        Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId);
-        Task<ServiceResponse<bool>> DeleteAllProductImage(int productId);
     }
     /// <summary>
     /// Product service
@@ -50,10 +36,12 @@ namespace T.WebApi.Services.ProductServices
         private readonly IRepository<Picture> _pictureRepository;
 
         private string apiUrl;
+
+        private IMapper _mapper;
         #endregion
 
         #region Ctor
-        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository)
+        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper)
         {
             _configuration = configuration;
             _environment = environment;
@@ -62,6 +50,7 @@ namespace T.WebApi.Services.ProductServices
             _productAttributeMappingRepository = productAttributeMapping;
             _productPictureMappingRepository = productPictureMapping;
             _pictureRepository = pictureRepository;
+            _mapper = mapper;
         }
         #endregion
 
@@ -105,6 +94,27 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<bool>();
         }
 
+        public async Task<ServiceResponse<bool>> EditProduct(ProductModel model)
+        {
+            
+            try
+            {
+                var product = (await _productsRepository.Table.Include(x => x.AttributeMappings).FirstOrDefaultAsync(x => x.Id == model.Id))
+                    ?? throw new ArgumentException("No product found with the specified id");
+
+                _mapper.Map(model, product);
+
+                product.UpdatedOnUtc = DateTime.Now;
+
+                await _productsRepository.UpdateAsync(product);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
+            }
+
+            return new ServiceSuccessResponse<bool>();
+        }
         public async Task<ServiceResponse<bool>> EditProduct(Product model)
         {
             try
