@@ -25,9 +25,8 @@
     <PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
   </ItemGroup>
 
-
-	<ItemGroup>
-    <ProjectReference Include="..\T.Library\T.Library.csproj" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\T.Library\T.Library.csproj" />
   </ItemGroup>
 
 </Project>

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\T.WebApi\T.WebApi.csproj" />
+    <ProjectReference Include="..\Api\T.WebApi\T.WebApi.csproj" />
   </ItemGroup>
 
 </Project>
