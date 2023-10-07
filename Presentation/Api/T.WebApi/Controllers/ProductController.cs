@@ -156,7 +156,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("attribute")]
-        public async Task<ActionResult> AddProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
+        public async Task<ActionResult> CreateProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
         {
 
             var result = await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
@@ -178,7 +178,7 @@ namespace T.WebApi.Controllers
             var productAttribute = (await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId)).Data ??
                 throw new ArgumentException("No product attribute found with the specified id");
 
-            var result = await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
+            var result = await _productAttributeService.UpdateProductAttributeMappingAsync(productAttributeMapping);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -219,10 +219,10 @@ namespace T.WebApi.Controllers
             }
             return Ok(result);
         }
-        [HttpGet("attribute/value/{id}")]
-        public async Task<IActionResult> GetAttributeValueById(int id)
+        [HttpGet("attribute/value/{productAttributeValueId}")]
+        public async Task<IActionResult> GetAttributeValueById(int productAttributeValueId)
         {
-            var result = await _productAttributeService.GetProductAttributeValuesByIdAsync(id);
+            var result = await _productAttributeService.GetProductAttributeValuesByIdAsync(productAttributeValueId);
             if (!result.Success)
             {
                 return BadRequest(result);

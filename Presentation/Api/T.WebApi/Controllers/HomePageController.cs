@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using T.Library.Model.Common;
 using T.Library.Model.Users;
-using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Services.HomePageServices;
+using T.WebApi.Services.TokenHelpers;
 
 namespace T.WebApi.Controllers
 {

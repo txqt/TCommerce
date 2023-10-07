@@ -29,7 +29,7 @@ namespace T.Web.Services.ProductService
             //var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
             //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
-
+        #region ProductAttribute
         public async Task<List<ProductAttribute>> GetAllProductAttributeAsync()
         {
             var response = await _httpClient.GetAsync($"api/product-attribute/{APIRoutes.GetAll}");
@@ -69,55 +69,70 @@ namespace T.Web.Services.ProductService
             var result = await _httpClient.DeleteAsync($"api/product-attribute/delete/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
+        #endregion
 
-        public Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id)
+        #region ProductAttributeMapping
+        public async Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int productAttributeMappingId)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.GetAsync($"api/product/attribute/{productAttributeMappingId}");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<ProductAttributeMapping>>();
         }
 
-        public Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int id)
+        public async Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int productId)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.GetAsync($"api/product/{productId}/attribute");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttributeMapping>>>();
         }
 
-        public Task<ServiceResponse<bool>> CreateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping)
+        public async Task<ServiceResponse<bool>> CreateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.PostAsJsonAsync($"api/product/attribute", productAttributeMapping);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public Task<ServiceResponse<bool>> UpdateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping)
+        public async Task<ServiceResponse<bool>> UpdateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.PutAsJsonAsync($"api/product/attribute", productAttributeMapping);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public Task<ServiceResponse<bool>> DeleteProductAttributeMappingByIdAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteProductAttributeMappingByIdAsync(int productAttributeId)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.DeleteAsync($"api/product/attribute/{productAttributeId}");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+        #endregion
+
+        #region ProductAttributeValue
+        public async Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValuesAsync(int productAttributeMappingId)
+        {
+            var result = await _httpClient.GetAsync($"api/product/attribute/{productAttributeMappingId}/value");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttributeValue>>>();
         }
 
-        public Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValuesAsync(int productAttributeMappingId)
+        public async Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int productAttributeValueId)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.GetAsync($"api/product/attribute/value/{productAttributeValueId}");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<ProductAttributeValue>>();
         }
 
-        public Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id)
+        public async Task<ServiceResponse<bool>> CreateProductAttributeValueAsync(ProductAttributeValue productAttributeValue)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.PostAsJsonAsync($"api/product/attribute/value", productAttributeValue);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public Task<ServiceResponse<bool>> CreateProductAttributeValueAsync(ProductAttributeValue productAttributeValue)
+        public async Task<ServiceResponse<bool>> UpdateProductAttributeValueAsync(ProductAttributeValue productAttributeValue)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.PutAsJsonAsync($"api/product/attribute/value", productAttributeValue);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public Task<ServiceResponse<bool>> UpdateProductAttributeValueAsync(ProductAttributeValue productAttributeValue)
+        public async Task<ServiceResponse<bool>> DeleteProductAttributeValueAsync(int productAttributeValueId)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.DeleteAsync($"api/product/attribute/value/{productAttributeValueId}");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
-
-        public Task<ServiceResponse<bool>> DeleteProductAttributeValueAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

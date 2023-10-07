@@ -10,7 +10,7 @@ using T.Library.Model.JwtToken;
 using T.Library.Model.Users;
 using T.WebApi.Extensions;
 
-namespace T.WebApi.Helpers.TokenHelpers
+namespace T.WebApi.Services.TokenHelpers
 {
     public interface ITokenService
     {
@@ -57,7 +57,7 @@ namespace T.WebApi.Helpers.TokenHelpers
                 issuer: _jwtOptions.Value.Issuer,
                 audience: _jwtOptions.Value.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddSeconds(10),
+                expires: DateTime.UtcNow.AddHours(_jwtOptions.Value.AccessTokenExpirationInHours),
                 signingCredentials: signingCredentials);
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }

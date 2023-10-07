@@ -8,7 +8,6 @@ using System.Security.Claims;
 using System.Text;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
-using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Services.AccountServices;
 using T.WebApi.Attribute;
 using T.WebApi.Services.CacheServices;
@@ -26,6 +25,7 @@ using T.WebApi.Middleware.TokenManagers;
 using T.WebApi.Middleware.ErrorHandlings;
 using T.WebApi.Services.IRepositoryServices;
 using T.Library.Model.Interface;
+using T.WebApi.Services.TokenHelpers;
 
 namespace T.WebApi.Extensions
 {

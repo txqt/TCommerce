@@ -14,9 +14,9 @@ using T.Library.Model.SendMail;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
-using T.WebApi.Helpers.TokenHelpers;
 using T.WebApi.Middleware.TokenManagers;
 using T.WebApi.Services.CacheServices;
+using T.WebApi.Services.TokenHelpers;
 
 namespace T.WebApi.Services.AccountServices
 {
@@ -203,9 +203,7 @@ namespace T.WebApi.Services.AccountServices
             var roles = await _userManager.GetRolesAsync(user);
 
             //Create token
-            
             var accessToken = await _tokenService.GenerateAccessToken(user);
-
 
             //Create refresh token
             var refreshToken = await _tokenService.GenerateRefreshToken();

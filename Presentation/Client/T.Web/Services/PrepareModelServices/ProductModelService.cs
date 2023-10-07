@@ -26,18 +26,18 @@ namespace T.Web.Services.PrepareModel
     public class ProductModelService : IProductModelService
     {
         private readonly IProductAttributeService _productAttributeService;
-        private readonly IProductAttributeMappingService _productAttributeMappingService;
+        //private readonly IProductAttributeMappingService _productAttributeService;
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IProductCategoryService productCategoryService;
         private string apiUrl = null;
         private readonly IConfiguration _configuration;
-        public ProductModelService(IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService,
+        public ProductModelService(IProductAttributeService productAttributeService,/* IProductAttributeMappingService productAttributeMappingService,*/
             IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService, IConfiguration configuration)
         {
             _productAttributeService = productAttributeService;
-            _productAttributeMappingService = productAttributeMappingService;
+            //_productAttributeService = productAttributeMappingService;
             _mapper = mapper;
             _productService = productService;
             _categoryService = categoryService;
@@ -79,8 +79,8 @@ namespace T.Web.Services.PrepareModel
 
             //get product attribute mappings
 
-            var result = (await _productAttributeMappingService
-                                .GetProductAttributeMappingByProductId(product.Id)).Data;
+            var result = (await _productAttributeService
+                                .GetProductAttributeMappingByProductIdAsync(product.Id)).Data;
 
             var pamList = _mapper.Map<List<ProductAttributeMappingModel>>(result);
 
@@ -129,7 +129,7 @@ namespace T.Web.Services.PrepareModel
 
             //get product attribute mappings
 
-            var result = (await _productAttributeMappingService
+            var result = (await _productAttributeService
                                 .GetProductAttributeValuesAsync(productAttributeMapping.Id)).Data;
 
             var pamList = _mapper.Map<List<ProductAttributeValueModel>>(result);

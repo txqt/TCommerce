@@ -26,9 +26,9 @@ namespace T.Web.Services.ProductService
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JsonSerializerOptions _options;
         private readonly IProductAttributeService _productAttributeService;
-        private readonly IProductAttributeMappingService _productAttributeMappingService;
+        //private readonly IProductAttributeMappingService _productAttributeMappingService;
         private readonly IMapper _mapper;
-        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService, IMapper mapper)
+        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IProductAttributeService productAttributeService, /*IProductAttributeMappingService productAttributeMappingService,*/ IMapper mapper)
         {
             _options = options;
             _httpClient = httpClient;
@@ -36,7 +36,7 @@ namespace T.Web.Services.ProductService
             //var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
             //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _productAttributeService = productAttributeService;
-            _productAttributeMappingService = productAttributeMappingService;
+            //_productAttributeMappingService = productAttributeMappingService;
             _mapper = mapper;
         }
 

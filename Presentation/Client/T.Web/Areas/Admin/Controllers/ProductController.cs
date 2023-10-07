@@ -20,21 +20,21 @@ namespace T.Web.Areas.Admin.Controllers
     {
         private readonly IProductService _productService;
         private readonly IProductAttributeService _productAttributeService;
-        private readonly IProductAttributeMappingService _productAttributeMappingService;
-        private readonly IProductAttributeValueService _productAttributeValueService;
+        //private readonly IProductAttributeMappingService _productAttributeService;
+        //private readonly IProductAttributeValueService _productAttributeService;
         private readonly IMapper _mapper;
         private readonly IProductModelService _prepareModelService;
         private readonly IProductCategoryService _productCategoryService;
         private readonly ICategoryService _categoryService;
         public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService,
-          IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService,
+          //IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService,
           IProductModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryService categoryService)
         {
             _productService = productService;
             _mapper = mapper;
             _productAttributeService = productAttributeService;
-            _productAttributeMappingService = productAttributeMappingService;
-            _productAttributeValueService = productAttributeValueService;
+            //_productAttributeService = productAttributeMappingService;
+            //_productAttributeService = productAttributeValueService;
             _prepareModelService = prepareModelService;
             _productCategoryService = productCategoryService;
             _categoryService = categoryService;
@@ -154,7 +154,7 @@ namespace T.Web.Areas.Admin.Controllers
             var product = (await _productService.GetByIdAsync(model.ProductId)).Data ??
               throw new ArgumentException("No product found with the specified id");
 
-            if ((await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
+            if ((await _productAttributeService.GetProductAttributeMappingByProductIdAsync(product.Id)).Data
               .Any(x => x.ProductAttributeId == model.ProductAttributeId))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
@@ -164,7 +164,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             var productAttributeMapping = _mapper.Map<ProductAttributeMapping>(model);
 
-            var result = await _productAttributeMappingService.AddOrUpdateProductAttributeMapping(productAttributeMapping);
+            var result = await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
 
             if (!result.Success)
             {
@@ -172,7 +172,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
+            productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByProductIdAsync(product.Id)).Data
               .Where(x => x.ProductAttributeId == model.ProductAttributeId).FirstOrDefault() ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
@@ -186,7 +186,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> EditProductAttributeMapping(int productAttributeMappingId)
         {
-            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMappingId)).Data ??
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeMappingId)).Data ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
             var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)).Data ??
@@ -204,7 +204,7 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 return View(model);
             }
-            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(model.Id)).Data ??
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(model.Id)).Data ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
             var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)).Data ??
@@ -212,7 +212,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this attribute");
 
-            if ((await _productAttributeMappingService.GetProductAttributeMappingByProductId(product.Id)).Data
+            if ((await _productAttributeService.GetProductAttributeMappingByProductIdAsync(product.Id)).Data
               .Any(x => x.ProductAttributeId == model.ProductAttributeId && x.Id != productAttributeMapping.Id))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
@@ -222,7 +222,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             productAttributeMapping = _mapper.Map(model, productAttributeMapping);
 
-            var result = await _productAttributeMappingService.AddOrUpdateProductAttributeMapping(productAttributeMapping);
+            var result = await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
 
             if (!result.Success)
             {
@@ -242,7 +242,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteProductAttributeMapping(int pamId)
         {
 
-            var result = await _productAttributeMappingService.DeleteProductAttrbuteMapping(pamId);
+            var result = await _productAttributeService.DeleteProductAttributeByIdAsync(pamId);
             if (!result.Success)
             {
                 return Json(new
@@ -262,7 +262,7 @@ namespace T.Web.Areas.Admin.Controllers
         public virtual async Task<IActionResult> ProductAttributeValueCreate(int productAttributeMappingId)
         {
             //try to get a product attribute mapping with the specified id
-            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMappingId)).Data ??
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeMappingId)).Data ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
             //try to get a product with the specified id
@@ -279,7 +279,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> ProductAttributeValueCreate(ProductAttributeValueModel model)
         {
             //try to get a product attribute mapping with the specified id
-            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(model.ProductAttributeMappingId)).Data;
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(model.ProductAttributeMappingId)).Data;
             if (productAttributeMapping == null)
                 return RedirectToAction(nameof(Index));
 
@@ -292,7 +292,7 @@ namespace T.Web.Areas.Admin.Controllers
                 //fill entity from model
                 var productAttributeValue = _mapper.Map<ProductAttributeValue>(model);
                 productAttributeValue.Quantity = model.CustomerEntersQty ? 1 : model.Quantity;
-                var result = await _productAttributeValueService.AddOrUpdateProductAttributeValue(productAttributeValue);
+                var result = await _productAttributeService.CreateProductAttributeValueAsync(productAttributeValue);
 
                 if (!result.Success)
                 {
@@ -318,12 +318,12 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> EditProductAttributeValue(int id)
         {
             //try to get a product attribute value with the specified id
-            var productAttributeValue = (await _productAttributeValueService.GetProductAttributeValuesByIdAsync(id)).Data;
+            var productAttributeValue = (await _productAttributeService.GetProductAttributeValuesByIdAsync(id)).Data;
             if (productAttributeValue == null)
                 return RedirectToAction(nameof(Index));
 
             //try to get a product attribute mapping with the specified id
-            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeValue.ProductAttributeMappingId)).Data;
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeValue.ProductAttributeMappingId)).Data;
             if (productAttributeMapping == null)
                 return RedirectToAction(nameof(Index));
 
@@ -341,12 +341,12 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> EditProductAttributeValue(ProductAttributeValueModel model)
         {
             //try to get a product attribute value with the specified id
-            var productAttributeValue = (await _productAttributeValueService.GetProductAttributeValuesByIdAsync(model.Id)).Data;
+            var productAttributeValue = (await _productAttributeService.GetProductAttributeValuesByIdAsync(model.Id)).Data;
             if (productAttributeValue == null)
                 return RedirectToAction(nameof(Index));
 
             //try to get a product attribute mapping with the specified id
-            var productAttributeMapping = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeValue.ProductAttributeMappingId)).Data;
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeValue.ProductAttributeMappingId)).Data;
             if (productAttributeMapping == null)
                 return RedirectToAction(nameof(Index));
 
@@ -359,7 +359,7 @@ namespace T.Web.Areas.Admin.Controllers
                 //fill entity from model
                 productAttributeValue = _mapper.Map(model, productAttributeValue);
                 productAttributeValue.Quantity = model.CustomerEntersQty ? 1 : model.Quantity;
-                var result = await _productAttributeValueService.AddOrUpdateProductAttributeValue(productAttributeValue);
+                var result = await _productAttributeService.CreateProductAttributeValueAsync(productAttributeValue);
 
                 if (!result.Success)
                 {
@@ -385,7 +385,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteProductAttributeValue(int pavId)
         {
 
-            var result = await _productAttributeValueService.DeleteProductAttrbuteValue(pavId);
+            var result = await _productAttributeService.DeleteProductAttributeValueAsync(pavId);
             if (!result.Success)
             {
                 return Json(new
@@ -418,7 +418,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetValueProductMapping(int productAttributeMapping)
         {
-            var productAttributeMappingResponse = (await _productAttributeMappingService.GetProductAttributeMapping(productAttributeMapping)).Data ??
+            var productAttributeMappingResponse = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeMapping)).Data ??
               throw new ArgumentException("Not found with the specified id");
 
             var model = await _prepareModelService.PrepareProductAttributeValueListModelAsync(productAttributeMappingResponse);

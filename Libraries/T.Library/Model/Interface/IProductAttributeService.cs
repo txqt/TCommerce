@@ -19,19 +19,19 @@ namespace T.Library.Model.Interface
         #endregion
 
         #region ProductAttributeMapping
-        Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id);
-        Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int id);
+        Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int productAttributeMappingId);
+        Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> CreateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping);
         Task<ServiceResponse<bool>> UpdateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping);
-        Task<ServiceResponse<bool>> DeleteProductAttributeMappingByIdAsync(int id);
+        Task<ServiceResponse<bool>> DeleteProductAttributeMappingByIdAsync(int productAttributeId);
         Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValuesAsync(int productAttributeMappingId);
         #endregion
 
         #region ProductAttributeValue
-        Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id);
+        Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int productAttributeValueId);
         Task<ServiceResponse<bool>> CreateProductAttributeValueAsync(ProductAttributeValue productAttributeValue);
         Task<ServiceResponse<bool>> UpdateProductAttributeValueAsync(ProductAttributeValue productAttributeValue);
-        Task<ServiceResponse<bool>> DeleteProductAttributeValueAsync(int id);
+        Task<ServiceResponse<bool>> DeleteProductAttributeValueAsync(int productAttributeValueId);
         #endregion
     }
 }
