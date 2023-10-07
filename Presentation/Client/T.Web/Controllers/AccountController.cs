@@ -59,33 +59,33 @@ namespace T.Web.Controllers
                 return View(loginViewModel);
             }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
             var userPrincipal = ValidateToken(loginResponse.Data.AccessToken);
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
-            ClaimsPrincipal principal = ValidateToken(loginResponse.Data.AccessToken);
-
-            Claim expirationClaim = principal.Claims.FirstOrDefault(c => c.Type == "exp");
-            if (expirationClaim != null && long.TryParse(expirationClaim.Value, out long expiration))
+            var authProperties = new AuthenticationProperties
             {
-                DateTimeOffset expirationDateTime = DateTimeOffset.FromUnixTimeSeconds(expiration);
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(_jwtOptions.Value.AccessTokenExpirationInHours),
+                IsPersistent = loginViewModel.RememberMe
+            };
 
-                TimeSpan timeRemaining = expirationDateTime - DateTimeOffset.Now;
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, // Chỉ cho phép server truy cập cookie, tránh XSS
+                Secure = true, // Chỉ gửi cookie qua HTTPS, tránh sniffing
+                SameSite = SameSiteMode.Strict, // Đặt chế độ SameSite cho cookie
+                Expires = DateTimeOffset.UtcNow.AddHours(_jwtOptions.Value.AccessTokenExpirationInHours) // Đặt thời gian hết hạn cho cookie
+            };
+            var cookieRefreshTokenOptions = new CookieOptions
+            {
+                HttpOnly = true, // Chỉ cho phép server truy cập cookie, tránh XSS
+                Secure = true, // Chỉ gửi cookie qua HTTPS, tránh sniffing
+                SameSite = SameSiteMode.Strict, // Đặt chế độ SameSite cho cookie
+                Expires = DateTimeOffset.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours) // Đặt thời gian hết hạn cho cookie
+            };
 
-                int remainingMinutes = (int)timeRemaining.TotalMinutes;
+            Response.Cookies.Append("jwt", loginResponse.Data.AccessToken, cookieOptions);
+            Response.Cookies.Append("refreshToken", loginResponse.Data.RefreshToken, cookieRefreshTokenOptions);
 
-                var authProperties = new AuthenticationProperties
-                {
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(remainingMinutes),
-                    IsPersistent = loginViewModel.RememberMe
-                };
-
-                // Lưu trữ giá trị vào session
-                HttpContext.Session.SetString("jwt", loginResponse.Data.AccessToken);
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
-            }
-
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
 
 
             if (returnUrl != null)

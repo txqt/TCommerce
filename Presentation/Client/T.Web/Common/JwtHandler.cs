@@ -13,7 +13,7 @@ namespace T.Web.Common
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
+            var accessToken = _httpContextAccessor.HttpContext.Request.Cookies["jwt"];
             if (!string.IsNullOrEmpty(accessToken))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);

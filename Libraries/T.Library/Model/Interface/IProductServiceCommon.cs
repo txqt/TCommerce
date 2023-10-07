@@ -9,7 +9,7 @@ using T.Library.Model.ViewsModel;
 
 namespace T.Library.Model.Interface
 {
-    public interface IProductCommon
+    public interface IProductServiceCommon
     {
         Task<List<Product>> GetAllNewestProduct();
         Task<List<Product>> GetRandomProduct();
@@ -17,10 +17,10 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<Product>> GetByIdAsync(int id);
         Task<ServiceResponse<Product>> GetByNameAsync(string name);
         Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId);
-        Task<ServiceResponse<bool>> CreateProduct(Product product);
+        Task<ServiceResponse<bool>> CreateProductAsync(Product product);
         //Task<ServiceResponse<bool>> CreateProducts(List<Product> products);
-        Task<ServiceResponse<bool>> EditProduct(ProductModel model);
-        Task<ServiceResponse<bool>> DeleteProduct(int productId);
+        Task<ServiceResponse<bool>> EditProductAsync(ProductModel model);
+        Task<ServiceResponse<bool>> DeleteProductAsync(int productId);
         Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttributeByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
         Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId);

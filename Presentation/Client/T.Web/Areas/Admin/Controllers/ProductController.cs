@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
+using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
@@ -70,7 +71,7 @@ namespace T.Web.Areas.Admin.Controllers
             }
             var product = _mapper.Map<Product>(model);
 
-            var result = await _productService.CreateProduct(product);
+            var result = await _productService.CreateProductAsync(product);
 
             if (!result.Success)
             {
@@ -98,7 +99,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var result = await _productService.EditProduct(model);
+            var result = await _productService.EditProductAsync(model);
 
             if (!result.Success)
             {
@@ -112,7 +113,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
 
-            var result = await _productService.DeleteProduct(id);
+            var result = await _productService.DeleteProductAsync(id);
 
             if (!result.Success)
             {

@@ -212,7 +212,7 @@ namespace T.WebApi.Services.AccountServices
 
             //Save refresh token
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = AppExtensions.GetDateTimeNow().AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
             await _userManager.UpdateAsync(user);
 
             var response = new AuthResponseDto()
@@ -237,39 +237,36 @@ namespace T.WebApi.Services.AccountServices
 
         public async Task<ServiceResponse<AuthResponseDto>> RefreshToken(RefreshTokenDto tokenDto)
         {
-            try
+            if (tokenDto is null)
             {
-                if (tokenDto is null)
-                {
-                    return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Invalid client request" };
-                }
-
-                var principal = _tokenService.GetPrincipalFromExpiredToken(tokenDto.Token);
-                var username = principal.Identity.Name;
-                var user = await _userManager.FindByNameAsync(username);
-
-                if (user == null || user.RefreshToken != tokenDto.RefreshToken || user.RefreshTokenExpiryTime <= AppExtensions.GetDateTimeNow())
-                    return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Invalid client request" };
-
-                var accessToken = await _tokenService.GenerateAccessToken(user);
-                user.RefreshToken = await _tokenService.GenerateRefreshToken();
-                await _userManager.UpdateAsync(user);
-
-                var data = new AuthResponseDto()
-                {
-                    AccessToken = accessToken,
-                    RefreshToken = user.RefreshToken,
-                    ReturnUrl = tokenDto.ReturnUrl
-                };
-
-                return new ServiceErrorResponse<AuthResponseDto> { Success = true, Data = data };
+                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "TokenDto is null" };
             }
-            catch (Exception e)
+
+            var principal = _tokenService.GetPrincipalFromExpiredToken(tokenDto.AccessToken);
+            var username = principal.Identity.Name;
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "User not found" };
+            if (user.RefreshToken != tokenDto.RefreshToken)
+                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Invalid refresh token" };
+            if (user.RefreshTokenExpiryTime <= DateTime.Now)
+                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Refresh token expired" };
+
+            var accessToken = await _tokenService.GenerateAccessToken(user);
+            var refreshToken = await _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            await _userManager.UpdateAsync(user);
+
+            var data = new AuthResponseDto()
             {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                ReturnUrl = tokenDto.ReturnUrl
+            };
 
-                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = $"{e.Message}" };
-
-            }
+            return new ServiceErrorResponse<AuthResponseDto> { Success = true, Data = data };
         }
 
         public async Task<ServiceResponse<bool>> Register(RegisterRequest request)

@@ -16,7 +16,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace T.Web.Services.ProductService
 {
-    public interface IProductService : IProductCommon
+    public interface IProductService : IProductServiceCommon
     {
         Task<PagingResponse<Product>> GetAll(ProductParameters productParameters);
     }
@@ -62,7 +62,7 @@ namespace T.Web.Services.ProductService
             }
         }
 
-        public async Task<ServiceResponse<bool>> CreateProduct(Product product)
+        public async Task<ServiceResponse<bool>> CreateProductAsync(Product product)
         {
             var result = await _httpClient.PostAsJsonAsync($"api/product/create", product);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
@@ -74,7 +74,7 @@ namespace T.Web.Services.ProductService
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public async Task<ServiceResponse<bool>> DeleteProduct(int id)
+        public async Task<ServiceResponse<bool>> DeleteProductAsync(int id)
         {
             var result = await _httpClient.DeleteAsync($"api/product/{id}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
@@ -86,7 +86,7 @@ namespace T.Web.Services.ProductService
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public async Task<ServiceResponse<bool>> EditProduct(ProductModel product)
+        public async Task<ServiceResponse<bool>> EditProductAsync(ProductModel product)
         {
             var result = await _httpClient.PutAsJsonAsync($"api/product", product);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();

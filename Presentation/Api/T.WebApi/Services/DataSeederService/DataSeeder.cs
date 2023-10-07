@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using T.Library.Model;
 using T.Library.Model.Common;
- 
+using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
@@ -26,14 +26,14 @@ namespace T.WebApi.Services.DataSeederService
         private readonly ICategoryService _categorySerivce;
         private readonly IProductCategoryService _productCategorySerivce;
         private readonly IProductAttributeService _productAttributeService;
-        private readonly IProductAttributeMappingService _productAttributeMappingService;
-        private readonly IProductAttributeValueService _productAttributeValueService;
+        //private readonly IProductAttributeMappingService _productAttributeMappingService;
+        //private readonly IProductAttributeValueService _productAttributeValueService;
         private readonly IPermissionRecordService _permissionRecordService;
         private readonly IPermissionRecordUserRoleMappingService _permissionRecordUserRoleMappingService;
         private readonly Func<string, Task<ServiceResponse<Product>>> _getProductByName;
         private readonly Func<string, Task<ServiceResponse<Category>>> _getCategoryByName;
 
-        public DataSeeder(DatabaseContext context, RoleManager<Role> roleManager, UserManager<User> userManager, IProductService productSerivce, ICategoryService categorySerivce, IProductCategoryService productCategorySerivce, IProductAttributeService productAttributeService, IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService, IPermissionRecordService permissionRecordService, IPermissionRecordUserRoleMappingService permissionRecordUserRoleMappingService)
+        public DataSeeder(DatabaseContext context, RoleManager<Role> roleManager, UserManager<User> userManager, IProductService productSerivce, ICategoryService categorySerivce, IProductCategoryService productCategorySerivce, IProductAttributeService productAttributeService, /*IProductAttributeMappingService productAttributeMappingService,*/ /*IProductAttributeValueService productAttributeValueService,*/ IPermissionRecordService permissionRecordService, IPermissionRecordUserRoleMappingService permissionRecordUserRoleMappingService)
         {
             _context = context;
             _roleManager = roleManager;
@@ -44,8 +44,8 @@ namespace T.WebApi.Services.DataSeederService
             _getCategoryByName = _categorySerivce.GetCategoryByNameAsync;
             _productCategorySerivce = productCategorySerivce;
             _productAttributeService = productAttributeService;
-            _productAttributeMappingService = productAttributeMappingService;
-            _productAttributeValueService = productAttributeValueService;
+            //_productAttributeMappingService = productAttributeMappingService;
+            //_productAttributeValueService = productAttributeValueService;
             _permissionRecordService = permissionRecordService;
             _permissionRecordUserRoleMappingService = permissionRecordUserRoleMappingService;
         }
@@ -84,7 +84,7 @@ namespace T.WebApi.Services.DataSeederService
                     
                     foreach (var product in item.Products)
                     {
-                        await _productService.CreateProduct(product);
+                        await _productService.CreateProductAsync(product);
 
                         var productId = (await _productService.GetByNameAsync(product.Name)).Data.Id;
 
@@ -109,9 +109,9 @@ namespace T.WebApi.Services.DataSeederService
                                 ProductId = productId,
                                 ProductAttributeId = productAttributeId
                             };
-                            await _productAttributeMappingService.CreateOrEditProductAttributeMappingAsync(productAttributeMapping);
+                            await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
 
-                            var productAttributeMappingId = (await _productAttributeMappingService.GetProductAttributeMappingByProductIdAsync(productId)).Data.Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
+                            var productAttributeMappingId = (await _productAttributeService.GetProductAttributeMappingByProductIdAsync(productId)).Data.Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
 
                             foreach (var pav in item.ProductAttributeValues)
                             {
@@ -120,7 +120,7 @@ namespace T.WebApi.Services.DataSeederService
                                     ProductAttributeMappingId = productAttributeMappingId,
                                     Name = pav.Name,
                                 };
-                                await _productAttributeValueService.AddOrUpdateProductAttributeValue(productAttributeValue);
+                                await _productAttributeService.CreateProductAttributeValueAsync(productAttributeValue);
                             }
                         }
                     }

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using T.Library.Model;
- 
+using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
@@ -58,7 +58,7 @@ namespace T.WebApi.Controllers
             if (!await _permissionRecordService.AuthorizeAsync(DefaultPermission.ManageProducts))
                 return Forbid();
 
-            var result = await _productService.CreateProduct(product);
+            var result = await _productService.CreateProductAsync(product);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -71,7 +71,7 @@ namespace T.WebApi.Controllers
         public async Task<ActionResult> EditProduct(ProductModel model)
         {
             
-            var result = await _productService.EditProduct(model);
+            var result = await _productService.EditProductAsync(model);
 
             if (!result.Success)
             {
@@ -84,7 +84,7 @@ namespace T.WebApi.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> DeleteProduct(int productId)
         {
-            var result = await _productService.DeleteProduct(productId);
+            var result = await _productService.DeleteProductAsync(productId);
             if (!result.Success)
             {
                 return BadRequest(result);

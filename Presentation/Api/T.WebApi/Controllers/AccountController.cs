@@ -41,6 +41,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPost("refresh")]
+        [AllowAnonymous]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto tokenDto)
         {

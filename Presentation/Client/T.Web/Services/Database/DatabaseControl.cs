@@ -21,8 +21,8 @@ namespace T.Web.Services.Database
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
-            var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            //var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
+            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
         public async Task<bool> DeleteDb()

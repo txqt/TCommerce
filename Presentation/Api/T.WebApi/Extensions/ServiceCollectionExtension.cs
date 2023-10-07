@@ -25,7 +25,7 @@ using T.WebApi.IdentityCustom;
 using T.WebApi.Middleware.TokenManagers;
 using T.WebApi.Middleware.ErrorHandlings;
 using T.WebApi.Services.IRepositoryServices;
-
+using T.Library.Model.Interface;
 
 namespace T.WebApi.Extensions
 {
@@ -136,8 +136,8 @@ namespace T.WebApi.Extensions
             services.AddTransient<IEmailSender, SendMailService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IProductAttributeService, ProductAttributeService>();
-            services.AddTransient<IProductAttributeMappingService, ProductAttributeMappingService>();
-            services.AddTransient<IProductAttributeValueService, ProductAttributeValueService>();
+            //services.AddTransient<IProductAttributeMappingService, ProductAttributeMappingService>();
+            //services.AddTransient<IProductAttributeValueService, ProductAttributeValueService>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IProductCategoryService, ProductCategoryService>();
             services.AddTransient<IPictureService, PictureService>();

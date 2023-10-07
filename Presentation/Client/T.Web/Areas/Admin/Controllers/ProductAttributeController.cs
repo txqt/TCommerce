@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
+using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.ViewsModel;
 using T.Web.Attribute;
@@ -27,7 +28,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _productAttributeService.GetAll();
+            var result = await _productAttributeService.GetAllProductAttributeAsync();
             return Json(new { data = result });
         }
 
@@ -44,7 +45,7 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 return View(productAttribute);
             }
-            var result = await _productAttributeService.Create(productAttribute);
+            var result = await _productAttributeService.CreateProductAttributeAsync(productAttribute);
 
             if (!result.Success)
             {
@@ -58,7 +59,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var result = await _productAttributeService.Get(id);
+            var result = await _productAttributeService.GetProductAttributeByIdAsync(id);
             return View(result.Data);
         }
 
@@ -69,7 +70,7 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 return View(productAttribute);
             }
-            var result = await _productAttributeService.Edit(productAttribute);
+            var result = await _productAttributeService.UpdateProductAttributeAsync(productAttribute);
 
             if (!result.Success)
             {
@@ -83,7 +84,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _productAttributeService.Get(id);
+            var result = await _productAttributeService.GetProductAttributeByIdAsync(id);
             return View(result.Data);
         }
 
@@ -91,7 +92,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 
-            var result = await _productAttributeService.Delete(id);
+            var result = await _productAttributeService.DeleteProductAttributeByIdAsync(id);
 
             if (!result.Success)
             {

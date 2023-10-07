@@ -14,29 +14,20 @@ namespace T.WebApi.Helpers.TokenHelpers
 {
     public interface ITokenService
     {
-        SigningCredentials GetSigningCredentials(string key);
-        Task<List<Claim>> GetClaims(User user);
-        JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims);
-        //string GenerateRefreshToken();
-        ClaimsPrincipal GetPrincipalFromExpiredToken(string? token);
-        Task<string> GenerateRefreshToken();
         Task<string> GenerateAccessToken(User user);
+        Task<string> GenerateRefreshToken();
+        ClaimsPrincipal GetPrincipalFromExpiredToken(string? token);
     }
     public class TokenService : ITokenService
     {
-        private readonly IConfiguration _configuration;
-        //private readonly IConfiguration _jwtSettings;
         private readonly UserManager<User> _userManager;
         private readonly IOptions<JwtOptions> _jwtOptions;
 
-        public TokenService(IConfiguration configuration, UserManager<User> userManager, IOptions<JwtOptions> jwtOptions)
+        public TokenService(UserManager<User> userManager, IOptions<JwtOptions> jwtOptions)
         {
-            _configuration = configuration;
-            //_jwtSettings = _configuration.GetSection("Authorization");
             _userManager = userManager;
             _jwtOptions = jwtOptions;
         }
-
         public SigningCredentials GetSigningCredentials(string _key)
         {
             var key = Encoding.UTF8.GetBytes(_key);
@@ -44,7 +35,6 @@ namespace T.WebApi.Helpers.TokenHelpers
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
-
         public async Task<List<Claim>> GetClaims(User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
@@ -53,35 +43,34 @@ namespace T.WebApi.Helpers.TokenHelpers
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.GivenName,user.LastName+" "+ user.FirstName),
-                new Claim(ClaimTypes.Email,user.Email ),
-                new Claim(ClaimTypes.Role,string.Join(";",roles)),
+                new Claim(ClaimTypes.Email,user.Email )
             };
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             return claims;
         }
-
-        public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+        public async Task<string> GenerateAccessToken(User user)
         {
+            var claims = await GetClaims(user);
+            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.AccessTokenKey);
             var tokenOptions = new JwtSecurityToken(
-            issuer: _jwtOptions.Value.Issuer,
-            audience: _jwtOptions.Value.Audience,
+                issuer: _jwtOptions.Value.Issuer,
+                audience: _jwtOptions.Value.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(Convert.ToDouble(_jwtOptions.Value.AccessTokenExpirationInHours)),
+                expires: DateTime.UtcNow.AddSeconds(10),
                 signingCredentials: signingCredentials);
-
-            return tokenOptions;
+            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
-
-        //public string GenerateRefreshToken()
-        //{
-        //    var randomNumber = new byte[32];
-        //    using (var rng = RandomNumberGenerator.Create())
-        //    {
-        //        rng.GetBytes(randomNumber);
-        //        return Convert.ToBase64String(randomNumber);
-        //    }
-        //}
-
+        public async Task<string> GenerateRefreshToken()
+        {
+            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.RefreshTokenKey);
+            var tokenOptions = new JwtSecurityToken(
+                issuer: _jwtOptions.Value.Issuer,
+                audience: _jwtOptions.Value.Audience,
+                expires: DateTime.UtcNow.AddDays(_jwtOptions.Value.RefreshTokenExpirationInDays),
+                signingCredentials: signingCredentials);
+            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        }
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string? token)
         {
             var tokenValidationParameters = new TokenValidationParameters
@@ -108,21 +97,6 @@ namespace T.WebApi.Helpers.TokenHelpers
             }
 
             return principal;
-        }
-
-        public async Task<string> GenerateRefreshToken()
-        {
-            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.RefreshTokenKey);
-            var tokenOptions = GenerateTokenOptions(signingCredentials, null);
-            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-        }
-
-        public async Task<string> GenerateAccessToken(User user)
-        {
-            var claims = await GetClaims(user);
-            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.AccessTokenKey);
-            var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
-            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
     }
 }

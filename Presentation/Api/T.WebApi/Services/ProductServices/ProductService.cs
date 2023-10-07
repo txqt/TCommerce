@@ -12,7 +12,7 @@ using T.WebApi.Services.ProductService;
 
 namespace T.WebApi.Services.ProductServices
 {
-    public interface IProductService : IProductCommon
+    public interface IProductService : IProductServiceCommon
     {
         Task<PagedList<Product>> GetAll(ProductParameters productParameters);
     }
@@ -85,7 +85,7 @@ namespace T.WebApi.Services.ProductServices
             return response;
         }
 
-        public async Task<ServiceResponse<bool>> CreateProduct(Product product)
+        public async Task<ServiceResponse<bool>> CreateProductAsync(Product product)
         {
             product.CreatedOnUtc = DateTime.Now;
             
@@ -94,7 +94,7 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<ServiceResponse<bool>> EditProduct(ProductModel model)
+        public async Task<ServiceResponse<bool>> EditProductAsync(ProductModel model)
         {
             
             try
@@ -130,7 +130,7 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<ServiceResponse<bool>> DeleteProduct(int productId)
+        public async Task<ServiceResponse<bool>> DeleteProductAsync(int productId)
         {
             await _productsRepository.DeleteAsync(productId);
             return new ServiceSuccessResponse<bool>();

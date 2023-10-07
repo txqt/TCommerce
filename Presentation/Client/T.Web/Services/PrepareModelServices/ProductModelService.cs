@@ -5,6 +5,7 @@ using T.Web.Services.ProductService;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Web.Services.CategoryService;
 using T.Library.Model.Common;
+using T.Library.Model.Interface;
 
 namespace T.Web.Services.PrepareModel
 {
@@ -97,7 +98,7 @@ namespace T.Web.Services.PrepareModel
                     Id = productAttributeMapping.Id
                 };
                 _mapper.Map(productAttributeMapping, model);
-                model.ProductAttributeName = (await _productAttributeService.Get(productAttributeMapping.ProductAttributeId)).Data.Name;
+                model.ProductAttributeName = (await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId)).Data.Name;
                 model.ProductAttributeId = productAttributeMapping.ProductAttributeId;
                 model.TextPrompt = productAttributeMapping.TextPrompt;
                 model.IsRequired = productAttributeMapping.IsRequired;
@@ -112,7 +113,7 @@ namespace T.Web.Services.PrepareModel
             model.ProductId = product.Id;
 
             //prepare available product attributes
-            model.AvailableProductAttributes = (await _productAttributeService.GetAll()).Select(productAttribute => new SelectListItem
+            model.AvailableProductAttributes = (await _productAttributeService.GetAllProductAttributeAsync()).Select(productAttribute => new SelectListItem
             {
                 Text = productAttribute.Name,
                 Value = productAttribute.Id.ToString()

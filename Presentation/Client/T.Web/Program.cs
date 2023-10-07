@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Text.Json;
+using T.Library.Model.Interface;
 using T.Library.Model.JwtToken;
 using T.Web.Common;
 using T.Web.Services.AccountService;
@@ -10,7 +11,6 @@ using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
 using T.Web.Services.ProductService;
 using T.Web.Services.UserService;
-using T.WebApi.Middleware.ErrorHandlings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +20,10 @@ builder.Services.AddTransient<JwtHandler>();
 builder.Services.AddHttpClient("", sp =>
 {
     sp.BaseAddress = new Uri(builder.Configuration.GetSection("Url:ApiUrl").Value);
-}).AddHttpMessageHandler<JwtHandler>();
+})
+    .AddHttpMessageHandler<JwtHandler>()
+    .AddHttpMessageHandler<UnauthorizedResponseHandler>();
+
 builder.Services.AddTransient<IDatabaseControl, DatabaseControl>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddTransient<IAccountService, AccountService>();
@@ -34,6 +37,7 @@ builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IHomePageService, HomePageService>();
+builder.Services.AddTransient<UnauthorizedResponseHandler>();
 //builder.Services.AddTransient<ISliderItemService, SliderItemService>();
 builder.Services.AddSingleton<JsonSerializerOptions>(new JsonSerializerOptions
 {

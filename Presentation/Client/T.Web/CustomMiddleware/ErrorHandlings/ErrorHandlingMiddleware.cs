@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using System.Net;
+﻿using System.Net;
 using T.Library.Model.Common;
 
-namespace T.WebApi.Middleware.ErrorHandlings
+namespace T.Web.CustomMiddleware.ErrorHandlings
 {
     public class ExceptionMiddleware
     {
@@ -43,5 +41,4 @@ namespace T.WebApi.Middleware.ErrorHandlings
             }.ToString());
         }
     }
-    
 }
