@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 using T.Library.Model;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
@@ -9,9 +8,6 @@ using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
-using T.WebApi.Extensions;
-using T.WebApi.Services.CategoryServices;
-using T.WebApi.Services.PermissionRecordServices;
 using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.Services.ProductServices;
 
@@ -28,12 +24,12 @@ namespace T.WebApi.Services.DataSeederService
         private readonly IProductAttributeService _productAttributeService;
         //private readonly IProductAttributeMappingService _productAttributeMappingService;
         //private readonly IProductAttributeValueService _productAttributeValueService;
-        private readonly IPermissionRecordService _permissionRecordService;
+        private readonly ISecurityService _permissionRecordService;
         private readonly IPermissionRecordUserRoleMappingService _permissionRecordUserRoleMappingService;
         private readonly Func<string, Task<ServiceResponse<Product>>> _getProductByName;
         private readonly Func<string, Task<ServiceResponse<Category>>> _getCategoryByName;
 
-        public DataSeeder(DatabaseContext context, RoleManager<Role> roleManager, UserManager<User> userManager, IProductService productSerivce, ICategoryService categorySerivce, IProductCategoryService productCategorySerivce, IProductAttributeService productAttributeService, /*IProductAttributeMappingService productAttributeMappingService,*/ /*IProductAttributeValueService productAttributeValueService,*/ IPermissionRecordService permissionRecordService, IPermissionRecordUserRoleMappingService permissionRecordUserRoleMappingService)
+        public DataSeeder(DatabaseContext context, RoleManager<Role> roleManager, UserManager<User> userManager, IProductService productSerivce, ICategoryService categorySerivce, IProductCategoryService productCategorySerivce, IProductAttributeService productAttributeService, /*IProductAttributeMappingService productAttributeMappingService,*/ /*IProductAttributeValueService productAttributeValueService,*/ ISecurityService permissionRecordService, IPermissionRecordUserRoleMappingService permissionRecordUserRoleMappingService)
         {
             _context = context;
             _roleManager = roleManager;
@@ -69,7 +65,7 @@ namespace T.WebApi.Services.DataSeederService
             {
                 foreach(var item in CategoriesDataSeed.Instance.GetAll())
                 {
-                    await _categorySerivce.CreateOrEditAsync(item);
+                    await _categorySerivce.CreateCategoryAsync(item);
                 }
             }
         }
@@ -97,7 +93,7 @@ namespace T.WebApi.Services.DataSeederService
                                 CategoryId = categoryId,
                                 ProductId = productId
                             };
-                            await _productCategorySerivce.CreateOrEditAsync(productCategoryMapping);
+                            await _productCategorySerivce.CreateProductCategoryAsync(productCategoryMapping);
                         }
                         
                         foreach(var pa in item.ProductAttributes)
@@ -111,7 +107,7 @@ namespace T.WebApi.Services.DataSeederService
                             };
                             await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
 
-                            var productAttributeMappingId = (await _productAttributeService.GetProductAttributeMappingByProductIdAsync(productId)).Data.Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
+                            var productAttributeMappingId = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId)).Data.Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
 
                             foreach (var pav in item.ProductAttributeValues)
                             {

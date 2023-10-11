@@ -2,26 +2,16 @@
 using System.Net.Http.Json;
 using T.Library.Model.Common;
 using System.Net.Http.Headers;
+using T.Library.Model.Interface;
 
 namespace T.Web.Services.CategoryService
 {
-    public interface ICategoryService
-    {
-        Task<List<Category>> GetAllAsync();
-        Task<ServiceResponse<Category>> Get(int id);
-        Task<ServiceResponse<bool>> AddOrEdit(Category category);
-        Task<ServiceResponse<bool>> Delete(int id);
-    }
     public class CategoryService : ICategoryService
     {
         private readonly HttpClient _httpClient;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public CategoryService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        public CategoryService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpContextAccessor = httpContextAccessor;
-            //var accessToken = _httpContextAccessor.HttpContext.Session.GetString("jwt");
-            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
         public async Task<ServiceResponse<bool>> AddOrEdit(Category category)
@@ -46,6 +36,42 @@ namespace T.Web.Services.CategoryService
         {
             var result = await _httpClient.GetAsync($"api/category/{APIRoutes.GetAll}");
             return await result.Content.ReadFromJsonAsync<List<Category>>();
+        }
+
+        public async Task<List<Category>> GetAllCategoryAsync()
+        {
+            var result = await _httpClient.GetAsync($"api/category/{APIRoutes.GetAll}");
+            return await result.Content.ReadFromJsonAsync<List<Category>>();
+        }
+
+        public async Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId)
+        {
+            var result = await _httpClient.GetAsync($"api/category/{categoryId}");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<Category>>();
+        }
+
+        [Obsolete("This method is not needed in this project.")]
+        public Task<ServiceResponse<Category>> GetCategoryByNameAsync(string categoryName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ServiceResponse<bool>> CreateCategoryAsync(Category category)
+        {
+            var result = await _httpClient.PostAsJsonAsync($"api/category", category);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<bool>> UpdateCategoryAsync(Category category)
+        {
+            var result = await _httpClient.PutAsJsonAsync($"api/category", category);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id)
+        {
+            var result = await _httpClient.DeleteAsync($"api/category/{id}");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
     }
 }

@@ -27,8 +27,8 @@ namespace T.Library.Model
         /// </summary>
         public int DisplayOrder { get; set; }
 
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
-        public Product Product { get; set;}
+        public Product? Product { get; set;}
     }
 }

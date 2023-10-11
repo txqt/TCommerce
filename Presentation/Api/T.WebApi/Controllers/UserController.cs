@@ -60,5 +60,11 @@ namespace T.WebApi.Controllers
         {
             return Ok(await _userService.GetAllRolesAsync());
         }
+
+        [HttpGet("me")]
+        public async Task<ActionResult> GetCurrentUser()
+        {
+            return Ok(await _userService.GetCurrentUser());
+        }
     }
 }

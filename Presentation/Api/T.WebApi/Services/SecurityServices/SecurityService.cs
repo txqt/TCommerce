@@ -2,38 +2,29 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using T.Library.Model.Common;
+using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
+using T.WebApi.Services.IRepositoryServices;
 using T.WebApi.Services.UserServices;
 
-namespace T.WebApi.Services.PermissionRecordServices
+namespace T.WebApi.Services.SecurityServices
 {
-    public interface IPermissionRecordService
+    public class SecurityService : ISecurityService
     {
-        Task<List<PermissionRecord>> GetAllPermissionRecordAsync();
-        Task<ServiceResponse<PermissionRecord>> GetPermissionRecordByIdAsync(int permissionRecordId);
-        Task<ServiceResponse<PermissionRecord>> GetPermissionRecordBySystemNameAsync(string permissionRecordSystemName);
-        Task<ServiceResponse<List<PermissionRecord>>> GetPermissionRecordsByCustomerRoleIdAsync(Guid roleId);
-        Task<ServiceResponse<bool>> CreateOrEditAsync(PermissionRecord permissionRecord);
-        Task<ServiceResponse<bool>> DeletePermissionRecordByIdAsync(int id);
-        Task<bool> AuthorizeAsync(PermissionRecord permissionRecord);
-        Task<bool> AuthorizeAsync(string permissionSystemname);
-        Task<bool> AuthorizeAsync(string permissionSystemName, User user);
-        Task<bool> AuthorizeAsync(string permissionSystemName, Guid roleId);
-    }
-    public class PermissionRecordService : IPermissionRecordService
-    {
-        private readonly DatabaseContext _context;
         private readonly IUserService _userService;
-        private readonly UserManager<User> _userManager;
-        public PermissionRecordService(DatabaseContext databaseContext, IUserService userService, UserManager<User> userManager)
+        private readonly IRepository<PermissionRecord> _permissionRepository;
+        private readonly IRepository<PermissionRecordUserRoleMapping> _permissionMappingRepository;
+        private readonly RoleManager<Role> _roleManager;
+        public SecurityService(IUserService userService, IRepository<PermissionRecord> permissionRepository, IRepository<PermissionRecordUserRoleMapping> permissionMappingRepository, RoleManager<Role> roleManager)
         {
-            _context = databaseContext;
             _userService = userService;
-            _userManager = userManager;
+            _permissionRepository = permissionRepository;
+            _permissionMappingRepository = permissionMappingRepository;
+            this._roleManager = roleManager;
         }
 
 
@@ -108,42 +99,23 @@ namespace T.WebApi.Services.PermissionRecordServices
         }
 
 
-        public async Task<ServiceResponse<bool>> CreateOrEditAsync(PermissionRecord permissionRecord)
+        public async Task<ServiceResponse<bool>> CreatePermissionRecord(PermissionRecord permissionRecord)
         {
-            var permissionRecordTable = await _context.PermissionRecords.FirstOrDefaultAsync(x => x.Id == permissionRecord.Id);
-            if (permissionRecordTable == null)
+            try
             {
-                _context.PermissionRecords.Add(permissionRecord);
-            }
-            else
-            {
-                if (_context.IsRecordUnchanged(permissionRecordTable, permissionRecord))
-                {
-                    return new ServiceErrorResponse<bool>("Data is unchanged");
-                }
-
-                permissionRecordTable.Name = permissionRecord.Name;
-                permissionRecordTable.SystemName = permissionRecord.SystemName;
-                permissionRecordTable.Category = permissionRecord.Category;
-            }
-            var result = await _context.SaveChangesAsync();
-            if (result == 0)
-            {
+                await _permissionRepository.CreateAsync(permissionRecord);
                 return new ServiceErrorResponse<bool>("Create permission record failed");
+            }catch(Exception ex)
+            {
+                return new ServiceSuccessResponse<bool>() { Message = ex.Message};
             }
-            return new ServiceSuccessResponse<bool>();
         }
 
         public async Task<ServiceResponse<bool>> DeletePermissionRecordByIdAsync(int id)
         {
             try
             {
-                var permissionRecord = await _context.PermissionRecords.FirstOrDefaultAsync(x => x.Id == id);
-
-                _context.PermissionRecords.Remove(permissionRecord);
-
-                await _context.SaveChangesAsync();
-
+                await _permissionRepository.DeleteAsync(id);
                 return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)
@@ -154,26 +126,12 @@ namespace T.WebApi.Services.PermissionRecordServices
 
         public async Task<List<PermissionRecord>> GetAllPermissionRecordAsync()
         {
-            List<PermissionRecord> permissionList = new List<PermissionRecord>();
-
-            Type type = typeof(DefaultPermission);
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-
-            foreach (FieldInfo field in fields)
-            {
-                if (field.FieldType == typeof(PermissionRecord))
-                {
-                    PermissionRecord permission = (PermissionRecord)field.GetValue(null);
-                    permissionList.Add(permission);
-                }
-            }
-
-            return permissionList;
+            return await _permissionRepository.Table.ToListAsync();
         }
 
         public async Task<ServiceResponse<PermissionRecord>> GetPermissionRecordByIdAsync(int permissionRecordId)
         {
-            var permissionRecord = await _context.PermissionRecords.FirstOrDefaultAsync(x => x.Id == permissionRecordId);
+            var permissionRecord = await _permissionRepository.Table.FirstOrDefaultAsync(x => x.Id == permissionRecordId);
 
             var response = new ServiceResponse<PermissionRecord>
             {
@@ -185,7 +143,7 @@ namespace T.WebApi.Services.PermissionRecordServices
 
         public async Task<ServiceResponse<PermissionRecord>> GetPermissionRecordBySystemNameAsync(string permissionRecordSystenName)
         {
-            var permissionRecord = await _context.PermissionRecords.FirstOrDefaultAsync(x => x.SystemName == permissionRecordSystenName);
+            var permissionRecord = await _permissionRepository.Table.FirstOrDefaultAsync(x => x.SystemName == permissionRecordSystenName);
 
             var response = new ServiceResponse<PermissionRecord>
             {
@@ -197,14 +155,71 @@ namespace T.WebApi.Services.PermissionRecordServices
 
         public async Task<ServiceResponse<List<PermissionRecord>>> GetPermissionRecordsByCustomerRoleIdAsync(Guid roleId)
         {
-            var permissionRecords = _context.PermissionRecordUserRoleMappings.Where(x => x.RoleId == roleId).Select(x=>x.PermissionRecord).ToListAsync();
+            var permissionRecords = await _permissionMappingRepository.Table.Where(x => x.RoleId == roleId).Select(x=>x.PermissionRecord).ToListAsync();
 
             var response = new ServiceResponse<List<PermissionRecord>>
             {
-                Data = await permissionRecords,
+                Data = permissionRecords,
                 Success = true
             };
             return response;
+        }
+
+        public async Task<ServiceResponse<bool>> UpdatePermissionRecord(PermissionRecord permissionRecord)
+        {
+            try
+            {
+                await _permissionRepository.UpdateAsync(permissionRecord);
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch(Exception ex)
+            {
+                return new ServiceErrorResponse<bool>() { Message = ex.Message};
+            }
+        }
+
+        public async Task<ServiceResponse<PermissionRecordUserRoleMapping>> GetPermissionMappingAsync(string roleId, int permissionId)
+        {
+            var permissionMapping = await _permissionMappingRepository.Table.Where(x => x.RoleId.ToString() == roleId && x.PermissionRecordId == permissionId).FirstOrDefaultAsync();
+            return new ServiceSuccessResponse<PermissionRecordUserRoleMapping>() { Data = permissionMapping };
+        }
+
+        public async Task<List<Role>> GetRoles()
+        {
+            return await _roleManager.Roles.Include(r => r.PermissionRecordUserRoleMappings).ThenInclude(p => p.PermissionRecord).ToListAsync();
+        }
+
+        public async Task<ServiceResponse<Role>> GetRoleByRoleId(string roleId)
+        {
+            var role = await _roleManager.Roles.Include(r => r.PermissionRecordUserRoleMappings).FirstOrDefaultAsync(r => r.Id.ToString() == roleId);
+            return new ServiceSuccessResponse<Role>() { Data = role };
+        }
+
+        public async Task<ServiceResponse<bool>> CreatePermissionMappingAsync(PermissionRecordUserRoleMapping permissionMapping)
+        {
+            try
+            {
+                await _permissionMappingRepository.CreateAsync(permissionMapping);
+
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>() { Message = ex.Message };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> DeletePermissionMappingByIdAsync(int mappingId)
+        {
+            try
+            {
+                await _permissionMappingRepository.DeleteAsync(mappingId);
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>() { Message = ex.Message };
+            }
         }
     }
 }

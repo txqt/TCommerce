@@ -10,22 +10,22 @@ namespace T.Library.Model.Common
         /// <summary>
         /// Gets or sets the picture mime type
         /// </summary>
-        public string MimeType { get; set; }
+        public string? MimeType { get; set; }
 
         /// <summary>
         /// Gets or sets the SEO friendly filename of the picture
         /// </summary>
-        public string SeoFilename { get; set; }
+        public string? SeoFilename { get; set; }
 
         /// <summary>
         /// Gets or sets the "alt" attribute for "img" HTML element. If empty, then a default rule will be used (e.g. product name)
         /// </summary>
-        public string AltAttribute { get; set; }
+        public string? AltAttribute { get; set; }
 
         /// <summary>
         /// Gets or sets the "title" attribute for "img" HTML element. If empty, then a default rule will be used (e.g. product name)
         /// </summary>
-        public string TitleAttribute { get; set; }
+        public string? TitleAttribute { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the picture is new
@@ -35,7 +35,7 @@ namespace T.Library.Model.Common
         /// <summary>
         /// Gets or sets the picture virtual path
         /// </summary>
-        public string UrlPath { get; set; }
+        public string? UrlPath { get; set; }
 
         public List<ProductPicture> ProductPictures { get; set; }
         public List<SlideShow> SlideShows { get; set; }

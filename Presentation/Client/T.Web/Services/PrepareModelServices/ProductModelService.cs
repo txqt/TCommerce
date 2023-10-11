@@ -57,7 +57,7 @@ namespace T.Web.Services.PrepareModel
                 _mapper.Map(category, model);
             }
 
-            var listcategory = (await _categoryService.GetAllAsync());
+            var listcategory = (await _categoryService.GetAllCategoryAsync());
             listcategory.Insert(0, new Category()
             {
                 Name = "Không có danh mục cha",
@@ -80,7 +80,7 @@ namespace T.Web.Services.PrepareModel
             //get product attribute mappings
 
             var result = (await _productAttributeService
-                                .GetProductAttributeMappingByProductIdAsync(product.Id)).Data;
+                                .GetProductAttributesMappingByProductIdAsync(product.Id)).Data;
 
             var pamList = _mapper.Map<List<ProductAttributeMappingModel>>(result);
 
@@ -196,7 +196,7 @@ namespace T.Web.Services.PrepareModel
                     Id = productCategory.Id
                 };
                 _mapper.Map(productCategory, model);
-                model.CategoryName = (await _categoryService.Get(productCategory.CategoryId)).Data.Name;
+                model.CategoryName = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)).Data.Name;
                 model.CategoryId = productCategory.CategoryId;
                 model.IsFeaturedProduct = productCategory.IsFeaturedProduct;
                 model.DisplayOrder = productCategory.DisplayOrder;
@@ -205,7 +205,7 @@ namespace T.Web.Services.PrepareModel
             model.ProductId = product.Id;
 
             //prepare available product attributes
-            model.AvailableCategories = (await _categoryService.GetAllAsync()).Select(productAttribute => new SelectListItem
+            model.AvailableCategories = (await _categoryService.GetAllCategoryAsync()).Select(productAttribute => new SelectListItem
             {
                 Text = productAttribute.Name,
                 Value = productAttribute.Id.ToString()

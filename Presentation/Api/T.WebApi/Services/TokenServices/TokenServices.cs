@@ -57,7 +57,7 @@ namespace T.WebApi.Services.TokenHelpers
                 issuer: _jwtOptions.Value.Issuer,
                 audience: _jwtOptions.Value.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(_jwtOptions.Value.AccessTokenExpirationInHours),
+                expires: DateTime.UtcNow.AddSeconds(_jwtOptions.Value.AccessTokenExpirationInSenconds),
                 signingCredentials: signingCredentials);
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
@@ -67,7 +67,7 @@ namespace T.WebApi.Services.TokenHelpers
             var tokenOptions = new JwtSecurityToken(
                 issuer: _jwtOptions.Value.Issuer,
                 audience: _jwtOptions.Value.Audience,
-                expires: DateTime.UtcNow.AddDays(_jwtOptions.Value.RefreshTokenExpirationInDays),
+                expires: DateTime.UtcNow.AddSeconds(_jwtOptions.Value.RefreshTokenExpirationInSenconds),
                 signingCredentials: signingCredentials);
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }

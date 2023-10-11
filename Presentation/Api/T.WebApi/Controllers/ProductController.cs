@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using T.Library.Model;
@@ -10,7 +9,6 @@ using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Attribute;
-using T.WebApi.Services.PermissionRecordServices;
 using T.WebApi.Services.ProductServices;
 
 namespace T.WebApi.Controllers
@@ -22,15 +20,17 @@ namespace T.WebApi.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        private readonly IPermissionRecordService _permissionRecordService;
+        private readonly ISecurityService _permissionRecordService;
         private readonly IProductAttributeService _productAttributeService;
+        private readonly IProductCategoryService _productCategoryService;
         private readonly IMapper _mapper;
-        public ProductController(IProductService productService, IPermissionRecordService permissionRecordService, IMapper mapper, IProductAttributeService productAttributeService)
+        public ProductController(IProductService productService, ISecurityService permissionRecordService, IMapper mapper, IProductAttributeService productAttributeService, IProductCategoryService productCategoryService)
         {
             _productService = productService;
             _permissionRecordService = permissionRecordService;
             _mapper = mapper;
             _productAttributeService = productAttributeService;
+            _productCategoryService = productCategoryService;
         }
 
         #region Product
@@ -55,8 +55,8 @@ namespace T.WebApi.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> CreateProduct(Product product)
         {
-            if (!await _permissionRecordService.AuthorizeAsync(DefaultPermission.ManageProducts))
-                return Forbid();
+            //if (!await _permissionRecordService.AuthorizeAsync(DefaultPermission.ManageProducts))
+            //    return Forbid();
 
             var result = await _productService.CreateProductAsync(product);
             if (!result.Success)
@@ -148,11 +148,11 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{productId}/attribute")]
         [AllowAnonymous]
+        [HttpGet("{productId}/attribute")]
         public async Task<ActionResult<ServiceResponse<List<ProductAttributeMapping>>>> GetProductAttributesMapping(int productId)
         {
-            return await _productAttributeService.GetProductAttributeMappingByProductIdAsync(productId);
+            return await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId);
         }
 
         [HttpPost("attribute")]
@@ -187,8 +187,8 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("attribute/{productAttributeMappingId}")]
         [AllowAnonymous]
+        [HttpGet("attribute/{productAttributeMappingId}")]
         public async Task<ActionResult<ServiceResponse<ProductAttributeMapping>>> GetProductAttributeMappingByIdAsync(int productAttributeMappingId)
         {
             return await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeMappingId);
@@ -219,6 +219,7 @@ namespace T.WebApi.Controllers
             }
             return Ok(result);
         }
+
         [HttpGet("attribute/value/{productAttributeValueId}")]
         public async Task<IActionResult> GetAttributeValueById(int productAttributeValueId)
         {
@@ -261,6 +262,52 @@ namespace T.WebApi.Controllers
             {
                 return BadRequest(result);
             }
+            return Ok(result);
+        }
+        #endregion
+
+        #region ProductCategory
+        [HttpGet("category/{productCategoryId}")]
+        public async Task<ActionResult<ServiceResponse<ProductCategory>>> GetProductCategoryById(int productCategoryId)
+        {
+            return await _productCategoryService.GetProductCategoryById(productCategoryId);
+        }
+
+        [HttpGet("{productId}/categories")]
+        public async Task<ActionResult<ServiceResponse<List<ProductCategory>>>> GetByProductId(int productId)
+        {
+            return await _productCategoryService.GetProductCategoriesByProductId(productId);
+        }
+
+        [HttpPost("category")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> CreateProductCategoryAsync(ProductCategory productCategory)
+        {
+            var result = await _productCategoryService.CreateProductCategoryAsync(productCategory);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpPut("category")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> UpdateProductCategoryAsync(ProductCategory productCategory)
+        {
+            var result = await _productCategoryService.UpdateProductCategoryAsync(productCategory);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpDelete("category/{productCategoryId}")]
+        public async Task<ActionResult> DeleteProductCategoryAsync(int productCategoryId)
+        {
+            var result = await _productCategoryService.DeleteProductCategoryAsync(productCategoryId);
+            if (!result.Success)
+                return BadRequest(result);
+
             return Ok(result);
         }
         #endregion

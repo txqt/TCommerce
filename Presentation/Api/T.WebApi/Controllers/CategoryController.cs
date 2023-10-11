@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Common;
+using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
 using T.WebApi.Attribute;
@@ -25,28 +26,39 @@ namespace T.WebApi.Controllers
             return Ok(await _categoryService.GetAllCategoryAsync());
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<Category>>> Get(int id)
+        [HttpGet("{categoryId}")]
+        public async Task<ActionResult<ServiceResponse<Category>>> Get(int categoryId)
         {
-            return await _categoryService.GetCategoryByIdAsync(id);
+            return await _categoryService.GetCategoryByIdAsync(categoryId);
         }
 
-        [HttpPost(APIRoutes.AddOrEdit)]
+        [HttpPost()]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> CreateOrEdit(Category category)
+        public async Task<ActionResult> CreateCategoryAsync(Category category)
         {
-            var result = await _categoryService.CreateOrEditAsync(category);
+            var result = await _categoryService.CreateCategoryAsync(category);
             if(!result.Success)
                 return BadRequest(result);
 
             return Ok(result);
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpPut()]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> UpdateCategoryAsync(Category category)
         {
-            var result = await _categoryService.DeleteCategoryByIdAsync(id);
+            var result = await _categoryService.UpdateCategoryAsync(category);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpDelete("{categoryId}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> Delete(int categoryId)
+        {
+            var result = await _categoryService.DeleteCategoryByIdAsync(categoryId);
             if (!result.Success)
                 return BadRequest(result);
 

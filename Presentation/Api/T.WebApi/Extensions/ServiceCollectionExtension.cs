@@ -18,14 +18,14 @@ using T.WebApi.Services.CategoryServices;
 using T.WebApi.Services.UserServices;
 using T.WebApi.Services.HomePageServices;
 using T.WebApi.Services.DataSeederService;
-using T.WebApi.Services.PermissionRecordServices;
 using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.IdentityCustom;
 using T.WebApi.Middleware.TokenManagers;
-using T.WebApi.Middleware.ErrorHandlings;
 using T.WebApi.Services.IRepositoryServices;
 using T.Library.Model.Interface;
 using T.WebApi.Services.TokenHelpers;
+using T.Library.Model.Security;
+using T.WebApi.Services.SecurityServices;
 
 namespace T.WebApi.Extensions
 {
@@ -136,15 +136,14 @@ namespace T.WebApi.Extensions
             services.AddTransient<IEmailSender, SendMailService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IProductAttributeService, ProductAttributeService>();
-            //services.AddTransient<IProductAttributeMappingService, ProductAttributeMappingService>();
-            //services.AddTransient<IProductAttributeValueService, ProductAttributeValueService>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IProductCategoryService, ProductCategoryService>();
             services.AddTransient<IPictureService, PictureService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IHomePageService, HomePageService>();
+            services.AddTransient<ISecurityService, SecurityService>();
             services.AddTransient<DataSeeder>();
-            services.AddTransient<IPermissionRecordService, PermissionRecordService>();
+            services.AddTransient<ISecurityService, SecurityService>();
             services.AddTransient<IPermissionRecordUserRoleMappingService, PermissionRecordUserRoleMappingService>();
             services.AddScoped<ValidationFilterAttribute>();
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>)); ;

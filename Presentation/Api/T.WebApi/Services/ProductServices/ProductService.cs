@@ -62,7 +62,7 @@ namespace T.WebApi.Services.ProductServices
                 var list_product = new List<Product>();
 
                 list_product = await _productsRepository.Table
-                    .SearchByString(productParameters.searchText)
+                    .SearchByString(productParameters.SearchText)
                     .Sort(productParameters.OrderBy)//sort by product coloumn 
                     .Include(x => x.ProductPictures)
                     .Where(x => x.Deleted == false)
@@ -79,7 +79,7 @@ namespace T.WebApi.Services.ProductServices
         {
             var response = new ServiceResponse<Product>
             {
-                Data = (await _productsRepository.Table.Include(x=>x.AttributeMappings).FirstOrDefaultAsync(x => x.Id == id)),
+                Data = (await _productsRepository.Table.Include(x => x.AttributeMappings).FirstOrDefaultAsync(x => x.Id == id)),
                 Success = true
             };
             return response;
@@ -87,16 +87,23 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> CreateProductAsync(Product product)
         {
-            product.CreatedOnUtc = DateTime.Now;
-            
-            await _productsRepository.CreateAsync(product);
+            try
+            {
+                product.CreatedOnUtc = DateTime.Now;
 
-            return new ServiceSuccessResponse<bool>();
+                await _productsRepository.CreateAsync(product);
+
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch(Exception ex)
+            {
+                return new ServiceErrorResponse<bool>() { Message = ex.Message};
+            }
         }
 
         public async Task<ServiceResponse<bool>> EditProductAsync(ProductModel model)
         {
-            
+
             try
             {
                 var product = (await _productsRepository.Table.Include(x => x.AttributeMappings).FirstOrDefaultAsync(x => x.Id == model.Id))
@@ -176,51 +183,49 @@ namespace T.WebApi.Services.ProductServices
             var product = await _productsRepository.GetByIdAsync(productId)
                 ?? throw new ArgumentException("No product found with the specified id");
 
-
+            try
             {
-                try
-                {
 
-                    string path = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/");
-                    if (!Directory.Exists(path))
+                string path = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                foreach (var imageFile in ListImages)
+                {
+                    if (imageFile.Length > 0)
                     {
-                        Directory.CreateDirectory(path);
-                    }
-                    foreach (var imageFile in ListImages)
-                    {
-                        if (imageFile.Length > 0)
+                        var uniqueFileName = Path.GetRandomFileName();
+                        var fileExtension = Path.GetExtension(imageFile.FileName);
+                        var newFileName = uniqueFileName + fileExtension;
+
+                        var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", newFileName);
+                        using (var fileStream = new FileStream(file, FileMode.Create))
                         {
-                            var uniqueFileName = Path.GetRandomFileName();
-                            var fileExtension = Path.GetExtension(imageFile.FileName);
-                            var newFileName = uniqueFileName + fileExtension;
-
-                            var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", newFileName);
-                            using (var fileStream = new FileStream(file, FileMode.Create))
-                            {
-                                await imageFile.CopyToAsync(fileStream);
-                            }
-
-                            var picture = new Picture
-                            {
-                                UrlPath = "/uploads/" + newFileName
-                            };
-                            await _pictureRepository.CreateAsync(picture);
-
-                            var productPicture = new ProductPicture
-                            {
-                                ProductId = productId,
-                                PictureId = picture.Id
-                            };
-                            await _productPictureMappingRepository.CreateAsync(productPicture);
+                            await imageFile.CopyToAsync(fileStream);
                         }
+
+                        var picture = new Picture
+                        {
+                            UrlPath = "/uploads/" + newFileName
+                        };
+                        await _pictureRepository.CreateAsync(picture);
+
+                        var productPicture = new ProductPicture
+                        {
+                            ProductId = productId,
+                            PictureId = picture.Id
+                        };
+                        await _productPictureMappingRepository.CreateAsync(productPicture);
                     }
-                    return new ServiceResponse<bool>() { Message = "File upload successfully", Success = true };
                 }
-                catch (Exception ex)
-                {
-                    return new ServiceResponse<bool>() { Message = ex.Message, Success = false };
-                }
+                return new ServiceResponse<bool>() { Message = "File upload successfully", Success = true };
             }
+            catch (Exception ex)
+            {
+                return new ServiceResponse<bool>() { Message = ex.Message, Success = false };
+            }
+
         }
 
         public async Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId)

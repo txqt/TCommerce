@@ -10,6 +10,7 @@ using T.Library.Model.Account;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 using T.Library.Model.SendMail;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
@@ -136,7 +137,7 @@ namespace T.WebApi.Services.AccountServices
             if (user == null) return new LoginResponse<AuthResponseDto>() { Message = "Tài khoản không tồn tại", Success = false };
 
             var result = await _signInManager.PasswordSignInAsync(login.UserNameOrEmail, login.Password, login.RememberMe, lockoutOnFailure: true);
-            
+
             // Tìm UserName theo Email, đăng nhập lại
             if ((!result.Succeeded) && AppUtilities.IsValidEmail(login.UserNameOrEmail))
             {
@@ -153,11 +154,11 @@ namespace T.WebApi.Services.AccountServices
                 return new LoginResponse<AuthResponseDto>() { Message = "Tài khoản của bạn cần đổi mật khẩu, vui lòng kiểm tra mail", Success = false };
             }
 
-            
+
             if (result.IsNotAllowed)
             {
                 var message = "Tài khoản của bạn đã bị chặn và không thể đăng nhập vào hệ thống";
-                if(user.EmailConfirmed == false)
+                if (user.EmailConfirmed == false)
                 {
 
                     message = "Tài khoản của bạn chưa được xác thực. Hệ thống đã gửi email đến cho bạn, vui lòng kiểm tra email của bạn và làm theo hướng dẫn để hoàn tất quá trình xác thực.\r\n";
@@ -182,13 +183,13 @@ namespace T.WebApi.Services.AccountServices
                     {
                         message = "Tài khoản của bạn chưa được xác thực. Không thể gửi email xác nhận, vui lòng thử lại hoặc liên hệ bộ phận kỹ thuật";
                     }
-                    
+
                 }
                 return new LoginResponse<AuthResponseDto>() { Message = $"{message}", Success = false };
             }
-                
 
-          
+
+
             if (result.IsLockedOut)
             {
                 //AppExtensions.GetDateTimeNow();
@@ -229,7 +230,6 @@ namespace T.WebApi.Services.AccountServices
             user.RefreshToken = null;
             _context.Users.Update(user);
             _context.SaveChanges();
-            await _tokenManager.DeactivateCurrentAsync();
             return true;
         }
 
@@ -252,15 +252,15 @@ namespace T.WebApi.Services.AccountServices
                 return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Refresh token expired" };
 
             var accessToken = await _tokenService.GenerateAccessToken(user);
-            var refreshToken = await _tokenService.GenerateRefreshToken();
 
-            user.RefreshToken = refreshToken;
-            await _userManager.UpdateAsync(user);
+            //var refreshToken = await _tokenService.GenerateRefreshToken();
+            //user.RefreshToken = refreshToken;
+            //await _userManager.UpdateAsync(user);
 
             var data = new AuthResponseDto()
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
+                RefreshToken = tokenDto.RefreshToken,
                 ReturnUrl = tokenDto.ReturnUrl
             };
 
@@ -277,48 +277,48 @@ namespace T.WebApi.Services.AccountServices
             //    return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
 
-            
-                var user = new User()
-                {
-                    Dob = request.Dob,
-                    Email = request.Email,
-                    NormalizedEmail = request.Email,
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    UserName = request.UserName,
-                    PhoneNumber = request.PhoneNumber,
-                    CreatedDate = AppExtensions.GetDateTimeNow(),
-                };
 
-                var result = await _userManager.CreateAsync(user, request.Password);
-                if (!result.Succeeded)
+            var user = new User()
+            {
+                Dob = request.Dob,
+                Email = request.Email,
+                NormalizedEmail = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                UserName = request.UserName,
+                PhoneNumber = request.PhoneNumber,
+                CreatedDate = AppExtensions.GetDateTimeNow(),
+            };
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                return new ServiceErrorResponse<bool>(string.Join(", ", errors));
+            }
+            if (result.Succeeded)
+            {
+                var defaultrole = _roleManager.FindByNameAsync(RoleName.Customer).Result;
+                if (defaultrole != null)
                 {
-                    var errors = result.Errors.Select(e => e.Description);
-                    return new ServiceErrorResponse<bool>(string.Join(", ", errors));
+                    IdentityResult roleresult = await _userManager.AddToRoleAsync(user, defaultrole.Name);
                 }
-                if (result.Succeeded)
-                {
-                    var defaultrole = _roleManager.FindByNameAsync(RoleName.Customer).Result;
-                    if (defaultrole != null)
-                    {
-                        IdentityResult roleresult = await _userManager.AddToRoleAsync(user, defaultrole.Name);
-                    }
-                }
+            }
 
-                var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var encodeToken = EncodeToken(confirmEmailToken);
-                string url = $"{_configuration["Url:ApiUrl"]}/api/account/confirmemail?userid={user.Id}&token={encodeToken}";
+            var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodeToken = EncodeToken(confirmEmailToken);
+            string url = $"{_configuration["Url:ApiUrl"]}/api/account/confirmemail?userid={user.Id}&token={encodeToken}";
 
-                EmailDto emailDto = new EmailDto
-                {
-                    Subject = "Xác thực email người dùng",
-                    Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
-                    + $"<h3>Tài khoản: {user.UserName}</h3></br>"
-                    + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
-                    To = user.Email
-                };
-                await _emailService.SendEmailAsync(emailDto);
-            
+            EmailDto emailDto = new EmailDto
+            {
+                Subject = "Xác thực email người dùng",
+                Body = $"<h1>Xin chào, {user.LastName + " " + user.FirstName}</h1><br/>"
+                + $"<h3>Tài khoản: {user.UserName}</h3></br>"
+                + $"<p>Hãy xác nhận email của bạn <a href='{url}'>Bấm vào đây</a></p>",
+                To = user.Email
+            };
+            await _emailService.SendEmailAsync(emailDto);
+
 
             return new ServiceResponse<bool>() { Message = "Vui lòng kiểm tra email để xác nhận !" };
         }
@@ -361,7 +361,7 @@ namespace T.WebApi.Services.AccountServices
         public string EncodeToken(string normalToken)
         {
             var encodedEmailToken = Encoding.UTF8.GetBytes(normalToken);
-            return  WebEncoders.Base64UrlEncode(encodedEmailToken); 
+            return WebEncoders.Base64UrlEncode(encodedEmailToken);
         }
         public string DecodeToken(string encodeToken)
         {

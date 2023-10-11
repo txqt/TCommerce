@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using T.Library.Model.Common;
+﻿using Microsoft.EntityFrameworkCore;
 using T.Library.Model.Response;
 using T.Library.Model.Security;
-using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
-using T.WebApi.Services.PermissionRecordServices;
-using T.WebApi.Services.UserServices;
 
 namespace T.WebApi.Services.PermissionRecordUserRoleMappingServices
 {

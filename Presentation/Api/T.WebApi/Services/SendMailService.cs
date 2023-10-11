@@ -60,11 +60,11 @@ public class SendMailService : IEmailSender
 
         try
         {
-            smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
-            smtp.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13;
-            smtp.CheckCertificateRevocation = false;
+            //smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            //smtp.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13 | SslProtocols.None;
+            //smtp.CheckCertificateRevocation = false;
             smtp.Connect(mailSettings.Host, mailSettings.Port, SecureSocketOptions.Auto);
-            smtp.Authenticate(mailSettings.Mail, mailSettings.Password);
+            smtp.Authenticate(mailSettings.Mail, "lvlk rcah icbz kcun");
             await smtp.SendAsync(message);
         }
 
@@ -89,9 +89,9 @@ public class SendMailService : IEmailSender
     public Task SendSmsAsync(string number, string message)
     {
         // Cài đặt dịch vụ gửi SMS tại đây
-        System.IO.Directory.CreateDirectory("smssave");
+        Directory.CreateDirectory("smssave");
         var emailsavefile = string.Format(@"smssave/{0}-{1}.txt", number, Guid.NewGuid());
-        System.IO.File.WriteAllTextAsync(emailsavefile, message);
+        File.WriteAllTextAsync(emailsavefile, message);
         return Task.FromResult(0);
     }
 }

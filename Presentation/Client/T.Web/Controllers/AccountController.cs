@@ -63,7 +63,7 @@ namespace T.Web.Controllers
 
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(_jwtOptions.Value.AccessTokenExpirationInHours),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(_jwtOptions.Value.AccessTokenExpirationInSenconds),
                 IsPersistent = loginViewModel.RememberMe
             };
 
@@ -72,14 +72,14 @@ namespace T.Web.Controllers
                 HttpOnly = true, // Chỉ cho phép server truy cập cookie, tránh XSS
                 Secure = true, // Chỉ gửi cookie qua HTTPS, tránh sniffing
                 SameSite = SameSiteMode.Strict, // Đặt chế độ SameSite cho cookie
-                Expires = DateTimeOffset.UtcNow.AddHours(_jwtOptions.Value.AccessTokenExpirationInHours) // Đặt thời gian hết hạn cho cookie
+                Expires = DateTimeOffset.UtcNow.AddSeconds(_jwtOptions.Value.AccessTokenExpirationInSenconds) // Đặt thời gian hết hạn cho cookie
             };
             var cookieRefreshTokenOptions = new CookieOptions
             {
                 HttpOnly = true, // Chỉ cho phép server truy cập cookie, tránh XSS
                 Secure = true, // Chỉ gửi cookie qua HTTPS, tránh sniffing
                 SameSite = SameSiteMode.Strict, // Đặt chế độ SameSite cho cookie
-                Expires = DateTimeOffset.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours) // Đặt thời gian hết hạn cho cookie
+                Expires = DateTimeOffset.UtcNow.AddSeconds(_jwtOptions.Value.RefreshTokenExpirationInSenconds) // Đặt thời gian hết hạn cho cookie
             };
 
             Response.Cookies.Append("jwt", loginResponse.Data.AccessToken, cookieOptions);
@@ -97,6 +97,10 @@ namespace T.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
+            // Xóa cookie
+            Response.Cookies.Delete("jwt");
+            Response.Cookies.Delete("refreshToken");
+
             await _accountService.Logout();
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");

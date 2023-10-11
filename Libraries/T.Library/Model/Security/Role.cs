@@ -5,9 +5,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using T.Library.Model.Security;
 
-namespace T.Library.Model.Users
+namespace T.Library.Model.Security
 {
     public class Role : IdentityRole<Guid>
     {

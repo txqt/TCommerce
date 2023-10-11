@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
-using T.Library.Model.Security;
-using T.Library.Model.Users;
-using T.WebApi.Database.ConfigurationDatabase;
-using T.WebApi.Services.PermissionRecordServices;
-using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
+using T.Library.Model.Interface;
 
 namespace T.WebApi.Attribute
 {
@@ -49,18 +44,18 @@ namespace T.WebApi.Attribute
 
             private readonly string permission;
             private readonly bool ignoreFilter;
-            private readonly IPermissionRecordService permissionService;
+            private readonly ISecurityService _securityService;
             private readonly IAuthenticationService authenticationService;
 
             #endregion
 
             #region Ctor
 
-            public AuthorizePermissionFilter(string permission, bool ignoreFilter, IPermissionRecordService permissionService, IAuthenticationService authenticationService)
+            public AuthorizePermissionFilter(string permission, bool ignoreFilter, ISecurityService securityService, IAuthenticationService authenticationService)
             {
                 this.permission = permission;
                 this.ignoreFilter = ignoreFilter;
-                this.permissionService = permissionService;
+                this._securityService = securityService;
                 this.authenticationService = authenticationService;
             }
 
@@ -104,7 +99,7 @@ namespace T.WebApi.Attribute
                 //var customer = await authenticationService.GetAuthenticatedCustomerAsync();
 
                 // check whether current customer has permission to access resource
-                if (await permissionService.AuthorizeAsync((await permissionService.GetAllPermissionRecordAsync()).FirstOrDefault(x=>x.SystemName == permission)))
+                if (await _securityService.AuthorizeAsync((await _securityService.GetPermissionRecordBySystemNameAsync(permission)).Data))
                     return; // authorized, allow access
 
                 // current user hasn't access

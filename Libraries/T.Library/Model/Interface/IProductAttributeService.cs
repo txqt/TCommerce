@@ -20,7 +20,7 @@ namespace T.Library.Model.Interface
 
         #region ProductAttributeMapping
         Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int productAttributeMappingId);
-        Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int productId);
+        Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributesMappingByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> CreateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping);
         Task<ServiceResponse<bool>> UpdateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping);
         Task<ServiceResponse<bool>> DeleteProductAttributeMappingByIdAsync(int productAttributeId);

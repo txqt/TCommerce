@@ -42,12 +42,13 @@ namespace T.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(ProductParameters productParameters)
         {
-            ViewBag.SearchText = productParameters.searchText != null ? productParameters.searchText : null;
-            ViewBag.OrderBy = productParameters.OrderBy != null ? productParameters.OrderBy : null;
-            ViewBag.PageSize = productParameters.PageSize;
-            ViewBag.PageNumber = productParameters.PageNumber;
             var result = await _productService.GetAll(productParameters);
-            return View(result);
+            var model = new ProductListViewModel
+            {
+                MetaData = result.MetaData,
+                ProductList = result.Items.ToList(),
+            };
+            return View(model);
         }
 
         [HttpGet]
@@ -154,7 +155,7 @@ namespace T.Web.Areas.Admin.Controllers
             var product = (await _productService.GetByIdAsync(model.ProductId)).Data ??
               throw new ArgumentException("No product found with the specified id");
 
-            if ((await _productAttributeService.GetProductAttributeMappingByProductIdAsync(product.Id)).Data
+            if ((await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id)).Data
               .Any(x => x.ProductAttributeId == model.ProductAttributeId))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
@@ -172,7 +173,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByProductIdAsync(product.Id)).Data
+            productAttributeMapping = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id)).Data
               .Where(x => x.ProductAttributeId == model.ProductAttributeId).FirstOrDefault() ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
@@ -212,7 +213,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this attribute");
 
-            if ((await _productAttributeService.GetProductAttributeMappingByProductIdAsync(product.Id)).Data
+            if ((await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id)).Data
               .Any(x => x.ProductAttributeId == model.ProductAttributeId && x.Id != productAttributeMapping.Id))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
@@ -222,7 +223,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             productAttributeMapping = _mapper.Map(model, productAttributeMapping);
 
-            var result = await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
+            var result = await _productAttributeService.UpdateProductAttributeMappingAsync(productAttributeMapping);
 
             if (!result.Success)
             {
@@ -499,15 +500,15 @@ namespace T.Web.Areas.Admin.Controllers
             var product = (await _productService.GetByIdAsync(productCategoryModel.ProductId)).Data ??
               throw new ArgumentException("No product found with the specified id");
 
-            var productCategoryList = (await _productCategoryService.GetByProductId(product.Id)).Data;
+            var productCategoryList = (await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data;
 
             var model = _mapper.Map<List<ProductCategoryModel>>(productCategoryList);
 
             foreach(var item in model)
             {
-                var category = (await _categoryService.Get(item.CategoryId)).Data;
+                var category = (await _categoryService.GetCategoryByIdAsync(item.CategoryId)).Data;
                 item.CategoryName = category.ParentCategoryId > 0 ? category.Name 
-                    + " >>> " + (await _categoryService.Get(category.ParentCategoryId)).Data.Name : category.Name;
+                    + " >>> " + (await _categoryService.GetCategoryByIdAsync(category.ParentCategoryId)).Data.Name : category.Name;
             }
 
             return Json(new
@@ -542,7 +543,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var category = (await _categoryService.Get(model.CategoryId)).Data ??
+            var category = (await _categoryService.GetCategoryByIdAsync(model.CategoryId)).Data ??
               throw new ArgumentException("No category found with the specified id");
 
             var product = (await _productService.GetByIdAsync(model.ProductId)).Data ??
@@ -550,7 +551,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this category");
 
-            if ((await _productCategoryService.GetByProductId(product.Id)).Data
+            if ((await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data
               .Any(x => x.CategoryId == category.Id && x.Id != model.Id))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thể loại này");
@@ -560,7 +561,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             var productCategory = _mapper.Map<ProductCategory>(model);
 
-            var result = await _productCategoryService.AddOrEdit(productCategory);
+            var result = await _productCategoryService.CreateProductCategoryAsync(productCategory);
 
             if (!result.Success)
             {
@@ -569,7 +570,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            productCategory = (await _productCategoryService.GetByProductId(product.Id)).Data
+            productCategory = (await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data
                 .Where(x=>x.CategoryId == model.CategoryId).FirstOrDefault() ??
               throw new ArgumentException("No product category found with the specified id");
 
@@ -583,10 +584,10 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> EditProductCategory(int productCategoryId)
         {
-            var productCategory = (await _productCategoryService.Get(productCategoryId)).Data ??
+            var productCategory = (await _productCategoryService.GetProductCategoryById(productCategoryId)).Data ??
               throw new ArgumentException("No product category mapping found with the specified id");
 
-            var category = (await _categoryService.Get(productCategory.CategoryId)).Data ??
+            var category = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)).Data ??
               throw new ArgumentException("No category found with the specified id");
 
             var product = (await _productService.GetByIdAsync(productCategory.ProductId)).Data ??
@@ -604,10 +605,10 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 return View(model);
             }
-            var productCategory = (await _productCategoryService.Get(model.Id)).Data ??
+            var productCategory = (await _productCategoryService.GetProductCategoryById(model.Id)).Data ??
               throw new ArgumentException("No product category mapping found with the specified id");
 
-            var category = (await _categoryService.Get(productCategory.CategoryId)).Data ??
+            var category = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)).Data ??
               throw new ArgumentException("No category found with the specified id");
 
             var product = (await _productService.GetByIdAsync(productCategory.ProductId)).Data ??
@@ -615,7 +616,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this category");
 
-            if ((await _productCategoryService.GetByProductId(product.Id)).Data
+            if ((await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data
               .Any(x => x.CategoryId == category.Id && x.Id != productCategory.Id))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thể loại này");
@@ -623,13 +624,13 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            productCategory = _mapper.Map(model, productCategory);
-            //productCategory.ProductId = model.Id;
-            //productCategory.CategoryId = model.CategoryId;
-            //productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
-            //productCategory.DisplayOrder = model.DisplayOrder;
+            //_mapper.Map(model, productCategory);
+            productCategory.ProductId = model.Id;
+            productCategory.CategoryId = model.CategoryId;
+            productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
+            productCategory.DisplayOrder = model.DisplayOrder;
 
-            var result = await _productCategoryService.AddOrEdit(productCategory);
+            var result = await _productCategoryService.UpdateProductCategoryAsync(productCategory);
 
             if (!result.Success)
             {
@@ -649,7 +650,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteProductCategory(int productCategoryId)
         {
 
-            var result = await _productCategoryService.Delete(productCategoryId);
+            var result = await _productCategoryService.DeleteProductCategoryAsync(productCategoryId);
             if (!result.Success)
             {
                 return Json(new

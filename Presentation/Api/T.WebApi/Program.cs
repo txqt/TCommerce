@@ -61,12 +61,12 @@ if (app.Environment.IsDevelopment())
 }
 
 // Resolve DataSeeder và gọi phương thức Initialize để seed dữ liệu
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    var dataSeeder = services.GetRequiredService<DataSeeder>();
-//    await dataSeeder.Initialize();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dataSeeder = services.GetRequiredService<DataSeeder>();
+    await dataSeeder.Initialize();
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

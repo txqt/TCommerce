@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using T.Library.Model.ViewsModel;
 using App.Utilities;
 using System.Text;
+using T.Library.Model.Security;
 
 namespace T.WebApi.Services.UserServices
 {

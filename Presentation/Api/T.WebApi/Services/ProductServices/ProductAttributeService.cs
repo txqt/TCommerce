@@ -76,8 +76,15 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> CreateProductAttributeAsync(ProductAttribute productAttribute)
         {
-            await _productAttributeRepository.CreateAsync(productAttribute);
-            return new ServiceSuccessResponse<bool>();
+            try
+            {
+                await _productAttributeRepository.CreateAsync(productAttribute);
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch(Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
+            }
         }
 
         public async Task<ServiceResponse<bool>> UpdateProductAttributeAsync(ProductAttribute productAttribute)
@@ -85,19 +92,26 @@ namespace T.WebApi.Services.ProductServices
             try
             {
                 await _productAttributeRepository.UpdateAsync(productAttribute);
+                return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)
             {
                 return new ServiceErrorResponse<bool>(ex.Message);
             }
 
-            return new ServiceSuccessResponse<bool>();
         }
 
         public async Task<ServiceResponse<bool>> DeleteProductAttributeByIdAsync(int id)
         {
-            await _productAttributeRepository.DeleteAsync(id);
-            return new ServiceSuccessResponse<bool>();
+            try
+            {
+                await _productAttributeRepository.DeleteAsync(id);
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>() { Message = ex.Message };
+            }
         }
 
         public async Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id)
@@ -113,7 +127,7 @@ namespace T.WebApi.Services.ProductServices
             return response;
         }
 
-        public async Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int id)
+        public async Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributesMappingByProductIdAsync(int id)
         {
             var productAttributeMapping = await _productAttributeMappingRepository.Table.Where(x => x.Deleted == false && x.ProductId == id)
                 .Include(x => x.ProductAttribute)
@@ -129,8 +143,14 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> CreateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping)
         {
-            await _productAttributeMappingRepository.CreateAsync(productAttributeMapping);
-            return new ServiceSuccessResponse<bool>();
+            try
+            {
+                await _productAttributeMappingRepository.CreateAsync(productAttributeMapping);
+                return new ServiceSuccessResponse<bool>();
+            }catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>() { Message = ex.Message};
+            }
         }
 
         public async Task<ServiceResponse<bool>> UpdateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping)
@@ -158,23 +178,13 @@ namespace T.WebApi.Services.ProductServices
             {
                 return new ServiceErrorResponse<bool>(ex.Message);
             }
-
         }
 
         public async Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValuesAsync(int productAttributeMappingId)
         {
             var productAttributeValue = await _productAttributeValueRepository.Table
                                         .Where(pav => pav.ProductAttributeMappingId == productAttributeMappingId)
-                                        .Include(x => x.ProductAttributeMappings)
                                         .ToListAsync();
-
-            if (productAttributeValue != null)
-            {
-                foreach (var item in productAttributeValue.Select(x => x.ProductAttributeMappings))
-                {
-                    item.ProductAttributeValue = null;
-                }
-            }
 
             if (productAttributeValue.Count == 0 || productAttributeValue is null)
                 return new ServiceErrorResponse<List<ProductAttributeValue>>("Product Attribute Value Not Found");

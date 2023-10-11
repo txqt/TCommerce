@@ -13,5 +13,6 @@ namespace T.Library.Model.Security
         public const string ManageCategories = "ManageCategories";
         public const string ManageAttributes = "ManageAttributes";
         public const string ManageUsers = "ManageUsers";
+        public const string ManagePermissions = "ManagePermissions";
     }
 }

@@ -36,15 +36,24 @@ namespace T.WebApi.Middleware.TokenManagers
             => await DeactivateAsync(GetCurrentAsync());
 
         public async Task<bool> IsActiveAsync(string token)
-            => !_cache.TryGetValue(GetKey(token), out _);
+        {
+            // Return false if the token does not exist in cache or has been deactivated
+            return !_cache.TryGetValue(GetKey(token), out bool deactivated) && !deactivated;
+        }
 
         public async Task DeactivateAsync(string token)
-            => await Task.Run(() => _cache.Set(GetKey(token), true,
-                new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow =
-                        TimeSpan.FromMinutes(_jwtOptions.Value.AccessTokenExpirationInMinutes)
-                }));
+        {
+            // Set the token in cache without a value
+            _cache.Set(GetKey(token), true, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_jwtOptions.Value.AccessTokenExpirationInMinutes)
+            });
+        }
+        public async Task ReactivateAsync(string token)
+        {
+            // Remove the token from cache to reactivate it
+            _cache.Remove(GetKey(token));
+        }
 
         private string GetCurrentAsync()
         {

@@ -78,7 +78,7 @@ namespace T.Web.Services.ProductService
             return await result.Content.ReadFromJsonAsync<ServiceResponse<ProductAttributeMapping>>();
         }
 
-        public async Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int productId)
+        public async Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributesMappingByProductIdAsync(int productId)
         {
             var result = await _httpClient.GetAsync($"api/product/{productId}/attribute");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttributeMapping>>>();

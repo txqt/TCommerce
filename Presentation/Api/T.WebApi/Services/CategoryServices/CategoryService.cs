@@ -5,110 +5,66 @@ using AutoMapper;
 using T.WebApi.Extensions;
 using T.Library.Model.Common;
 using T.Library.Model;
+using T.Library.Model.Interface;
+using Microsoft.AspNetCore.Mvc;
+using T.WebApi.Services.IRepositoryServices;
 
 namespace T.WebApi.Services.CategoryServices
 {
-    public interface ICategoryService
-    {
-        Task<List<Category>> GetAllCategoryAsync();
-        Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId);
-        Task<ServiceResponse<Category>> GetCategoryByNameAsync(string categoryName);
-        Task<ServiceResponse<bool>> CreateOrEditAsync(Category category);
-        Task<ServiceResponse<bool>> CreateCategoriesAsync(List<Category> categories);
-        Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id);
-    }
     public class CategoryService : ICategoryService
     {
-        private readonly DatabaseContext _context;
         private readonly IMapper _mapper;
+        private readonly IRepository<Category> _categoryRepository;
 
-        public CategoryService(DatabaseContext context, IMapper mapper)
+        public CategoryService(IMapper mapper, IRepository<Category> categoryRepository)
         {
-            _context = context;
             _mapper = mapper;
+            _categoryRepository = categoryRepository;
         }
 
-        public async Task<ServiceResponse<bool>> CreateOrEditAsync(Category category)
+        public async Task<ServiceResponse<bool>> CreateCategoryAsync(Category category)
         {
-            var categoryTable = await _context.Category.FirstOrDefaultAsync(x => x.Id == category.Id);
-            if (categoryTable == null)
+            try
             {
-                category.CreatedOnUtc = DateTime.Now;
-                _context.Category.Add(category);
+                await _categoryRepository.CreateAsync(category);
+                return new ServiceSuccessResponse<bool>();
             }
-            else
+            catch (Exception ex)
             {
-                if (_context.IsRecordUnchanged(categoryTable, category))
-                {
-                    return new ServiceErrorResponse<bool>("Data is unchanged");
-                }
-                categoryTable.Name = category.Name;
-                categoryTable.Description = category.Description;
-                categoryTable.MetaKeywords = category.MetaKeywords;
-                categoryTable.MetaDescription = category.MetaDescription;
-                categoryTable.MetaTitle = category.MetaTitle;
-                categoryTable.ParentCategoryId = category.ParentCategoryId;
-                categoryTable.PictureId = category.PictureId;
-                categoryTable.ShowOnHomepage = category.ShowOnHomepage;
-                categoryTable.IncludeInTopMenu = category.IncludeInTopMenu;
-                categoryTable.Published = category.Published;
-                categoryTable.DisplayOrder = category.DisplayOrder;
-                categoryTable.UpdatedOnUtc = DateTime.UtcNow;
-                categoryTable.PriceRangeFiltering = category.PriceRangeFiltering;
-                categoryTable.PriceFrom = category.PriceFrom;
-                categoryTable.PriceTo = category.PriceTo;
-                categoryTable.ManuallyPriceRange = category.ManuallyPriceRange;
+                return new ServiceErrorResponse<bool>(ex.Message);
             }
-            var result = await _context.SaveChangesAsync();
-            if (result == 0)
-            {
-                return new ServiceErrorResponse<bool>("Create category failed");
-            }
-            return new ServiceSuccessResponse<bool>();
+        }
 
+        public async Task<ServiceResponse<bool>> UpdateCategoryAsync(Category category)
+        {
+            try
+            {
+                await _categoryRepository.UpdateAsync(category);
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
+            }
         }
 
         public async Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id)
         {
             try
             {
-                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id);
-                _context.Category.Remove(category);
-                await _context.SaveChangesAsync();
+                await _categoryRepository.DeleteAsync(id);
                 return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)
             {
-                return new ServiceErrorResponse<bool>(message: ex.Message);
+                return new ServiceErrorResponse<bool>() { Message = ex.Message};
             }
         }
 
         public async Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId)
         {
-            
-            {
-                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == categoryId);
-
-                var response = new ServiceResponse<Category>
-                {
-                    Data = category,
-                    Success = true
-                };
-                return response;
-            }
-        }
-
-        public async Task<List<Category>> GetAllCategoryAsync()
-        {
-            
-            {
-                return await _context.Category.ToListAsync();
-            }
-        }
-
-        public async Task<ServiceResponse<Category>> GetCategoryByNameAsync(string categoryName)
-        {
-            var category = await _context.Category.FirstOrDefaultAsync(x => x.Name == categoryName);
+            var category = await _categoryRepository.Table.Where(x => x.Deleted == false)
+                .FirstOrDefaultAsync(x => x.Id == categoryId);
 
             var response = new ServiceResponse<Category>
             {
@@ -118,22 +74,22 @@ namespace T.WebApi.Services.CategoryServices
             return response;
         }
 
-        public async Task<ServiceResponse<bool>> CreateCategoriesAsync(List<Category> categories)
+        public async Task<List<Category>> GetAllCategoryAsync()
         {
-            foreach (var c in categories)
+            return (await _categoryRepository.GetAllAsync()).ToList();
+        }
+
+        public async Task<ServiceResponse<Category>> GetCategoryByNameAsync(string categoryName)
+        {
+            var category = await _categoryRepository.Table.Where(x => x.Deleted == false)
+                .FirstOrDefaultAsync(x => x.Name == categoryName);
+
+            var response = new ServiceResponse<Category>
             {
-                c.CreatedOnUtc = DateTime.UtcNow;
-            }
-
-            _context.Category.AddRange(categories);
-
-            var result = await _context.SaveChangesAsync();
-
-            if (result == 0)
-            {
-                return new ServiceErrorResponse<bool>("Create categories failed");
-            }
-            return new ServiceSuccessResponse<bool>();
+                Data = category,
+                Success = true
+            };
+            return response;
         }
     }
 }

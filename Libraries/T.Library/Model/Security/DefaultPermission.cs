@@ -13,5 +13,6 @@ namespace T.Library.Model.Security
         public static readonly PermissionRecord ManageCategories = new() { Name = "Admin area: Manage Categories", SystemName = PermissionSystemName.ManageCategories, Category = "Manager" };
         public static readonly PermissionRecord ManageAttributes = new() { Name = "Admin area: Manage Attributes", SystemName = PermissionSystemName.ManageAttributes, Category = "Manager" };
         public static readonly PermissionRecord ManageUsers = new() { Name = "Admin area: Manage Users", SystemName = PermissionSystemName.ManageUsers, Category = "Manager" };
+        public static readonly PermissionRecord ManagePermissions = new() { Name = "Admin area: Manage Permissions", SystemName = PermissionSystemName.ManagePermissions, Category = "Manager" };
     }
 }

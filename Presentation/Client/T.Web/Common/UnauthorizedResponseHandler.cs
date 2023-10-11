@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using T.Library.Model.JwtToken;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
+using T.Web.Services.AccountService;
 
 namespace T.Web.Common
 {
@@ -14,12 +15,14 @@ namespace T.Web.Common
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _clientFactory;
         private readonly IOptions<JwtOptions> _jwtOptions;
+        private readonly IAccountService _accountService;
 
-        public UnauthorizedResponseHandler(IHttpContextAccessor httpContextAccessor, IHttpClientFactory clientFactory, IOptions<JwtOptions> jwtOptions)
+        public UnauthorizedResponseHandler(IHttpContextAccessor httpContextAccessor, IHttpClientFactory clientFactory, IOptions<JwtOptions> jwtOptions, IAccountService accountService)
         {
             _httpContextAccessor = httpContextAccessor;
             _clientFactory = clientFactory;
             _jwtOptions = jwtOptions;
+            _accountService = accountService;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -52,17 +55,17 @@ namespace T.Web.Common
                                 HttpOnly = true, // Chỉ cho phép server truy cập cookie, tránh XSS
                                 Secure = true, // Chỉ gửi cookie qua HTTPS, tránh sniffing
                                 SameSite = SameSiteMode.Strict, // Đặt chế độ SameSite cho cookie
-                                Expires = DateTimeOffset.UtcNow.AddHours(_jwtOptions.Value.AccessTokenExpirationInHours) // Đặt thời gian hết hạn cho cookie
+                                Expires = DateTimeOffset.UtcNow.AddSeconds(_jwtOptions.Value.AccessTokenExpirationInSenconds) // Đặt thời gian hết hạn cho cookie
                             };
                             var cookieRefreshTokenOptions = new CookieOptions
                             {
                                 HttpOnly = true, // Chỉ cho phép server truy cập cookie, tránh XSS
                                 Secure = true, // Chỉ gửi cookie qua HTTPS, tránh sniffing
                                 SameSite = SameSiteMode.Strict, // Đặt chế độ SameSite cho cookie
-                                Expires = DateTimeOffset.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours) // Đặt thời gian hết hạn cho cookie
+                                Expires = DateTimeOffset.UtcNow.AddSeconds(_jwtOptions.Value.RefreshTokenExpirationInSenconds) // Đặt thời gian hết hạn cho cookie
                             };
                             _httpContextAccessor.HttpContext.Response.Cookies.Append("jwt", result.Data.AccessToken, cookieOptions);
-                            _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", result.Data.RefreshToken, cookieOptions);
+                            _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", result.Data.RefreshToken, cookieRefreshTokenOptions);
 
                             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.Data.AccessToken);
                             response = await base.SendAsync(request, cancellationToken);
@@ -70,7 +73,8 @@ namespace T.Web.Common
                     }
                     else
                     {
-                        _httpContextAccessor.HttpContext.Response.Redirect("/Account/Login");
+                        //_httpContextAccessor.HttpContext.Response.Redirect("/Account/Login");
+                        await _accountService.Logout();
                     }
                 }
             }

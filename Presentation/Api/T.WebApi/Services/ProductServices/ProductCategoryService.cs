@@ -1,126 +1,92 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
+using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
+using T.WebApi.Services.IRepositoryServices;
 
 namespace T.WebApi.Services.ProductServices
 {
-    public interface IProductCategoryService
-    {
-        Task<List<ProductCategory>> GetAllAsync();
-        Task<ServiceResponse<ProductCategory>> Get(int id);
-        Task<ServiceResponse<List<ProductCategory>>> GetbyProductId(int id);
-        Task<ServiceResponse<List<ProductCategory>>> GetbyCategoryId(int id);
-        Task<ServiceResponse<bool>> CreateOrEditAsync(ProductCategory productCategory);
-        Task<ServiceResponse<bool>> DeleteAsync(int id);
-    }
     public class ProductCategoryService : IProductCategoryService
     {
-        private readonly DatabaseContext _context;
-        private readonly Mapper _mapper;
+        private readonly IRepository<ProductCategory> _productCategoryRepository;
 
-        public ProductCategoryService(DatabaseContext context)
+        public ProductCategoryService(IRepository<ProductCategory> productCategoryRepository)
         {
-            _context = context;
-        }
-        public async Task<ServiceResponse<bool>> CreateOrEditAsync(ProductCategory productCategory)
-        {
-            
-            {
-                var productCategoryTable = await _context.Product_ProductCategory_Mapping.FirstOrDefaultAsync(x => x.Id == productCategory.Id);
-
-                if (productCategoryTable == null)
-                {
-                    _context.Product_ProductCategory_Mapping.Add(productCategory);
-                }
-                else
-                {
-                    if (_context.IsRecordUnchanged(productCategoryTable, productCategory))
-                    {
-                        return new ServiceErrorResponse<bool>("Data is unchanged");
-                    }
-                    productCategoryTable.ProductId = productCategory.ProductId;
-                    productCategoryTable.CategoryId = productCategory.CategoryId;
-                    productCategoryTable.IsFeaturedProduct = productCategory.IsFeaturedProduct;
-                    productCategoryTable.DisplayOrder = productCategory.DisplayOrder;
-                }
-                var result = await _context.SaveChangesAsync();
-                if (result == 0)
-                {
-                    return new ServiceErrorResponse<bool>("Create product category mapping failed");
-                }
-                return new ServiceSuccessResponse<bool>();
-            }
+            _productCategoryRepository = productCategoryRepository;
         }
 
-        public async Task<ServiceResponse<bool>> DeleteAsync(int id)
+        public async Task<ServiceResponse<bool>> CreateProductCategoryAsync(ProductCategory productCategory)
         {
             try
             {
-                var category = await _context.Product_ProductCategory_Mapping.FirstOrDefaultAsync(x => x.Id == id);
-                _context.Product_ProductCategory_Mapping.Remove(category);
-                await _context.SaveChangesAsync();
+                await _productCategoryRepository.CreateAsync(productCategory);
                 return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)
             {
-                return new ServiceErrorResponse<bool>(message: ex.Message);
+                return new ServiceErrorResponse<bool>() { Message = ex.Message };
             }
         }
 
-        public async Task<ServiceResponse<ProductCategory>> Get(int id)
+        public async Task<ServiceResponse<bool>> DeleteProductCategoryAsync(int productCategoryId)
         {
-            
+            try
             {
-                var category = await _context.Product_ProductCategory_Mapping.FirstOrDefaultAsync(x => x.Id == id);
-
-                var response = new ServiceResponse<ProductCategory>
-                {
-                    Data = category,
-                    Success = true
-                };
-                return response;
+                await _productCategoryRepository.DeleteAsync(productCategoryId);
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
             }
         }
 
-        public async Task<List<ProductCategory>> GetAllAsync()
+        public async Task<ServiceResponse<ProductCategory>> GetProductCategoryById(int productCategoryId)
         {
-            
+            var productCategory = await _productCategoryRepository.Table.Where(x => x.Deleted == false)
+                .FirstOrDefaultAsync(x => x.Id == productCategoryId);
+
+            var response = new ServiceResponse<ProductCategory>
             {
-                return await _context.Product_ProductCategory_Mapping.ToListAsync();
-            }
+                Data = productCategory,
+                Success = true
+            };
+            return response;
         }
 
-        public async Task<ServiceResponse<List<ProductCategory>>> GetbyCategoryId(int id)
-        {
-            
-            {
-                var category = await _context.Product_ProductCategory_Mapping.Where(x => x.CategoryId == id).ToListAsync();
+        //public async Task<List<ProductCategory>> GetAllProductCategoryAsync()
+        //{
+        //    return (await _productCategoryRepository.GetAllAsync()).ToList();
+        //}
 
-                var response = new ServiceResponse<List<ProductCategory>>
-                {
-                    Data = category,
-                    Success = true
-                };
-                return response;
-            }
+        public async Task<ServiceResponse<List<ProductCategory>>> GetProductCategoriesByProductId(int productId)
+        {
+            var productCategoryList = await _productCategoryRepository.Table.Where(x => x.Deleted == false && x.ProductId == productId)
+               .ToListAsync();
+
+            var response = new ServiceResponse<List<ProductCategory>>
+            {
+                Data = productCategoryList,
+                Success = true
+            };
+            return response;
         }
 
-        public async Task<ServiceResponse<List<ProductCategory>>> GetbyProductId(int id)
+        public async Task<ServiceResponse<bool>> UpdateProductCategoryAsync(ProductCategory productCategory)
         {
-            
+            try
             {
-                var category = await _context.Product_ProductCategory_Mapping.Where(x => x.ProductId == id).ToListAsync();
-
-                var response = new ServiceResponse<List<ProductCategory>>
-                {
-                    Data = category,
-                    Success = true
-                };
-                return response;
+                await _productCategoryRepository.UpdateAsync(productCategory);
             }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
+            }
+
+            return new ServiceSuccessResponse<bool>();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using T.Library.Model.Security;
-using T.Library.Model.Users;
 
 namespace T.WebApi.Services.DataSeederService
 {

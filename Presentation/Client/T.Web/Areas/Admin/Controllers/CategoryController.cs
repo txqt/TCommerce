@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Common;
+using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
@@ -34,14 +35,14 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var categoryList = await _categoryService.GetAllAsync();
+            var categoryList = await _categoryService.GetAllCategoryAsync();
 
             var listModel = _mapper.Map<List<CategoryModel>>(categoryList);
             foreach(var item in listModel)
             {
                 if(item.ParentCategoryId > 0)
                 {
-                    item.ParentCategoryName = (await _categoryService.Get(item.ParentCategoryId)).Data.Name;
+                    item.ParentCategoryName = (await _categoryService.GetCategoryByIdAsync(item.ParentCategoryId)).Data.Name;
                 }
             }
 
@@ -65,7 +66,7 @@ namespace T.Web.Areas.Admin.Controllers
             }
 
             var category = _mapper.Map<Category>(model);
-            var result = await _categoryService.AddOrEdit(category);
+            var result = await _categoryService.CreateCategoryAsync(category);
 
             if (!result.Success)
             {
@@ -79,7 +80,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var category = (await _categoryService.Get(id)).Data ??
+            var category = (await _categoryService.GetCategoryByIdAsync(id)).Data ??
                 throw new ArgumentException("No category found with the specified id");
 
             var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModel(), category);
@@ -95,12 +96,12 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var category = (await _categoryService.Get(model.Id)).Data ??
+            var category = (await _categoryService.GetCategoryByIdAsync(model.Id)).Data ??
                 throw new ArgumentException("No category found with the specified id");
 
             category = _mapper.Map(model, category);
 
-            var result = await _categoryService.AddOrEdit(category);
+            var result = await _categoryService.UpdateCategoryAsync(category);
             if (!result.Success)
             {
                 SetStatusMessage($"{result.Message}");
@@ -118,7 +119,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteCategory(int id)
         {
 
-            var result = await _categoryService.Delete(id);
+            var result = await _categoryService.DeleteCategoryByIdAsync(id);
             if (!result.Success)
             {
                 return Json(new { success = false, message = result.Message });

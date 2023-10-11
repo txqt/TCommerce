@@ -1,4 +1,4 @@
-﻿@model PagingResponse<Product>
+﻿@model ProductListViewModel
 
 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
     <div class="row">
@@ -37,12 +37,17 @@
                 </label>
                 <script>
                     $(function () {
-                        $('#searchInput').keypress(function (event) {
+                        $('#searchInput').on('input', function () {
+                            var searchText = $(this).val();
+                            if (!searchText) {
+                                var url = "@Url.Action("Index", "Product", new ProductParameters{ PageSize = Model.Parameters.PageSize, OrderBy = Model.Parameters.OrderBy })";
+                                getProduct(url);
+                            }
+                        }).keypress(function (event) {
                             if (event.keyCode === 13) {
                                 event.preventDefault(); // prevent form submission
-                                var searchText = document.getElementById("searchInput").value;
-
-                                var url = "@Url.Action("Index", "Product", new { PageSize = ViewBag.PageSize, orderBy = ViewBag.OrderBy, })&searchText=" + searchText
+                                var searchText = $(this).val();
+                                var url = "@Url.Action("Index", "Product", new { PageSize = Model.Parameters.PageSize, orderBy = Model.Parameters.OrderBy })&SearchText=" + searchText;
                                 getProduct(url);
                             }
                         });
@@ -58,7 +63,13 @@
                 <thead>
                     <tr role="row">
                         <th class="sorting @(ViewBag.OrderBy == "name" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
-                            <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "name" ? "name desc" : "name" })">Name</a>
+                            <a class="sorting_header_link"
+                               data-page-number="@Model.Parameters.PageNumber"
+                               data-page-size="@Model.Parameters.PageSize"
+                               data-search-text="@Model.Parameters.SearchText"
+                               data-order-by="@(Model.Parameters.OrderBy == "name" ? "name desc" : "name")>
+                                Name
+                            </a>
                         </th>
                         <th class="sorting @(ViewBag.OrderBy == "price" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Price: activate to sort column ascending" style="width: 195.2px;">
                             <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "price" ? "price desc" : "price" })">Price</a>
@@ -92,10 +103,10 @@
                 </tfoot>
                 <tbody>
                     @{
-                        if (Model != null || Model.Items.Count > 0)
+                        if (Model != null || Model.ProductList.Count > 0)
                         {
                             int count = 0;
-                            foreach (var item in Model.Items)
+                            foreach (var item in Model.ProductList)
                             {
 
                                 <tr class="@(count % 2 == 0 ? "even" : "odd")">

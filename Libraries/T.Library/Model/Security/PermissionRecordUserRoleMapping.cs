@@ -1,6 +1,5 @@
 ﻿
 using T.Library.Model.Common;
-using T.Library.Model.Users;
 
 namespace T.Library.Model.Security
 {
@@ -18,7 +17,7 @@ namespace T.Library.Model.Security
         /// Gets or sets the customer role identifier
         /// </summary>
         public Guid RoleId { get; set; }
-        public Role Role { get; set; }
-        public PermissionRecord PermissionRecord { get; set; }
+        public Role? Role { get; set; }
+        public PermissionRecord? PermissionRecord { get; set; }
     }
 }

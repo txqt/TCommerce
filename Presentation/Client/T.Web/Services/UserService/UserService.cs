@@ -1,11 +1,11 @@
 ﻿using T.Library.Model.Response;
 using T.Library.Model;
-using T.Library.Model.Users;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using T.Library.Model.ViewsModel;
 using System.Net.Http.Headers;
+using T.Library.Model.Security;
 
 namespace T.Web.Services.UserService
 {
