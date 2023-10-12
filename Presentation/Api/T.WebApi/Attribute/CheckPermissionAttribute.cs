@@ -5,18 +5,18 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security;
 using System.Security.Claims;
+using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
 
 namespace T.WebApi.Attribute
 {
-    [Obsolete("This attribute is temporarily outdated, you should use CheckPermissionAttribute")]
-    public class CustomAuthorizationFilter : AuthorizeAttribute, IAuthorizationFilter
+    public class CheckPermissionAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
-        private readonly string[] _roles;
+        private readonly string[] _permissions;
 
-        public CustomAuthorizationFilter(params string[] roles)
+        public CheckPermissionAttribute(params string[] permissions)
         {
-            _roles = roles;
+            _permissions = permissions;
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)
@@ -34,16 +34,6 @@ namespace T.WebApi.Attribute
             // Lấy thông tin đăng nhập của user
             var user = context.HttpContext.User;
 
-            if (_roles == null || _roles.Length == 0)
-            {
-                if (!user.Identity.IsAuthenticated)
-                {
-                    context.Result = new UnauthorizedResult();
-                    return;
-                }
-                return;
-            }
-
             // Kiểm tra xem user đã đăng nhập hay chưa
             if (!user.Identity.IsAuthenticated)
             {
@@ -51,27 +41,18 @@ namespace T.WebApi.Attribute
                 return;
             }
 
-            // Kiểm tra xem user có vai trò "Admin" hay không
-            if (user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == RoleName.Admin))
+            if (_permissions != null)
             {
-                return;
-            }
-
-            bool hasRequiredRole = false;
-            foreach (var role in _roles)
-            {
-                if (user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == role))
+                var securityService = context.HttpContext.RequestServices.GetService<ISecurityService>();
+                foreach (var permission in _permissions)
                 {
-                    hasRequiredRole = true;
-                    break;
+                    var permissionRecord = securityService.GetPermissionRecordBySystemNameAsync(permission).Result.Data;
+                    if (permissionRecord == null || !securityService.AuthorizeAsync(permissionRecord).Result)
+                    {
+                        context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
+                        return;
+                    }
                 }
-            }
-
-            // Kiểm tra xem user có vai trò cần thiết hay không
-            if (!hasRequiredRole)
-            {
-                context.Result = new ForbidResult();
-                return;
             }
         }
     }

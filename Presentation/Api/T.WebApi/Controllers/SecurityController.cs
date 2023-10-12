@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Interface;
+using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.WebApi.Attribute;
 
@@ -7,7 +9,8 @@ namespace T.WebApi.Controllers
 {
     [Route("api/security")]
     [ApiController]
-    [AuthorizePermission(PermissionSystemName.ManagePermissions)]
+    //[CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermissionAttribute(PermissionSystemName.ManagePermissions)]
     public class SecurityController : ControllerBase
     {
         private readonly ISecurityService _securityService;
@@ -94,6 +97,33 @@ namespace T.WebApi.Controllers
                 return BadRequest(result);
             }
             return Ok(result);
+        }
+
+        [HttpPost("authorize-permission")]
+        [AllowAnonymous]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> AuthorizePermission(PermissionRecord permissionRecord)
+        {
+            var success = await _securityService.AuthorizeAsync(permissionRecord);
+            if (!success)
+            {
+                return Forbid();
+            }
+            return Ok(success);
+        }
+        [HttpGet("permission/system-name/{permissionRecordSystemName}")]
+        [AllowAnonymous]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> GetPermissionRecordBySystemNameAsync(string permissionRecordSystemName)
+        {
+            var result = await _securityService.GetPermissionRecordBySystemNameAsync(permissionRecordSystemName);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
     }
 }

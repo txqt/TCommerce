@@ -94,7 +94,7 @@ namespace T.WebApi.Extensions
                 if (string.IsNullOrWhiteSpace(param))
                     continue;
 
-                var propertyArray = param.Trim().Split(' ');
+                var propertyArray = param.Trim().Split(new char[] { ' ', '_', '-' });
                 var propertyName = propertyArray[0];
                 var descending = propertyArray.Length > 1 && propertyArray[1].ToLower() == "desc";
 

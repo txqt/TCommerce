@@ -62,29 +62,65 @@
             <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
                 <thead>
                     <tr role="row">
-                        <th class="sorting @(ViewBag.OrderBy == "name" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
+                        <th class="sorting @(Model.Parameters.OrderBy == "name" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="descending" aria-label="Name: activate to sort column descending" style="width: 195.2px;">
                             <a class="sorting_header_link"
-                               data-page-number="@Model.Parameters.PageNumber"
-                               data-page-size="@Model.Parameters.PageSize"
-                               data-search-text="@Model.Parameters.SearchText"
-                               data-order-by="@(Model.Parameters.OrderBy == "name" ? "name desc" : "name")>
+                               asp-page="/Product/Index"
+                               asp-route-PageNumber="@Model.Parameters.PageNumber"
+                               asp-route-PageSize="@Model.Parameters.PageSize"
+                               asp-route-SearchText="@Model.Parameters.SearchText"
+                               asp-route-OrderBy="@(Model.Parameters.OrderBy == "name" ? "name-desc" : "name")">
                                 Name
                             </a>
                         </th>
-                        <th class="sorting @(ViewBag.OrderBy == "price" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Price: activate to sort column ascending" style="width: 195.2px;">
-                            <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "price" ? "price desc" : "price" })">Price</a>
+                        <th class="sorting @(Model.Parameters.OrderBy == "Price" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Price: activate to sort column ascending" style="width: 195.2px;">
+                            <a class="sorting_header_link"
+                               asp-page="/Product/Index"
+                               asp-route-PageNumber="@Model.Parameters.PageNumber"
+                               asp-route-PageSize="@Model.Parameters.PageSize"
+                               asp-route-SearchText="@Model.Parameters.SearchText"
+                               asp-route-OrderBy="@(Model.Parameters.OrderBy == "price" ? "price-desc" : "price")">
+                                Price
+                            </a>
                         </th>
-                        <th class="sorting @(ViewBag.OrderBy == "OldPrice" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Old Price: activate to sort column ascending" style="width: 195.2px;">
-                            <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "OldPrice" ? "OldPrice desc" : "OldPrice" })">Old Price</a>
+                        <th class="sorting @(Model.Parameters.OrderBy == "OldPrice" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Old Price: activate to sort column ascending" style="width: 195.2px;">
+                            <a class="sorting_header_link"
+                               asp-page="/Product/Index"
+                               asp-route-PageNumber="@Model.Parameters.PageNumber"
+                               asp-route-PageSize="@Model.Parameters.PageSize"
+                               asp-route-SearchText="@Model.Parameters.SearchText"
+                               asp-route-OrderBy="@(Model.Parameters.OrderBy == "OldPrice" ? "OldPrice-desc" : "OldPrice")">
+                                Old Price
+                            </a>
                         </th>
-                        <th class="sorting @(ViewBag.OrderBy == "StockQuantity" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Stock Quantity: activate to sort column ascending" style="width: 195.2px;">
-                            <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "StockQuantity" ? "StockQuantity desc" : "StockQuantity" })">Stock Quantity</a>
+                        <th class="sorting @(Model.Parameters.OrderBy == "StockQuantity" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Stock Quantity: activate to sort column ascending" style="width: 195.2px;">
+                            <a class="sorting_header_link"
+                               asp-page="/Product/Index"
+                               asp-route-PageNumber="@Model.Parameters.PageNumber"
+                               asp-route-PageSize="@Model.Parameters.PageSize"
+                               asp-route-SearchText="@Model.Parameters.SearchText"
+                               asp-route-OrderBy="@(Model.Parameters.OrderBy == "StockQuantity" ? "StockQuantity-desc" : "StockQuantity")">
+                                Stock Quantity
+                            </a>
                         </th>
-                        <th class="sorting @(ViewBag.OrderBy == "CreatedOnUtc" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Created date: activate to sort column ascending" style="width: 133.2px;">
-                            <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "CreatedOnUtc" ? "CreatedOnUtc desc" : "CreatedOnUtc" })">Created Date</a>
+                        <th class="sorting @(Model.Parameters.OrderBy == "CreatedOnUtc" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Created date: activate to sort column ascending" style="width: 133.2px;">
+                            <a class="sorting_header_link"
+                               asp-page="/Product/Index"
+                               asp-route-PageNumber="@Model.Parameters.PageNumber"
+                               asp-route-PageSize="@Model.Parameters.PageSize"
+                               asp-route-SearchText="@Model.Parameters.SearchText"
+                               asp-route-OrderBy="@(Model.Parameters.OrderBy == "CreatedOnUtc" ? "CreatedOnUtc-desc" : "CreatedOnUtc")">
+                                Created Date
+                            </a>
                         </th>
-                        <th class="sorting @(ViewBag.OrderBy == "UpdatedOnUtc" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Created date: activate to sort column ascending" style="width: 133.2px;">
-                            <a class="sorting_header_link" href="@Url.Action("Index", "Product", new { pageNumber = ViewBag.PageNumber, pageSize = ViewBag.PageSize, searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy == "UpdatedOnUtc" ? "UpdatedOnUtc desc" : "UpdatedOnUtc" })">Updated Date</a>
+                        <th class="sorting @(Model.Parameters.OrderBy == "UpdatedOnUtc" ? "sorting_desc" : "sorting_asc")" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Created date: activate to sort column ascending" style="width: 133.2px;">
+                            <a class="sorting_header_link"
+                               asp-page="/Product/Index"
+                               asp-route-PageNumber="@Model.Parameters.PageNumber"
+                               asp-route-PageSize="@Model.Parameters.PageSize"
+                               asp-route-SearchText="@Model.Parameters.SearchText"
+                               asp-route-OrderBy="@(Model.Parameters.OrderBy == "UpdatedOnUtc" ? "UpdatedOnUtc-desc" : "UpdatedOnUtc")">
+                                Updated Date
+                            </a>
                         </th>
                         <th class="" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="" style="width: 133.2px;">
                             <a href="#" class="sorting_header_link">Edit</a>
@@ -151,28 +187,12 @@
 </div>
 
 <script>
-
-    $('#dataTable').on('click', 'th a', function (e) {
-        e.preventDefault();
-        var url = $(this).attr('href');
-        $.ajax({
-            url: url,
-            type: 'GET',
-            dataType: 'html',
-            success: function (data) {
-                $('#dataTable').html($(data).find('#dataTable').html());
-                $('#dataTable_info').html($(data).find('#dataTable_info').html());
-                $('.pagination').html($(data).find('.pagination').html());
-            }
-        });
-    });
-
     function getProduct(url) {
         $.ajax({
             url: url,
             type: 'GET',
             success: function (data) {
-                $('#dataTable').html($(data).find('#dataTable').html());
+                $('#dataTable tbody').html($(data).find('#dataTable tbody').html());
                 $('#dataTable_info').html($(data).find('#dataTable_info').html());
                 $('.pagination').html($(data).find('.pagination').html());
             }

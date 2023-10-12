@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
-using T.Web.Controllers;
 using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
 
@@ -13,8 +13,9 @@ namespace T.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("/admin/category/[action]")]
-    [CustomAuthorizationFilter(RoleName.Admin)]
-    public class CategoryController : BaseController
+    //[CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermission(PermissionSystemName.ManageCategories)]
+    public class CategoryController : BaseAdminController
     {
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;

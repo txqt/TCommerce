@@ -38,7 +38,12 @@ namespace T.WebApi.Services.SecurityServices
             if (permissionRecord is null)
                 return false;
 
-            return await AuthorizeAsync(permissionRecord.SystemName, (await _userService.GetCurrentUser()).Data);
+            var user = (await _userService.GetCurrentUser()).Data;
+
+            if (user == null)
+                return false;
+
+            return await AuthorizeAsync(permissionRecord.SystemName, user);
         }
         public async Task<bool> AuthorizeAsync(string permissionSystemname)
         {

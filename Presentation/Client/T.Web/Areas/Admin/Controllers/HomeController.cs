@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Roles.RoleName;
+using T.Web.Areas.Admin.Controllers;
 using T.Web.Attribute;
-using T.Web.Controllers;
 
 namespace T.Web.Areas.Identity.Controllers
 {
     [Area("Admin")]
     [Route("/admin/home/[action]")]
-    [CustomAuthorizationFilter(RoleName.Admin)]
-    public class HomeController : BaseController
+    //[CustomAuthorizationFilter(RoleName.Admin)]
+    public class HomeController : BaseAdminController
     {
         public IActionResult Index()
         {

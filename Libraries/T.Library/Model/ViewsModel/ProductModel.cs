@@ -20,7 +20,7 @@ namespace T.Library.Model.ViewsModel
         public int StockQuantity { get; set; }
         [Required, Display(Name = "Giá")]
         public decimal Price { get; set; }
-        [Required, Display(Name = "Giá cũ")]
+        [Display(Name = "Giá cũ")]
         public decimal OldPrice { get; set; }
         [Display(Name = "Đánh dấu là sản phẩm mới")]
         public bool MarkAsNew { get; set; }
@@ -35,14 +35,14 @@ namespace T.Library.Model.ViewsModel
 
         public bool VisibleIndividually { get; set; }
 
-        public string AdminComment { get; set; }
+        public string? AdminComment { get; set; }
         [Display(Name = "Hiện thị ở trang chủ")]
         public bool ShowOnHomepage { get; set; }
 
-        public string MetaKeywords { get; set; }
+        public string? MetaKeywords { get; set; }
 
-        public string MetaDescription { get; set; }
-        public string MetaTitle { get; set; }
+        public string? MetaDescription { get; set; }
+        public string? MetaTitle { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether the product allows customer reviews
         /// </summary>
@@ -51,7 +51,7 @@ namespace T.Library.Model.ViewsModel
         /// <summary>
         /// Gets or sets the SKU
         /// </summary>
-        public string Sku { get; set; }
+        public string? Sku { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether the entity is ship enabled
         /// </summary>
@@ -125,6 +125,6 @@ namespace T.Library.Model.ViewsModel
         /// Gets or sets the available end date and time
         /// </summary>
         public DateTime? AvailableEndDateTimeUtc { get; set; }
-        public List<ProductAttributeMapping> AttributeMappings { get; set; }
+        public List<ProductAttributeMapping>? AttributeMappings { get; set; }
     }
 }

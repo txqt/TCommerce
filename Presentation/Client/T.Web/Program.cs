@@ -66,7 +66,7 @@ internal class Program
 
         builder.Services.AddSession(options =>
         {
-            options.IdleTimeout = TimeSpan.FromHours(jwtOptions.AccessTokenExpirationInHours);
+            options.IdleTimeout = TimeSpan.FromSeconds(1);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
         });

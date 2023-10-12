@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
 using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
-using T.Web.Controllers;
 using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.ProductService;
@@ -15,8 +15,9 @@ namespace T.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("/admin/product/[action]")]
-    [CustomAuthorizationFilter(RoleName.Admin)]
-    public class ProductController : BaseController
+    //[CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermission(PermissionSystemName.ManageProducts)]
+    public class ProductController : BaseAdminController
     {
         private readonly IProductService _productService;
         private readonly IProductAttributeService _productAttributeService;
@@ -40,6 +41,7 @@ namespace T.Web.Areas.Admin.Controllers
             _categoryService = categoryService;
         }
 
+        [Route("index")]
         public async Task<IActionResult> Index(ProductParameters productParameters)
         {
             var result = await _productService.GetAll(productParameters);
@@ -47,6 +49,7 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 MetaData = result.MetaData,
                 ProductList = result.Items.ToList(),
+                Parameters = productParameters
             };
             return View(model);
         }

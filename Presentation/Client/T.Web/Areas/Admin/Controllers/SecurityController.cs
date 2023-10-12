@@ -6,14 +6,14 @@ using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
 using T.Web.Attribute;
-using T.Web.Controllers;
 
 namespace T.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("/admin/security/[action]")]
-    [CustomAuthorizationFilter(RoleName.Admin)]
-    public class SecurityController : BaseController
+    //[CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermission(PermissionSystemName.ManagePermissions)]
+    public class SecurityController : BaseAdminController
     {
         private readonly ISecurityService _securityService;
         public SecurityController(ISecurityService securityService)

@@ -2,17 +2,18 @@
 using T.Library.Model;
 using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Attribute;
-using T.Web.Controllers;
 using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("/admin/product-attribute/[action]")]
-    [CustomAuthorizationFilter(RoleName.Admin)]
-    public class ProductAttributeController : BaseController
+    //[CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermission(PermissionSystemName.ManageAttributes)]
+    public class ProductAttributeController : BaseAdminController
     {
         private readonly IProductAttributeService _productAttributeService;
         public ProductAttributeController(IProductAttributeService productAttributeService)

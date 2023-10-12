@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
-using T.Web.Controllers;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
 using T.Web.Services.UserService;
@@ -14,8 +14,9 @@ namespace T.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("/admin/user/[action]")]
-    [CustomAuthorizationFilter(RoleName.Admin)]
-    public class UserController : BaseController
+    //[CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermission(PermissionSystemName.ManageUsers)]
+    public class UserController : BaseAdminController
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;

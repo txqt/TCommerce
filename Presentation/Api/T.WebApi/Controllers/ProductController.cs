@@ -15,8 +15,8 @@ namespace T.WebApi.Controllers
 {
     [Route("api/product")]
     [ApiController]
-    [CustomAuthorizationFilter(RoleName.Admin)]
-    [AuthorizePermission(PermissionSystemName.ManageProducts)]
+    //[CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermission(PermissionSystemName.ManageProducts)]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;

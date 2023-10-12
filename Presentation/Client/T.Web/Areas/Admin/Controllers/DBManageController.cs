@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Roles.RoleName;
+using T.Web.Areas.Admin.Controllers;
 using T.Web.Attribute;
-using T.Web.Controllers;
 using T.Web.Services.Database;
 
 namespace T.Web.Areas.Identity.Controllers
@@ -10,8 +10,8 @@ namespace T.Web.Areas.Identity.Controllers
     [Area("Admin")]
     [Route("/database-manage/[action]")]
     [Authorize]
-    [CustomAuthorizationFilter(RoleName.Admin)]
-    public class DBManageController : BaseController
+    //[CustomAuthorizationFilter(RoleName.Admin)]
+    public class DBManageController : BaseAdminController
     {
         private readonly IDatabaseControl _databaseControl;
 

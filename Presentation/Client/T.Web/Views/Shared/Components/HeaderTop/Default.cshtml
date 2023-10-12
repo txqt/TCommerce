@@ -1,4 +1,7 @@
-﻿<div class="header-top">
+﻿@using T.Library.Model.Roles.RoleName;
+@inject ISecurityService securityService
+
+<div class="header-top">
     <div class="container">
         <div class="header-left">
             <div class="header-dropdown">
@@ -36,11 +39,11 @@
                         {
                             <li>Xin chào @User.Identity.Name!</li>
                             <li><a href="#" id="logoutLink">Đăng xuất</a></li>
-                            @if (User.IsInRole(RoleName.Admin))
+                            var permissionRecord = securityService.GetPermissionRecordBySystemNameAsync(PermissionSystemName.AccessAdminPanel).Result.Data;
+                            @if (await securityService.AuthorizeAsync(permissionRecord))
                             {
                                 <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin mode</a></li>
                             }
-
                         }
                         else
                         {

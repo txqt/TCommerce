@@ -147,7 +147,7 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the old price
         /// </summary>
-        [Required]
+        //[Required]
         public decimal OldPrice { get; set; }
 
         public bool MarkAsNew { get; set; } = false;
@@ -251,11 +251,11 @@ namespace T.Library.Model
         //    set => GiftCardTypeId = (int)value;
         //}
 
-        public List<ProductCategory> ProductCategories { get; set; }
+        public List<ProductCategory>? ProductCategories { get; set; }
 
-        public List<ProductAttributeMapping> AttributeMappings { get; set; }
+        public List<ProductAttributeMapping>? AttributeMappings { get; set; }
 
-        public List<ProductPicture> ProductPictures { get; set; }
-        public List<ProductReview> ProductReviews { get; set; }
+        public List<ProductPicture>? ProductPictures { get; set; }
+        public List<ProductReview>? ProductReviews { get; set; }
     }
 }

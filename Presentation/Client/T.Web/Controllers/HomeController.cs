@@ -40,7 +40,7 @@ namespace T.Web.Controllers
             return Json(new { data = listModel });
         }
 
-        [CustomAuthorizationFilter(RoleName.Customer)]
+        //[CustomAuthorizationFilter(RoleName.Customer)]
         public IActionResult Privacy()
         {
             return View();

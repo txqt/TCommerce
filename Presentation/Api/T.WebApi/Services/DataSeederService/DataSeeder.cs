@@ -80,6 +80,7 @@ namespace T.WebApi.Services.DataSeederService
                     
                     foreach (var product in item.Products)
                     {
+
                         await _productService.CreateProductAsync(product);
 
                         var productId = (await _productService.GetByNameAsync(product.Name)).Data.Id;

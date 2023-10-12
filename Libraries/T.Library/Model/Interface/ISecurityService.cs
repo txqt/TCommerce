@@ -19,7 +19,6 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> UpdatePermissionRecord(PermissionRecord permissionRecord);
         Task<ServiceResponse<bool>> DeletePermissionRecordByIdAsync(int id);
         Task<bool> AuthorizeAsync(PermissionRecord permissionRecord);
-        Task<bool> AuthorizeAsync(string permissionSystemname);
         Task<bool> AuthorizeAsync(string permissionSystemName, User user);
         Task<bool> AuthorizeAsync(string permissionSystemName, Guid roleId);
         Task<ServiceResponse<PermissionRecordUserRoleMapping>> GetPermissionMappingAsync(string roleId, int permissionId);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Net;
 using T.Library.Model;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
@@ -56,9 +57,10 @@ namespace T.Web.Services.SecurityServices
             throw new NotImplementedException();
         }
 
-        public Task<ServiceResponse<PermissionRecord>> GetPermissionRecordBySystemNameAsync(string permissionRecordSystemName)
+        public async Task<ServiceResponse<PermissionRecord>> GetPermissionRecordBySystemNameAsync(string permissionRecordSystemName)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.GetAsync($"api/security/permission/system-name/{permissionRecordSystemName}");
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<PermissionRecord>>();
         }
 
         public Task<ServiceResponse<List<PermissionRecord>>> GetPermissionRecordsByCustomerRoleIdAsync(Guid roleId)
@@ -76,15 +78,24 @@ namespace T.Web.Services.SecurityServices
             throw new NotImplementedException();
         }
 
-        public Task<bool> AuthorizeAsync(PermissionRecord permissionRecord)
+        public async Task<bool> AuthorizeAsync(PermissionRecord permissionRecord)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.PostAsJsonAsync($"api/security/authorize-permission", permissionRecord);
+
+            if (result.StatusCode == HttpStatusCode.Forbidden)
+            {
+                // Handle the Forbidden error...
+                return false;
+            }
+            else if (!result.IsSuccessStatusCode)
+            {
+                // Handle other possible errors...
+                return false;
+            }
+
+            return await result.Content.ReadFromJsonAsync<bool>();
         }
-        [Obsolete]
-        public Task<bool> AuthorizeAsync(string permissionSystemname)
-        {
-            throw new NotImplementedException();
-        }
+
         [Obsolete]
         public Task<bool> AuthorizeAsync(string permissionSystemName, User user)
         {

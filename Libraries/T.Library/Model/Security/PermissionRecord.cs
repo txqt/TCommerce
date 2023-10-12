@@ -21,6 +21,7 @@ namespace T.Library.Model.Security
         /// Gets or sets the permission category
         /// </summary>
         public string Category { get; set; }
-        public List<PermissionRecordUserRoleMapping> PermissionRecordUserRoleMappings { get; set; }
+        
+        public List<PermissionRecordUserRoleMapping>? PermissionRecordUserRoleMappings { get; set; }
     }
 }

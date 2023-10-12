@@ -7,5 +7,6 @@ namespace T.Web.Areas.Admin.Models
         public List<Product> ProductList { get; set; } = new List<Product>();
         public MetaData MetaData { get; set; } = new MetaData();
         public ProductParameters Parameters { get; set; } = new ProductParameters();
+        public Product ProductModel { get; set; } = new Product();
     }
 }

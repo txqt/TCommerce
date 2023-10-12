@@ -46,7 +46,7 @@ namespace T.WebApi.Middleware.TokenManagers
             // Set the token in cache without a value
             _cache.Set(GetKey(token), true, new MemoryCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_jwtOptions.Value.AccessTokenExpirationInMinutes)
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_jwtOptions.Value.AccessTokenExpirationInSenconds)
             });
         }
         public async Task ReactivateAsync(string token)
