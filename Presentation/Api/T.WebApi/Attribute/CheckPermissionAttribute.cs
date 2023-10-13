@@ -7,6 +7,7 @@ using System.Security;
 using System.Security.Claims;
 using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 
 namespace T.WebApi.Attribute
 {
@@ -46,8 +47,8 @@ namespace T.WebApi.Attribute
                 var securityService = context.HttpContext.RequestServices.GetService<ISecurityService>();
                 foreach (var permission in _permissions)
                 {
-                    var permissionRecord = securityService.GetPermissionRecordBySystemNameAsync(permission).Result.Data;
-                    if (permissionRecord == null || !securityService.AuthorizeAsync(permissionRecord).Result)
+                    //var permissionRecord = securityService.GetPermissionRecordBySystemNameAsync(permission).Result.Data;
+                    if (!securityService.AuthorizeAsync(permission).Result)
                     {
                         context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
                         return;

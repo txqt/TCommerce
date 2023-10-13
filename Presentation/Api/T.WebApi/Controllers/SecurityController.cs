@@ -111,6 +111,20 @@ namespace T.WebApi.Controllers
             }
             return Ok(success);
         }
+
+        [HttpGet("authorize-permission/system-name/{permissionSystemName}")]
+        [AllowAnonymous]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> AuthorizePermissionBySystemName(string permissionSystemName)
+        {
+            var success = await _securityService.AuthorizeAsync(permissionSystemName);
+            if (!success)
+            {
+                return Forbid();
+            }
+            return Ok(success);
+        }
+
         [HttpGet("permission/system-name/{permissionRecordSystemName}")]
         [AllowAnonymous]
         [ServiceFilter(typeof(ValidationFilterAttribute))]

@@ -8,6 +8,7 @@ using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
+using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.IRepositoryServices;
 using T.WebApi.Services.UserServices;
 
@@ -19,12 +20,14 @@ namespace T.WebApi.Services.SecurityServices
         private readonly IRepository<PermissionRecord> _permissionRepository;
         private readonly IRepository<PermissionRecordUserRoleMapping> _permissionMappingRepository;
         private readonly RoleManager<Role> _roleManager;
-        public SecurityService(IUserService userService, IRepository<PermissionRecord> permissionRepository, IRepository<PermissionRecordUserRoleMapping> permissionMappingRepository, RoleManager<Role> roleManager)
+        private readonly ICacheService _cacheService;
+        public SecurityService(IUserService userService, IRepository<PermissionRecord> permissionRepository, IRepository<PermissionRecordUserRoleMapping> permissionMappingRepository, RoleManager<Role> roleManager, ICacheService cacheService)
         {
             _userService = userService;
             _permissionRepository = permissionRepository;
             _permissionMappingRepository = permissionMappingRepository;
             this._roleManager = roleManager;
+            _cacheService = cacheService;
         }
 
 
@@ -45,6 +48,7 @@ namespace T.WebApi.Services.SecurityServices
 
             return await AuthorizeAsync(permissionRecord.SystemName, user);
         }
+        
         public async Task<bool> AuthorizeAsync(string permissionSystemname)
         {
             if (string.IsNullOrEmpty(permissionSystemname))
@@ -53,7 +57,12 @@ namespace T.WebApi.Services.SecurityServices
             if((await GetPermissionRecordBySystemNameAsync(permissionSystemname)) is null)
                 return false;
 
-            return await AuthorizeAsync(permissionSystemname, (await _userService.GetCurrentUser()).Data);
+            var user = (await _userService.GetCurrentUser()).Data;
+
+            if (user == null)
+                return false;
+
+            return await AuthorizeAsync(permissionSystemname, user);
         }
 
         /// <summary>
@@ -93,12 +102,30 @@ namespace T.WebApi.Services.SecurityServices
             if (permissionSystemName is null)
                 return false;
 
+            // Define a cache key
+            string cacheKey = $"AuthorizeAsync-{permissionSystemName}-{roleId}";
+
+            // Try to get the result from the cache
+            bool? cachedResult = _cacheService.Get<bool?>(cacheKey);
+
+            // If the result was in the cache, return it
+            if (cachedResult.HasValue)
+                return cachedResult.Value;
+
+            // If the result was not in the cache, execute the method and store the result in the cache
             var permissions = await GetPermissionRecordsByCustomerRoleIdAsync(roleId);
             foreach (var permission in permissions.Data)
             {
                 if (permission.SystemName.Equals(permissionSystemName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // Store the result in the cache before returning it
+                    _cacheService.Set(cacheKey, true);
                     return true;
+                }
             }
+
+            // If no permission was found, store 'false' in the cache before returning it
+            _cacheService.Set(cacheKey, false);
 
             return false;
         }

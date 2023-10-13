@@ -1,81 +1,45 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using System.Runtime.Caching;
 
 namespace T.WebApi.Services.CacheServices
 {
     public interface ICacheService
     {
-        T GetData<T> (string key);
-        bool SetData<T> (T value, DateTimeOffset expirationTime, string key = null);
-        object RemoveData(string key = null);
+        T Get<T>(string key);
+        void Set<T>(string key, T value, TimeSpan? expiry = null);
+        void Remove(string key);
     }
+
     public class CacheService : ICacheService
     {
-        private ObjectCache _memoryCache = MemoryCache.Default;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMemoryCache _cache;
 
-        public CacheService(IHttpContextAccessor httpContextAccessor)
+        public CacheService(IMemoryCache cache)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _cache = cache;
         }
 
-        private string GetCacheKeyBySystem() { var request = _httpContextAccessor.HttpContext?.Request; var path = request?.Path.HasValue == true ? request.Path.Value : string.Empty; return $"cache_{path}"; }
-        public T GetData<T>(string key)
+        public T Get<T>(string key)
         {
-            var _key = key != null ? key : GetCacheKeyBySystem();
-            try
-            {
-                T item = (T) _memoryCache.Get(_key);
-                return item;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            return _cache.Get<T>(key);
         }
 
-        public object RemoveData(string key = null)
+        public void Set<T>(string key, T value, TimeSpan? expiry = null)
         {
-            var result = true;
-
-            try
+            if (expiry.HasValue)
             {
-                if (!string.IsNullOrEmpty(GetCacheKeyBySystem()) || key != null)
-                {
-                    var res = _memoryCache.Remove(key != null ? key :GetCacheKeyBySystem());
-                }
-                else
-                {
-                    result = false;
-                }
-                return result;
+                _cache.Set(key, value, expiry.Value);
             }
-            catch (Exception ex)
+            else
             {
-                throw;
+                _cache.Set(key, value);
             }
         }
 
-        public bool SetData<T>(T value, DateTimeOffset expirationTime, string key = null)
+        public void Remove(string key)
         {
-            var result = true;
-
-            try
-            {
-                if (!string.IsNullOrEmpty(GetCacheKeyBySystem()) || key != null)
-                {
-                    _memoryCache.Set(key != null ? key : GetCacheKeyBySystem(), value, expirationTime);
-                }
-                else
-                {
-                    result = false;
-                }
-                return result;
-            }
-            catch(Exception ex) 
-            {
-                throw;
-            }
+            _cache.Remove(key);
         }
     }
 }

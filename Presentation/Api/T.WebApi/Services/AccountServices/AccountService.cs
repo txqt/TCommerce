@@ -1,9 +1,6 @@
 ﻿using App.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Policy;
 using System.Text;
 using T.Library.Model;
 using T.Library.Model.Account;
@@ -15,7 +12,6 @@ using T.Library.Model.SendMail;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
-using T.WebApi.Middleware.TokenManagers;
 using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.TokenHelpers;
 
@@ -44,7 +40,6 @@ namespace T.WebApi.Services.AccountServices
         private readonly DatabaseContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly ITokenService _tokenService;
-        private readonly ITokenManager _tokenManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICacheService _cache;
 
@@ -58,8 +53,7 @@ namespace T.WebApi.Services.AccountServices
                                IWebHostEnvironment env,
                                ITokenService tokenService,
                                IHttpContextAccessor httpContextAccessor,
-                               ICacheService cache,
-                               ITokenManager tokenManager)
+                               ICacheService cache)
         {
             this._emailService = emailService;
             _configuration = configuration;
@@ -72,7 +66,6 @@ namespace T.WebApi.Services.AccountServices
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _cache = cache;
-            _tokenManager = tokenManager;
         }
 
         public async Task<ServiceResponse<string>> ConfirmEmail(string userId, string token)
@@ -240,7 +233,7 @@ namespace T.WebApi.Services.AccountServices
                 return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "TokenDto is null" };
             }
 
-            var principal = _tokenService.GetPrincipalFromExpiredToken(tokenDto.AccessToken);
+            var principal = _tokenService.GetPrincipalToken(tokenDto.AccessToken);
             var username = principal.Identity.Name;
             var user = await _userManager.FindByNameAsync(username);
 

@@ -30,6 +30,7 @@ namespace T.Library.Model.Users
 
         public bool RequirePasswordChange { get; set; }
 
+        public bool IsBanned { get; set; }
         public bool Deleted { get; set; }
     }
 }

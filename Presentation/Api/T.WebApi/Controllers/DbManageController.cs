@@ -25,24 +25,18 @@ namespace T.WebApi.Controllers
     public class DbManageController : ControllerBase
     {
         private readonly DatabaseContext _databaseContext;
-        private readonly ICacheService _cache;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> roleManager;
 
-        public DbManageController(DatabaseContext databaseContext, ICacheService cache, RoleManager<Role> roleManager, UserManager<User> userManager)
+        public DbManageController(DatabaseContext databaseContext, RoleManager<Role> roleManager, UserManager<User> userManager)
         {
             this._databaseContext = databaseContext;
-            _cache = cache;
             this.roleManager = roleManager;
             _userManager = userManager;
         }
         [HttpGet]
         public ActionResult Index()
         {
-
-            var cacheDbInfo = _cache.GetData<DatabaseControlResponse>(null);
-            if (cacheDbInfo != null)
-                return Ok(cacheDbInfo);
 
             var connect = _databaseContext.Database.GetDbConnection();
             var all_tables = connect.State == ConnectionState.Open
@@ -60,8 +54,6 @@ namespace T.WebApi.Controllers
                 list_tables = all_tables
             };
 
-            var expirationTime = DateTimeOffset.Now.AddSeconds(30);
-            _cache.SetData(dbResponse, expirationTime);
             return Ok(dbResponse);
         }
 

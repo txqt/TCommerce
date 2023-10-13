@@ -1,6 +1,8 @@
-﻿namespace T.WebApi.Middleware.ErrorHandlings
+﻿using T.WebApi.Middleware.ErrorHandlings;
+
+namespace T.WebApi.Middleware
 {
-    public static class ExceptionMiddlewareExtensions
+    public static class MiddlewareExtensions
     {
         public static void ConfigureCustomExceptionMiddleware(this IApplicationBuilder app)
         {

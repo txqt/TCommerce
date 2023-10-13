@@ -20,7 +20,6 @@ using T.WebApi.Services.HomePageServices;
 using T.WebApi.Services.DataSeederService;
 using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.IdentityCustom;
-using T.WebApi.Middleware.TokenManagers;
 using T.WebApi.Services.IRepositoryServices;
 using T.Library.Model.Interface;
 using T.WebApi.Services.TokenHelpers;
@@ -131,8 +130,6 @@ namespace T.WebApi.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ICacheService, CacheService>();
-            services.AddScoped<TokenManagerMiddleware>();
-            services.AddTransient<ITokenManager, TokenManager>();
             services.AddTransient<IEmailSender, SendMailService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IProductAttributeService, ProductAttributeService>();

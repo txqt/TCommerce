@@ -44,8 +44,8 @@ namespace T.Web.Attribute
                 var securityService = context.HttpContext.RequestServices.GetService<ISecurityService>();
                 foreach (var permission in _permissions)
                 {
-                    var permissionRecord = securityService.GetPermissionRecordBySystemNameAsync(permission).Result.Data;
-                    if (permissionRecord == null || !securityService.AuthorizeAsync(permissionRecord).Result)
+                    //var permissionRecord = securityService.GetPermissionRecordBySystemNameAsync(permission).Result.Data;
+                    if (!securityService.AuthorizeAsync(permission).Result)
                     {
                         context.Result = new ViewResult
                         {

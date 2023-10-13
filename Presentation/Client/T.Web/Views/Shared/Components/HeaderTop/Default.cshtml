@@ -39,8 +39,7 @@
                         {
                             <li>Xin chào @User.Identity.Name!</li>
                             <li><a href="#" id="logoutLink">Đăng xuất</a></li>
-                            var permissionRecord = securityService.GetPermissionRecordBySystemNameAsync(PermissionSystemName.AccessAdminPanel).Result.Data;
-                            @if (await securityService.AuthorizeAsync(permissionRecord))
+                            @if (await securityService.AuthorizeAsync(PermissionSystemName.AccessAdminPanel))
                             {
                                 <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin mode</a></li>
                             }

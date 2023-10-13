@@ -95,6 +95,23 @@ namespace T.Web.Services.SecurityServices
 
             return await result.Content.ReadFromJsonAsync<bool>();
         }
+        public async Task<bool> AuthorizeAsync(string permissionRecordSystemName)
+        {
+            var result = await _httpClient.GetAsync($"api/security/authorize-permission/system-name/{permissionRecordSystemName}");
+
+            if (result.StatusCode == HttpStatusCode.Forbidden)
+            {
+                // Handle the Forbidden error...
+                return false;
+            }
+            else if (!result.IsSuccessStatusCode)
+            {
+                // Handle other possible errors...
+                return false;
+            }
+
+            return await result.Content.ReadFromJsonAsync<bool>();
+        }
 
         [Obsolete]
         public Task<bool> AuthorizeAsync(string permissionSystemName, User user)
@@ -112,5 +129,6 @@ namespace T.Web.Services.SecurityServices
             var result = await _httpClient.DeleteAsync($"api/security/permission-mapping/{mappingId}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
+
     }
 }

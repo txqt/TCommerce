@@ -1,16 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
-using T.Library.Model;
-using T.Library.Model.Users;
-using T.WebApi.Attribute;
-using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
-using T.WebApi.Middleware.ErrorHandlings;
-using T.WebApi.Middleware.TokenManagers;
+using T.WebApi.Middleware;
 using T.WebApi.Services.DataSeederService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,8 +66,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseCors("CorsPolicy");
-app.UseMiddleware<TokenManagerMiddleware>();
-//app.ConfigureCustomExceptionMiddleware();
+//app.UseMiddleware<TokenManagerMiddleware>();
+app.ConfigureCustomExceptionMiddleware();
 
 app.MapControllers();
 
