@@ -24,18 +24,18 @@ namespace T.WebApi.Extensions
 
             return true;
         }
-        public static void DbccCheckIdent<T>(this DbContext context, int? reseedTo = null) where T : class
-        {
-            var tableName = context.GetTableName<T>();
-            var resetIdSql = $"DBCC CHECKIDENT('{tableName}', RESEED{(reseedTo != null ? "," + reseedTo : "")});";
-            context.Database.ExecuteSqlRaw(resetIdSql);
-        }
+        //public static void DbccCheckIdent<T>(this DbContext context, int? reseedTo = null) where T : class
+        //{
+        //    var tableName = context.GetTableName<T>();
+        //    var resetIdSql = $"DBCC CHECKIDENT('{tableName}', RESEED{(reseedTo != null ? "," + reseedTo : "")});";
+        //    context.Database.ExecuteSqlRaw(resetIdSql);
+        //}
 
-        public static string GetTableName<T>(this DbContext context) where T : class
-        {
-            var entityType = context.Model.FindEntityType(typeof(T));
-            return entityType.GetTableName();
-        }
+        //public static string GetTableName<T>(this DbContext context) where T : class
+        //{
+        //    var entityType = context.Model.FindEntityType(typeof(T));
+        //    return entityType.GetTableName();
+        //}
     }
 
 }

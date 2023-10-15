@@ -26,14 +26,10 @@ namespace T.Web.Attribute
             {
                 return;
             }
-
-            // Các xử lý khác ở đây
-
             // Lấy thông tin đăng nhập của user
             var user = context.HttpContext.User;
 
-            // Kiểm tra xem user đã đăng nhập hay chưa
-            if (!user.Identity.IsAuthenticated)
+            if ((_permissions == null || _permissions.Length == 0) && user.Identity is not null && !user.Identity.IsAuthenticated)
             {
                 context.Result = new UnauthorizedResult();
                 return;

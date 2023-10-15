@@ -27,6 +27,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.PhoneNumber)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsBanned)
+            </th>
+            <th></th>
             <th></th>
             <th></th>
         </tr>
@@ -63,7 +67,29 @@
             });
         }
     });
-
+    $('#dataTable-users').on('click', '.banUserBtn', function () {
+        var userId = $(this).data('userid'); // Lấy categoryid từ thuộc tính data của nút
+        // Hiển thị hộp thoại "confirm"
+        if (confirm("Bạn có chắc chắn muốn xóa?")) {
+            $.ajax({
+                url: "@Url.Action("BanUser", "User")",
+                type: "DELETE",
+                data: { id: userId },
+                success: function (response) {
+                    // Xử lý phản hồi từ API
+                    if (response.success) {
+                        LoadTable();
+                    } else {
+                        alert(response.message); // Hiển thị thông báo lỗi
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText); // Hiển thị lỗi trong console
+                    alert("Đã xảy ra lỗi ."); // Hiển thị thông báo lỗi
+                }
+            });
+        }
+    });
     function LoadTable() {
         $('#dataTable-users').DataTable().destroy();
         $('#dataTable-users').DataTable({
@@ -78,6 +104,7 @@
                 { data: "email" },
                 { data: "userName" },
                 { data: "phoneNumber" },
+                { data: "IsBanned" },
                 {
                     data: null,
                     render: function (data, type, row) {
@@ -94,6 +121,16 @@
                         var userId = row.id
                         if (type === "display") {
                             return '<button class="btn btn-danger d-flex justify-content-center align-items-center deleteUserBtn" data-userid="' + userId + '">Delete</button>';
+                        }
+                        return data;
+                    }
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        var userId = row.id
+                        if (type === "display") {
+                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center banUserBtn" data-userid="' + userId + '">Ban</button>';
                         }
                         return data;
                     }

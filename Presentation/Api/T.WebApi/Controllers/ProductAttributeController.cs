@@ -5,6 +5,7 @@ using T.Library.Model;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Attribute;
 using T.WebApi.Services.ProductServices;
@@ -13,7 +14,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/product-attribute")]
     [ApiController]
-    [CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermission(PermissionSystemName.ManageAttributes)]
     public class ProductAttributeController : ControllerBase
     {
         private readonly IProductAttributeService _productAttributeSvc;

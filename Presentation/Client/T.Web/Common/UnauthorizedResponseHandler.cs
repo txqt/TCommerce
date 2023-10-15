@@ -14,10 +14,10 @@ namespace T.Web.Common
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _clientFactory;
-        private readonly IOptions<JwtOptions> _jwtOptions;
+        private readonly IOptions<AuthorizationOptions> _jwtOptions;
         //private readonly IAccountService _accountService;
 
-        public UnauthorizedResponseHandler(IHttpContextAccessor httpContextAccessor, IHttpClientFactory clientFactory, IOptions<JwtOptions> jwtOptions/*, IAccountService accountService*/)
+        public UnauthorizedResponseHandler(IHttpContextAccessor httpContextAccessor, IHttpClientFactory clientFactory, IOptions<AuthorizationOptions> jwtOptions/*, IAccountService accountService*/)
         {
             _httpContextAccessor = httpContextAccessor;
             _clientFactory = clientFactory;

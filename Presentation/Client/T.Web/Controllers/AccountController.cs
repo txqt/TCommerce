@@ -25,9 +25,9 @@ namespace T.Web.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-        private readonly IOptions<JwtOptions> _jwtOptions;
+        private readonly IOptions<Library.Model.JwtToken.AuthorizationOptions> _jwtOptions;
 
-        public AccountController(IAccountService accountService, IOptions<JwtOptions> jwtOptions)
+        public AccountController(IAccountService accountService, IOptions<Library.Model.JwtToken.AuthorizationOptions> jwtOptions)
         {
             _accountService = accountService;
             _jwtOptions = jwtOptions;
@@ -46,7 +46,7 @@ namespace T.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel loginViewModel, string? returnUrl)
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel, string returnUrl = null)
         {
             if (!ModelState.IsValid)
                 return View(loginViewModel);

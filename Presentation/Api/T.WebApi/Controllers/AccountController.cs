@@ -12,7 +12,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/account")]
     [ApiController]
-    [CustomAuthorizationFilter()]
+    [CheckPermission()]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -24,14 +24,14 @@ namespace T.WebApi.Controllers
         [HttpPost("login")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var response = await _accountService.Login(model, returnUrl);
+            var response = await _accountService.Login(model);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -87,7 +87,7 @@ namespace T.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpGet("ConfirmEmail")]
+        [HttpGet("confirm-email")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)

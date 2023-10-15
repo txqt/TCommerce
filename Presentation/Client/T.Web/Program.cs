@@ -53,9 +53,9 @@ internal class Program
 
 
         var jwtSection = builder.Configuration.GetSection("Authorization");
-        var jwtOptions = new JwtOptions();
+        var jwtOptions = new AuthorizationOptions();
         jwtSection.Bind(jwtOptions);
-        builder.Services.Configure<JwtOptions>(jwtSection);
+        builder.Services.Configure<AuthorizationOptions>(jwtSection);
 
 
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>

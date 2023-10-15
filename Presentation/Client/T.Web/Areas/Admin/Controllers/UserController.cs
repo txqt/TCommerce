@@ -122,5 +122,17 @@ namespace T.Web.Areas.Admin.Controllers
             }
             return Json(new { success = true, message = result.Message });
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> BanUser(Guid id)
+        {
+
+            var result = await _userService.DeleteAsync(id);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
+        }
     }
 }

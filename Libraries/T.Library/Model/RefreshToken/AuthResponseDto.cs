@@ -10,6 +10,6 @@ namespace T.Library.Model.RefreshToken
     {
         public string? AccessToken { get; set; }
         public string? RefreshToken { get; set; }
-        public string? ReturnUrl { get; set; }
+        //public string? ReturnUrl { get; set; }
     }
 }

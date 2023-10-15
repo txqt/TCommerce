@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
+using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Attribute;
@@ -12,7 +14,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/user")]
     [ApiController]
-    [CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermission(PermissionSystemName.ManageUsers)]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -33,38 +35,54 @@ namespace T.WebApi.Controllers
             return await _userService.Get(id);
         }
 
-        [HttpPost(APIRoutes.AddOrEdit)]
+        [HttpPost()]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> CreateOrEdit(UserModel model)
+        public async Task<ActionResult> CreateUserAsync(UserModel model)
         {
-            var result = await _userService.CreateOrEditAsync(model);
+            var result = await _userService.CreateUserAsync(model);
             if (!result.Success)
                 return BadRequest(result);
 
             return Ok(result);
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpPut()]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> UpdateUserAsync(UserModel model)
+        {
+            var result = await _userService.UpdateUserAsync(model);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> Delete(Guid id)
         {
-            var result = await _userService.DeleteAsync(id);
+            var result = await _userService.DeleteUserByUserIdAsync(id);
             if (!result.Success)
                 return BadRequest(result);
 
             return Ok(result);
-        }
-
-        [HttpGet("all-roles")]
-        public async Task<ActionResult> GetAllRoles()
-        {
-            return Ok(await _userService.GetAllRolesAsync());
         }
 
         [HttpGet("me")]
         public async Task<ActionResult> GetCurrentUser()
         {
             return Ok(await _userService.GetCurrentUser());
+        }
+
+        [HttpPost("ban/{userId}")]
+        public async Task<ActionResult> BanUser(string userId)
+        {
+            var result = await _userService.BanUser(userId);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
     }
 }

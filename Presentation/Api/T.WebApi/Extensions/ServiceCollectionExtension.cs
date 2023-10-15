@@ -25,6 +25,7 @@ using T.Library.Model.Interface;
 using T.WebApi.Services.TokenHelpers;
 using T.Library.Model.Security;
 using T.WebApi.Services.SecurityServices;
+using T.Library.Model.Options;
 
 namespace T.WebApi.Extensions
 {
@@ -64,11 +65,6 @@ namespace T.WebApi.Extensions
         // Thêm xác thực và phân quyền JWT vào dịch vụ
         public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
         {
-            var jwtSection = configuration.GetSection("Authorization");
-            var jwtOptions = new JwtOptions();
-            jwtSection.Bind(jwtOptions);
-            services.Configure<JwtOptions>(jwtSection);
-
             services.AddAuthorization(options =>
             {
                 // Thêm policy với tên là "Jwt" và yêu cầu tất cả người dùng phải được xác thực bằng JWT
@@ -99,9 +95,9 @@ namespace T.WebApi.Extensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtOptions.Issuer,
-                    ValidAudience = jwtOptions.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.AccessTokenKey)),
+                    ValidIssuer = configuration["Authorization:Issuer"],
+                    ValidAudience = configuration["Authorization:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authorization:AccessTokenKey"])),
                     ClockSkew = TimeSpan.Zero,
                 };
 
@@ -188,6 +184,8 @@ namespace T.WebApi.Extensions
         public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+            services.Configure<UrlOptions>(configuration.GetSection("Url"));
+            services.Configure<Library.Model.JwtToken.AuthorizationOptions>(configuration.GetSection("Authorization"));
             return services;
         }
 

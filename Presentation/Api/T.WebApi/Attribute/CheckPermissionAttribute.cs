@@ -11,18 +11,30 @@ using T.Library.Model.Security;
 
 namespace T.WebApi.Attribute
 {
+    /// <summary>
+    /// Attribute for checking user permissions before accessing a resource (controller action) in the application.
+    /// When no specific permissions are provided, it checks if the user is authenticated.
+    /// </summary>
     public class CheckPermissionAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
         private readonly string[] _permissions;
 
+        /// <summary>
+        /// Initializes an instance of the attribute with a list of permissions to check.
+        /// </summary>
+        /// <param name="permissions">The list of permissions to check.</param>
         public CheckPermissionAttribute(params string[] permissions)
         {
             _permissions = permissions;
         }
 
+        /// <summary>
+        /// Method to perform permission checks before accessing a resource.
+        /// </summary>
+        /// <param name="context">The permission checking context.</param>
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            // Kiểm tra xem Action hoặc Controller có bị đánh dấu với [AllowAnonymous] không
+            // Check if the Action or Controller is marked with [AllowAnonymous]
             bool allowAnonymous = context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousAttribute))
                 || context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousFilter));
             if (allowAnonymous)
@@ -30,13 +42,10 @@ namespace T.WebApi.Attribute
                 return;
             }
 
-            // Các xử lý khác ở đây
-
-            // Lấy thông tin đăng nhập của user
+            // Get user login information
             var user = context.HttpContext.User;
 
-            // Kiểm tra xem user đã đăng nhập hay chưa
-            if (!user.Identity.IsAuthenticated)
+            if ((_permissions == null || _permissions.Length == 0) && user.Identity is not null && !user.Identity.IsAuthenticated)
             {
                 context.Result = new UnauthorizedResult();
                 return;
@@ -45,9 +54,14 @@ namespace T.WebApi.Attribute
             if (_permissions != null)
             {
                 var securityService = context.HttpContext.RequestServices.GetService<ISecurityService>();
+
+                if (securityService == null)
+                {
+                    throw new ArgumentNullException("Something went wrong !");
+                }
+
                 foreach (var permission in _permissions)
                 {
-                    //var permissionRecord = securityService.GetPermissionRecordBySystemNameAsync(permission).Result.Data;
                     if (!securityService.AuthorizeAsync(permission).Result)
                     {
                         context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);

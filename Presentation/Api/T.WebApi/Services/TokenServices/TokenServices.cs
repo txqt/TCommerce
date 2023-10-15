@@ -21,9 +21,9 @@ namespace T.WebApi.Services.TokenHelpers
     public class TokenService : ITokenService
     {
         private readonly UserManager<User> _userManager;
-        private readonly IOptions<JwtOptions> _jwtOptions;
+        private readonly IOptions<AuthorizationOptions> _jwtOptions;
 
-        public TokenService(UserManager<User> userManager, IOptions<JwtOptions> jwtOptions)
+        public TokenService(UserManager<User> userManager, IOptions<AuthorizationOptions> jwtOptions)
         {
             _userManager = userManager;
             _jwtOptions = jwtOptions;

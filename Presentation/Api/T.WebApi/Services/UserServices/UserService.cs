@@ -10,19 +10,11 @@ using T.Library.Model.ViewsModel;
 using App.Utilities;
 using System.Text;
 using T.Library.Model.Security;
+using T.Library.Model.Interface;
+using T.Library.Model.Roles.RoleName;
 
 namespace T.WebApi.Services.UserServices
 {
-    public interface IUserService
-    {
-        Task<List<UserModel>> GetAllAsync();
-        Task<List<Role>> GetAllRolesAsync();
-        Task<List<Role>> GetRolesByUserAsync(User user);
-        Task<ServiceResponse<UserModel>> Get(Guid id);
-        Task<ServiceResponse<User>> GetCurrentUser();
-        Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model);
-        Task<ServiceResponse<bool>> DeleteAsync(Guid id);
-    }
     public class UserService : IUserService
     {
         private readonly DatabaseContext _context;
@@ -40,105 +32,113 @@ namespace T.WebApi.Services.UserServices
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<ServiceResponse<bool>> CreateOrEditAsync(UserModel model)
+        public async Task<ServiceResponse<bool>> CreateUserAsync(UserModel model)
         {
-            
+            if (model.Email is not null)
             {
-                var userTable = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.Id);
-
                 if (!AppUtilities.IsValidEmail(model.Email))
                     return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
-                if ((await _userManager.FindByEmailAsync(model.Email) != null) && userTable?.Email != model.Email)
+                if ((await _userManager.FindByEmailAsync(model.Email) != null))
                 {
                     return new ServiceErrorResponse<bool>("Email đã tồn tại");
                 }
-
-                if ((await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber) != null) && userTable?.PhoneNumber != model.PhoneNumber)
-                    return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
-
-                model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
-
-                
-                if (userTable == null)
-                {
-                    var user = new User();
-                    user.Email = model.Email;
-                    user.FirstName = model.FirstName;
-                    user.LastName = model.LastName;
-                    user.PhoneNumber = model.PhoneNumber;
-                    user.UserName = model.UserName;
-                    user.CreatedDate = AppExtensions.GetDateTimeNow();
-                    user.RequirePasswordChange = true;
-                    user.Deleted = user.Deleted;
-                    var result = await _userManager.CreateAsync(user, model.Password);
-
-                    if (model.RoleNames != null && model.RoleNames.Any())
-                    {
-                        var userRoles = await _userManager.GetRolesAsync(user);
-                        await _userManager.RemoveFromRolesAsync(user, userRoles);
-
-                        var selectedRoles = model.RoleNames.Distinct();
-                        try
-                        {
-                            await _userManager.AddToRolesAsync(user, selectedRoles);
-                        }
-                        catch(Exception ex)
-                        {
-                            return new ServiceErrorResponse<bool>(ex.Message);
-                        }
-                    }
-                }
-                else
-                {
-                    var userMapped = _mapper.Map<User>(model);
-
-                    if (_context.IsRecordUnchanged(userTable, userMapped))
-                    {
-                        return new ServiceErrorResponse<bool>("Data is unchanged");
-                    }
-
-                    await _userManager.FindByIdAsync(model.Id.ToString());
-                    //userTable.Dob = model.Dob;
-                    userTable.Email = model.Email;
-                    userTable.FirstName = model.FirstName;
-                    userTable.LastName = model.LastName;
-                    userTable.PhoneNumber = model.PhoneNumber;
-                    userTable.UserName = model.UserName;
-                    userTable.RequirePasswordChange = true;
-                    userTable.Deleted = userTable.Deleted;
-                    if (model.RoleNames != null && model.RoleNames.Any())
-                    {
-                        var userRoles = await _userManager.GetRolesAsync(userTable);
-                        await _userManager.RemoveFromRolesAsync(userTable, userRoles);
-
-                        var selectedRoles = model.RoleNames.Distinct();
-                        try
-                        {
-                            await _userManager.AddToRolesAsync(userTable, selectedRoles);
-                        }
-                        catch (Exception ex)
-                        {
-                            return new ServiceErrorResponse<bool>(ex.Message);
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(model.Password))
-                    {
-                        userTable.PasswordHash = _userManager.PasswordHasher.HashPassword(userTable, model.Password);
-
-                    }
-                    var result = await _userManager.UpdateAsync(userTable);
-                    if (!result.Succeeded)
-                    {
-                        return new ServiceErrorResponse<bool>("Update user failed");
-                    }
-                }
-                
-                return new ServiceSuccessResponse<bool>();
             }
+
+            if ((await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber) != null))
+                return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
+
+            model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
+
+            if(model.UserName is not null && AppUtilities.IsValidEmail(model.UserName)){
+                return new ServiceErrorResponse<bool>("Username không thể là 1 email");
+            }
+
+            var user = _mapper.Map<User>(model);
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, userRoles);
+            if (model.RoleNames != null && model.RoleNames.Any())
+            {
+                var selectedRoles = model.RoleNames.Distinct();
+                try
+                {
+                    await _userManager.AddToRolesAsync(user, selectedRoles);
+                }
+                catch (Exception ex)
+                {
+                    return new ServiceErrorResponse<bool>(ex.Message);
+                }
+            }
+            else
+            {
+                try
+                {
+                    await _userManager.AddToRoleAsync(user, RoleName.Customer);
+                }
+                catch (Exception ex)
+                {
+                    return new ServiceErrorResponse<bool>(ex.Message);
+                }
+            }
+
+            return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<ServiceResponse<bool>> DeleteAsync(Guid id)
+        public async Task<ServiceResponse<bool>> UpdateUserAsync(UserModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.Id.ToString()) ??
+                throw new ArgumentNullException($"Cannot find user by id");
+
+            if (model.Email is not null)
+            {
+                if (!AppUtilities.IsValidEmail(model.Email))
+                    return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
+
+                if ((await _userManager.FindByEmailAsync(model.Email) != null) && user.Email != model.Email)
+                {
+                    return new ServiceErrorResponse<bool>("Email đã tồn tại");
+                }
+            }
+
+            if ((await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == model.PhoneNumber) != null) && user.PhoneNumber != model.PhoneNumber)
+                return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
+
+            model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
+
+            if (model.RoleNames != null && model.RoleNames.Any())
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, userRoles);
+
+                var selectedRoles = model.RoleNames.Distinct();
+                try
+                {
+                    await _userManager.AddToRolesAsync(user, selectedRoles);
+                }
+                catch (Exception ex)
+                {
+                    return new ServiceErrorResponse<bool>(ex.Message);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, model.Password);
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                return new ServiceErrorResponse<bool>("Update user failed");
+            }
+            return new ServiceSuccessResponse<bool>();
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteUserByUserIdAsync(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString()); ;
 
@@ -157,40 +157,27 @@ namespace T.WebApi.Services.UserServices
 
         public async Task<ServiceResponse<UserModel>> Get(Guid id)
         {
-            
+            var user = await _userManager.FindByIdAsync(id.ToString()) ??
+                throw new ArgumentNullException("Cannot find user by that id");
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var model = _mapper.Map<UserModel>(user);
+
+            model.RoleNames = roles;
+
+            var response = new ServiceResponse<UserModel>
             {
-                var user = await _userManager.FindByIdAsync(id.ToString());
-
-                var roles = await _userManager.GetRolesAsync(user);
-
-                var model = _mapper.Map<UserModel>(user);
-
-                model.RoleNames = roles;
-
-                var response = new ServiceResponse<UserModel>
-                {
-                    Data = model,
-                    Success = true
-                };
-                return response;
-            }
+                Data = model,
+                Success = true
+            };
+            return response;
         }
 
         public async Task<List<UserModel>> GetAllAsync()
         {
-            
-            {
-                var model = _mapper.Map<List<UserModel>>(await _context.Users.Where(x=>x.Deleted == false).ToListAsync());
-                return model;
-            }
-        }
-
-        public async Task<List<Role>> GetAllRolesAsync()
-        {
-            
-            {
-                return await _roleManager.Roles.ToListAsync();
-            }
+            var model = _mapper.Map<List<UserModel>>(await _context.Users.Where(x => x.Deleted == false).ToListAsync());
+            return model;
         }
 
         public string GenerateRandomPassword(int length)
@@ -210,30 +197,45 @@ namespace T.WebApi.Services.UserServices
 
         public async Task<ServiceResponse<User>> GetCurrentUser()
         {
-            // Lấy thông tin đối tượng HttpContext từ IHttpContextAccessor.
             var httpContext = _httpContextAccessor.HttpContext;
 
-            // Lấy tên người dùng (username) của người dùng hiện tại từ HttpContext.
-            string username = httpContext.User.Identity.Name;
-
-            if (string.IsNullOrEmpty(username))
+            // Kiểm tra xem User.Identity.Name có null hay không
+            if (httpContext == null || httpContext.User?.Identity?.Name == null)
             {
-                return null;
+                return new ServiceErrorResponse<User>();
             }
 
-            // Tìm người dùng trong UserManager bằng tên người dùng.
+            string username = httpContext.User.Identity.Name;
+
             var user = await _userManager.FindByNameAsync(username);
 
-            return new ServiceResponse<User>() { Success = user != null ? true : false, Data = user };
+            return new ServiceResponse<User>() { Success = user != null, Data = user };
         }
 
         public async Task<List<Role>> GetRolesByUserAsync(User user)
         {
             var list_role = from r in _context.Roles
-                    join ur in _context.UserRoles on r.Id equals ur.RoleId
-                    where ur.UserId == user.Id
-                    select r;
+                            join ur in _context.UserRoles on r.Id equals ur.RoleId
+                            where ur.UserId == user.Id
+                            select r;
             return await list_role.ToListAsync();
         }
+
+        public async Task<ServiceResponse<bool>> BanUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return new ServiceErrorResponse<bool>("User not found");
+
+            user.IsBanned = true;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+                return new ServiceErrorResponse<bool>("Failed to ban user");
+
+            return new ServiceSuccessResponse<bool>(true);
+        }
+
+
     }
 }

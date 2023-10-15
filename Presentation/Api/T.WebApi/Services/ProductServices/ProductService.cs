@@ -35,7 +35,7 @@ namespace T.WebApi.Services.ProductServices
 
         private readonly IRepository<Picture> _pictureRepository;
 
-        private string apiUrl;
+        private string? APIUrl;
 
         private IMapper _mapper;
         #endregion
@@ -45,7 +45,7 @@ namespace T.WebApi.Services.ProductServices
         {
             _configuration = configuration;
             _environment = environment;
-            apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
+            APIUrl = _configuration.GetSection("Url:APIUrl").Value;
             _productsRepository = productsRepository;
             _productAttributeMappingRepository = productAttributeMapping;
             _productPictureMappingRepository = productPictureMapping;
@@ -166,7 +166,7 @@ namespace T.WebApi.Services.ProductServices
 
                 foreach (var pp in productPicture)
                 {
-                    pp.Picture.UrlPath = apiUrl + pp.Picture.UrlPath;
+                    pp.Picture.UrlPath = APIUrl + pp.Picture.UrlPath;
                 }
 
                 var response = new ServiceResponse<List<ProductPicture>>
@@ -241,7 +241,11 @@ namespace T.WebApi.Services.ProductServices
                 var picture = await _pictureRepository.GetByIdAsync(productPicture.PictureId)
                     ?? throw new ArgumentException("No picture found with the specified id");
 
+                if (picture.UrlPath is null)
+                    throw new ArgumentNullException("Cannot find Url path");
+
                 var fileName = picture.UrlPath.Replace("/uploads/", "");
+
                 var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", fileName);
                 if (File.Exists(filePath))
                 {
@@ -272,6 +276,10 @@ namespace T.WebApi.Services.ProductServices
                 {
                     var picture = await _pictureRepository.GetByIdAsync(item.PictureId)
                     ?? throw new ArgumentException("No picture found with the specified id");
+
+                    if (picture.UrlPath is null)
+                        throw new ArgumentNullException("Cannot find Url path");
+
                     var fileName = picture.UrlPath.Replace("/uploads/", "");
                     var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", fileName);
                     if (File.Exists(filePath))
@@ -330,7 +338,7 @@ namespace T.WebApi.Services.ProductServices
                 fileName = productPicture.Picture.UrlPath;
             }
 
-            return apiUrl + fileName;
+            return APIUrl + fileName;
         }
 
         //public async Task<ServiceResponse<bool>> CreateProducts(List<Product> products)

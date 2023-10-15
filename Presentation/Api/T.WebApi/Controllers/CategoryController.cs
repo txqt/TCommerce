@@ -4,6 +4,7 @@ using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
+using T.Library.Model.Security;
 using T.WebApi.Attribute;
 using T.WebApi.Services.CategoryServices;
 
@@ -11,7 +12,7 @@ namespace T.WebApi.Controllers
 {
     [Route("api/category")]
     [ApiController]
-    [CustomAuthorizationFilter(RoleName.Admin)]
+    [CheckPermission(PermissionSystemName.ManageCategories)]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;

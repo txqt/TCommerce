@@ -8,7 +8,6 @@ namespace T.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [CustomAuthorizationFilter(RoleName.Admin)]
     public class SendMailController : ControllerBase
     {
         private readonly IEmailSender _emailSender;
