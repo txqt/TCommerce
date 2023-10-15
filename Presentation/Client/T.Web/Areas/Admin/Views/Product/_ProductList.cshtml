@@ -13,7 +13,7 @@
                         <option value="100">100</option>
                     </select> entries
                     <script>
-                        var defaultPageSize = @ViewBag.PageSize; // giả sử giá trị mặc định là 10
+                        var defaultPageSize = @Model.Parameters.PageSize; // giả sử giá trị mặc định là 10
 
                         $(function () {
                             $("#select-pagesize").val(defaultPageSize); // thiết lập giá trị mặc định cho select
@@ -21,7 +21,7 @@
 
                         function changePageSize() {
                             var newPageSize = document.getElementsByName("pageSize")[0].value;
-                            var url = "@Url.Action("Index", "Product", new { searchText = ViewBag.SearchText, orderBy = ViewBag.OrderBy, })&PageSize=" + newPageSize
+                            var url = "@Url.Action("Index", "Product", new { searchText = Model.Parameters.SearchText, orderBy = Model.Parameters.OrderBy, })&PageSize=" + newPageSize
                             getProduct(url);
                         }
                     </script>

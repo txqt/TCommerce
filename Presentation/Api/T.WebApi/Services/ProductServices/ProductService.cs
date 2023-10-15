@@ -341,27 +341,11 @@ namespace T.WebApi.Services.ProductServices
             return APIUrl + fileName;
         }
 
-        //public async Task<ServiceResponse<bool>> CreateProducts(List<Product> products)
-        //{
-        //    foreach (var product in products)
-        //    {
-        //        product.CreatedOnUtc = DateTime.UtcNow;
-        //    }
-
-        //    _context.Product.AddRange(products);
-
-        //    var result = await _context.SaveChangesAsync();
-
-        //    if (result == 0)
-        //    {
-        //        return new ServiceErrorResponse<bool>("Create product failed");
-        //    }
-        //    return new ServiceSuccessResponse<bool>();
-        //}
-
         public async Task<ServiceResponse<Product>> GetByNameAsync(string name)
         {
-            var product = await _productsRepository.Table.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
+            var product = await _productsRepository.Table
+                        .Where(x => x.Name != null && x.Name.ToLower() == name.ToLower())
+                        .FirstOrDefaultAsync();
 
             var response = new ServiceResponse<Product>
             {

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
+using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
@@ -14,7 +15,6 @@ namespace T.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("/admin/user/[action]")]
-    //[CustomAuthorizationFilter(RoleName.Admin)]
     [CheckPermission(PermissionSystemName.ManageUsers)]
     public class UserController : BaseAdminController
     {
@@ -61,7 +61,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             var userModel = _mapper.Map<UserModel>(model);
 
-            var result = await _userService.CreateOrEditAsync(userModel);
+            var result = await _userService.CreateUserAsync(userModel);
 
             if (!result.Success)
             {
@@ -97,7 +97,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             user = _mapper.Map(model, user);
 
-            var result = await _userService.CreateOrEditAsync(user);
+            var result = await _userService.UpdateUserAsync(user);
             if (!result.Success)
             {
                 SetStatusMessage($"{result.Message}");
@@ -115,7 +115,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteUser(Guid id)
         {
 
-            var result = await _userService.DeleteAsync(id);
+            var result = await _userService.DeleteUserByUserIdAsync(id);
             if (!result.Success)
             {
                 return Json(new { success = false, message = result.Message });
@@ -127,7 +127,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> BanUser(Guid id)
         {
 
-            var result = await _userService.DeleteAsync(id);
+            var result = await _userService.BanUser(id.ToString());
             if (!result.Success)
             {
                 return Json(new { success = false, message = result.Message });
