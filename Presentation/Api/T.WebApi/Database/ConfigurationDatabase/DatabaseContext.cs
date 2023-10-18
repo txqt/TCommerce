@@ -18,6 +18,10 @@ namespace T.WebApi.Database.ConfigurationDatabase
         {
         }
 
+        public DatabaseContext()
+        {
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

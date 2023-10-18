@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using T.Library.Model.Interface;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Services.UserService;
@@ -14,10 +15,12 @@ namespace T.Web.Services.PrepareModelServices
     {
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        public UserModelService(IMapper mapper, IUserService userService)
+        private readonly ISecurityService _securityService;
+        public UserModelService(IMapper mapper, IUserService userService, ISecurityService securityService)
         {
             _mapper = mapper;
             _userService = userService;
+            _securityService = securityService;
         }
 
         public async Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, UserModel user)
@@ -31,7 +34,7 @@ namespace T.Web.Services.PrepareModelServices
                 _mapper.Map(user, model);
             }
 
-            model.AvailableRoles = (await _userService.GetAllRolesAsync()).Select(role => new SelectListItem
+            model.AvailableRoles = (await _securityService.GetRoles()).Select(role => new SelectListItem
             {
                 Text = role.Name,
                 Value = role.Name

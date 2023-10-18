@@ -1,0 +1,83 @@
+﻿@{
+    Layout = "_EmptyLayout";
+}
+
+@model StartupFormModel;
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+<div class="container mt-5">
+    <form action="/Startup/Install" method="post">
+        <h2>Store Information</h2>
+        <div class="border p-3 mt-3">
+            <div class="form-group">
+                <label for="adminEmail">Admin Email:</label>
+                <input type="email" id="adminEmail" asp-for="AdminEmail" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Admin Password:</label>
+                <input type="password" id="adminPassword" asp-for="AdminPassword" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" asp-for="ConfirmPassword" class="form-control" required>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" id="createSampleData" asp-for="CreateSampleData" class="form-check-input">
+                <label class="form-check-label" for="createSampleData">Create sample data</label>
+            </div>
+        </div>
+        <br />
+        <h2>Database Information</h2>
+        <div class="form-group">
+            <label for="dbType">Database Type:</label>
+            <select id="dbType" name="dbType" class="form-control">
+                <option value="SqlServer">SQL Server</option>
+                <!-- Add other options as needed -->
+            </select>
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" id="createDatabaseIfNotExist" asp-for="CreateDatabaseIfNotExist" class="form-check-input">
+            <label class="form-check-label" for="createDatabaseIfNotExist">Create Database If Not Exist</label>
+        </div>
+        <div class="border p-3 mt-3">
+            <div class="form-group">
+                <label for="serverName">Server Name:</label>
+                <input type="text" id="serverName" asp-for="ServerName" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="dbName">Database Name:</label>
+                <input type="text" id="dbName" asp-for="DbName" class="form-control" required>
+            </div>
+        </div>
+        <div class="form-group form-check mt-3">
+            <input type="checkbox" id="useWindowsAuth" asp-for="UseWindowsAuth" class="form-check-input">
+            <label class="form-check-label" for="useWindowsAuth">Use Integrated Windows Authentication:</label>
+        </div>
+        <div id="sqlUserPass" class="border p-3 mt-3">
+            <div class="form-group">
+                <label for="sqlUsername">SQL Username:</label>
+                <input type="text" id="sqlUsername" asp-for="SqlUsername" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="sqlPassword">SQL Password:</label>
+                <input type="password" id="sqlPassword" asp-for="SqlPassword" class="form-control">
+            </div>
+        </div>
+
+        <br />
+        <button type="submit" class="btn btn-primary">Install</button>
+    </form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#useWindowsAuth').change(function () {
+            if (this.checked)
+                $('#sqlUserPass').fadeOut('fast');
+            else
+                $('#sqlUserPass').fadeIn('fast');
+        });
+    });
+</script>

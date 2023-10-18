@@ -26,6 +26,7 @@ using T.WebApi.Services.TokenHelpers;
 using T.Library.Model.Security;
 using T.WebApi.Services.SecurityServices;
 using T.Library.Model.Options;
+using T.WebApi.Services.DbManageService;
 
 namespace T.WebApi.Extensions
 {
@@ -136,7 +137,7 @@ namespace T.WebApi.Extensions
             services.AddTransient<IHomePageService, HomePageService>();
             services.AddTransient<ISecurityService, SecurityService>();
             services.AddTransient<DataSeeder>();
-            services.AddTransient<ISecurityService, SecurityService>();
+            services.AddTransient<IDbManageService, DbManageService>();
             services.AddTransient<IPermissionRecordUserRoleMappingService, PermissionRecordUserRoleMappingService>();
             services.AddScoped<ValidationFilterAttribute>();
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>)); ;

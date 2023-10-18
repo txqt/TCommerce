@@ -46,18 +46,19 @@ namespace T.WebApi.Services.DataSeederService
             _permissionRecordUserRoleMappingService = permissionRecordUserRoleMappingService;
         }
 
-        public async Task Initialize()
+        public async Task Initialize(bool sampleData = false)
         {
-            await SeedCategoriesAsync();
-            await SeedProductAttributeAsync();
-            await SeedProductsAsync();
-            
             if (await SeedRoles() && await SeedPermission())
             {
                 await SeedPermissionRolesMapping();
-                await SeedUserAsync();
+                if (sampleData)
+                {
+                    await SeedCategoriesAsync();
+                    await SeedProductAttributeAsync();
+                    await SeedProductsAsync();
+                    await SeedUserAsync();
+                }
             }
-
         }
         private async Task SeedCategoriesAsync()
         {

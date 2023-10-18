@@ -36,7 +36,6 @@ namespace T.WebApi.Services.AccountServices
     }
     public class AccountService : IAccountService
     {
-        private readonly IConfiguration _configuration;
         private readonly SignInManager<User> _signInManager;
         private readonly IHttpContextAccessor _httpContext;
         private readonly IEmailSender _emailService;
@@ -50,8 +49,7 @@ namespace T.WebApi.Services.AccountServices
         private readonly IOptions<AuthorizationOptions> _jwtOptions;
         private readonly IOptions<UrlOptions> _urlOptions;
 
-        public AccountService(IConfiguration configuration,
-                               UserManager<User> userManager,
+        public AccountService(UserManager<User> userManager,
                                SignInManager<User> signInManager,
                                IEmailSender emailService,
                                RoleManager<Role> roleManager,
@@ -65,7 +63,6 @@ namespace T.WebApi.Services.AccountServices
                                IOptions<UrlOptions> urlOptions)
         {
             this._emailService = emailService;
-            _configuration = configuration;
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
@@ -112,7 +109,7 @@ namespace T.WebApi.Services.AccountServices
             var confirmEmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var validToken = EncodeToken(confirmEmailToken);
 
-            string url = $"{_configuration["Url:ClientUrl"]}/account/reset-password?email={email}&token={validToken}";
+            string url = $"{_urlOptions.Value.ClientUrl}/account/reset-password?email={email}&token={validToken}";
 
             EmailDto emailDto = new EmailDto
             {
