@@ -18,7 +18,7 @@ using T.WebApi.Services.CategoryServices;
 using T.WebApi.Services.UserServices;
 using T.WebApi.Services.HomePageServices;
 using T.WebApi.Services.DataSeederService;
-using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
+//using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.IdentityCustom;
 using T.WebApi.Services.IRepositoryServices;
 using T.Library.Model.Interface;
@@ -138,8 +138,9 @@ namespace T.WebApi.Extensions
             services.AddTransient<ISecurityService, SecurityService>();
             services.AddTransient<DataSeeder>();
             services.AddTransient<IDbManageService, DbManageService>();
-            services.AddTransient<IPermissionRecordUserRoleMappingService, PermissionRecordUserRoleMappingService>();
+            //services.AddTransient<IPermissionRecordUserRoleMappingService, PermissionRecordUserRoleMappingService>();
             services.AddScoped<ValidationFilterAttribute>();
+            services.AddScoped<DatabaseContextFactory>();
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>)); ;
 
             return services;

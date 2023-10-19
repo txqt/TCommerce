@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using T.Library.Model;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
@@ -8,45 +9,42 @@ using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.WebApi.Database.ConfigurationDatabase;
-using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
+//using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.Services.ProductServices;
 
 namespace T.WebApi.Services.DataSeederService
 {
     public class DataSeeder
     {
-        private readonly DatabaseContext _context;
         private readonly RoleManager<Role> _roleManager;
         private readonly UserManager<User> _userManager;
         private readonly IProductService _productService;
         private readonly ICategoryService _categorySerivce;
         private readonly IProductCategoryService _productCategorySerivce;
         private readonly IProductAttributeService _productAttributeService;
-        //private readonly IProductAttributeMappingService _productAttributeMappingService;
-        //private readonly IProductAttributeValueService _productAttributeValueService;
-        private readonly ISecurityService _permissionRecordService;
-        private readonly IPermissionRecordUserRoleMappingService _permissionRecordUserRoleMappingService;
-        private readonly Func<string, Task<ServiceResponse<Product>>> _getProductByName;
-        private readonly Func<string, Task<ServiceResponse<Category>>> _getCategoryByName;
+        private readonly ISecurityService _securityService;
+        //private readonly IPermissionRecordUserRoleMappingService _permissionRecordUserRoleMappingService;
 
-        public DataSeeder(DatabaseContext context, RoleManager<Role> roleManager, UserManager<User> userManager, IProductService productSerivce, ICategoryService categorySerivce, IProductCategoryService productCategorySerivce, IProductAttributeService productAttributeService, /*IProductAttributeMappingService productAttributeMappingService,*/ /*IProductAttributeValueService productAttributeValueService,*/ ISecurityService permissionRecordService, IPermissionRecordUserRoleMappingService permissionRecordUserRoleMappingService)
+        public DataSeeder(RoleManager<Role> roleManager,
+            UserManager<User> userManager,
+            IProductService productSerivce,
+            ICategoryService categorySerivce,
+            IProductCategoryService productCategorySerivce,
+            IProductAttributeService productAttributeService,
+            ISecurityService permissionRecordService
+            /*IPermissionRecordUserRoleMappingService permissionRecordUserRoleMappingService*/)
         {
-            _context = context;
             _roleManager = roleManager;
             _userManager = userManager;
             _productService = productSerivce;
             _categorySerivce = categorySerivce;
-            _getProductByName = _productService.GetByNameAsync;
-            _getCategoryByName = _categorySerivce.GetCategoryByNameAsync;
             _productCategorySerivce = productCategorySerivce;
             _productAttributeService = productAttributeService;
-            //_productAttributeMappingService = productAttributeMappingService;
-            //_productAttributeValueService = productAttributeValueService;
-            _permissionRecordService = permissionRecordService;
-            _permissionRecordUserRoleMappingService = permissionRecordUserRoleMappingService;
+            _securityService = permissionRecordService;
+            //_permissionRecordUserRoleMappingService = permissionRecordUserRoleMappingService;
         }
 
-        public async Task Initialize(bool sampleData = false)
+        public async Task Initialize(string AdminEmail, string AdminPassword, bool sampleData = false)
         {
             if (await SeedRoles() && await SeedPermission())
             {
@@ -58,136 +56,161 @@ namespace T.WebApi.Services.DataSeederService
                     await SeedProductsAsync();
                     await SeedUserAsync();
                 }
+                var user = new User()
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Admin",
+                    LastName = "Admin",
+                    Email = AdminEmail,
+                    NormalizedEmail = AdminEmail,
+                    PhoneNumber = "0322321312",
+                    UserName = AdminEmail,
+                    NormalizedUserName = AdminEmail.ToUpper(),
+                    CreatedDate = DateTime.UtcNow,
+                    EmailConfirmed = true
+                };
+
+                await _userManager.CreateAsync(user, AdminPassword);
+                var createdUser = await _userManager.FindByNameAsync(user.UserName);
+
+                if (createdUser is null)
+                {
+                    throw new Exception("Something went wrong");
+                }
+                await _userManager.AddToRoleAsync(createdUser, RoleName.Admin);
             }
         }
         private async Task SeedCategoriesAsync()
         {
-            if (!await _context.Category.AnyAsync())
+            foreach (var item in CategoriesDataSeed.Instance.GetAll())
             {
-                foreach(var item in CategoriesDataSeed.Instance.GetAll())
-                {
-                    await _categorySerivce.CreateCategoryAsync(item);
-                }
+                await _categorySerivce.CreateCategoryAsync(item);
             }
+
         }
         private async Task SeedProductsAsync()
         {
-            if (!await _context.Product.AnyAsync())
+
+            ProductDataSeed listProductSeed = new ProductDataSeed();
+
+            foreach (var item in listProductSeed.GetAll())
             {
-                ProductDataSeed listProductSeed = new ProductDataSeed();
 
-                foreach(var item in listProductSeed.GetAll())
+                foreach (var product in item.Products)
                 {
-                    
-                    foreach (var product in item.Products)
+
+                    await _productService.CreateProductAsync(product);
+
+                    var productId = (await _productService.GetByNameAsync(product.Name)).Data.Id;
+
+                    foreach (var category in item.Categories)
                     {
+                        var categoryId = (await _categorySerivce.GetCategoryByNameAsync(category.Name.ToString())).Data.Id;
 
-                        await _productService.CreateProductAsync(product);
-
-                        var productId = (await _productService.GetByNameAsync(product.Name)).Data.Id;
-
-                        foreach(var category in item.Categories)
+                        var productCategoryMapping = new ProductCategory()
                         {
-                            var categoryId = (await _categorySerivce.GetCategoryByNameAsync(category.Name.ToString())).Data.Id;
+                            CategoryId = categoryId,
+                            ProductId = productId
+                        };
+                        await _productCategorySerivce.CreateProductCategoryAsync(productCategoryMapping);
+                    }
 
-                            var productCategoryMapping = new ProductCategory()
-                            {
-                                CategoryId = categoryId,
-                                ProductId = productId
-                            };
-                            await _productCategorySerivce.CreateProductCategoryAsync(productCategoryMapping);
-                        }
-                        
-                        foreach(var pa in item.ProductAttributes)
+                    foreach (var pa in item.ProductAttributes)
+                    {
+                        var productAttributeId = (await _productAttributeService.GetProductAttributeByName(pa.Name.ToString())).Data.Id;
+
+                        var productAttributeMapping = new ProductAttributeMapping()
                         {
-                            var productAttributeId = (await _productAttributeService.GetProductAttributeByName(pa.Name.ToString())).Data.Id;
+                            ProductId = productId,
+                            ProductAttributeId = productAttributeId
+                        };
+                        await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
 
-                            var productAttributeMapping = new ProductAttributeMapping()
+                        var productAttributeMappingId = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId)).Data.Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
+
+                        foreach (var pav in item.ProductAttributeValues)
+                        {
+                            var productAttributeValue = new ProductAttributeValue()
                             {
-                                ProductId = productId,
-                                ProductAttributeId = productAttributeId
+                                ProductAttributeMappingId = productAttributeMappingId,
+                                Name = pav.Name,
                             };
-                            await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
-
-                            var productAttributeMappingId = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId)).Data.Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
-
-                            foreach (var pav in item.ProductAttributeValues)
-                            {
-                                var productAttributeValue = new ProductAttributeValue()
-                                {
-                                    ProductAttributeMappingId = productAttributeMappingId,
-                                    Name = pav.Name,
-                                };
-                                await _productAttributeService.CreateProductAttributeValueAsync(productAttributeValue);
-                            }
+                            await _productAttributeService.CreateProductAttributeValueAsync(productAttributeValue);
                         }
                     }
                 }
             }
+
         }
         private async Task SeedProductAttributeAsync()
         {
-            if (!await _context.ProductAttribute.AnyAsync())
+
+            foreach (var item in ProductAttributesDataSeed.Instance.GetAll())
             {
-                foreach (var item in ProductAttributesDataSeed.Instance.GetAll())
-                {
-                    await _productAttributeService.CreateProductAttributeAsync(item);
-                }
-            };
-            
+                await _productAttributeService.CreateProductAttributeAsync(item);
+            }
         }
         private async Task<bool> SeedPermission()
         {
-            if (await _context.PermissionRecords.AnyAsync())
-            {
-                return false;
-            }
+            FieldInfo[] fields = typeof(DefaultPermission).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
 
-            var permission_list = await _permissionRecordService.GetAllPermissionRecordAsync();
+            List<PermissionRecord> permission_list = new List<PermissionRecord>();
+
+            foreach (FieldInfo field in fields)
+            {
+                if (field.FieldType == typeof(PermissionRecord))
+                {
+                    // Lấy giá trị của trường và thêm vào danh sách
+                    PermissionRecord permission = (PermissionRecord)field.GetValue(null);
+                    permission_list.Add(permission);
+                }
+            }
 
             try
             {
-                await _context.PermissionRecords.AddRangeAsync(permission_list);
-                await _context.SaveChangesAsync();
+                foreach (var item in permission_list)
+                {
+                    if (!(await _securityService.CreatePermissionRecord(item)).Success)
+                    {
+                        return false;
+                    }
+                }
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }
+
         }
         private async Task SeedPermissionRolesMapping()
         {
-            if (await _context.PermissionRecordUserRoleMappings.AnyAsync())
-            {
-                return;
-            }
 
             var list = new List<RolePermissionMappingSeedModel>()
-            {
-                new RolePermissionMappingSeedModel()
                 {
-                    Roles = new List<Role>()
+                    new RolePermissionMappingSeedModel()
                     {
-                        new Role(RoleName.Employee)
+                        Roles = new List<Role>()
+                        {
+                            new Role(RoleName.Employee)
+                        },
+                        PermissionRecords = new List<PermissionRecord>()
+                        {
+                            DefaultPermission.AccessAdminPanel,
+                            DefaultPermission.ManageProducts,
+                            DefaultPermission.ManageCategories,
+                            DefaultPermission.ManageAttributes,
+                        }
                     },
-                    PermissionRecords = new List<PermissionRecord>()
+                    new RolePermissionMappingSeedModel()
                     {
-                        DefaultPermission.AccessAdminPanel,
-                        DefaultPermission.ManageProducts,
-                        DefaultPermission.ManageCategories,
-                        DefaultPermission.ManageAttributes,
+                        Roles = new List<Role>()
+                        {
+                            new Role(RoleName.Admin)
+                        },
+                        PermissionRecords = await _securityService.GetAllPermissionRecordAsync()
                     }
-                },
-                new RolePermissionMappingSeedModel()
-                {
-                    Roles = new List<Role>()
-                    {
-                        new Role(RoleName.Admin)
-                    },
-                    PermissionRecords = await _permissionRecordService.GetAllPermissionRecordAsync()
-                }
-            };
+                };
 
             foreach (var item in list)
             {
@@ -197,20 +220,18 @@ namespace T.WebApi.Services.DataSeederService
                     {
                         var rolePermissionMapping = new PermissionRecordUserRoleMapping()
                         {
-                            PermissionRecordId = (await _permissionRecordService.GetPermissionRecordBySystemNameAsync(permission.SystemName)).Data.Id,
+                            PermissionRecordId = (await _securityService.GetPermissionRecordBySystemNameAsync(permission.SystemName)).Data.Id,
                             RoleId = await GetRoleId(_roleManager, role.Name)
                         };
-                        await _permissionRecordUserRoleMappingService.CreateOrEditAsync(rolePermissionMapping);
+                        await _securityService.CreatePermissionMappingAsync(rolePermissionMapping);
                     }
                 }
             }
+
         }
         private async Task<bool> SeedRoles()
         {
-            if (await _context.Roles.AnyAsync())
-            {
-                return false;
-            }
+
 
             try
             {
@@ -230,26 +251,25 @@ namespace T.WebApi.Services.DataSeederService
             {
                 return false;
             }
+
         }
         private async Task SeedUserAsync()
         {
-            if (await _context.Users.AnyAsync())
-            {
-                return;
-            }
+
 
             foreach (var item in UserRoleMappingDataSeed.Instance.GetAll())
             {
-                foreach(var user in item.Users)
+                foreach (var user in item.Users)
                 {
                     await _userManager.CreateAsync(user, "123321");
                     var createdUser = await _userManager.FindByNameAsync(user.UserName);
-                    foreach(var role in item.Roles)
+                    foreach (var role in item.Roles)
                     {
                         await _userManager.AddToRoleAsync(createdUser, role.Name);
                     }
                 }
             }
+
         }
         public async Task<Guid> GetRoleId(RoleManager<Role> roleManager, string roleName)
         {

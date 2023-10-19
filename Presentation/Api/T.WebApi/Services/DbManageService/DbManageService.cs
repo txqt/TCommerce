@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
+using System.Diagnostics;
 using T.WebApi.Database.ConfigurationDatabase;
 
 namespace T.WebApi.Services.DbManageService
@@ -10,37 +12,53 @@ namespace T.WebApi.Services.DbManageService
         bool DatabaseExists();
         Task CreateDatabaseAsync(int triesToConnect = 10);
         string BuildConnectionString(string serverName, string dbName, string sqlUsername, string sqlPassword, bool useWindowsAuth);
+        Task InitializeDatabase();
     }
     public class DbManageService : IDbManageService
     {
         private readonly IConfiguration _configuration;
-        private readonly DatabaseContext _context;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DbManageService(IConfiguration configuration, DatabaseContext context)
+        public DbManageService(IConfiguration configuration, IServiceProvider serviceProvider)
         {
             _configuration = configuration;
-            _context = context;
+            _serviceProvider = serviceProvider;
         }
 
         public SqlConnectionStringBuilder GetConnectionStringBuilder()
         {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
-            var builder = new SqlConnectionStringBuilder(connectionString);
-            return builder;
+            var connectionStringBuilder = new SqlConnectionStringBuilder(_configuration.GetConnectionString("DefaultConnection"));
+            return connectionStringBuilder;
         }
 
         public bool DatabaseExists()
         {
-            return _context.Database.CanConnect();
+            try
+            {
+                using (var connection = new SqlConnection(GetConnectionStringBuilder().ConnectionString))
+                {
+                    connection.Open();
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task CreateDatabaseAsync(int triesToConnect = 10)
         {
+            if (DatabaseExists())
+            {
+                return;
+            }
+
             var connectionStringBuilder = GetConnectionStringBuilder();
             var databaseName = connectionStringBuilder.InitialCatalog;
 
             // Create a new connection string without the database name
-            connectionStringBuilder.InitialCatalog = "";
+            connectionStringBuilder.InitialCatalog = "master";
             using (var connection = new SqlConnection(connectionStringBuilder.ConnectionString))
             {
                 await connection.OpenAsync();
@@ -58,7 +76,7 @@ namespace T.WebApi.Services.DbManageService
                 {
                     using (var context = new DatabaseContext())
                     {
-                        if (context.Database.CanConnect())
+                        if (DatabaseExists())
                         {
                             // Database is ready, you can start creating tables and seed data
                             return;
@@ -83,7 +101,9 @@ namespace T.WebApi.Services.DbManageService
             {
                 DataSource = serverName,
                 InitialCatalog = dbName,
-                IntegratedSecurity = useWindowsAuth
+                IntegratedSecurity = useWindowsAuth,
+                PersistSecurityInfo = false,
+                TrustServerCertificate = true
             };
 
             if (!useWindowsAuth)
@@ -95,6 +115,15 @@ namespace T.WebApi.Services.DbManageService
             return builder.ConnectionString;
         }
 
+        public async Task InitializeDatabase()
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+
+                await dbContext.Database.EnsureCreatedAsync();
+            }
+        }
         //public void UpdateEntities(params string[] sqlCommands)
         //{
         //    foreach (var sqlCommand in sqlCommands)

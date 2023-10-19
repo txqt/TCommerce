@@ -11,30 +11,30 @@ namespace T.WebApi.Services.DataSeederService
         {
             return new List<UserRoleMappingModel>()
             {
-                new UserRoleMappingModel()
-                {
-                    Users = new List<User>()
-                    {
-                        new User()
-                        {
-                            Id = Guid.NewGuid(),
-                            FirstName = "Văn Thành",
-                            LastName = "Hồ",
-                            Email = "hovanthanh12102002@gmail.com",
-                            NormalizedEmail = "hovanthanh12102002@gmail.com",
-                            PhoneNumber = "0322321312",
-                            UserName = "thanhhv",
-                            NormalizedUserName = "THANHHV",
-                            CreatedDate = DateTime.UtcNow,
-                            EmailConfirmed = true
-                        }, 
+                //new UserRoleMappingModel()
+                //{
+                //    Users = new List<User>()
+                //    {
+                //        new User()
+                //        {
+                //            Id = Guid.NewGuid(),
+                //            FirstName = "Văn Thành",
+                //            LastName = "Hồ",
+                //            Email = "hovanthanh12102002@gmail.com",
+                //            NormalizedEmail = "hovanthanh12102002@gmail.com",
+                //            PhoneNumber = "0322321312",
+                //            UserName = "thanhhv",
+                //            NormalizedUserName = "THANHHV",
+                //            CreatedDate = DateTime.UtcNow,
+                //            EmailConfirmed = true
+                //        }, 
                         
-                    },
-                    Roles = new List<Role>()
-                    {
-                        new Role(RoleName.Admin)
-                    }
-                },
+                //    },
+                //    Roles = new List<Role>()
+                //    {
+                //        new Role(RoleName.Admin)
+                //    }
+                //},
                 new UserRoleMappingModel()
                 {
                     Users = new List<User>()

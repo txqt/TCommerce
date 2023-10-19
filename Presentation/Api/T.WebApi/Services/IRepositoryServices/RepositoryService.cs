@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using T.Library.Model.Common;
 using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
@@ -9,12 +8,13 @@ namespace T.WebApi.Services.IRepositoryServices
     public class RepositoryService<T> : IRepository<T> where T : class
     {
         private readonly DatabaseContext _context;
+        public DbSet<T> Table { get; private set; }
         public RepositoryService(DatabaseContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            Table = _context.Set<T>();
         }
 
-        public DbSet<T> Table => _context.Set<T>();
 
         public async Task<IEnumerable<T>> GetAllAsync(bool? includeDeleted = false)
         {

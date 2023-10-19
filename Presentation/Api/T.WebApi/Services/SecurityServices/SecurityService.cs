@@ -136,10 +136,10 @@ namespace T.WebApi.Services.SecurityServices
             try
             {
                 await _permissionRepository.CreateAsync(permissionRecord);
-                return new ServiceErrorResponse<bool>("Create permission record failed");
+                return new ServiceSuccessResponse<bool>();
             }catch(Exception ex)
             {
-                return new ServiceSuccessResponse<bool>() { Message = ex.Message};
+                return new ServiceErrorResponse<bool>() { Message = ex.Message};
             }
         }
 
@@ -158,7 +158,7 @@ namespace T.WebApi.Services.SecurityServices
 
         public async Task<List<PermissionRecord>> GetAllPermissionRecordAsync()
         {
-            return await _permissionRepository.Table.ToListAsync();
+            return (await _permissionRepository.GetAllAsync()).ToList();
         }
 
         public async Task<ServiceResponse<PermissionRecord>> GetPermissionRecordByIdAsync(int permissionRecordId)

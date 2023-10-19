@@ -18,7 +18,7 @@ public static class AppSettingsExtensions
         {
             if (tempObj[keys[i]] == null)
             {
-                throw new Exception("Key does not exist");
+                return null;
             }
             tempObj = tempObj[keys[i]];
         }
@@ -45,7 +45,7 @@ public static class AppSettingsExtensions
 
         if (tempObj[keys.Last()] != null)
         {
-            throw new Exception("Key already exists");
+            return;
         }
 
         tempObj[keys.Last()] = "";
