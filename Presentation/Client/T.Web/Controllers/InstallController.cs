@@ -7,13 +7,19 @@ namespace T.Web.Controllers
     public class InstallController : BaseController
     {
         private readonly HttpClient _httpClient;
-        public InstallController(HttpClient httpClient)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public InstallController(HttpClient httpClient, IWebHostEnvironment webHostEnvironment)
         {
             _httpClient = httpClient;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> Index()
         {
+            if(!_webHostEnvironment.IsDevelopment())
+            {
+                return Redirect("/home/index");
+            }
             var result = await _httpClient.GetAsync("api/db-manage/is-installed");
             if (result.IsSuccessStatusCode)
             {
