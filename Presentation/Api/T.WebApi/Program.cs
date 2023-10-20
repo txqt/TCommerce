@@ -47,9 +47,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+}
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
 // Resolve DataSeeder và gọi phương thức Initialize để seed dữ liệu
 //using (var scope = app.Services.CreateScope())
