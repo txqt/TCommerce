@@ -22,7 +22,7 @@ using T.Web.Services.AccountService;
 namespace T.Web.Controllers
 {
     [Route("/account/[action]")]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly IAccountService _accountService;
         private readonly IOptions<Library.Model.JwtToken.AuthorizationOptions> _jwtOptions;

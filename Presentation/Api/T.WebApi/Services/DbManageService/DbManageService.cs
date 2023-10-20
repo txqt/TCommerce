@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using System.Diagnostics;
@@ -9,6 +10,7 @@ namespace T.WebApi.Services.DbManageService
     public interface IDbManageService
     {
         SqlConnectionStringBuilder GetConnectionStringBuilder();
+        bool IsDatabaseInstalled();
         bool DatabaseExists();
         Task CreateDatabaseAsync(int triesToConnect = 10);
         string BuildConnectionString(string serverName, string dbName, string sqlUsername, string sqlPassword, bool useWindowsAuth);
@@ -18,6 +20,7 @@ namespace T.WebApi.Services.DbManageService
     {
         private readonly IConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
+        protected bool? _databaseIsInstalled;
 
         public DbManageService(IConfiguration configuration, IServiceProvider serviceProvider)
         {
@@ -29,6 +32,13 @@ namespace T.WebApi.Services.DbManageService
         {
             var connectionStringBuilder = new SqlConnectionStringBuilder(_configuration.GetConnectionString("DefaultConnection"));
             return connectionStringBuilder;
+        }
+
+        public bool IsDatabaseInstalled()
+        {
+            _databaseIsInstalled ??= !string.IsNullOrEmpty(GetConnectionStringBuilder()?.ConnectionString);
+
+            return _databaseIsInstalled.Value;
         }
 
         public bool DatabaseExists()

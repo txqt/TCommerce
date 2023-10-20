@@ -7,7 +7,8 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 
 <div class="container mt-5">
-    <form action="/Startup/Install" method="post">
+    <form asp-action="Install" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <h2>Store Information</h2>
         <div class="border p-3 mt-3">
             <div class="form-group">
@@ -54,6 +55,7 @@
             <input type="checkbox" id="useWindowsAuth" asp-for="UseWindowsAuth" class="form-check-input">
             <label class="form-check-label" for="useWindowsAuth">Use Integrated Windows Authentication:</label>
         </div>
+
         <div id="sqlUserPass" class="border p-3 mt-3">
             <div class="form-group">
                 <label for="sqlUsername">SQL Username:</label>
@@ -64,7 +66,6 @@
                 <input type="password" id="sqlPassword" asp-for="SqlPassword" class="form-control">
             </div>
         </div>
-
         <br />
         <button type="submit" class="btn btn-primary">Install</button>
     </form>

@@ -98,7 +98,7 @@ internal class Program
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Startup}/{action=Index}/{id?}");
+            pattern: "{controller=Install}/{action=Index}/{id?}");
 
         app.Run();
     }

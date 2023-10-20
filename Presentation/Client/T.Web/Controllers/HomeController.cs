@@ -7,7 +7,7 @@ using T.Web.Services.HomePageServices;
 
 namespace T.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IHomePageService _homePageService;
@@ -24,14 +24,6 @@ namespace T.Web.Controllers
         {
             return View();
         }
-
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllSliderItemAsync()
-        //{
-        //    var sliderItemList = await _sliderItemService.GetAllSliderItemAsync();
-
-        //    return View(sliderItemList);
-        //}
 
         [HttpGet]
         public async Task<IActionResult> ShowCategoriesOnHomePage()

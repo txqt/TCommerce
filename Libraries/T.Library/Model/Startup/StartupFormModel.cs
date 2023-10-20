@@ -24,9 +24,11 @@ namespace T.Library.Model.Startup
         public bool CreateDatabaseIfNotExist { get; set; } = true;
         public string ServerName { get; set; }
         public string DbName { get; set; }
-        public bool UseWindowsAuth { get; set; }
-        public string SqlUsername { get; set; }
-        public string SqlPassword { get; set; }
+        public bool UseWindowsAuth { get; set; } = true;
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string SqlUsername { get; set; } = string.Empty;
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string SqlPassword { get; set; } = string.Empty;
 
         //public string GetConnectionString()
         //{
