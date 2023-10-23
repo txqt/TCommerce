@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using System.Diagnostics;
-using T.WebApi.Database.ConfigurationDatabase;
+using T.WebApi.Database;
 
 namespace T.WebApi.Services.DbManageService
 {

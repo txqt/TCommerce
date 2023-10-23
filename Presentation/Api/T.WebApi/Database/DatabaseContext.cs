@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using T.Library.Model;
-using T.Library.Model.BannerItem;
+using T.Library.Model.Banners;
 using T.Library.Model.Common;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
-using T.WebApi.Extensions;
 
-namespace T.WebApi.Database.ConfigurationDatabase
+namespace T.WebApi.Database
 {
     public class DatabaseContext : IdentityDbContext<User, Role, Guid>
     {
@@ -32,7 +30,7 @@ namespace T.WebApi.Database.ConfigurationDatabase
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 var tableName = entityType.GetTableName();
-                if (tableName.StartsWith("AspNet"))
+                if (tableName is not null && tableName.StartsWith("AspNet"))
                 {
                     entityType.SetTableName(tableName.Substring(6));
                 }
@@ -51,7 +49,7 @@ namespace T.WebApi.Database.ConfigurationDatabase
         public DbSet<ProductPicture> Product_ProductPicture_Mapping { get; set; }
         public DbSet<ProductReview> ProductReview { get; set; }
         public DbSet<ProductReviewHelpfulness> ProductReviewHelpfulness { get; set; }
-        public DbSet<SlideShow> SliderItem { get; set; }
+        public DbSet<Banner> Banners { get; set; }
         public DbSet<PermissionRecord> PermissionRecords { get; set; }
         public DbSet<PermissionRecordUserRoleMapping> PermissionRecordUserRoleMappings { get; set; }
     }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using T.WebApi.Database.ConfigurationDatabase;
+using T.WebApi.Database;
 
 namespace T.WebApi.Services.IRepositoryServices
 {

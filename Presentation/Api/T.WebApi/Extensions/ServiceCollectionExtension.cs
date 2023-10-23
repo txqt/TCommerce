@@ -7,7 +7,6 @@ using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 using T.Library.Model.Users;
-using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Services.AccountServices;
 using T.WebApi.Attribute;
 using T.WebApi.Services.CacheServices;
@@ -27,6 +26,8 @@ using T.Library.Model.Security;
 using T.WebApi.Services.SecurityServices;
 using T.Library.Model.Options;
 using T.WebApi.Services.DbManageService;
+using T.WebApi.Database;
+using T.WebApi.Services.BannerServices;
 
 namespace T.WebApi.Extensions
 {
@@ -138,7 +139,7 @@ namespace T.WebApi.Extensions
             services.AddTransient<ISecurityService, SecurityService>();
             services.AddTransient<DataSeeder>();
             services.AddTransient<IDbManageService, DbManageService>();
-            //services.AddTransient<IPermissionRecordUserRoleMappingService, PermissionRecordUserRoleMappingService>();
+            services.AddTransient<IBannerService, BannerService>();
             services.AddScoped<ValidationFilterAttribute>();
             services.AddScoped<DatabaseContextFactory>();
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>)); ;

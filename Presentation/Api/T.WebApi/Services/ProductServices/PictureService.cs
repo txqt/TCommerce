@@ -1,7 +1,7 @@
 ﻿using T.Library.Model.Response;
 using T.Library.Model;
-using T.WebApi.Database.ConfigurationDatabase;
 using Microsoft.EntityFrameworkCore;
+using T.WebApi.Database;
 
 namespace T.WebApi.Services.ProductService
 {

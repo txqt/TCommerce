@@ -3,7 +3,6 @@ using T.Library.Model;
 using T.Library.Model.Users;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
 using Microsoft.AspNetCore.Identity;
 using T.Library.Model.ViewsModel;
@@ -12,6 +11,7 @@ using System.Text;
 using T.Library.Model.Security;
 using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
+using T.WebApi.Database;
 
 namespace T.WebApi.Services.UserServices
 {

@@ -1,0 +1,17 @@
+﻿@{
+    ProductAttribute viewmodel = new ProductAttribute();
+    var model = new DataTableViewModel
+    {
+        TableId = "dataTable-product-attribute",
+        Headers = new List<string> { "Name", "Description", "Edit", "Delete" },
+        GetDataUrl = Url.Action("GetAll", "ProductAttribute"),
+        Columns = new List<ColumnDefinition>
+        {
+            new ColumnDefinition { Data = "name" },
+            new ColumnDefinition { Data = "description" },
+            new ColumnDefinition { EditUrl = Url.Action("Edit", "ProductAttribute", new { id = "__id__" }), IsEditable = true },
+            new ColumnDefinition { DeleteUrl = Url.Action("Delete", "ProductAttribute", new { id = "__id__" }), IsDeletable = true },
+        }
+    };
+}
+@await Html.PartialAsync("_Table",model)

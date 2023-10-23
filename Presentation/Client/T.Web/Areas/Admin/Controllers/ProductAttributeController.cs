@@ -4,6 +4,7 @@ using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
+using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
 using T.Web.Services.ProductService;
 
@@ -23,7 +24,26 @@ namespace T.Web.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            return View(new ProductAttribute());
+            var model = new DataTableViewModel
+            {
+                TableId = "dataTable-product-attribute",
+                TableTitle = "Danh sách thuộc tính sản phẩm",
+                Headers = new List<string> { "Name", "Description", "Edit", "Delete" },
+                GetDataUrl = Url.Action("GetAll", "ProductAttribute"),
+                Columns = new List<ColumnDefinition>
+                {
+                    new ColumnDefinition { Data = "name" },
+                    new ColumnDefinition { Data = "description" },
+                    new ColumnDefinition { EditUrl = Url.Action("Edit", "ProductAttribute", new { id = "__id__" }), IsEditable = true },
+                    new ColumnDefinition { DeleteUrl = Url.Action("Delete", "ProductAttribute", new { id = "__id__" }), IsDeletable = true },
+                }
+            };
+            return View(model);
+        }
+
+        public IActionResult test()
+        {
+            return View();
         }
 
         [HttpGet]

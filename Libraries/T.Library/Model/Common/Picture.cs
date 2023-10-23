@@ -1,4 +1,4 @@
-﻿using T.Library.Model.BannerItem;
+﻿using T.Library.Model.Banners;
 
 namespace T.Library.Model.Common
 {
@@ -38,6 +38,6 @@ namespace T.Library.Model.Common
         public string? UrlPath { get; set; }
 
         public List<ProductPicture> ProductPictures { get; set; }
-        public List<SlideShow> SlideShows { get; set; }
+        public List<Banner> Banners { get; set; }
     }
 }
