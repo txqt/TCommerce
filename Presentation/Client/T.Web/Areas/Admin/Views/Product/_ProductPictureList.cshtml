@@ -16,47 +16,19 @@
 
 </div>
 
-<style>
-    #dataTable-img tbody tr:nth-child(odd) {
-        background-color: #f9f9f9; /* Màu nền cho hàng lẻ */
-    }
-
-    #dataTable-img tbody tr:nth-child(even) {
-        background-color: #ffffff; /* Màu nền cho hàng chẵn */
-    }
-</style>
 <p class="d-flex justify-content-between">
     <span class="btn btn-primary" onclick="ClickButtoUpload()">Upload Hình Ảnh</span>
     <span class="btn btn-danger" onclick="DeleteAllImages()">Xóa Tất Cả Ảnh</span>
 </p>
 
 
-<div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
-    <div class="row">
-        <div class="col-sm-12" style="overflow-x: auto;">
-            <table class="table table-bordered dataTable" id="dataTable-img" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
-                <thead>
-                    <tr role="row">
-                        <th>
-                            Picture
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.DisplayOrder)
-                        </th>
-                        <th>
-                            Delete
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-</div>
+@await Html.PartialAsync("_Table", Model.DataTable)
 
 <script>
+    var tableId = "#@Model.DataTable.TableId";
+    var url = "@Model.DataTable.GetDataUrl";
+    var columns = @Html.Raw(Json.Serialize(Model.DataTable.Columns));
+
     function AutoUploadPhoto() {
         var formFiles = $("#selectfileupload").prop("files");
         var formData = new FormData();
@@ -74,7 +46,7 @@
             success: function (result) {
                 // Xử lý kết quả thành công
                 console.log(result);
-                LoadPhotos();
+                $(tableId).DataTable().ajax.reload();
             },
             error: function (xhr, status, error) {
                 // Xử lý lỗi
@@ -85,66 +57,7 @@
     function ClickButtoUpload() {
         $("#selectfileupload").click();
     }
-    // Sự kiện click cho nút xóa ảnh
-    $('#dataTable-img').on('click', '.deleteImageBtn', function () {
-        var pictureId = $(this).data('pictureid'); // Lấy pictureId từ thuộc tính data của nút
 
-        // Hiển thị hộp thoại "confirm"
-        if (confirm("Bạn có chắc chắn muốn xóa ảnh này?")) {
-            $.ajax({
-                url: "@Url.Action("DeletePhoto", "Product")",
-                type: "POST",
-                data: { productId: @Model.ProductId, pictureId: pictureId },
-                success: function (response) {
-                    // Xử lý phản hồi từ API
-                    if (response.success) {
-                        LoadPhotos();
-                    } else {
-                        alert(response.message); // Hiển thị thông báo lỗi
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.log(xhr.responseText); // Hiển thị lỗi trong console
-                    alert("Đã xảy ra lỗi trong quá trình xóa ảnh."); // Hiển thị thông báo lỗi
-                }
-            });
-        }
-    });
-    function LoadPhotos() {
-        var urlListPhoto = "@Url.Action("ListPhotos", "Product", new {id = Model.ProductId})"
-        $('#dataTable-img').DataTable().destroy();
-        $('#dataTable-img').DataTable({
-            lengthMenu: [5, 10, 25, 50],
-            pageLength: 5,
-            searching: false,
-            ajax: {
-                url: urlListPhoto,
-                type: "GET",
-                datatype: "json",
-            },
-            columns: [
-                {
-                    data: "pictureUrl",
-                    render: function (data) {
-                        return '<img src="' + data + '" style="max-width: 200px;height: auto; "/>';
-                    }
-                },
-                { data: "displayOrder" },
-                {
-                    data: null,
-                    render: function (data, type, row) {
-                        if (type === "display") {
-                            var pictureId = row.pictureId; // Lấy pictureId từ dữ liệu hàng
-
-                            var removeUrl = "";
-                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center deleteImageBtn" data-pictureid="' + pictureId + '">Delete</button>';
-                        }
-                        return data;
-                    }
-                }
-            ]
-        });
-    }
     function DeleteAllImages() {
         // Hiển thị hộp thoại "confirm"
         if (confirm("Bạn có chắc chắn muốn xóa tất cả ảnh?")) {
@@ -155,7 +68,7 @@
                 success: function (response) {
                     // Xử lý phản hồi từ API
                     if (response.success) {
-                        LoadPhotos(); // Tải lại danh sách hình ảnh sau khi xóa thành công
+                        $(tableId).DataTable().ajax.reload();
                     } else {
                         alert(response.message); // Hiển thị thông báo lỗi
                     }
@@ -168,7 +81,4 @@
         }
     }
 
-    $(document).ready(function () {
-        LoadPhotos();
-    });
 </script>

@@ -23,7 +23,7 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> DeleteProductAsync(int productId);
         Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttributeByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
-        Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId);
+        Task<ServiceResponse<bool>> DeleteProductImage(int pictureMappingId);
         Task<ServiceResponse<bool>> DeleteAllProductImage(int productId);
     }
 }

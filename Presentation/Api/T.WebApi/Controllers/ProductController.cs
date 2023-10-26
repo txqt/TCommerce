@@ -112,10 +112,10 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{productId}/picture-id/{pictureId}")]
-        public async Task<ActionResult> DeleteProductImage(int productId, int pictureId)
+        [HttpDelete("picture-mapping-id/{pictureMappingId}")]
+        public async Task<ActionResult> DeleteProductImage(int pictureMappingId)
         {
-            var result = await _productService.DeleteProductImage(productId, pictureId);
+            var result = await _productService.DeleteProductImage(pictureMappingId);
             if (!result.Success)
             {
                 return BadRequest(result);

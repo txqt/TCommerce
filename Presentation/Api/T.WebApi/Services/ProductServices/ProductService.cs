@@ -228,15 +228,16 @@ namespace T.WebApi.Services.ProductServices
 
         }
 
-        public async Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId)
+        public async Task<ServiceResponse<bool>> DeleteProductImage(int pictureMappingId)
         {
             try
             {
-                var product = await _productsRepository.GetByIdAsync(productId)
+                var productPicture = await _productPictureMappingRepository.GetByIdAsync(pictureMappingId)
+                    ?? throw new ArgumentException("This product is not mapped to this picture");
+
+                var product = await _productsRepository.GetByIdAsync(productPicture.ProductId)
                 ?? throw new ArgumentException("No product found with the specified id");
 
-                var productPicture = await _productPictureMappingRepository.Table.Where(x => x.ProductId == product.Id && x.PictureId == pictureId).FirstOrDefaultAsync()
-                    ?? throw new ArgumentException("This product is not mapped to this picture");
 
                 var picture = await _pictureRepository.GetByIdAsync(productPicture.PictureId)
                     ?? throw new ArgumentException("No picture found with the specified id");
@@ -252,7 +253,7 @@ namespace T.WebApi.Services.ProductServices
                     File.Delete(filePath);
                 }
 
-                await _pictureRepository.DeleteAsync(pictureId);
+                await _pictureRepository.DeleteAsync(productPicture.PictureId);
 
                 return new ServiceSuccessResponse<bool>() { Message = "Remove the mapped image with this product successfully" };
             }

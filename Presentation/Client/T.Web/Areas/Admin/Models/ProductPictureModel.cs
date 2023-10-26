@@ -21,6 +21,8 @@ namespace T.Web.Areas.Admin.Models
 
         public string OverrideTitleAttribute { get; set; }
 
+        public DataTableViewModel DataTable { get; set; }
+
         #endregion
     }
 }

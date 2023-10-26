@@ -240,7 +240,27 @@
                 </div>
                 <div id="collapse-2" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion-2">
                     <div class="card-body">
-                        @(await Html.PartialAsync("_ProductAttributeMappingList", new ProductAttributeMappingModel { ProductId = Model.Id }))
+                        @* @(await Html.PartialAsync("_ProductAttributeMappingList", new ProductAttributeMappingModel { ProductId = Model.Id })) *@
+                        @{
+                            var ProductAttributeMappingListModel = new DataTableViewModel
+                            {
+                                TableId = "dataTable-pam",
+                                TableTitle = "Danh sách thuộc tính sản phẩm",
+                                CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
+                                Headers = new List<string> { "ProductAttributeName", "TextPrompt", "IsRequired", "DisplayOrder", "Edit", "Delete" },
+                                GetDataUrl = Url.Action("GetListProductMapping", "Product", new { productId = Model.Id }),
+                                Columns = new List<ColumnDefinition>
+                                        {
+                                        new ColumnDefinition { Data = "productAttributeName" },
+                                        new ColumnDefinition { Data = "textPrompt" },
+                                        new ColumnDefinition { Data = "isRequired", IsCheckBox = true },
+                                        new ColumnDefinition { Data = "displayOrder" },
+                                        new ColumnDefinition { EditUrl = Url.Action("EditProductAttributeMapping", "Product", new { id = "__id__" }), IsEditable = true },
+                                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductAttributeMapping", "Product", new { id = "__id__" }), IsDeletable = true },
+                                        }
+                            };
+                        }
+                        @await Html.PartialAsync("_Table", ProductAttributeMappingListModel)
                     </div>
                 </div>
             </div>
@@ -258,7 +278,28 @@
                 </div>
                 <div id="collapse-3" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion-3">
                     <div class="card-body">
-                        @(await Html.PartialAsync("_ProductPictureList", new ProductPictureModel { ProductId = Model.Id }))
+                        @* @(await Html.PartialAsync("_ProductPictureList", new ProductPictureModel { ProductId = Model.Id })) *@
+                        @{
+                            var productPictureList = new ProductPictureModel()
+                            {
+                                ProductId = Model.Id,
+                                DataTable = new DataTableViewModel()
+                                {
+                                    TableId = "dataTable-img",
+                                    TableTitle = "Danh sách hình ảnh của " + Model.Name,
+                                    // CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
+                                    Headers = new List<string> { "Picture", "DisplayOrder", "Delete" },
+                                    GetDataUrl = Url.Action("ListPhotos", "Product", new { productId = Model.Id }),
+                                    Columns = new List<ColumnDefinition>
+                                            {
+                                            new ColumnDefinition { Data = "pictureUrl", IsPicture = true },
+                                            new ColumnDefinition { Data = "displayOrder" },
+                                            new ColumnDefinition { DeleteUrl = Url.Action("DeletePhoto", "Product", new { id = "__id__" }), IsDeletable = true },
+                                            }
+                                }
+                            };
+                        }
+                        @await Html.PartialAsync("_ProductPictureList", productPictureList)
                     </div>
                 </div>
             </div>
@@ -276,7 +317,26 @@
                 </div>
                 <div id="collapse-4" class="collapse show" aria-labelledby="headingFour" data-parent="#accordion-4">
                     <div class="card-body">
-                        @(await Html.PartialAsync("_ProductCategoryList", new ProductCategoryModel { ProductId = Model.Id }))
+                        @* @(await Html.PartialAsync("_ProductCategoryList", new ProductCategoryModel { ProductId = Model.Id })) *@
+                        @{
+                            var ProductCategoryList = new DataTableViewModel
+                            {
+                                TableId = "dataTable-product-category",
+                                TableTitle = "Danh sách thể loại của sản phẩm",
+                                CreateUrl = Url.Action("ProductCategoryMappingCreate", "Product", new { productId = Model.Id }),
+                                Headers = new List<string> { "CategoryName", "IsFeaturedProduct", "DisplayOrder", "Edit", "Delete" },
+                                GetDataUrl = Url.Action("GetListCategoryMapping", "Product", new { productId = Model.Id }),
+                                Columns = new List<ColumnDefinition>
+                                        {
+                                        new ColumnDefinition { Data = "categoryName" },
+                                        new ColumnDefinition { Data = "isFeaturedProduct", IsCheckBox = true },
+                                        new ColumnDefinition { Data = "displayOrder" },
+                                        new ColumnDefinition { EditUrl = Url.Action("EditProductCategory", "Product", new { id = "__id__" }), IsEditable = true },
+                                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductCategory", "Product", new { id = "__id__" }), IsDeletable = true },
+                                        }
+                            };
+                        }
+                        @await Html.PartialAsync("_Table", ProductCategoryList)
                     </div>
                 </div>
             </div>

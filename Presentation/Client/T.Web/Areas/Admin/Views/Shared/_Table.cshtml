@@ -6,9 +6,12 @@
 
 <h1>@Model.TableTitle</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (Model.CreateUrl != null || Model.CreateUrl == string.Empty)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 
 <table class="table" id="@Model.TableId">
     <thead>
@@ -30,7 +33,7 @@
         var columns = @Html.Raw(Json.Serialize(Model.Columns));
         LoadTable(tableId, url, columns);
     });
-    
+
 
     function LoadTable(tableId, url, columns) {
         var dataTableColumns = columns.map(function (column) {
@@ -50,6 +53,23 @@
                         return '<button class="btn btn-danger deleteBtn" data-id="' + row.id + '" data-url="' + deleteUrl + '">Delete</button>';
                     }
                 };
+            } else if (column.isCheckBox) {
+                return {
+                    data: column.data,
+                    render: function (data, type, row) {
+                        if (type === "display") {
+                            return '<input type="checkbox" disabled="disabled" ' + (data ? 'checked="checked"' : '') + '/>';
+                        }
+                        return data;
+                    }
+                };
+            } else if (column.isPicture) {
+                return {
+                    data: column.data,
+                    render: function (data, type, row) {
+                        return '<img src="' + data + '" style="max-width: 200px;height: auto; "/>';
+                    }
+                };
             } else {
                 return {
                     data: column.data
@@ -59,6 +79,8 @@
 
         $(tableId).DataTable().destroy();
         $(tableId).DataTable({
+            lengthMenu: [5, 10, 25, 50],
+            pageLength: 5,
             ajax: {
                 url: url,
                 type: "GET",

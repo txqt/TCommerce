@@ -445,9 +445,9 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ListPhotos(int id)
+        public async Task<IActionResult> ListPhotos(int productId)
         {
-            var product = (await _productService.GetByIdAsync(id)).Data ??
+            var product = (await _productService.GetByIdAsync(productId)).Data ??
               throw new ArgumentException("No product found with the specified id");
 
             var listphotos = await _prepareModelService.PrepareProductPictureModelAsync(product);
@@ -460,10 +460,10 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeletePhoto(int productId, int pictureId)
+        public async Task<IActionResult> DeletePhoto(int id)
         {
 
-            var result = await _productService.DeleteProductImage(productId, pictureId);
+            var result = await _productService.DeleteProductImage(id);
             if (!result.Success)
             {
                 return Json(new

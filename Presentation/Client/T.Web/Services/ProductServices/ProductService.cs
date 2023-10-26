@@ -77,9 +77,9 @@ namespace T.Web.Services.ProductService
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public async Task<ServiceResponse<bool>> DeleteProductImage(int productId, int pictureId)
+        public async Task<ServiceResponse<bool>> DeleteProductImage(int pictureMappingId)
         {
-            var result = await _httpClient.DeleteAsync($"api/product/{productId}/picture-id/{pictureId}");
+            var result = await _httpClient.DeleteAsync($"api/product/picture-mapping-id/{pictureMappingId}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 

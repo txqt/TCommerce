@@ -16,5 +16,7 @@
         public string DeleteUrl { get; set; }
         public bool IsEditable { get; set; }
         public bool IsDeletable { get; set; }
+        public bool IsCheckBox { get; set; }
+        public bool IsPicture { get; set; }
     }
 }

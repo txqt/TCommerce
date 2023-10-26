@@ -28,6 +28,7 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 TableId = "dataTable-product-attribute",
                 TableTitle = "Danh sách thuộc tính sản phẩm",
+                CreateUrl = Url.Action("Create", "ProductAttribute"),
                 Headers = new List<string> { "Name", "Description", "Edit", "Delete" },
                 GetDataUrl = Url.Action("GetAll", "ProductAttribute"),
                 Columns = new List<ColumnDefinition>

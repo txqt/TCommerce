@@ -63,7 +63,7 @@ namespace T.Web.Controllers
 
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(_jwtOptions.Value.AccessTokenExpirationInSenconds),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(_jwtOptions.Value.RefreshTokenExpirationInSenconds),
                 IsPersistent = loginViewModel.RememberMe
             };
 
