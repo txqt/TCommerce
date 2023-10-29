@@ -5,13 +5,10 @@
 }
 
 <h1>Sửa sản phẩm @Model.Name</h1>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<partial name="_ProductListLink" />
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <partial name="_AlertMessage"></partial>
         <form asp-action="EditProduct" style="background-color: #fff; padding: 20px; border-radius: 10px">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group" hidden>
@@ -255,8 +252,8 @@
                                         new ColumnDefinition { Data = "textPrompt" },
                                         new ColumnDefinition { Data = "isRequired", IsCheckBox = true },
                                         new ColumnDefinition { Data = "displayOrder" },
-                                        new ColumnDefinition { EditUrl = Url.Action("EditProductAttributeMapping", "Product", new { id = "__id__" }), IsEditable = true },
-                                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductAttributeMapping", "Product", new { id = "__id__" }), IsDeletable = true },
+                                        new ColumnDefinition { EditUrl = Url.Action("EditProductAttributeMapping", "Product"), IsEditable = true },
+                                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductAttributeMapping", "Product"), IsDeletable = true },
                                         }
                             };
                         }
@@ -294,7 +291,7 @@
                                             {
                                             new ColumnDefinition { Data = "pictureUrl", IsPicture = true },
                                             new ColumnDefinition { Data = "displayOrder" },
-                                            new ColumnDefinition { DeleteUrl = Url.Action("DeletePhoto", "Product", new { id = "__id__" }), IsDeletable = true },
+                                            new ColumnDefinition { DeleteUrl = Url.Action("DeletePhoto", "Product"), IsDeletable = true },
                                             }
                                 }
                             };
@@ -331,8 +328,8 @@
                                         new ColumnDefinition { Data = "categoryName" },
                                         new ColumnDefinition { Data = "isFeaturedProduct", IsCheckBox = true },
                                         new ColumnDefinition { Data = "displayOrder" },
-                                        new ColumnDefinition { EditUrl = Url.Action("EditProductCategory", "Product", new { id = "__id__" }), IsEditable = true },
-                                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductCategory", "Product", new { id = "__id__" }), IsDeletable = true },
+                                        new ColumnDefinition { EditUrl = Url.Action("EditProductCategory", "Product"), IsEditable = true },
+                                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductCategory", "Product"), IsDeletable = true },
                                         }
                             };
                         }

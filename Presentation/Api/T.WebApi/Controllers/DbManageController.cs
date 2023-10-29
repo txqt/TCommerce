@@ -24,7 +24,7 @@ namespace T.WebApi.Controllers
         public IActionResult IsDatabaseInstalled()
         {
             var _dbManageService = _serviceProvider.GetRequiredService<IDbManageService>();
-            if (_dbManageService.IsDatabaseInstalled())
+            if (_dbManageService.DatabaseExists() && _dbManageService.IsDatabaseInstalled())
             {
                 return Ok();
             }

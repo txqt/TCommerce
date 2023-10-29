@@ -107,7 +107,7 @@ namespace T.WebApi.Controllers
             var success = await _securityService.AuthorizeAsync(permissionRecord);
             if (!success)
             {
-                return Forbid();
+                return new StatusCodeResult(StatusCodes.Status403Forbidden);
             }
             return Ok(success);
         }
@@ -120,7 +120,7 @@ namespace T.WebApi.Controllers
             var success = await _securityService.AuthorizeAsync(permissionSystemName);
             if (!success)
             {
-                return Forbid();
+                return new StatusCodeResult(StatusCodes.Status403Forbidden);
             }
             return Ok(success);
         }

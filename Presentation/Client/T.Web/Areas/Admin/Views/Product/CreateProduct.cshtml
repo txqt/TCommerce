@@ -4,13 +4,11 @@
     ViewData["Title"] = "CreateProduct";
 }
 
-<h1>CreateProduct</h1>
-
-<h4>Product</h4>
+<h1>Tạo sản phẩm mới</h1>
+<partial name="_ProductListLink" />
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <partial name="_AlertMessage"></partial>
         <form asp-action="CreateProduct" style="background-color: #fff; padding: 20px; border-radius: 10px">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group" hidden>

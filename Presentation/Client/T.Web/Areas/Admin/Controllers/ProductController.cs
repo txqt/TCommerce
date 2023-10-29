@@ -41,7 +41,6 @@ namespace T.Web.Areas.Admin.Controllers
             _categoryService = categoryService;
         }
 
-        [Route("index")]
         public async Task<IActionResult> Index(ProductParameters productParameters)
         {
             var result = await _productService.GetAll(productParameters);
@@ -166,7 +165,11 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var productAttributeMapping = _mapper.Map<ProductAttributeMapping>(model);
+            var productAttributeMapping = new ProductAttributeMapping()
+            {
+                ProductId = model.ProductId,
+                ProductAttributeId = model.ProductAttributeId,
+            };
 
             var result = await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
 
@@ -183,14 +186,14 @@ namespace T.Web.Areas.Admin.Controllers
             SetStatusMessage($"Thêm thành công !");
             return RedirectToAction("EditProductAttributeMapping", new
             {
-                productAttributeMappingId = productAttributeMapping.Id
+                id = productAttributeMapping.Id
             });
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditProductAttributeMapping(int productAttributeMappingId)
+        public async Task<IActionResult> EditProductAttributeMapping(int id)
         {
-            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeMappingId)).Data ??
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(id)).Data ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
             var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)).Data ??
@@ -243,10 +246,10 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteProductAttributeMapping(int pamId)
+        public async Task<IActionResult> DeleteProductAttributeMapping(int id)
         {
 
-            var result = await _productAttributeService.DeleteProductAttributeByIdAsync(pamId);
+            var result = await _productAttributeService.DeleteProductAttributeMappingByIdAsync(id);
             if (!result.Success)
             {
                 return Json(new

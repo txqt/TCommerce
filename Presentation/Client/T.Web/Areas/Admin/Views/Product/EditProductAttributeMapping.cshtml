@@ -6,3 +6,4 @@
 </form>
 <hr />
 @(await Html.PartialAsync("_ProductAttributeValueList", new ProductAttributeValueModel() { ProductAttributeMappingId = Model.Id }))
+<partial name="_ProductListLink" />

@@ -68,8 +68,8 @@ namespace T.Library.Model
 
         public int ConditionAttributeSelected { get; set; }
 
-        public List<ProductAttributeValue> ProductAttributeValue { get; set; }
-        public Product Product { get; set; }
-        public ProductAttribute ProductAttribute { get; set; }
+        public List<ProductAttributeValue>? ProductAttributeValue { get; set; }
+        public Product? Product { get; set; }
+        public ProductAttribute? ProductAttribute { get; set; }
     }
 }

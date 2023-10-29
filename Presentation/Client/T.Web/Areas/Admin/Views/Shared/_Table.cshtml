@@ -9,7 +9,7 @@
 @if (Model.CreateUrl != null || Model.CreateUrl == string.Empty)
 {
     <p>
-        <a asp-action="Create">Create New</a>
+        <a href="@Model.CreateUrl">Create New</a>
     </p>
 }
 
@@ -41,7 +41,7 @@
                 return {
                     data: null,
                     render: function (data, type, row) {
-                        var editUrl = column.editUrl.replace('__id__', row.id);
+                        var editUrl = column.editUrl + '?id=' + row.id;
                         return '<button class="btn btn-info" onclick="openPopup(\'' + editUrl + '\')">Edit</button>';
                     }
                 };
@@ -49,7 +49,7 @@
                 return {
                     data: null,
                     render: function (data, type, row) {
-                        var deleteUrl = column.deleteUrl.replace('__id__', row.id);
+                        var deleteUrl = column.deleteUrl + '?id=' + row.id;
                         return '<button class="btn btn-danger deleteBtn" data-id="' + row.id + '" data-url="' + deleteUrl + '">Delete</button>';
                     }
                 };

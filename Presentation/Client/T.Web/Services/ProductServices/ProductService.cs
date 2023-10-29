@@ -73,7 +73,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<ServiceResponse<bool>> DeleteProductAsync(int productId)
         {
-            var result = await _httpClient.DeleteAsync($"api/product/{productId}/delete-all-picture");
+            var result = await _httpClient.DeleteAsync($"api/product/{productId}");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 

@@ -269,14 +269,7 @@ namespace T.WebApi.Services.AccountServices
                 return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "TokenDto is null" };
             }
 
-            var principal = _tokenService.GetPrincipalToken(tokenDto.AccessToken);
-
-            if (principal.Identity == null || principal.Identity.Name is null)
-                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Token does not contain user information" };
-
-            var username = principal.Identity.Name;
-
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.Users.FirstOrDefaultAsync(x=>x.RefreshToken == tokenDto.RefreshToken);
 
             if (user == null)
                 return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "User not found" };
@@ -287,15 +280,10 @@ namespace T.WebApi.Services.AccountServices
 
             var accessToken = await _tokenService.GenerateAccessToken(user);
 
-            //var refreshToken = await _tokenService.GenerateRefreshToken();
-            //user.RefreshToken = refreshToken;
-            //await _userManager.UpdateAsync(user);
-
             var data = new AuthResponseDto()
             {
                 AccessToken = accessToken,
-                RefreshToken = tokenDto.RefreshToken,
-                //ReturnUrl = tokenDto.ReturnUrl
+                RefreshToken = tokenDto.RefreshToken
             };
 
             return new ServiceErrorResponse<AuthResponseDto> { Success = true, Data = data };
