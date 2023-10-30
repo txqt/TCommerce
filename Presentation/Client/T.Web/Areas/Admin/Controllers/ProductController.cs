@@ -389,10 +389,10 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteProductAttributeValue(int pavId)
+        public async Task<IActionResult> DeleteProductAttributeValue(int id)
         {
 
-            var result = await _productAttributeService.DeleteProductAttributeValueAsync(pavId);
+            var result = await _productAttributeService.DeleteProductAttributeValueAsync(id);
             if (!result.Success)
             {
                 return Json(new
@@ -423,9 +423,9 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetValueProductMapping(int productAttributeMapping)
+        public async Task<IActionResult> GetValueProductMapping(int id)
         {
-            var productAttributeMappingResponse = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeMapping)).Data ??
+            var productAttributeMappingResponse = (await _productAttributeService.GetProductAttributeMappingByIdAsync(id)).Data ??
               throw new ArgumentException("Not found with the specified id");
 
             var model = await _prepareModelService.PrepareProductAttributeValueListModelAsync(productAttributeMappingResponse);
@@ -588,9 +588,9 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditProductCategory(int productCategoryId)
+        public async Task<IActionResult> EditProductCategory(int id)
         {
-            var productCategory = (await _productCategoryService.GetProductCategoryById(productCategoryId)).Data ??
+            var productCategory = (await _productCategoryService.GetProductCategoryById(id)).Data ??
               throw new ArgumentException("No product category mapping found with the specified id");
 
             var category = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)).Data ??
@@ -653,10 +653,10 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteProductCategory(int productCategoryId)
+        public async Task<IActionResult> DeleteProductCategory(int id)
         {
 
-            var result = await _productCategoryService.DeleteProductCategoryAsync(productCategoryId);
+            var result = await _productCategoryService.DeleteProductCategoryAsync(id);
             if (!result.Success)
             {
                 return Json(new

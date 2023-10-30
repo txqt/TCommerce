@@ -1,9 +1,33 @@
-﻿@model ProductAttributeMappingModel
+﻿@{
+    Layout = "_EmptyLayout";
+}
+@model ProductAttributeMappingModel
 
 <h3 class="text-info">Sửa thuộc tính liên kết với sản phẩm</h3>
 <form method="post" style="background-color: #fff; padding: 20px; border-radius: 10px">
     @(await Html.PartialAsync("_AddOrUpdateProductAttributeMapping", Model))
-</form>
+</form> 
 <hr />
-@(await Html.PartialAsync("_ProductAttributeValueList", new ProductAttributeValueModel() { ProductAttributeMappingId = Model.Id }))
+@{
+    var pav = new DataTableViewModel
+            {
+                TableId = "dataTable-pav",
+                TableTitle = $"Danh sách thuộc tính {Model.ProductAttributeName}",
+                CreateUrl = Url.Action("ProductAttributeValueCreate", "Product", new { productAttributeMappingId = Model.Id }),
+                Headers = new List<string> { "Name", "PriceAdjustment", "WeightAdjustment", "IsPreSelected", "PictureThumbnailUrl", "Edit", "Delete" },
+                GetDataUrl = Url.Action("GetValueProductMapping", "Product", new { id = Model.Id }),
+                Columns = new List<ColumnDefinition>
+                    {
+                    new ColumnDefinition { Data = "name" },
+                    new ColumnDefinition { Data = "priceAdjustment" },
+                    new ColumnDefinition { Data = "weightAdjustment" },
+                    new ColumnDefinition { Data = "isPreSelected", IsCheckBox = true },
+                    new ColumnDefinition { Data = "pictureThumbnailUrl" },
+                    new ColumnDefinition { EditUrl = Url.Action("EditProductAttributeValue", "Product"), IsEditable = true },
+                    new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductAttributeValue", "Product"), IsDeletable = true },
+                    }
+            };
+}
+@await Html.PartialAsync("_Table", pav)
+@* @(await Html.PartialAsync("_ProductAttributeValueList", new ProductAttributeValueModel() { ProductAttributeMappingId = Model.Id })) *@
 <partial name="_ProductListLink" />

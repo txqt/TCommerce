@@ -10,219 +10,7 @@
 <div class="row">
     <div class="col-md-12">
         <form asp-action="EditProduct" style="background-color: #fff; padding: 20px; border-radius: 10px">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group" hidden>
-                <input asp-for="Id" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ShortDescription" class="control-label"></label>
-                <textarea asp-for="ShortDescription" class="form-control"></textarea>
-                <span asp-validation-for="ShortDescription" class="text-danger"></span>
-
-            </div>
-            <div class="form-group">
-                <label asp-for="FullDescription" class="control-label"></label>
-                <textarea asp-for="FullDescription" class="form-control"></textarea>
-                <span asp-validation-for="FullDescription" class="text-danger"></span>
-            </div>
-
-
-            <div class="form-group">
-                <label asp-for="StockQuantity" class="control-label"></label>
-                <input asp-for="StockQuantity" class="form-control" />
-                <span asp-validation-for="StockQuantity" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OldPrice" class="control-label"></label>
-                <input asp-for="OldPrice" class="form-control" />
-                <span asp-validation-for="OldPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" id="markasnewcheckbox" asp-for="MarkAsNew" /> @Html.DisplayNameFor(model => model.MarkAsNew)
-                    </label>
-                </div>
-            </div>
-
-
-            <div id="mark-as-new" style="display:none">
-                <div class="form-group">
-                    <label asp-for="MarkAsNewStartDateTimeUtc" class="control-label"></label>
-                    <input asp-for="MarkAsNewStartDateTimeUtc" class="form-control" />
-                    <span asp-validation-for="MarkAsNewStartDateTimeUtc" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="MarkAsNewEndDateTimeUtc" class="control-label"></label>
-                    <input asp-for="MarkAsNewEndDateTimeUtc" class="form-control" />
-                    <span asp-validation-for="MarkAsNewEndDateTimeUtc" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="DisplayOrder" class="control-label"></label>
-                <input asp-for="DisplayOrder" class="form-control" value="0" />
-                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model => model.Published)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="VisibleIndividually" /> @Html.DisplayNameFor(model => model.VisibleIndividually)
-                    </label>
-                </div>
-            </div>
-
-
-            <div id="accordion">
-                <div class="card">
-                    <div class="card-header" id="headingOne">
-                        <h5 class="mb-0">
-                            <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Nâng cao
-                            </button>
-                        </h5>
-                    </div>
-
-                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label asp-for="AdminComment" class="control-label"></label>
-                                <input asp-for="AdminComment" class="form-control" />
-                                <span asp-validation-for="AdminComment" class="text-danger"></span>
-                            </div>
-                            <div class="form-group form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" asp-for="ShowOnHomepage" /> @Html.DisplayNameFor(model => model.ShowOnHomepage)
-                                </label>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="MetaKeywords" class="control-label"></label>
-                                <input asp-for="MetaKeywords" class="form-control" />
-                                <span asp-validation-for="MetaKeywords" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="MetaDescription" class="control-label"></label>
-                                <input asp-for="MetaDescription" class="form-control" />
-                                <span asp-validation-for="MetaDescription" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="MetaTitle" class="control-label"></label>
-                                <input asp-for="MetaTitle" class="form-control" />
-                                <span asp-validation-for="MetaTitle" class="text-danger"></span>
-                            </div>
-                            <div class="form-group form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" asp-for="AllowUserReviews" /> @Html.DisplayNameFor(model => model.AllowUserReviews)
-                                </label>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="Sku" class="control-label"></label>
-                                <input asp-for="Sku" class="form-control" />
-                                <span asp-validation-for="Sku" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" asp-for="IsShipEnabled" /> @Html.DisplayNameFor(model => model.IsShipEnabled)
-                                </label>
-                            </div>
-                            <div class="form-group form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" asp-for="IsFreeShipping" /> @Html.DisplayNameFor(model => model.IsFreeShipping)
-                                </label>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="OrderMinimumQuantity" class="control-label"></label>
-                                <input asp-for="OrderMinimumQuantity" class="form-control" value="1" />
-                                <span asp-validation-for="OrderMinimumQuantity" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="OrderMaximumQuantity" class="control-label"></label>
-                                <input asp-for="OrderMaximumQuantity" class="form-control" value="100" />
-                                <span asp-validation-for="OrderMaximumQuantity" class="text-danger"></span>
-                            </div>
-                            <div class="form-group form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" asp-for="NotReturnable" /> @Html.DisplayNameFor(model => model.NotReturnable)
-                                </label>
-                            </div>
-                            <div class="form-group form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" asp-for="DisableBuyButton" /> @Html.DisplayNameFor(model => model.DisableBuyButton)
-                                </label>
-                            </div>
-                            <div class="form-group form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" asp-for="DisableWishlistButton" /> @Html.DisplayNameFor(model => model.DisableWishlistButton)
-                                </label>
-                            </div>
-                            <div class="form-group form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" asp-for="AvailableForPreOrder" /> @Html.DisplayNameFor(model => model.AvailableForPreOrder)
-                                </label>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="PreOrderAvailabilityStartDateTimeUtc" class="control-label"></label>
-                                <input asp-for="PreOrderAvailabilityStartDateTimeUtc" class="form-control" />
-                                <span asp-validation-for="PreOrderAvailabilityStartDateTimeUtc" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Weight" class="control-label"></label>
-                                <input asp-for="Weight" class="form-control" value="0" />
-                                <span asp-validation-for="Weight" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Length" class="control-label"></label>
-                                <input asp-for="Length" class="form-control" value="0" />
-                                <span asp-validation-for="Length" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Width" class="control-label"></label>
-                                <input asp-for="Width" class="form-control" value="0" />
-                                <span asp-validation-for="Width" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Height" class="control-label"></label>
-                                <input asp-for="Height" class="form-control" value="0" />
-                                <span asp-validation-for="Height" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="AvailableStartDateTimeUtc" class="control-label"></label>
-                                <input asp-for="AvailableStartDateTimeUtc" class="form-control" />
-                                <span asp-validation-for="AvailableStartDateTimeUtc" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="AvailableEndDateTimeUtc" class="control-label"></label>
-                                <input asp-for="AvailableEndDateTimeUtc" class="form-control" />
-                                <span asp-validation-for="AvailableEndDateTimeUtc" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group" style="margin-top:16px">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+            @(await Html.PartialAsync("_AddOrEditProduct"))
         </form>
     </div>
     <div class="col-md-12" style="margin-top: 36px">
@@ -240,22 +28,22 @@
                         @* @(await Html.PartialAsync("_ProductAttributeMappingList", new ProductAttributeMappingModel { ProductId = Model.Id })) *@
                         @{
                             var ProductAttributeMappingListModel = new DataTableViewModel
-                            {
-                                TableId = "dataTable-pam",
-                                TableTitle = "Danh sách thuộc tính sản phẩm",
-                                CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
-                                Headers = new List<string> { "ProductAttributeName", "TextPrompt", "IsRequired", "DisplayOrder", "Edit", "Delete" },
-                                GetDataUrl = Url.Action("GetListProductMapping", "Product", new { productId = Model.Id }),
-                                Columns = new List<ColumnDefinition>
-                                        {
-                                        new ColumnDefinition { Data = "productAttributeName" },
-                                        new ColumnDefinition { Data = "textPrompt" },
-                                        new ColumnDefinition { Data = "isRequired", IsCheckBox = true },
-                                        new ColumnDefinition { Data = "displayOrder" },
-                                        new ColumnDefinition { EditUrl = Url.Action("EditProductAttributeMapping", "Product"), IsEditable = true },
-                                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductAttributeMapping", "Product"), IsDeletable = true },
-                                        }
-                            };
+            {
+                TableId = "dataTable-pam",
+                TableTitle = "Danh sách thuộc tính sản phẩm",
+                CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
+                Headers = new List<string> { "ProductAttributeName", "TextPrompt", "IsRequired", "DisplayOrder", "Edit", "Delete" },
+                GetDataUrl = Url.Action("GetListProductMapping", "Product", new { productId = Model.Id }),
+                Columns = new List<ColumnDefinition>
+                        {
+                        new ColumnDefinition { Data = "productAttributeName" },
+                        new ColumnDefinition { Data = "textPrompt" },
+                        new ColumnDefinition { Data = "isRequired", IsCheckBox = true },
+                        new ColumnDefinition { Data = "displayOrder" },
+                        new ColumnDefinition { EditUrl = Url.Action("EditProductAttributeMapping", "Product"), IsEditable = true },
+                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductAttributeMapping", "Product"), IsDeletable = true },
+                        }
+            };
                         }
                         @await Html.PartialAsync("_Table", ProductAttributeMappingListModel)
                     </div>
@@ -278,23 +66,23 @@
                         @* @(await Html.PartialAsync("_ProductPictureList", new ProductPictureModel { ProductId = Model.Id })) *@
                         @{
                             var productPictureList = new ProductPictureModel()
-                            {
-                                ProductId = Model.Id,
-                                DataTable = new DataTableViewModel()
-                                {
-                                    TableId = "dataTable-img",
-                                    TableTitle = "Danh sách hình ảnh của " + Model.Name,
-                                    // CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
-                                    Headers = new List<string> { "Picture", "DisplayOrder", "Delete" },
-                                    GetDataUrl = Url.Action("ListPhotos", "Product", new { productId = Model.Id }),
-                                    Columns = new List<ColumnDefinition>
-                                            {
-                                            new ColumnDefinition { Data = "pictureUrl", IsPicture = true },
-                                            new ColumnDefinition { Data = "displayOrder" },
-                                            new ColumnDefinition { DeleteUrl = Url.Action("DeletePhoto", "Product"), IsDeletable = true },
-                                            }
-                                }
-                            };
+            {
+                ProductId = Model.Id,
+                DataTable = new DataTableViewModel()
+                {
+                    TableId = "dataTable-img",
+                    TableTitle = "Danh sách hình ảnh của " + Model.Name,
+                    // CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
+                    Headers = new List<string> { "Picture", "DisplayOrder", "Delete" },
+                    GetDataUrl = Url.Action("ListPhotos", "Product", new { productId = Model.Id }),
+                    Columns = new List<ColumnDefinition>
+                        {
+                        new ColumnDefinition { Data = "pictureUrl", IsPicture = true },
+                        new ColumnDefinition { Data = "displayOrder" },
+                        new ColumnDefinition { DeleteUrl = Url.Action("DeletePhoto", "Product"), IsDeletable = true },
+                        }
+                }
+            };
                         }
                         @await Html.PartialAsync("_ProductPictureList", productPictureList)
                     </div>
@@ -317,21 +105,21 @@
                         @* @(await Html.PartialAsync("_ProductCategoryList", new ProductCategoryModel { ProductId = Model.Id })) *@
                         @{
                             var ProductCategoryList = new DataTableViewModel
-                            {
-                                TableId = "dataTable-product-category",
-                                TableTitle = "Danh sách thể loại của sản phẩm",
-                                CreateUrl = Url.Action("ProductCategoryMappingCreate", "Product", new { productId = Model.Id }),
-                                Headers = new List<string> { "CategoryName", "IsFeaturedProduct", "DisplayOrder", "Edit", "Delete" },
-                                GetDataUrl = Url.Action("GetListCategoryMapping", "Product", new { productId = Model.Id }),
-                                Columns = new List<ColumnDefinition>
-                                        {
-                                        new ColumnDefinition { Data = "categoryName" },
-                                        new ColumnDefinition { Data = "isFeaturedProduct", IsCheckBox = true },
-                                        new ColumnDefinition { Data = "displayOrder" },
-                                        new ColumnDefinition { EditUrl = Url.Action("EditProductCategory", "Product"), IsEditable = true },
-                                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductCategory", "Product"), IsDeletable = true },
-                                        }
-                            };
+            {
+                TableId = "dataTable-product-category",
+                TableTitle = "Danh sách thể loại của sản phẩm",
+                CreateUrl = Url.Action("ProductCategoryMappingCreate", "Product", new { productId = Model.Id }),
+                Headers = new List<string> { "CategoryName", "IsFeaturedProduct", "DisplayOrder", "Edit", "Delete" },
+                GetDataUrl = Url.Action("GetListCategoryMapping", "Product", new { productId = Model.Id }),
+                Columns = new List<ColumnDefinition>
+                        {
+                        new ColumnDefinition { Data = "categoryName" },
+                        new ColumnDefinition { Data = "isFeaturedProduct", IsCheckBox = true },
+                        new ColumnDefinition { Data = "displayOrder" },
+                        new ColumnDefinition { EditUrl = Url.Action("EditProductCategory", "Product"), IsEditable = true },
+                        new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductCategory", "Product"), IsDeletable = true },
+                        }
+            };
                         }
                         @await Html.PartialAsync("_Table", ProductCategoryList)
                     </div>

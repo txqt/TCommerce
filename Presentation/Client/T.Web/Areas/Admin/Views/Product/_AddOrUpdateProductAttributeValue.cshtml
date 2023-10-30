@@ -5,13 +5,13 @@
 <input hidden class="form-control" asp-for="ProductAttributeMappingId" value="@Model.ProductAttributeMappingId" />
 <input asp-for="DisplayColorSquaresRgb" type="hidden" />
 
-@if (ViewBag.RefreshPage == true)
+@* @if (ViewBag.RefreshPage == true)
 {
     <script>
         window.close();
         window.opener.location.reload();
     </script>
-}
+} *@
 
 <div class="form-group">
     <label for="@Html.DisplayNameFor(model => model.Name)">@Html.DisplayNameFor(model => model.Name)</label>
