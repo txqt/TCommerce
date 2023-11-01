@@ -1,4 +1,5 @@
 ﻿@model ProductAttributeValueModel
+
 @{
     Layout = "_EmptyLayout";
 }
@@ -7,5 +8,5 @@
     <h3 class="text-info">Thêm giá trị thuộc tính</h3>
     @(await Html.PartialAsync("_AddOrUpdateProductAttributeValue", Model))
 </form>
-<partial name="_ProductListLink" />
+<partial name="_ProductNavigation" />
 

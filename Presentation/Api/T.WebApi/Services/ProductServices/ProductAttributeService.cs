@@ -116,8 +116,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id)
         {
-            var productAttributeMapping = await _productAttributeMappingRepository.Table.Where(x => x.Deleted == false)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var productAttributeMapping = await _productAttributeMappingRepository.GetByIdAsync(id);
 
             var response = new ServiceResponse<ProductAttributeMapping>
             {

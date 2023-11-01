@@ -25,9 +25,9 @@ namespace T.Web.Profiles
                 //.ForMember(dest => dest.Published, opt => opt.MapFrom(src => src.Published))
                 //.ForMember(dest => dest.VisibleIndividually, opt => opt.MapFrom(src => src.VisibleIndividually))
                 .ReverseMap();
-            CreateMap<ProductAttributeMapping, ProductAttributeMappingModel>()
+            CreateMap<ProductAttributeMappingModel, ProductAttributeMapping>()
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.ProductAttributeId, opt => opt.MapFrom(src => src.ProductAttributeId))
                 .ForMember(dest => dest.TextPrompt, opt => opt.MapFrom(src => src.TextPrompt))
                 .ForMember(dest => dest.IsRequired, opt => opt.MapFrom(src => src.IsRequired))
@@ -38,9 +38,10 @@ namespace T.Web.Profiles
                 .ForMember(dest => dest.ValidationFileMaximumSize, opt => opt.MapFrom(src => src.ValidationFileMaximumSize))
                 .ForMember(dest => dest.DefaultValue, opt => opt.MapFrom(src => src.DefaultValue))
                 //.ForMember(dest => dest.ValidationRulesString, opt => opt.MapFrom(src => src.ValidationRulesString))
-                .ForMember(dest => dest.ProductAttributeName, opt => opt.MapFrom(src => src.ProductAttribute.Name))
-                .ForSourceMember(dest => dest.ProductAttribute, opt => opt.DoNotValidate())
+                .ForPath(dest => dest.ProductAttribute.Name, opt => opt.MapFrom(src => src.ProductAttributeName))
+                .AfterMap((src, dest) => dest.ProductAttribute = null)
                 .ReverseMap();
+
             CreateMap<ProductAttributeValue, ProductAttributeValueModel>()
                 .ForMember(dest => dest.ProductAttributeMappingId, opt => opt.MapFrom(src => src.ProductAttributeMappingId))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))

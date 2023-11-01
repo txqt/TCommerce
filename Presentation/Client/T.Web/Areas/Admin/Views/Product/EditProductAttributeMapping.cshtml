@@ -1,7 +1,4 @@
-﻿@{
-    Layout = "_EmptyLayout";
-}
-@model ProductAttributeMappingModel
+﻿@model ProductAttributeMappingModel
 
 <h3 class="text-info">Sửa thuộc tính liên kết với sản phẩm</h3>
 <form method="post" style="background-color: #fff; padding: 20px; border-radius: 10px">
@@ -14,8 +11,10 @@
                 TableId = "dataTable-pav",
                 TableTitle = $"Danh sách thuộc tính {Model.ProductAttributeName}",
                 CreateUrl = Url.Action("ProductAttributeValueCreate", "Product", new { productAttributeMappingId = Model.Id }),
+                CreateButtonName = "Tạo mới",
                 Headers = new List<string> { "Name", "PriceAdjustment", "WeightAdjustment", "IsPreSelected", "PictureThumbnailUrl", "Edit", "Delete" },
                 GetDataUrl = Url.Action("GetValueProductMapping", "Product", new { id = Model.Id }),
+                PopupWindow = true,
                 Columns = new List<ColumnDefinition>
                     {
                     new ColumnDefinition { Data = "name" },
@@ -30,4 +29,4 @@
 }
 @await Html.PartialAsync("_Table", pav)
 @* @(await Html.PartialAsync("_ProductAttributeValueList", new ProductAttributeValueModel() { ProductAttributeMappingId = Model.Id })) *@
-<partial name="_ProductListLink" />
+<partial name="_ProductNavigation" />

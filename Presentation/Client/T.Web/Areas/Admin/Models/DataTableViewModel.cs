@@ -5,9 +5,13 @@
         public string TableId { get; set; }
         public string TableTitle { get; set; }
         public string CreateUrl { get; set; }
+        public string CreateButtonName { get; set; } = null;
         public List<string> Headers { get; set; }
         public List<ColumnDefinition> Columns { get; set; }
         public string GetDataUrl { get; set; }
+        public bool PopupWindow { get; set; } = false;
+        public List<int> LengthMenu { get; set; } = new List<int> { 5, 10, 25, 50 };
+        public int PageLength { get; set; } = 5;
     }
     public class ColumnDefinition
     {

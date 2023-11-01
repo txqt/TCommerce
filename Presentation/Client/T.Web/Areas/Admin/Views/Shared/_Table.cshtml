@@ -1,37 +1,55 @@
 ﻿@model DataTableViewModel
 
-@{
-    ViewData["Title"] = Model.TableTitle;
-}
+<style>
+    .dt-buttons .btn {
+        margin-right: 10px; /* Adjust as needed */
+    }
+
+    .create-new-button {
+        margin-right: 0;
+    }
+</style>
 
 <h1>@Model.TableTitle</h1>
 
-@if (Model.CreateUrl != null || Model.CreateUrl == string.Empty)
+@* @if (Model.CreateUrl != null || Model.CreateUrl == string.Empty)
 {
     <p>
-        <a href="@Model.CreateUrl">Create New</a>
+        @if (Model.PopupWindow)
+        {
+            <button class="btn btn-info" onclick="openPopup('@Model.CreateUrl')">@(Model.CreateButtonName == null ? "Create new" : Model.CreateButtonName)</button>
+        }
+        else
+        {
+            <a class="btn btn-info" href="@Model.CreateUrl">@(Model.CreateButtonName == null ? "Create new" : Model.CreateButtonName)</a>
+        }
     </p>
-}
+} *@
 
-<table class="table table-bordered border-primary table-hover" id="@Model.TableId">
-    <thead>
-        <tr>
-            @foreach (var header in Model.Headers)
-            {
-                <th>@header</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-
+<div class="table-responsive display" style="width:100%">
+    <table class="table table-success table-striped table-hover" id="@Model.TableId">
+        <thead>
+            <tr>
+                @foreach (var header in Model.Headers)
+                {
+                    <th>@header</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
 <script>
     $(document).ready(function () {
         var tableId = '#@Model.TableId';
         var url = '@Model.GetDataUrl';
         var columns = @Html.Raw(Json.Serialize(Model.Columns));
         LoadTable(tableId, url, columns);
+        // Add click event to reset button
+        $('#resetTable').click(function () {
+            LoadTable(tableId, url, columns);
+        });
     });
 
 
@@ -42,7 +60,11 @@
                     data: null,
                     render: function (data, type, row) {
                         var editUrl = column.editUrl + '?id=' + row.id;
-                        return '<button class="btn btn-info" onclick="openPopup(\'' + editUrl + '\')">Edit</button>';
+                        if (@Model.PopupWindow.ToString().ToLower()) {
+                            return '<button class="btn btn-info" onclick="openPopup(\'' + editUrl + '\')">Edit</button>';
+                        } else {
+                            return '<a class="btn btn-info" href="' + editUrl + '">Edit</a>';
+                        }
                     }
                 };
             } else if (column.isDeletable) {
@@ -79,13 +101,49 @@
 
         $(tableId).DataTable().destroy();
         $(tableId).DataTable({
-            lengthMenu: [5, 10, 25, 50],
-            pageLength: 5,
+            dom: 'Bfrtip',
+            lengthMenu: @Html.Raw(Json.Serialize(Model.LengthMenu)),
+            pageLength: @Model.PageLength,
             ajax: {
                 url: url,
                 type: "GET",
                 datatype: "json",
             },
+            buttons: [
+                {
+                    text: '@(Model.CreateButtonName == null ? "Create" : Model.CreateButtonName)', // Use Model.CreateButtonName if it's not null
+                    action: function (e, dt, node, config) {
+    @if (Model.PopupWindow)
+    {
+        <text>
+                                openPopup('@Model.CreateUrl'); // Open a popup window with the create new URL
+        </text>
+    }
+    else
+    {
+        <text>
+                                window.location.href = '@Model.CreateUrl'; // Navigate to the create new URL
+        </text>
+    }
+                        },
+                    className: 'create-new-button btn btn-info' // Add a class to style the button
+                },
+                {
+                    text: '<i class="fa fa-redo"></i>',
+                    action: function (e, dt, node, config) {
+                        dt.ajax.reload();
+                    }
+                },
+                'copy',
+                {
+                    extend: 'collection',
+                    text: 'Print table',
+                    buttons: [
+                        'excel',
+                        'pdf'
+                    ]
+                }
+            ],
             columns: dataTableColumns
         });
 

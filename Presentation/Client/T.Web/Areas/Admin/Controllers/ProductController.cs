@@ -165,11 +165,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var productAttributeMapping = new ProductAttributeMapping()
-            {
-                ProductId = model.ProductId,
-                ProductAttributeId = model.ProductAttributeId,
-            };
+            var productAttributeMapping = _mapper.Map<ProductAttributeMapping>(model);
 
             var result = await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
 
@@ -227,7 +223,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            productAttributeMapping = _mapper.Map(model, productAttributeMapping);
+            _mapper.Map(model, productAttributeMapping);
 
             var result = await _productAttributeService.UpdateProductAttributeMappingAsync(productAttributeMapping);
 
@@ -241,7 +237,7 @@ namespace T.Web.Areas.Admin.Controllers
             SetStatusMessage($"Sửa thành công !");
             return RedirectToAction("EditProductAttributeMapping", new
             {
-                productAttributeMappingId = productAttributeMapping.Id
+                id = productAttributeMapping.Id
             });
         }
 

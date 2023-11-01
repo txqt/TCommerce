@@ -128,18 +128,18 @@ namespace T.WebApi.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ICacheService, CacheService>();
-            services.AddTransient<IEmailSender, SendMailService>();
-            services.AddTransient<IProductService, ProductService>();
-            services.AddTransient<IProductAttributeService, ProductAttributeService>();
-            services.AddTransient<ICategoryService, CategoryService>();
-            services.AddTransient<IProductCategoryService, ProductCategoryService>();
-            services.AddTransient<IPictureService, PictureService>();
-            services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IHomePageService, HomePageService>();
-            services.AddTransient<ISecurityService, SecurityService>();
-            services.AddTransient<DataSeeder>();
-            services.AddTransient<IDbManageService, DbManageService>();
-            services.AddTransient<IBannerService, BannerService>();
+            services.AddScoped<IEmailSender, SendMailService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductAttributeService, ProductAttributeService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductCategoryService, ProductCategoryService>();
+            services.AddScoped<IPictureService, PictureService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IHomePageService, HomePageService>();
+            services.AddScoped<ISecurityService, SecurityService>();
+            services.AddScoped<DataSeeder>();
+            services.AddScoped<IDbManageService, DbManageService>();
+            services.AddScoped<IBannerService, BannerService>();
             services.AddScoped<ValidationFilterAttribute>();
             services.AddScoped<DatabaseContextFactory>();
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>)); ;
@@ -153,6 +153,7 @@ namespace T.WebApi.Extensions
             services.AddDbContext<DatabaseContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
 
             return services;
