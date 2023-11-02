@@ -33,23 +33,13 @@
             <div id="dataTable_filter" class="dataTables_filter">
                 <label>
                     Search: <input type="search" id="searchInput" name="searchText" value="@ViewBag.SearchText" class="form-control form-control-sm" placeholder="" aria-controls="dataTable">
-                    <a href="@Url.Action("Index","Product")">Back to full list</a>
                 </label>
                 <script>
                     $(function () {
                         $('#searchInput').on('input', function () {
                             var searchText = $(this).val();
-                            if (!searchText) {
-                                var url = "@Url.Action("Index", "Product", new ProductParameters{ PageSize = Model.Parameters.PageSize, OrderBy = Model.Parameters.OrderBy })";
-                                getProduct(url);
-                            }
-                        }).keypress(function (event) {
-                            if (event.keyCode === 13) {
-                                event.preventDefault(); // prevent form submission
-                                var searchText = $(this).val();
-                                var url = "@Url.Action("Index", "Product", new { PageSize = Model.Parameters.PageSize, orderBy = Model.Parameters.OrderBy })&SearchText=" + searchText;
-                                getProduct(url);
-                            }
+                            var url = "@Url.Action("Index", "Product", new { PageSize = Model.Parameters.PageSize, orderBy = Model.Parameters.OrderBy })&SearchText=" + searchText;
+                            getProduct(url);
                         });
                     });
                 </script>

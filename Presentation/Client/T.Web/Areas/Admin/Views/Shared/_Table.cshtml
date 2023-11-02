@@ -10,7 +10,9 @@
     }
 </style>
 
-<h1>@Model.TableTitle</h1>
+<h1 class="text-info">@Model.TableTitle</h1>
+
+<br />
 
 @* @if (Model.CreateUrl != null || Model.CreateUrl == string.Empty)
 {
@@ -45,15 +47,52 @@
         var tableId = '#@Model.TableId';
         var url = '@Model.GetDataUrl';
         var columns = @Html.Raw(Json.Serialize(Model.Columns));
-        LoadTable(tableId, url, columns);
-        // Add click event to reset button
-        $('#resetTable').click(function () {
-            LoadTable(tableId, url, columns);
-        });
+        var createUrl = '@Model.CreateUrl';
+        var buttons = [
+            {
+                text: '<i class="fa fa-redo"></i>',
+                action: function (e, dt, node, config) {
+                    dt.ajax.reload();
+                }
+            },
+            'copy',
+            {
+                extend: 'collection',
+                text: 'Print table',
+                buttons: [
+                    'excel',
+                    'pdf'
+                ]
+            }
+        ];
+
+        if (createUrl && createUrl.length > 0) {
+            var createButton = {
+                text: '@(Model.CreateButtonName == null ? "Create" : Model.CreateButtonName)',
+                action: function (e, dt, node, config) {
+    @if (Model.PopupWindow)
+    {
+        <text>
+                            openPopup(createUrl);
+        </text>
+    }
+    else
+    {
+        <text>
+                            window.location.href = createUrl;
+        </text>
+    }
+                },
+                className: 'create-new-button btn btn-info'
+            };
+            buttons.unshift(createButton);
+        }
+
+        LoadTable(tableId, url, columns, buttons);
     });
 
 
-    function LoadTable(tableId, url, columns) {
+    function LoadTable(tableId, url, columns, buttons) {
         var dataTableColumns = columns.map(function (column) {
             if (column.isEditable) {
                 return {
@@ -109,41 +148,7 @@
                 type: "GET",
                 datatype: "json",
             },
-            buttons: [
-                {
-                    text: '@(Model.CreateButtonName == null ? "Create" : Model.CreateButtonName)', // Use Model.CreateButtonName if it's not null
-                    action: function (e, dt, node, config) {
-    @if (Model.PopupWindow)
-    {
-        <text>
-                                openPopup('@Model.CreateUrl'); // Open a popup window with the create new URL
-        </text>
-    }
-    else
-    {
-        <text>
-                                window.location.href = '@Model.CreateUrl'; // Navigate to the create new URL
-        </text>
-    }
-                        },
-                    className: 'create-new-button btn btn-info' // Add a class to style the button
-                },
-                {
-                    text: '<i class="fa fa-redo"></i>',
-                    action: function (e, dt, node, config) {
-                        dt.ajax.reload();
-                    }
-                },
-                'copy',
-                {
-                    extend: 'collection',
-                    text: 'Print table',
-                    buttons: [
-                        'excel',
-                        'pdf'
-                    ]
-                }
-            ],
+            buttons: buttons,
             columns: dataTableColumns
         });
 
