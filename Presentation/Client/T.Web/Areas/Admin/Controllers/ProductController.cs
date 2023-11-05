@@ -20,14 +20,14 @@ namespace T.Web.Areas.Admin.Controllers
     public class ProductController : BaseAdminController
     {
         private readonly IProductService _productService;
-        private readonly IProductAttributeService _productAttributeService;
+        private readonly IProductAttributeCommon _productAttributeService;
         //private readonly IProductAttributeMappingService _productAttributeService;
         //private readonly IProductAttributeValueService _productAttributeService;
         private readonly IMapper _mapper;
         private readonly IProductModelService _prepareModelService;
         private readonly IProductCategoryService _productCategoryService;
         private readonly ICategoryService _categoryService;
-        public ProductController(IProductService productService, IMapper mapper, IProductAttributeService productAttributeService,
+        public ProductController(IProductService productService, IMapper mapper, IProductAttributeCommon productAttributeService,
           //IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService,
           IProductModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryService categoryService)
         {

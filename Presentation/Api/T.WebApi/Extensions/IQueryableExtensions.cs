@@ -9,7 +9,7 @@ namespace T.WebApi.Extensions
 {
     public static class IQueryableExtensions
     {
-        public static IQueryable<T> SearchByString<T>(this IQueryable<T> items, string searchTerm)
+        public static IQueryable<T> SearchByString<T>(this IQueryable<T> items, string searchTerm = null)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return items;

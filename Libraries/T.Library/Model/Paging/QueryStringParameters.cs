@@ -14,4 +14,6 @@
             _pageSize = (value > maxPageSize) ? maxPageSize : value;
         }
     }
+    public string OrderBy { get; set; }
+    public string SearchText { get; set; } = string.Empty;
 }

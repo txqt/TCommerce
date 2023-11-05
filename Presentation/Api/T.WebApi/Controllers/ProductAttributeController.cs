@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using T.Library.Model;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
@@ -27,6 +28,15 @@ namespace T.WebApi.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await _productAttributeSvc.GetAllProductAttributeAsync());
+        }
+
+        [AllowAnonymous]
+        [HttpGet(APIRoutes.GetAll + "-paged")]
+        public async Task<IActionResult> GetAllPagedAsync([FromQuery]ProductAttributeParameters productAttributeParameters)
+        {
+            var products = await _productAttributeSvc.GetAllPagedAsync(productAttributeParameters);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(products.MetaData));
+            return Ok(products);
         }
 
         [HttpGet("{id}")]

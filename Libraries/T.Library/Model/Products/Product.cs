@@ -6,7 +6,7 @@ namespace T.Library.Model
     /// <summary>
     /// Represents a product
     /// </summary>
-    public partial class Product : BaseEntity
+    public partial class Product : BaseEntity, ISoftDeletedEntity
     {
         ///// <summary>
         ///// Gets or sets the product type identifier
@@ -231,6 +231,7 @@ namespace T.Library.Model
         /// Gets or sets the date and time of product update
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
+        public bool Deleted { get; set; }
 
         ///// <summary>
         ///// Gets or sets the product type

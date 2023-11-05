@@ -7,7 +7,7 @@ using T.Library.Model.Response;
 
 namespace T.Library.Model.Interface
 {
-    public interface IProductAttributeService
+    public interface IProductAttributeCommon
     {
         #region ProductAttribute
         Task<List<ProductAttribute>> GetAllProductAttributeAsync();

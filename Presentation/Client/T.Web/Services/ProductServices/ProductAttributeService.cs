@@ -16,7 +16,7 @@ namespace T.Web.Services.ProductService
     //    Task<ServiceResponse<bool>> Delete(int id);
     //    Task<ServiceResponse<ProductAttribute>> Get(int id);
     //}
-    public class ProductAttributeService : IProductAttributeService
+    public class ProductAttributeService : IProductAttributeCommon
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _options;

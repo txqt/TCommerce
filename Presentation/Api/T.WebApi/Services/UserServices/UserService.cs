@@ -227,7 +227,7 @@ namespace T.WebApi.Services.UserServices
             if (user == null)
                 return new ServiceErrorResponse<bool>("User not found");
 
-            user.IsBanned = true;
+            user.Deleted = true;
             var result = await _userManager.UpdateAsync(user);
 
             if (!result.Succeeded)

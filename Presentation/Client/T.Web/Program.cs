@@ -35,7 +35,7 @@ internal class Program
         builder.Services.AddAutoMapper(typeof(Program).Assembly);
         builder.Services.AddTransient<IAccountService, AccountService>();
         builder.Services.AddTransient<IProductService, ProductService>();
-        builder.Services.AddTransient<IProductAttributeService, ProductAttributeService>();
+        builder.Services.AddTransient<IProductAttributeCommon, ProductAttributeService>();
         builder.Services.AddTransient<ISecurityService, SecurityService>();
         builder.Services.AddTransient<IProductModelService, ProductModelService>();
         builder.Services.AddTransient<IUserModelService, UserModelService>();

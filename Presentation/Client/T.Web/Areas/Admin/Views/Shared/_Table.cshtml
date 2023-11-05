@@ -1,8 +1,8 @@
 ﻿@model DataTableViewModel
 
 <style>
-    .dt-buttons .btn {
-        margin-right: 10px; /* Adjust as needed */
+    div.dt-buttons {
+        margin: 10px 10px 10px 0; /* Adjust as needed */
     }
 
     .create-new-button {
@@ -82,7 +82,7 @@
                             window.location.href = createUrl;
         </text>
     }
-                },
+                            },
                 className: 'create-new-button btn btn-info'
             };
             buttons.unshift(createButton);
@@ -140,13 +140,24 @@
 
         $(tableId).DataTable().destroy();
         $(tableId).DataTable({
-            dom: 'Bfrtip',
+            dom: "<'row'<'col-sm-12'B>>" +
+                "<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
             lengthMenu: @Html.Raw(Json.Serialize(Model.LengthMenu)),
             pageLength: @Model.PageLength,
+            serverSide: true,
             ajax: {
                 url: url,
-                type: "GET",
+                type: "POST",
                 datatype: "json",
+                data: function (d) {
+                    return $.extend({}, d, {
+                        "pageNumber": d.start / d.length + 1,
+                        "pageSize": d.length,
+                        "searchText": d.search.value
+                    });
+                }
             },
             buttons: buttons,
             columns: dataTableColumns

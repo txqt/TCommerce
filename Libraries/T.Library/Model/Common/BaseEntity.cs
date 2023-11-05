@@ -9,9 +9,5 @@
         /// Gets or sets the entity identifier
         /// </summary>
         public int Id { get; set; }
-        /// <summary>
-        /// Gets or sets the entity is deleted or not
-        /// </summary>
-        public bool Deleted { get; set; }
     }
 }

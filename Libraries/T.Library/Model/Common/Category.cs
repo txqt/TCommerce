@@ -5,7 +5,7 @@ namespace T.Library.Model.Common
     /// <summary>
     /// Represents a category
     /// </summary>
-    public partial class Category : BaseEntity
+    public partial class Category : BaseEntity, ISoftDeletedEntity
     {
         /// <summary>
         /// Gets or sets the name
@@ -94,5 +94,6 @@ namespace T.Library.Model.Common
         public bool ManuallyPriceRange { get; set; }
 
         public List<ProductCategory> ProductCategories { get; set; }
+        public bool Deleted { get; set; }
     }
 }

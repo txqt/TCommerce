@@ -46,7 +46,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<ProductCategory>> GetProductCategoryById(int productCategoryId)
         {
-            var productCategory = await _productCategoryRepository.Table.Where(x => x.Deleted == false)
+            var productCategory = await _productCategoryRepository.Table
                 .FirstOrDefaultAsync(x => x.Id == productCategoryId);
 
             var response = new ServiceResponse<ProductCategory>
@@ -64,7 +64,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<List<ProductCategory>>> GetProductCategoriesByProductId(int productId)
         {
-            var productCategoryList = await _productCategoryRepository.Table.Where(x => x.Deleted == false && x.ProductId == productId)
+            var productCategoryList = await _productCategoryRepository.Table.Where(x => x.ProductId == productId)
                .ToListAsync();
 
             var response = new ServiceResponse<List<ProductCategory>>

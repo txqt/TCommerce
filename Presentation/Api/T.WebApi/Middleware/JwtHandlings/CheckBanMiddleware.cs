@@ -22,7 +22,7 @@ namespace T.WebApi.Middleware.JwtHandlings
                 var username = principal.Identity.Name; // this depends on the claims you added to the token
                 var user = await userManager.FindByNameAsync(username);
 
-                if (user != null && user.IsBanned)
+                if (user != null && user.Deleted)
                 {
                     context.Response.StatusCode = 401; // Unauthorized
                     await context.Response.WriteAsync("Your account has been banned");

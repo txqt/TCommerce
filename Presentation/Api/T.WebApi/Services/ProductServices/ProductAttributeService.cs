@@ -5,37 +5,15 @@ using T.Library.Model;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.WebApi.Database.ConfigurationDatabase;
+using T.WebApi.Extensions;
 using T.WebApi.Services.IRepositoryServices;
 
 namespace T.WebApi.Services.ProductServices
 {
-    //public interface IProductAttributeService
-    //{
-    //    #region ProductAttribute
-    //    Task<List<ProductAttribute>> GetAllProductAttributeAsync();
-    //    Task<ServiceResponse<ProductAttribute>> GetProductAttributeByIdAsync(int id);
-    //    Task<ServiceResponse<ProductAttribute>> GetProductAttributeByName(string name);
-    //    Task<ServiceResponse<bool>> CreateProductAttributeAsync(ProductAttribute productAttribute);
-    //    Task<ServiceResponse<bool>> UpdateProductAttributeAsync(ProductAttribute productAttribute);
-    //    Task<ServiceResponse<bool>> DeleteProductAttributeByIdAsync(int id);
-    //    #endregion
-
-    //    #region ProductAttributeMapping
-    //    Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id);
-    //    Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributeMappingByProductIdAsync(int id);
-    //    Task<ServiceResponse<bool>> CreateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping);
-    //    Task<ServiceResponse<bool>> UpdateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping);
-    //    Task<ServiceResponse<bool>> DeleteProductAttributeMappingByIdAsync(int id);
-    //    Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValuesAsync(int productAttributeMappingId);
-    //    #endregion
-
-    //    #region ProductAttributeValue
-    //    Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id);
-    //    Task<ServiceResponse<bool>> CreateProductAttributeValueAsync(ProductAttributeValue productAttributeValue);
-    //    Task<ServiceResponse<bool>> UpdateProductAttributeValueAsync(ProductAttributeValue productAttributeValue);
-    //    Task<ServiceResponse<bool>> DeleteProductAttributeValueAsync(int id);
-    //    #endregion
-    //}
+    public interface IProductAttributeService : IProductAttributeCommon
+    {
+        Task<PagedList<ProductAttribute>> GetAllPagedAsync(ProductAttributeParameters productAttributeParameters);
+    }
     public class ProductAttributeService : IProductAttributeService
     {
         private readonly IRepository<ProductAttribute> _productAttributeRepository;
@@ -46,6 +24,19 @@ namespace T.WebApi.Services.ProductServices
             _productAttributeRepository = productAttributeRepository;
             _productAttributeMappingRepository = productAttributeMappingRepository;
             _productAttributeValueRepository = productAttributeValueRepository;
+        }
+
+        public async Task<PagedList<ProductAttribute>> GetAllPagedAsync(ProductAttributeParameters productAttributeParameters)
+        {
+            var list_product_attribute = new List<ProductAttribute>();
+
+            list_product_attribute = await _productAttributeRepository.Table
+                .SearchByString(productAttributeParameters.SearchText)
+                .Sort(productAttributeParameters.OrderBy)
+                .ToListAsync();
+
+            return PagedList<ProductAttribute>
+                        .ToPagedList(list_product_attribute, productAttributeParameters.PageNumber, productAttributeParameters.PageSize);
         }
 
         public async Task<List<ProductAttribute>> GetAllProductAttributeAsync()
@@ -67,7 +58,7 @@ namespace T.WebApi.Services.ProductServices
         {
             var response = new ServiceResponse<ProductAttribute>
             {
-                Data = await _productAttributeRepository.Table.Where(x => x.Deleted == false)
+                Data = await _productAttributeRepository.Table
                     .FirstOrDefaultAsync(x => x.Name == name),
                 Success = true
             };
@@ -128,7 +119,7 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributesMappingByProductIdAsync(int id)
         {
-            var productAttributeMapping = await _productAttributeMappingRepository.Table.Where(x => x.Deleted == false && x.ProductId == id)
+            var productAttributeMapping = await _productAttributeMappingRepository.Table.Where(x => x.ProductId == id)
                 .Include(x => x.ProductAttribute)
                 .ToListAsync();
 

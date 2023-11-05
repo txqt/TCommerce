@@ -57,22 +57,17 @@ namespace T.WebApi.Services.ProductServices
         #region Methods
         public async Task<PagedList<Product>> GetAll(ProductParameters productParameters)
         {
+            var list_product = new List<Product>();
 
-            {
-                var list_product = new List<Product>();
+            list_product = await _productsRepository.Table
+                .SearchByString(productParameters.SearchText)
+                .Sort(productParameters.OrderBy)//sort by product coloumn 
+                .Include(x => x.ProductPictures)
+                .Where(x => x.Deleted == false)
+                .ToListAsync();
 
-                list_product = await _productsRepository.Table
-                    .SearchByString(productParameters.SearchText)
-                    .Sort(productParameters.OrderBy)//sort by product coloumn 
-                    .Include(x => x.ProductPictures)
-                    .Where(x => x.Deleted == false)
-                    .ToListAsync();
-
-                list_product = list_product.DistinctBy(x => x.Id).ToList();
-                //list_product.Shuffle();
-                return PagedList<Product>
-                            .ToPagedList(list_product, productParameters.PageNumber, productParameters.PageSize);
-            }
+            return PagedList<Product>
+                        .ToPagedList(list_product, productParameters.PageNumber, productParameters.PageSize);
         }
 
         public async Task<ServiceResponse<Product>> GetByIdAsync(int id)
@@ -95,9 +90,9 @@ namespace T.WebApi.Services.ProductServices
 
                 return new ServiceSuccessResponse<bool>();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return new ServiceErrorResponse<bool>() { Message = ex.Message};
+                return new ServiceErrorResponse<bool>() { Message = ex.Message };
             }
         }
 
@@ -160,7 +155,7 @@ namespace T.WebApi.Services.ProductServices
         {
 
             {
-                var productPicture = await _productPictureMappingRepository.Table.Where(x => x.Deleted == false && x.ProductId == productId)
+                var productPicture = await _productPictureMappingRepository.Table.Where(x => x.ProductId == productId)
                     .Include(x => x.Picture)
                     .ToListAsync();
 

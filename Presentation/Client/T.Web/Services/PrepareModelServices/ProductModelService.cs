@@ -25,7 +25,7 @@ namespace T.Web.Services.PrepareModel
     }
     public class ProductModelService : IProductModelService
     {
-        private readonly IProductAttributeService _productAttributeService;
+        private readonly IProductAttributeCommon _productAttributeService;
         //private readonly IProductAttributeMappingService _productAttributeService;
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
@@ -33,7 +33,7 @@ namespace T.Web.Services.PrepareModel
         private readonly IProductCategoryService productCategoryService;
         private string apiUrl = null;
         private readonly IConfiguration _configuration;
-        public ProductModelService(IProductAttributeService productAttributeService,/* IProductAttributeMappingService productAttributeMappingService,*/
+        public ProductModelService(IProductAttributeCommon productAttributeService,/* IProductAttributeMappingService productAttributeMappingService,*/
             IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService, IConfiguration configuration)
         {
             _productAttributeService = productAttributeService;

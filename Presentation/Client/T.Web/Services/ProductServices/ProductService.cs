@@ -25,10 +25,10 @@ namespace T.Web.Services.ProductService
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JsonSerializerOptions _options;
-        private readonly IProductAttributeService _productAttributeService;
+        private readonly IProductAttributeCommon _productAttributeService;
         //private readonly IProductAttributeMappingService _productAttributeMappingService;
         private readonly IMapper _mapper;
-        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IProductAttributeService productAttributeService, /*IProductAttributeMappingService productAttributeMappingService,*/ IMapper mapper)
+        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IProductAttributeCommon productAttributeService, /*IProductAttributeMappingService productAttributeMappingService,*/ IMapper mapper)
         {
             _options = options;
             _httpClient = httpClient;

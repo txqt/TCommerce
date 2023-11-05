@@ -5,10 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using T.Library.Model.Common;
 
 namespace T.Library.Model.Users
 {
-    public class User : IdentityUser<Guid>
+    public class User : IdentityUser<Guid>, ISoftDeletedEntity
     {
         [MaxLength(30)]
         [Required(ErrorMessage = "Phải nhập tên đệm và tên")]
@@ -30,7 +31,6 @@ namespace T.Library.Model.Users
 
         public bool RequirePasswordChange { get; set; }
 
-        public bool IsBanned { get; set; }
         public bool Deleted { get; set; }
     }
 }

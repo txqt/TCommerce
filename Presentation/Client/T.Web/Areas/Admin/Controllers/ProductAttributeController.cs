@@ -16,8 +16,8 @@ namespace T.Web.Areas.Admin.Controllers
     [CheckPermission(PermissionSystemName.ManageAttributes)]
     public class ProductAttributeController : BaseAdminController
     {
-        private readonly IProductAttributeService _productAttributeService;
-        public ProductAttributeController(IProductAttributeService productAttributeService)
+        private readonly IProductAttributeCommon _productAttributeService;
+        public ProductAttributeController(IProductAttributeCommon productAttributeService)
         {
             _productAttributeService = productAttributeService;
         }
