@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Reflection;
 using T.Library.Model;
 using T.Library.Model.Common;
@@ -69,15 +70,23 @@ namespace T.WebApi.Services.DataSeederService
                     CreatedDate = DateTime.UtcNow,
                     EmailConfirmed = true
                 };
-
-                await _userManager.CreateAsync(user, AdminPassword);
-                var createdUser = await _userManager.FindByNameAsync(user.UserName);
-
-                if (createdUser is null)
+                var result = await _userManager.CreateAsync(user, AdminPassword);
+                if (result.Succeeded)
+                {
+                    try
+                    {
+                        await _userManager.AddToRoleAsync(user, RoleName.Admin);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        return;
+                    }
+                }
+                else
                 {
                     throw new Exception("Something went wrong");
                 }
-                await _userManager.AddToRoleAsync(createdUser, RoleName.Admin);
             }
         }
         private async Task SeedCategoriesAsync()
@@ -262,10 +271,18 @@ namespace T.WebApi.Services.DataSeederService
                 foreach (var user in item.Users)
                 {
                     await _userManager.CreateAsync(user, "123321");
-                    var createdUser = await _userManager.FindByNameAsync(user.UserName);
+                    var createdUser = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x=>x.UserName == user.UserName);
                     foreach (var role in item.Roles)
                     {
-                        await _userManager.AddToRoleAsync(createdUser, role.Name);
+                        try
+                        {
+                            await _userManager.AddToRoleAsync(createdUser, role.Name);
+                        }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            return;
+                        }
                     }
                 }
             }

@@ -50,7 +50,32 @@ namespace T.Web.Areas.Admin.Controllers
                 ProductList = result.Items.ToList(),
                 Parameters = productParameters
             };
-            return View(model);
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAll(DataTablesParameters parameters)
+        {
+            // Create ProductParameters from DataTables parameters
+            var productParameters = new ProductParameters
+            {
+                PageNumber = parameters.Start / parameters.Length + 1,
+                PageSize = parameters.Length,
+                SearchText = parameters.Search.Value,
+                OrderBy = parameters.Columns[parameters.Order[0].Column].Data + " " + parameters.Order[0].Dir
+            };
+
+            // Call the service to get the paged data
+            var pagingResponse = await _productService.GetAll(productParameters);
+
+            // Return the data in the format that DataTables expects
+            return Json(new
+            {
+                draw = parameters.Draw,
+                recordsTotal = pagingResponse.MetaData.TotalCount,
+                recordsFiltered = pagingResponse.MetaData.TotalCount,
+                data = pagingResponse.Items
+            });
         }
 
         [HttpGet]

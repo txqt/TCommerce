@@ -82,7 +82,7 @@
                             window.location.href = createUrl;
         </text>
     }
-                            },
+                                },
                 className: 'create-new-button btn btn-info'
             };
             buttons.unshift(createButton);
@@ -150,14 +150,22 @@
             ajax: {
                 url: url,
                 type: "POST",
-                datatype: "json",
                 data: function (d) {
                     return $.extend({}, d, {
-                        "pageNumber": d.start / d.length + 1,
-                        "pageSize": d.length,
-                        "searchText": d.search.value
+                        pageNumber: d.start / d.length + 1, // Calculate page number based on start and length
+                        pageSize: d.length, // Page size is the length
+                        searchText: d.search.value, // Search text
+                        orderBy: d.order[0].column + " " + d.order[0].dir // Order by
                     });
-                }
+                },
+                dataFilter: function (data) {
+                    var json = jQuery.parseJSON(data);
+                    json.recordsTotal = json.recordsTotal;
+                    json.recordsFiltered = json.recordsFiltered;
+                    json.data = json.data;
+
+                    return JSON.stringify(json); // return JSON string
+                },
             },
             buttons: buttons,
             columns: dataTableColumns
