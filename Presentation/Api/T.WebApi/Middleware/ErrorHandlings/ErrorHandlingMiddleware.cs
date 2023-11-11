@@ -33,7 +33,7 @@ namespace T.WebApi.Middleware.ErrorHandlings
             var message = exception switch
             {
                 AccessViolationException => "Access violation error.",
-                _ => $"{exception.Message}"
+                _ => $"Server error"
             };
             await context.Response.WriteAsync(new ErrorDetails()
             {

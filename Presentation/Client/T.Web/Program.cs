@@ -4,8 +4,10 @@ using System.Text.Json.Serialization;
 using T.Library.Model.Interface;
 using T.Library.Model.JwtToken;
 using T.Web.Common;
+using T.Web.Helpers;
 using T.Web.Services;
 using T.Web.Services.AccountService;
+using T.Web.Services.BannerServices;
 using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
 using T.Web.Services.HomePageServices;
@@ -38,12 +40,16 @@ internal class Program
         builder.Services.AddTransient<IProductAttributeCommon, ProductAttributeService>();
         builder.Services.AddTransient<ISecurityService, SecurityService>();
         builder.Services.AddTransient<IProductModelService, ProductModelService>();
+        builder.Services.AddTransient<ICategoryModelService, CategoryModelService>();
+        builder.Services.AddTransient<IBannerModelService, BannerModelService>();
         builder.Services.AddTransient<IUserModelService, UserModelService>();
         builder.Services.AddTransient<ICategoryService, CategoryService>();
         builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
         builder.Services.AddTransient<IPermissionRecordService, PermissionRecordService>();
         builder.Services.AddTransient<IUserService, UserService>();
         builder.Services.AddTransient<IHomePageService, HomePageService>();
+        builder.Services.AddTransient<IBannerService, BannerService>();
+        builder.Services.AddSingleton<HttpClientHelper>();
         builder.Services.AddTransient<UnauthorizedResponseHandler>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {

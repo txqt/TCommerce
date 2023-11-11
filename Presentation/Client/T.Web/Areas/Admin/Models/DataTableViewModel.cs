@@ -1,7 +1,14 @@
-﻿namespace T.Web.Areas.Admin.Models
+﻿using System.Drawing.Printing;
+
+namespace T.Web.Areas.Admin.Models
 {
     public class DataTableViewModel
     {
+        public DataTableViewModel()
+        {
+            TableId = Guid.NewGuid().ToString();
+        }
+
         public string TableId { get; set; }
         public string TableTitle { get; set; }
         public string CreateUrl { get; set; }
@@ -10,8 +17,9 @@
         public List<ColumnDefinition> Columns { get; set; }
         public string GetDataUrl { get; set; }
         public bool PopupWindow { get; set; } = false;
-        public List<int> LengthMenu { get; set; } = new List<int> { 5, 10, 25, 50 };
-        public int PageLength { get; set; } = 5;
+        public List<int> LengthMenu { get; set; } = new List<int>() { 10, 25, 50, 100, 200 };
+        public int PageLength { get; set; } = 10;
+        public bool ServerSideProcessing { get; set; } = false;
     }
     public class ColumnDefinition
     {

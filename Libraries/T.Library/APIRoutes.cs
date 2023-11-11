@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 public class APIRoutes
 {
-    public const string AddOrEdit = "add-or-edit";
-    public const string GetAll = "get-all";
-    public const string Create = "create";
-    public const string Update = "update";
+    //public const string AddOrEdit = "add-or-edit";
+    public const string GETALL = "all";
+    public const string CREATE = "create";
+    public const string UPDATE = "update";
 }
 

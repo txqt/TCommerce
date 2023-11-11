@@ -45,7 +45,7 @@ namespace T.Web.Services.UserService
 
         public async Task<List<UserModel>> GetAllAsync()
         {
-            var result = await _httpClient.GetAsync($"api/user/{APIRoutes.GetAll}");
+            var result = await _httpClient.GetAsync($"api/user/{APIRoutes.GETALL}");
             return await result.Content.ReadFromJsonAsync<List<UserModel>>();
         }
 

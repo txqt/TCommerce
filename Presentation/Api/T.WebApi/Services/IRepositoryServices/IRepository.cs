@@ -6,8 +6,8 @@ namespace T.WebApi.Services.IRepositoryServices
     {
         DbSet<T> Table { get; }
         IQueryable<T> Query { get; }
-        Task<IEnumerable<T>> GetAllAsync(bool includeDeleted = false);
-        Task<T> GetByIdAsync(int id, bool includeDeleted = false);
+        Task<IEnumerable<T>> GetAllAsync(bool includeDeleted = true);
+        Task<T> GetByIdAsync(int id, bool includeDeleted = true);
         Task CreateAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);

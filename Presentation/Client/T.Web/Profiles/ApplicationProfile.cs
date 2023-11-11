@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using T.Library.Model;
+using T.Library.Model.Banners;
 using T.Library.Model.Common;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
@@ -66,6 +67,9 @@ namespace T.Web.Profiles
                 .ForMember(dest => dest.DisplayOrder, opt => opt.MapFrom(src => src.DisplayOrder))
                 .ForMember(dest => dest.Category, opt => opt.Ignore())
                 .ForMember(dest => dest.Product, opt => opt.Ignore())
+                .ReverseMap();
+
+            CreateMap<BannerViewModel, Banner>()
                 .ReverseMap();
         }
     }

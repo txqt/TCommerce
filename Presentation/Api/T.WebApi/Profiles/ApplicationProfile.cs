@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using T.Library.Model;
+using T.Library.Model.Banners;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
 
@@ -47,6 +48,9 @@ namespace T.WebApi.Profiles
                 .ReverseMap();
 
             CreateMap<User, UserModel>()
+                .ReverseMap();
+
+            CreateMap<BannerViewModel, Banner>()
                 .ReverseMap();
         }
     }

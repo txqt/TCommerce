@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using T.Library.Model.Banners;
 using T.Library.Model.Response;
+using T.Library.Model.ViewsModel;
 
 namespace T.Library.Model.Interface
 {
@@ -12,8 +13,8 @@ namespace T.Library.Model.Interface
     {
         Task<List<Banner>> GetAllBannerAsync();
         Task<ServiceResponse<Banner>> GetBannerByIdAsync(int id);
-        Task<ServiceResponse<bool>> CreateBannerAsync(Banner banner);
-        Task<ServiceResponse<bool>> UpdateBannerAsync(Banner banner);
+        Task<ServiceResponse<bool>> CreateBannerAsync(BannerViewModel model);
+        Task<ServiceResponse<bool>> UpdateBannerAsync(BannerViewModel model);
         Task<ServiceResponse<bool>> DeleteBannerByIdAsync(int id);
     }
 }

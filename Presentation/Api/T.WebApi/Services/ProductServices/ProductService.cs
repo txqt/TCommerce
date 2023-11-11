@@ -5,10 +5,8 @@ using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
-using T.WebApi.Database.ConfigurationDatabase;
 using T.WebApi.Extensions;
 using T.WebApi.Services.IRepositoryServices;
-using T.WebApi.Services.ProductService;
 
 namespace T.WebApi.Services.ProductServices
 {
@@ -57,24 +55,20 @@ namespace T.WebApi.Services.ProductServices
         #region Methods
         public async Task<PagedList<Product>> GetAll(ProductParameters productParameters)
         {
-            var list_product = new List<Product>();
-
-            list_product = await _productsRepository.Table
+            var query = _productsRepository.Table
                 .SearchByString(productParameters.SearchText)
                 .Sort(productParameters.OrderBy)//sort by product coloumn 
                 .Include(x => x.ProductPictures)
-                .Where(x => x.Deleted == false)
-                .ToListAsync();
+                .Where(x => x.Deleted == false);
 
-            return PagedList<Product>
-                        .ToPagedList(list_product, productParameters.PageNumber, productParameters.PageSize);
+            return await PagedList<Product>.ToPagedList(query, productParameters.PageNumber, productParameters.PageSize);
         }
 
         public async Task<ServiceResponse<Product>> GetByIdAsync(int id)
         {
             var response = new ServiceResponse<Product>
             {
-                Data = (await _productsRepository.Table.Include(x => x.AttributeMappings).FirstOrDefaultAsync(x => x.Id == id)),
+                Data = (await _productsRepository.GetByIdAsync(id)),
                 Success = true
             };
             return response;

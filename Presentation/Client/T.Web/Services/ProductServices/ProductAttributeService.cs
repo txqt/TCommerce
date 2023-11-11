@@ -32,7 +32,7 @@ namespace T.Web.Services.ProductService
         #region ProductAttribute
         public async Task<List<ProductAttribute>> GetAllProductAttributeAsync()
         {
-            var response = await _httpClient.GetAsync($"api/product-attribute/{APIRoutes.GetAll}");
+            var response = await _httpClient.GetAsync($"api/product-attribute/{APIRoutes.GETALL}");
 
             response.EnsureSuccessStatusCode();
 

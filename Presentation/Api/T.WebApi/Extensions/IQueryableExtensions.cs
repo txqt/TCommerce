@@ -98,6 +98,10 @@ namespace T.WebApi.Extensions
                 var propertyName = propertyArray[0];
                 var descending = propertyArray.Length > 1 && propertyArray[1].ToLower() == "desc";
 
+                var propertyInfo = typeof(T).GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                if (propertyInfo == null)
+                    continue; // Skip this iteration if the property does not exist
+
                 var parameter = Expression.Parameter(typeof(T), "entity");
                 var property = Expression.Property(parameter, propertyName);
                 var selector = Expression.Lambda(property, parameter);
@@ -108,6 +112,7 @@ namespace T.WebApi.Extensions
 
             return entities.Provider.CreateQuery<T>(query);
         }
+
         public static IQueryable<T> ApplySoftDeleteFilter<T>(this IQueryable<T> query, bool includeDeleted)
         where T : class
         {

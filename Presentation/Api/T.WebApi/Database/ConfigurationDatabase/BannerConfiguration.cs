@@ -10,6 +10,7 @@ namespace T.WebApi.Database.ConfigurationDatabase
         public void Configure(EntityTypeBuilder<Banner> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.HasOne(x=>x.Picture).WithMany(x=>x.Banners).HasForeignKey(x=>x.PictureId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

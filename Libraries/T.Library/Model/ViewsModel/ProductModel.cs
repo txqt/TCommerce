@@ -125,6 +125,6 @@ namespace T.Library.Model.ViewsModel
         /// Gets or sets the available end date and time
         /// </summary>
         public DateTime? AvailableEndDateTimeUtc { get; set; }
-        public List<ProductAttributeMapping>? AttributeMappings { get; set; }
+        //public List<ProductAttributeMapping>? AttributeMappings { get; set; }
     }
 }

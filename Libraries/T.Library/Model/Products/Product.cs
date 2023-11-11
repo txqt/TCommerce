@@ -257,6 +257,7 @@ namespace T.Library.Model
         public List<ProductAttributeMapping>? AttributeMappings { get; set; }
 
         public List<ProductPicture>? ProductPictures { get; set; }
+
         public List<ProductReview>? ProductReviews { get; set; }
     }
 }

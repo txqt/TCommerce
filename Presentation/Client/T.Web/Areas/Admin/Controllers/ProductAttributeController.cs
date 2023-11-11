@@ -26,7 +26,6 @@ namespace T.Web.Areas.Admin.Controllers
         {
             var model = new DataTableViewModel
             {
-                TableId = "dataTable-product-attribute",
                 TableTitle = "Danh sách thuộc tính sản phẩm",
                 CreateUrl = Url.Action("Create", "ProductAttribute"),
                 Headers = new List<string> { "Name", "Description", "Edit", "Delete" },
@@ -35,8 +34,8 @@ namespace T.Web.Areas.Admin.Controllers
                 {
                     new ColumnDefinition { Data = "name" },
                     new ColumnDefinition { Data = "description" },
-                    new ColumnDefinition { EditUrl = Url.Action("Edit", "ProductAttribute", new { id = "__id__" }), IsEditable = true },
-                    new ColumnDefinition { DeleteUrl = Url.Action("Delete", "ProductAttribute", new { id = "__id__" }), IsDeletable = true },
+                    new ColumnDefinition { EditUrl = Url.Action("Edit", "ProductAttribute"), IsEditable = true },
+                    new ColumnDefinition { DeleteUrl = Url.Action("Delete", "ProductAttribute"), IsDeletable = true },
                 }
             };
             return View(model);

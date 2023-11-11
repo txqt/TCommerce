@@ -270,19 +270,39 @@ namespace T.WebApi.Services.DataSeederService
             {
                 foreach (var user in item.Users)
                 {
-                    await _userManager.CreateAsync(user, "123321");
-                    var createdUser = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x=>x.UserName == user.UserName);
-                    foreach (var role in item.Roles)
+                    //await _userManager.CreateAsync(user, "123321");
+                    //var createdUser = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x=>x.UserName == user.UserName);
+                    //foreach (var role in item.Roles)
+                    //{
+                    //    try
+                    //    {
+                    //        await _userManager.AddToRoleAsync(createdUser, role.Name);
+                    //    }
+                    //    catch(Exception ex)
+                    //    {
+                    //        Console.WriteLine(ex.Message);
+                    //        return;
+                    //    }
+                    //}
+                    var result = await _userManager.CreateAsync(user, "123321");
+                    if (result.Succeeded)
                     {
-                        try
+                        foreach (var role in item.Roles)
                         {
-                            await _userManager.AddToRoleAsync(createdUser, role.Name);
+                            try
+                            {
+                                await _userManager.AddToRoleAsync(user, role.Name);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                                return;
+                            }
                         }
-                        catch(Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                            return;
-                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Something went wrong");
                     }
                 }
             }

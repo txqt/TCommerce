@@ -43,13 +43,6 @@ namespace T.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(ProductParameters productParameters)
         {
-            var result = await _productService.GetAll(productParameters);
-            var model = new ProductListViewModel
-            {
-                MetaData = result.MetaData,
-                ProductList = result.Items.ToList(),
-                Parameters = productParameters
-            };
             return View();
         }
 
@@ -69,12 +62,12 @@ namespace T.Web.Areas.Admin.Controllers
             var pagingResponse = await _productService.GetAll(productParameters);
 
             // Return the data in the format that DataTables expects
-            return Json(new
+            return Json(new DataTableResponse
             {
-                draw = parameters.Draw,
-                recordsTotal = pagingResponse.MetaData.TotalCount,
-                recordsFiltered = pagingResponse.MetaData.TotalCount,
-                data = pagingResponse.Items
+                Draw = parameters.Draw,
+                RecordsTotal = pagingResponse.MetaData.TotalCount,
+                RecordsFiltered = pagingResponse.MetaData.TotalCount,
+                Data = pagingResponse.Items.Cast<object>().ToList()
             });
         }
 
@@ -111,12 +104,10 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditProduct(int productId)
+        public async Task<IActionResult> EditProduct(int id)
         {
-            var result = await _productService.GetByIdAsync(productId);
-            var res = _mapper.Map<ProductModel>(result.Data);
-            res.AttributeMappings = result.Data.AttributeMappings.ToList();
-            return View(res);
+            var result = await _productService.GetByIdAsync(id);
+            return View(_mapper.Map<ProductModel>(result.Data));
         }
 
         [HttpPost]

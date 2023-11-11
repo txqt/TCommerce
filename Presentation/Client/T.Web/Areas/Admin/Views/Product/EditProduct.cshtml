@@ -29,7 +29,7 @@
                         @{
                             var ProductAttributeMappingListModel = new DataTableViewModel
             {
-                TableId = Guid.NewGuid().ToString(),
+                // TableId = Guid.NewGuid().ToString(),
                 TableTitle = "Danh sách thuộc tính sản phẩm",
                 CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
                 Headers = new List<string> { "ProductAttributeName", "TextPrompt", "IsRequired", "DisplayOrder", "Edit", "Delete" },
@@ -70,7 +70,7 @@
                 ProductId = Model.Id,
                 DataTable = new DataTableViewModel()
                 {
-                    TableId = Guid.NewGuid().ToString(),
+                    // TableId = Guid.NewGuid().ToString(),
                     TableTitle = "Danh sách hình ảnh của " + Model.Name,
                     // CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
                     Headers = new List<string> { "Picture", "DisplayOrder", "Delete" },
@@ -106,7 +106,7 @@
                         @{
                             var ProductCategoryList = new DataTableViewModel
             {
-                TableId = Guid.NewGuid().ToString(),
+                // TableId = Guid.NewGuid().ToString(),
                 TableTitle = "Danh sách thể loại của sản phẩm",
                 CreateUrl = Url.Action("ProductCategoryMappingCreate", "Product", new { productId = Model.Id }),
                 Headers = new List<string> { "CategoryName", "IsFeaturedProduct", "DisplayOrder", "Edit", "Delete" },
@@ -129,11 +129,11 @@
     </div>
 </div>
 
-@section Scripts
+@* @section Scripts
     {
     @await Html.PartialAsync("_Summernote", new Summernote("#ShortDescription"))
     @await Html.PartialAsync("_Summernote", new Summernote("#FullDescription", false))
-}
+} *@
 <script>
     $('#markasnewcheckbox').change(function () {
         if ($(this).is(":checked")) {

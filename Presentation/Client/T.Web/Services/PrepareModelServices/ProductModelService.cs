@@ -19,7 +19,6 @@ namespace T.Web.Services.PrepareModel
         Task<ProductAttributeValueModel> PrepareProductAttributeValueModelAsync(ProductAttributeValueModel model,
             ProductAttributeMapping productAttributeMapping, ProductAttributeValue productAttributeValue);
         Task<List<ProductPictureModel>> PrepareProductPictureModelAsync(Product product);
-        Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
         Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
             Product product, ProductCategory productCategory);
     }
@@ -44,32 +43,6 @@ namespace T.Web.Services.PrepareModel
             this.productCategoryService = productCategoryService;
             _configuration = configuration;
             apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
-        }
-
-        public async Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category)
-        {
-            if (category is not null)
-            {
-                model ??= new CategoryModel()
-                {
-                    Id = category.Id
-                };
-                _mapper.Map(category, model);
-            }
-
-            var listcategory = (await _categoryService.GetAllCategoryAsync());
-            listcategory.Insert(0, new Category()
-            {
-                Name = "Không có danh mục cha",
-                Id = -1
-            });
-            model.AvailableCategories = (listcategory).Select(productAttribute => new SelectListItem
-            {
-                Text = productAttribute.Name,
-                Value = productAttribute.Id.ToString()
-            }).ToList();
-
-            return model;
         }
 
         public async Task<List<ProductAttributeMappingModel>> PrepareProductAttributeMappingListModelAsync(Product product)

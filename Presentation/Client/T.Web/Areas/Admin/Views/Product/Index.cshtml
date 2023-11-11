@@ -19,13 +19,20 @@
 @{
     var model = new DataTableViewModel()
             {
-                TableId = Guid.NewGuid().ToString(),
+                // TableId = Guid.NewGuid().ToString(),
                 TableTitle = "Product List",
-                Headers = new List<string>() { "Name" },
+                Headers = new List<string>() { "Name", "Price", "StockQuantity", "Edit", "Delete" },
+                CreateButtonName = "Tạo sản phẩm mới",
+                CreateUrl = Url.Action("CreateProduct", "Product"),
                 GetDataUrl = Url.Action("GetAll", "Product"),
+                ServerSideProcessing = true,
                 Columns = new List<ColumnDefinition>()
                 {
-                    new ColumnDefinition(){ Data = "name"}
+                    new ColumnDefinition(){ Data = "name"},
+                    new ColumnDefinition(){ Data = "price"},
+                    new ColumnDefinition(){ Data = "stockQuantity"},
+                    new ColumnDefinition(){ EditUrl = Url.Action("EditProduct", "Product"), IsEditable = true},
+                    new ColumnDefinition(){ DeleteUrl = Url.Action("Delete", "Product"), IsDeletable = true},
                 }
             };
 }

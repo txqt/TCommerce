@@ -21,7 +21,7 @@ namespace T.WebApi.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpGet(APIRoutes.GetAll)]
+        [HttpGet(APIRoutes.GETALL)]
         public async Task<ActionResult> GetAll() 
         {
             return Ok(await _categoryService.GetAllCategoryAsync());

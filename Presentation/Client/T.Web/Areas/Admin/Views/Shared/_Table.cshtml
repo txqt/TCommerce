@@ -2,7 +2,7 @@
 
 <style>
     div.dt-buttons {
-        margin: 10px 10px 10px 0; /* Adjust as needed */
+        margin: 10px 10px 20px 0; /* Adjust as needed */
     }
 
     .create-new-button {
@@ -70,29 +70,31 @@
             var createButton = {
                 text: '@(Model.CreateButtonName == null ? "Create" : Model.CreateButtonName)',
                 action: function (e, dt, node, config) {
-    @if (Model.PopupWindow)
-    {
-        <text>
-                            openPopup(createUrl);
-        </text>
-    }
-    else
-    {
-        <text>
-                            window.location.href = createUrl;
-        </text>
-    }
-                                },
+                @if (Model.PopupWindow)
+                {
+                    <text>
+                                        openPopup(createUrl);
+                    </text>
+                }
+                else
+                {
+                    <text>
+                                        window.location.href = createUrl;
+                    </text>
+                }
+                                        },
                 className: 'create-new-button btn btn-info'
             };
             buttons.unshift(createButton);
         }
 
-        LoadTable(tableId, url, columns, buttons);
+        var serverSide = @Model.ServerSideProcessing.ToString().ToLower();
+
+        LoadTable(tableId, url, columns, buttons, serverSide);
     });
 
 
-    function LoadTable(tableId, url, columns, buttons) {
+    function LoadTable(tableId, url, columns, buttons, serverSide) {
         var dataTableColumns = columns.map(function (column) {
             if (column.isEditable) {
                 return {
@@ -111,7 +113,7 @@
                     data: null,
                     render: function (data, type, row) {
                         var deleteUrl = column.deleteUrl + '?id=' + row.id;
-                        return '<button class="btn btn-danger deleteBtn" data-id="' + row.id + '" data-url="' + deleteUrl + '">Delete</button>';
+                        return '<button class="btn btn-danger deleteBtn" data-url="' + deleteUrl + '">Delete</button>';
                     }
                 };
             } else if (column.isCheckBox) {
@@ -138,16 +140,9 @@
             }
         });
 
-        $(tableId).DataTable().destroy();
-        $(tableId).DataTable({
-            dom: "<'row'<'col-sm-12'B>>" +
-                "<'row'<'col-sm-6'l><'col-sm-6'f>>" +
-                "<'row'<'col-sm-12'tr>>" +
-                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-            lengthMenu: @Html.Raw(Json.Serialize(Model.LengthMenu)),
-            pageLength: @Model.PageLength,
-            serverSide: true,
-            ajax: {
+        var ajaxSettings;
+        if (serverSide) {
+            ajaxSettings = {
                 url: url,
                 type: "POST",
                 data: function (d) {
@@ -166,13 +161,31 @@
 
                     return JSON.stringify(json); // return JSON string
                 },
-            },
+            };
+        } else {
+            ajaxSettings = {
+                url: url,
+                type: "GET",
+                datatype: "json",
+            };
+        }
+
+        $(tableId).DataTable().destroy();
+        $(tableId).DataTable({
+            dom: "<'row'<'col-sm-12'B>>" +
+                "<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            lengthMenu: @Html.Raw(Json.Serialize(Model.LengthMenu)),
+            pageLength: @Model.PageLength,
+            serverSide: serverSide,
+            processing: true,
+            ajax: ajaxSettings,
             buttons: buttons,
             columns: dataTableColumns
         });
 
         $(tableId).on('click', '.deleteBtn', function () {
-            var rowId = $(this).data('id');
             var deleteUrl = $(this).data('url');
             if (confirm('Are you sure you want to delete this item?')) {
                 $.ajax({

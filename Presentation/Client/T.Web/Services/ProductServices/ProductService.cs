@@ -105,7 +105,7 @@ namespace T.Web.Services.ProductService
                 ["pageSize"] = productParameters.PageSize.ToString(),
                 ["orderBy"] = productParameters.OrderBy,
             };
-            var response = await _httpClient.GetAsync(QueryHelpers.AddQueryString($"api/product/{APIRoutes.GetAll}", queryStringParam));
+            var response = await _httpClient.GetAsync(QueryHelpers.AddQueryString($"api/product/{APIRoutes.GETALL}", queryStringParam));
 
             response.EnsureSuccessStatusCode();
 

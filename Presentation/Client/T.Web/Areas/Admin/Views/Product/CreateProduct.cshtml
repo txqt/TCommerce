@@ -17,11 +17,11 @@
 
 <partial name="_ProductNavigation" />
 
-@section Scripts
+@* @section Scripts
     {
     @await Html.PartialAsync("_Summernote", new Summernote("#ShortDescription"))
     @await Html.PartialAsync("_Summernote", new Summernote("#FullDescription", false))
-}
+} *@
 
 <script>
     $('#markasnewcheckbox').change(function () {

@@ -23,7 +23,7 @@ namespace T.WebApi.Services.IRepositoryServices
         }
 
 
-        public async Task<IEnumerable<T>> GetAllAsync(bool includeDeleted = false)
+        public async Task<IEnumerable<T>> GetAllAsync(bool includeDeleted = true)
         {
             IQueryable<T> query = Table;
 
@@ -34,7 +34,7 @@ namespace T.WebApi.Services.IRepositoryServices
             return await query.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id, bool includeDeleted = false)
+        public async Task<T> GetByIdAsync(int id, bool includeDeleted = true)
         {
             if (id <= 0)
             {

@@ -23,7 +23,7 @@ namespace T.WebApi.Controllers
             _userService = userService;
         }
 
-        [HttpGet(APIRoutes.GetAll)]
+        [HttpGet(APIRoutes.GETALL)]
         public async Task<ActionResult> GetAll()
         {
             return Ok(await _userService.GetAllAsync());

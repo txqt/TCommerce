@@ -1,34 +1,44 @@
 ﻿using T.Library.Model.Banners;
+using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
+using T.Library.Model.ViewsModel;
+using T.Web.Helpers;
 
 namespace T.Web.Services.BannerServices
 {
     public class BannerService : IBannerService
     {
-        public Task<List<Banner>> GetAllBannerAsync()
+        private readonly HttpClientHelper _httpClientHelper;
+        private readonly string defaulApiRoute = "api/banner/";
+        public BannerService(HttpClientHelper httpClientHelper)
         {
-            throw new NotImplementedException();
+            _httpClientHelper = httpClientHelper;
         }
 
-        public Task<ServiceResponse<Banner>> GetBannerByIdAsync(int id)
+        public async Task<List<Banner>> GetAllBannerAsync()
         {
-            throw new NotImplementedException();
+            return await _httpClientHelper.GetAsync<List<Banner>>($"{defaulApiRoute + APIRoutes.GETALL}");
         }
 
-        public Task<ServiceResponse<bool>> CreateBannerAsync(Banner banner)
+        public async Task<ServiceResponse<Banner>> GetBannerByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _httpClientHelper.GetAsync<ServiceResponse<Banner>>($"{defaulApiRoute + id}");
         }
 
-        public Task<ServiceResponse<bool>> UpdateBannerAsync(Banner banner)
+        public async Task<ServiceResponse<bool>> CreateBannerAsync(BannerViewModel banner)
         {
-            throw new NotImplementedException();
+            return await _httpClientHelper.PostAsFormDataAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile, "ImageFile");
         }
 
-        public Task<ServiceResponse<bool>> DeleteBannerByIdAsync(int id)
+        public async Task<ServiceResponse<bool>> UpdateBannerAsync(BannerViewModel banner)
         {
-            throw new NotImplementedException();
+            return await _httpClientHelper.PutAsFormDataAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile, "ImageFile");
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteBannerByIdAsync(int id)
+        {
+            return await _httpClientHelper.DeleteAsync<ServiceResponse<bool>>($"{defaulApiRoute + id}");
         }
     }
 }

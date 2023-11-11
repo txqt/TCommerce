@@ -11,10 +11,10 @@ namespace T.Library.Model.Banners
     {
         public string Title { get; set; } = string.Empty;
         public string Subtitle { get; set; } = string.Empty;
-        public string ImageUrl { get; set; } = string.Empty;
         public string ButtonLabel { get; set; } = string.Empty;
         public string ButtonLink { get; set; } = string.Empty;
-        public int ButtonPositionX { get; set; }
-        public int ButtonPositionY { get; set; }
+        public decimal Price { get;set; }
+        public int PictureId { get; set; }
+        public Picture Picture { get; set; }
     }
 }

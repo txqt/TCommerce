@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using T.Library.Model.Banners;
 using T.Library.Model.Interface;
+using T.Library.Model.ViewsModel;
 
 namespace T.WebApi.Controllers
 {
@@ -16,7 +17,7 @@ namespace T.WebApi.Controllers
             _bannerService = bannerService;
         }
 
-        [HttpGet(APIRoutes.GetAll)]
+        [HttpGet(APIRoutes.GETALL)]
         public async Task<ActionResult> GetAllBannerAsync()
         {
             return Ok(await _bannerService.GetAllBannerAsync());
@@ -34,7 +35,7 @@ namespace T.WebApi.Controllers
 
 
         [HttpPost()]
-        public async Task<ActionResult> CreateBannerAsync(Banner banner)
+        public async Task<ActionResult> CreateBannerAsync([FromForm] BannerViewModel banner)
         {
             var result = await _bannerService.CreateBannerAsync(banner);
             if (result.Success)
@@ -45,7 +46,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpPut()]
-        public async Task<ActionResult> UpdateBannerAsync(Banner banner)
+        public async Task<ActionResult> UpdateBannerAsync([FromForm] BannerViewModel banner)
         {
             var result = await _bannerService.UpdateBannerAsync(banner);
             if (result.Success)

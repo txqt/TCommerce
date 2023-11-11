@@ -10,9 +10,7 @@ using T.Library.Model.Users;
 using T.WebApi.Services.AccountServices;
 using T.WebApi.Attribute;
 using T.WebApi.Services.CacheServices;
-using T.Library.Model.JwtToken;
 using T.WebApi.Services.ProductServices;
-using T.WebApi.Services.ProductService;
 using T.WebApi.Services.CategoryServices;
 using T.WebApi.Services.UserServices;
 using T.WebApi.Services.HomePageServices;
@@ -28,6 +26,7 @@ using T.Library.Model.Options;
 using T.WebApi.Services.DbManageService;
 using T.WebApi.Database;
 using T.WebApi.Services.BannerServices;
+using T.WebApi.Services.PictureServices;
 
 namespace T.WebApi.Extensions
 {

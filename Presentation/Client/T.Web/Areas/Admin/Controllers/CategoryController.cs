@@ -8,6 +8,7 @@ using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
 using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
+using T.Web.Services.PrepareModelServices;
 
 namespace T.Web.Areas.Admin.Controllers
 {
@@ -19,9 +20,9 @@ namespace T.Web.Areas.Admin.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
-        private readonly IProductModelService _prepareModelService;
+        private readonly ICategoryModelService _prepareModelService;
 
-        public CategoryController(ICategoryService categoryService, IMapper mapper, IProductModelService prepareModelService)
+        public CategoryController(ICategoryService categoryService, IMapper mapper, ICategoryModelService prepareModelService)
         {
             _categoryService = categoryService;
             _mapper = mapper;

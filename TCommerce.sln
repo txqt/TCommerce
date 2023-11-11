@@ -5,27 +5,24 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{D2FA5411-4F92-4D08-9307-BDEFAD473D00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T.Library", "Libraries\T.Library\T.Library.csproj", "{F3400CFA-8575-47F5-A934-C1E1EDE0A131}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "T.Library", "Libraries\T.Library\T.Library.csproj", "{F3400CFA-8575-47F5-A934-C1E1EDE0A131}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{3A69B73C-51DB-4B68-A0F3-DE9DEDBE2C2C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{73C7264A-5078-48D3-AD8A-1046BDBDD838}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T.WebApi", "Presentation\Api\T.WebApi\T.WebApi.csproj", "{C0C50963-80D5-428A-877C-E58C22AE2583}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "T.WebApi", "Presentation\Api\T.WebApi\T.WebApi.csproj", "{C0C50963-80D5-428A-877C-E58C22AE2583}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{6DA2C47F-3DF9-4A1C-87C4-A492E0EF3A56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T.Web", "Presentation\Client\T.Web\T.Web.csproj", "{9096F8BA-DD58-4982-BD38-4BFFAB974E9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "T.Web", "Presentation\Client\T.Web\T.Web.csproj", "{9096F8BA-DD58-4982-BD38-4BFFAB974E9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T.Test", "Presentation\T.Test\T.Test.csproj", "{C207B58C-C40E-4ED6-8E75-2AFDDEF90266}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "T.Test", "Presentation\T.Test\T.Test.csproj", "{C207B58C-C40E-4ED6-8E75-2AFDDEF90266}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3400CFA-8575-47F5-A934-C1E1EDE0A131}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,6 +41,9 @@ Global
 		{C207B58C-C40E-4ED6-8E75-2AFDDEF90266}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C207B58C-C40E-4ED6-8E75-2AFDDEF90266}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C207B58C-C40E-4ED6-8E75-2AFDDEF90266}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F3400CFA-8575-47F5-A934-C1E1EDE0A131} = {D2FA5411-4F92-4D08-9307-BDEFAD473D00}

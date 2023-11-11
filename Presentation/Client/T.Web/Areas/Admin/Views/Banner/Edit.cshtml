@@ -1,0 +1,10 @@
+﻿@model T.Library.Model.ViewsModel.BannerViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    @await Html.PartialAsync("_AddOrEditBanner", Model)
+</form>
+

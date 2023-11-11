@@ -24,14 +24,14 @@ namespace T.WebApi.Controllers
             _productAttributeSvc = productAttributeSvc;
         }
 
-        [HttpGet(APIRoutes.GetAll)]
+        [HttpGet(APIRoutes.GETALL)]
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await _productAttributeSvc.GetAllProductAttributeAsync());
         }
 
         [AllowAnonymous]
-        [HttpGet(APIRoutes.GetAll + "-paged")]
+        [HttpGet(APIRoutes.GETALL + "/paged")]
         public async Task<IActionResult> GetAllPagedAsync([FromQuery]ProductAttributeParameters productAttributeParameters)
         {
             var products = await _productAttributeSvc.GetAllPagedAsync(productAttributeParameters);
@@ -45,7 +45,7 @@ namespace T.WebApi.Controllers
             return await _productAttributeSvc.GetProductAttributeByIdAsync(id);
         }
 
-        [HttpPost(APIRoutes.Create)]
+        [HttpPost(APIRoutes.CREATE)]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateAsync(ProductAttribute productAttribute)
         {

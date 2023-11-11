@@ -14,33 +14,9 @@ namespace T.Web.Services.CategoryService
             _httpClient = httpClient;
         }
 
-        public async Task<ServiceResponse<bool>> AddOrEdit(Category category)
-        {
-            var result = await _httpClient.PostAsJsonAsync($"api/category/{APIRoutes.AddOrEdit}", category);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
-        }
-
-        public async Task<ServiceResponse<bool>> Delete(int id)
-        {
-            var result = await _httpClient.DeleteAsync($"api/category/delete/{id}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
-        }
-
-        public async Task<ServiceResponse<Category>> Get(int id)
-        {
-            var result = await _httpClient.GetAsync($"api/category/{id}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<Category>>();
-        }
-
-        public async Task<List<Category>> GetAllAsync()
-        {
-            var result = await _httpClient.GetAsync($"api/category/{APIRoutes.GetAll}");
-            return await result.Content.ReadFromJsonAsync<List<Category>>();
-        }
-
         public async Task<List<Category>> GetAllCategoryAsync()
         {
-            var result = await _httpClient.GetAsync($"api/category/{APIRoutes.GetAll}");
+            var result = await _httpClient.GetAsync($"api/category/{APIRoutes.GETALL}");
             return await result.Content.ReadFromJsonAsync<List<Category>>();
         }
 
