@@ -1,0 +1,21 @@
+﻿@model T.Web.Areas.Admin.Models.CKEditor
+@{
+    string selector = Model.IdEditor;
+}
+
+@if (Model.LoadLibrary)
+{
+    <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
+}
+
+<script>
+    CKEDITOR.replace('@selector', {
+        on: {
+            paste: function (evt) {
+                var plain_text = evt.data.dataValue;
+                plain_text = plain_text.replace(/<[^>]*>/g, ''); // Remove HTML tags
+                evt.data.dataValue = plain_text;
+            }
+        }
+    });
+</script>

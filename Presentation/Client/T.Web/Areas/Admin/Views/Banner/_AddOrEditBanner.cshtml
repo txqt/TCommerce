@@ -44,5 +44,8 @@
 
 <button type="submit" class="btn btn-primary">Save</button>
 
+@* @await Html.PartialAsync("_CKEditor", new T.Web.Areas.Admin.Models.CKEditor("Title"))
+@await Html.PartialAsync("_CKEditor", new T.Web.Areas.Admin.Models.CKEditor("Subtitle")) *@
+
 @await Html.PartialAsync("_Summernote", new Summernote("#Title"))
 @await Html.PartialAsync("_Summernote", new Summernote("#Subtitle"))
