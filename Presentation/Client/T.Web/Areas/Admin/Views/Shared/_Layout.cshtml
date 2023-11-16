@@ -127,6 +127,29 @@
             popupWindow.focus();
             return false;
         }
+        var entityMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '/': '&#x2F;',
+            '`': '&#x60;',
+            '=': '&#x3D;'
+        }, selectedIds = [];
+
+        function escapeHtml(string) {
+            return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+                return entityMap[s];
+            });
+        }
+
+        function addAntiForgeryToken(n) {
+            n || (n = {});
+            var t = $("input[name=__RequestVerificationToken]");
+            return t.length && (n.__RequestVerificationToken = t.val()),
+                n
+        }
     </script>
 </body>
 

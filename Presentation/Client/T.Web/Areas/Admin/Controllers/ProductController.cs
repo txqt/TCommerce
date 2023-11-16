@@ -47,24 +47,36 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetAll(DataTablesParameters parameters)
+        public async Task<IActionResult> GetAll(ProductParameters productParameters)
         {
+            var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
+            Console.WriteLine(draw);
+            var start = int.Parse(Request.Form["start"].FirstOrDefault());
+            var length = int.Parse(Request.Form["length"].FirstOrDefault());
+            int orderColumnIndex = int.Parse(Request.Form["order[0][column]"]);
+            string orderDirection = Request.Form["order[0][dir]"];
+            string orderColumnName = Request.Form["columns[" + orderColumnIndex + "][data]"];
+
+            string orderBy = orderColumnName + " " + orderDirection;
+            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+
             // Create ProductParameters from DataTables parameters
-            var productParameters = new ProductParameters
+            var productParameter = new ProductParameters
             {
-                PageNumber = parameters.Start / parameters.Length + 1,
-                PageSize = parameters.Length,
-                SearchText = parameters.Search.Value,
-                OrderBy = parameters.Columns[parameters.Order[0].Column].Data + " " + parameters.Order[0].Dir
+                PageNumber = start / length + 1,
+                PageSize = length,
+                SearchText = searchValue,
+                OrderBy = orderBy,
+                CategoryId = productParameters.CategoryId
             };
 
             // Call the service to get the paged data
-            var pagingResponse = await _productService.GetAll(productParameters);
+            var pagingResponse = await _productService.GetAll(productParameter);
 
             // Return the data in the format that DataTables expects
             return Json(new DataTableResponse
             {
-                Draw = parameters.Draw,
+                Draw = draw,
                 RecordsTotal = pagingResponse.MetaData.TotalCount,
                 RecordsFiltered = pagingResponse.MetaData.TotalCount,
                 Data = pagingResponse.Items.Cast<object>().ToList()
@@ -682,6 +694,12 @@ namespace T.Web.Areas.Admin.Controllers
                 success = true,
                 message = result.Message
             });
+        }
+
+        [HttpPost]
+        public IActionResult Test(List<int> selectedIds)
+        {
+            return StatusCode(404);
         }
     }
 }

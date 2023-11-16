@@ -28,16 +28,16 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 TableTitle = "Danh sách Banner",
                 CreateUrl = Url.Action("Create", "Banner"),
-                Headers = new List<string> { "Title", "Subtitle", "Price", "Image", "Edit", "Delete"},
+                //Headers = new List<string> { "Title", "Subtitle", "Price", "Image", "Edit", "Delete"},
                 GetDataUrl = Url.Action("GetAll", "Banner"),
                 Columns = new List<ColumnDefinition>
                 {
                     new ColumnDefinition { Data = "title" },
                     new ColumnDefinition { Data = "subtitle" },
                     new ColumnDefinition { Data = "price" },
-                    new ColumnDefinition { Data = "picture.urlPath", IsPicture = true },
-                    new ColumnDefinition { EditUrl = Url.Action("Edit", "Banner"), IsEditable = true },
-                    new ColumnDefinition { DeleteUrl = Url.Action("Delete", "Banner"), IsDeletable = true },
+                    new ColumnDefinition { Data = "picture.urlPath", RenderType = RenderType.RenderPicture },
+                    new ColumnDefinition { EditUrl = Url.Action("Edit", "Banner"), RenderType = RenderType.RenderButtonEdit },
+                    new ColumnDefinition { DeleteUrl = Url.Action("Delete", "Banner"), RenderType = RenderType.RenderButtonRemove },
                 }
             };
             return View(model);

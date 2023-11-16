@@ -32,9 +32,10 @@
     <table class="table table-success table-striped table-hover" id="@Model.TableId">
         <thead>
             <tr>
-                @foreach (var header in Model.Headers)
+                @foreach (var column in Model.Columns)
                 {
-                    <th>@header</th>
+                    <th>
+                    </th>
                 }
             </tr>
         </thead>
@@ -43,124 +44,159 @@
     </table>
 </div>
 <script>
-    $(document).ready(function () {
-        var tableId = '#@Model.TableId';
-        var url = '@Model.GetDataUrl';
-        var columns = @Html.Raw(Json.Serialize(Model.Columns));
-        var createUrl = '@Model.CreateUrl';
-        var buttons = [
-            {
-                text: '<i class="fa fa-redo"></i>',
-                action: function (e, dt, node, config) {
-                    dt.ajax.reload();
-                }
-            },
-            'copy',
-            {
-                extend: 'collection',
-                text: 'Print table',
-                buttons: [
-                    'excel',
-                    'pdf'
-                ]
-            }
-        ];
+    
 
-        if (createUrl && createUrl.length > 0) {
-            var createButton = {
-                text: '@(Model.CreateButtonName == null ? "Create" : Model.CreateButtonName)',
-                action: function (e, dt, node, config) {
-                @if (Model.PopupWindow)
+    function clearSelectAllCheckbox() {
+        $('#selectAll').prop('checked', false);
+        selectedIds = $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]:checked').map(function () {
+            return this.value;
+        }).get();
+        console.log(selectedIds);
+    }
+
+    @if (!string.IsNullOrEmpty(Model.SearchButtonId))
+    {
+        <text>
+            $('#@Model.SearchButtonId').click(function () {
+                $('#@Model.TableId').DataTable().ajax.reload();
+                $('#@Model.TableId .checkboxGroups').prop('checked', false).change();
+                clearSelectAllCheckbox();
+                return false;
+            });
+        </text>
+    }
+
+        $(document).ready(function () {
+
+            var tableId = '#@Model.TableId';
+            var url = '@Model.GetDataUrl';
+
+            var createUrl = '@Model.CreateUrl';
+            var buttons = [
                 {
-                    <text>
-                                        openPopup(createUrl);
-                    </text>
-                }
-                else
+                    text: '<i class="fa fa-redo"></i>',
+                    action: function (e, dt, node, config) {
+                        dt.ajax.reload();
+                    }
+                },
+                'copy',
                 {
-                    <text>
-                                        window.location.href = createUrl;
-                    </text>
+                    extend: 'collection',
+                    text: 'Print table',
+                    buttons: [
+                        'excel',
+                        'pdf'
+                    ]
                 }
-                                        },
-                className: 'create-new-button btn btn-info'
-            };
-            buttons.unshift(createButton);
-        }
-
-        var serverSide = @Model.ServerSideProcessing.ToString().ToLower();
-
-        LoadTable(tableId, url, columns, buttons, serverSide);
-    });
-
-
-    function LoadTable(tableId, url, columns, buttons, serverSide) {
-        var dataTableColumns = columns.map(function (column) {
-            if (column.isEditable) {
-                return {
-                    data: null,
-                    render: function (data, type, row) {
-                        var editUrl = column.editUrl + '?id=' + row.id;
-                        if (@Model.PopupWindow.ToString().ToLower()) {
-                            return '<button class="btn btn-info" onclick="openPopup(\'' + editUrl + '\')">Edit</button>';
-                        } else {
-                            return '<a class="btn btn-info" href="' + editUrl + '">Edit</a>';
-                        }
-                    }
+            ];
+            if (createUrl && createUrl.length > 0) {
+                var createButton = {
+                    text: '@(Model.CreateButtonName == null ? "Create" : Model.CreateButtonName)',
+                    action: function (e, dt, node, config) {
+    @if (Model.PopupWindow)
+    {
+        <text>
+                                openPopup(createUrl);
+        </text>
+    }
+    else
+    {
+        <text>
+                                window.location.href = createUrl;
+        </text>
+    }
+                                                                                        },
+                    className: 'create-new-button btn btn-info'
                 };
-            } else if (column.isDeletable) {
-                return {
-                    data: null,
-                    render: function (data, type, row) {
-                        var deleteUrl = column.deleteUrl + '?id=' + row.id;
-                        return '<button class="btn btn-danger deleteBtn" data-url="' + deleteUrl + '">Delete</button>';
-                    }
-                };
-            } else if (column.isCheckBox) {
-                return {
-                    data: column.data,
-                    render: function (data, type, row) {
-                        if (type === "display") {
-                            return '<input type="checkbox" disabled="disabled" ' + (data ? 'checked="checked"' : '') + '/>';
-                        }
-                        return data;
-                    }
-                };
-            } else if (column.isPicture) {
-                return {
-                    data: column.data,
-                    render: function (data, type, row) {
-                        return '<img src="' + data + '" style="max-width: 200px;height: auto; "/>';
-                    }
-                };
-            } else {
-                return {
-                    data: column.data
-                };
+                buttons.unshift(createButton);
             }
+
+            var serverSide = @Model.ServerSide.ToString().ToLower();
+
+            $(document).on('click', '#selectAll', function () {
+                $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]').prop('checked', this.checked);
+                selectedIds = $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]:checked').map(function () {
+                    return this.value;
+                }).get();
+                console.log(selectedIds);
+            });
+
+            $(document).on('change', 'input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]', function () {
+                selectedIds = $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]:checked').map(function () {
+                    return this.value;
+                }).get();
+                console.log(selectedIds);
+            });
+
+                                LoadTable_@(Model.TableId)(tableId, url, buttons, serverSide);
         });
+
+
+    function LoadTable_@(Model.TableId)(tableId, url, buttons, serverSide){
+
 
         var ajaxSettings;
         if (serverSide) {
             ajaxSettings = {
                 url: url,
                 type: "POST",
-                data: function (d) {
-                    return $.extend({}, d, {
-                        pageNumber: d.start / d.length + 1, // Calculate page number based on start and length
-                        pageSize: d.length, // Page size is the length
-                        searchText: d.search.value, // Search text
-                        orderBy: d.order[0].column + " " + d.order[0].dir // Order by
-                    });
-                },
-                dataFilter: function (data) {
-                    var json = jQuery.parseJSON(data);
-                    json.recordsTotal = json.recordsTotal;
-                    json.recordsFiltered = json.recordsFiltered;
-                    json.data = json.data;
+                data: function (data) {
+    @if (Model.Filters != null)
+    {
+        foreach (var filter in Model.Filters)
+        {
+            if (filter.Type == typeof(string))
+            {
 
-                    return JSON.stringify(json); // return JSON string
+                if (!string.IsNullOrEmpty(filter.ModelName))
+                {
+                    <text>
+                                        data.@filter.Name = $('#@(filter.ModelName)_@filter.Name').val();
+                    </text>
+                }
+                else
+                {
+                    <text>
+                                        data.@filter.Name = $('#@filter.Name').val();
+                    </text>
+                }
+                continue;
+            }
+            if (filter.Type == typeof(bool))
+            {
+                <text>
+                                    data.@filter.Name = $('#@filter.Name').is(':checked');
+                </text>
+                continue;
+            }
+            if (filter.Type == typeof(int))
+            {
+                if (int.TryParse(@filter.Value.ToString(), out int val))
+                {
+                    <text>
+                                        data.@filter.Name = @val;
+                    </text>
+                }
+                continue;
+            }
+            if (filter.Type == typeof(DateTime?))
+            {
+                <text>
+                                    data.@filter.Name = $('#@filter.Name').val();
+                </text>
+                continue;
+            }
+        }
+        <text>
+                            addAntiForgeryToken(data);
+        </text>
+    }
+                        return data;
                 },
+                beforeSend: function () {
+                    clearSelectAllCheckbox();
+                },
+                "datatype": "json",
             };
         } else {
             ajaxSettings = {
@@ -179,26 +215,133 @@
             lengthMenu: @Html.Raw(Json.Serialize(Model.LengthMenu)),
             pageLength: @Model.PageLength,
             serverSide: serverSide,
-            processing: true,
+            processing: @Model.Processing.ToString().ToLower(),
             ajax: ajaxSettings,
             buttons: buttons,
-            columns: dataTableColumns
-        });
-
-        $(tableId).on('click', '.deleteBtn', function () {
-            var deleteUrl = $(this).data('url');
-            if (confirm('Are you sure you want to delete this item?')) {
-                $.ajax({
-                    url: deleteUrl,
-                    type: 'POST',
-                    success: function () {
-                        $(tableId).DataTable().ajax.reload();
-                    },
-                    error: function () {
-                        alert('An error occurred while deleting the item.');
-                    }
-                });
+            columns: [
+    @for (int i = 0; i < Model.Columns.Count; i++)
+    {
+        var column = Model.Columns[i];
+        <text>
+                    {
+            @if (!string.IsNullOrEmpty(column.Title) && !column.IsMasterCheckBox)
+            {
+                <text>
+                        title: '@JavaScriptEncoder.Default.Encode(column.Title)',
+                </text>
             }
-        });
+            else
+            {
+                if (!string.IsNullOrEmpty(column.Title) && column.IsMasterCheckBox)
+                {
+                    <text>
+                            title: '<div class="checkbox"><label><input id="selectAll" type="checkbox" />@JavaScriptEncoder.Default.Encode(column.Title)</label></div>',
+                    </text>
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(column.Title) && column.IsMasterCheckBox)
+                    {
+                        <text>
+                                title: '<input id="selectAll" type="checkbox"/>',
+                        </text>
+                    }
+                }
+            }
+                    width: '@column.Width',
+                    visible: @column.Visible.ToString().ToLowerInvariant(),
+                    searchable: @column.Searchable.ToString().ToLowerInvariant(),
+                    orderable: @column.Orderable.ToString().ToLowerInvariant(),
+            @if (column.AutoWidth)
+            {
+                <text>
+                        autoWidth: @column.AutoWidth.ToString().ToLowerInvariant(),
+                </text>
+            }
+            @if (!string.IsNullOrEmpty(column.ClassName))
+            {
+                <text>
+                        className: '@column.ClassName',
+                </text>
+            }
+            @switch (column.RenderType)
+            {
+                case RenderType.RenderButtonRemove:
+                    <text>
+                            render: function (data, type, row, meta) {
+                                return '<button class="@(column.ClassName ?? "btn btn-danger")"><i class="far fa-trash-alt deleteBtn" data-url="@(column.DeleteUrl + "?id=")' + row.id + '"></i>@column.Title</button>';
+                            },
+                    </text>
+                    break;
+                case RenderType.RenderButtonEdit:
+                    <text>
+                            render: function (data, type, row, meta) {
+                                // var editUrl = @column.EditUrl + '?id=' + row.id;
+                                if (@Model.PopupWindow.ToString().ToLower()) {
+                                    return '<button class="@(column.ClassName ?? "btn btn-info")" onclick="openPopup(\'' + editUrl + '\')">Edit</button>';
+                                } else {
+                                    return '<a class="@(column.ClassName ?? "btn btn-info")" href="@(column.EditUrl + "?id=")' + data + '">Edit</a>';
+                                }
+                            },
+                    </text>
+                    break;
+                case RenderType.RenderPicture:
+                    var widthAttr = string.Empty;
+                    <text>
+                            render: function (data, type, row, meta) {
+                                return '<img src="' + data + '" style="max-width: 200px;height: auto; "/>';
+                            },
+                    </text>
+                    break;
+                case RenderType.RenderCheckBox:
+                    <text>
+                            render: function (data, type, row, meta) {
+                                return '<input type="checkbox" name="@column.CheckBoxName" class="row-checkbox" value="' + data + '">';
+                            },
+                    </text>
+                    break;
+                case RenderType.RenderBoolean:
+                    <text>
+                            render: function (data, type, row) {
+                                return data
+                                    ? '<i class="fas fa-check true-icon" value="true"></i>'
+                                    : '<i class="fas fa-times false-icon" value="false"></i>';
+                            },
+                    </text>
+                    break;
+                case RenderType.NotRender:
+                    <text>
+                            render: function (data, type, row, meta) {
+                                return escapeHtml(data);
+                            },
+                    </text>
+                    break;
+            }
+                    data: '@column.Data'
+                                                                                                    }
+            @if (i != Model.Columns.Count - 1)
+            {
+                <text>, </text>
+            }
+        </text>
     }
+                                                    ]
+                                        });
+
+    $(tableId).on('click', '.deleteBtn', function () {
+        var deleteUrl = $(this).data('url');
+        if (confirm('Are you sure you want to delete this item?')) {
+            $.ajax({
+                url: deleteUrl,
+                type: 'POST',
+                success: function () {
+                    $(tableId).DataTable().ajax.reload();
+                },
+                error: function () {
+                    alert('An error occurred while deleting the item.');
+                }
+            });
+        }
+    });
+                                            }
 </script>

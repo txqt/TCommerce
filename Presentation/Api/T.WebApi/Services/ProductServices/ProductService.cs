@@ -33,13 +33,15 @@ namespace T.WebApi.Services.ProductServices
 
         private readonly IRepository<Picture> _pictureRepository;
 
+        private readonly IRepository<ProductCategory> _productCategoryRepository;
+
         private string? APIUrl;
 
         private IMapper _mapper;
         #endregion
 
         #region Ctor
-        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper)
+        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository)
         {
             _configuration = configuration;
             _environment = environment;
@@ -49,6 +51,7 @@ namespace T.WebApi.Services.ProductServices
             _productPictureMappingRepository = productPictureMapping;
             _pictureRepository = pictureRepository;
             _mapper = mapper;
+            _productCategoryRepository = productCategoryRepository;
         }
         #endregion
 
@@ -60,6 +63,14 @@ namespace T.WebApi.Services.ProductServices
                 .Sort(productParameters.OrderBy)//sort by product coloumn 
                 .Include(x => x.ProductPictures)
                 .Where(x => x.Deleted == false);
+
+            if (productParameters.CategoryId > 0)
+            {
+                query = from p in _productsRepository.Table
+                        join pc in _productCategoryRepository.Table on p.Id equals pc.ProductId
+                        where pc.CategoryId == productParameters.CategoryId
+                        select p;
+            }
 
             return await PagedList<Product>.ToPagedList(query, productParameters.PageNumber, productParameters.PageSize);
         }

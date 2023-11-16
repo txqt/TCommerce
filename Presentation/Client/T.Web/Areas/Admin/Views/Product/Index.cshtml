@@ -1,4 +1,4 @@
-﻿@* @model ProductListViewModel *@
+﻿@model ProductParameters
 @{
     ViewData["Title"] = "Product List";
 }
@@ -17,23 +17,70 @@
     </div>
 </div> *@
 @{
+    var product = new Product();
     var model = new DataTableViewModel()
             {
                 // TableId = Guid.NewGuid().ToString(),
                 TableTitle = "Product List",
-                Headers = new List<string>() { "Name", "Price", "StockQuantity", "Edit", "Delete" },
+                // Headers = new List<string>() {"Name", "Price", "StockQuantity", "Edit", "Delete" },
                 CreateButtonName = "Tạo sản phẩm mới",
                 CreateUrl = Url.Action("CreateProduct", "Product"),
+                SearchButtonId = "search-products",
+                Filters = new List<Filter>()
+                {
+                    new Filter(nameof(Model.CategoryId)),
+                },
                 GetDataUrl = Url.Action("GetAll", "Product"),
-                ServerSideProcessing = true,
+                ServerSide = true,
                 Columns = new List<ColumnDefinition>()
                 {
-                    new ColumnDefinition(){ Data = "name"},
-                    new ColumnDefinition(){ Data = "price"},
-                    new ColumnDefinition(){ Data = "stockQuantity"},
-                    new ColumnDefinition(){ EditUrl = Url.Action("EditProduct", "Product"), IsEditable = true},
-                    new ColumnDefinition(){ DeleteUrl = Url.Action("Delete", "Product"), IsDeletable = true},
+                    new ColumnDefinition()
+                    {
+                        Data = "id",
+                        RenderType = RenderType.RenderCheckBox,
+                        IsMasterCheckBox = true,
+                        Orderable = false
+                    },
+                    new ColumnDefinition("name")
+                    {
+                        Title = nameof(product.Name)
+                    },
+                    new ColumnDefinition("price")
+                    {
+                        Title = nameof(product.Price)
+                    },
+                    new ColumnDefinition("stockQuantity")
+                    {
+                        Title = nameof(product.StockQuantity)
+                    },
+                    new ColumnDefinition("id")
+                    {
+                        EditUrl = Url.Action("EditProduct", "Product"),
+                        RenderType = RenderType.RenderButtonEdit,
+                        Title = "Edit",
+                        Orderable = false
+                    },
+                    new ColumnDefinition("id")
+                    {
+                        DeleteUrl = Url.Action("Delete", "Product"),
+                        RenderType = RenderType.RenderButtonRemove,
+                        Title = "Delete",
+                        Orderable = false
+                    },
                 }
             };
 }
-@await Html.PartialAsync("_Table", model)
+
+
+<form id="myForm" method="post" action="@Url.Action("Test", "Product")">
+    <label asp-for="CategoryId"></label>
+    <input asp-for="CategoryId" class="form-control" />
+    <button type="button" id="search-products" class="btn btn-primary btn-search">
+        <i class="fas fa-search"></i>
+        Search
+    </button>
+    <div class="table-responsive display" style="width:100%">
+        @await Html.PartialAsync("_Table", model)
+    </div>
+    <button type="submit">Submit</button>
+</form>

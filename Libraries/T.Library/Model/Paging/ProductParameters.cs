@@ -1,4 +1,4 @@
 ﻿public class ProductParameters : QueryStringParameters
 {
-    public string? CategoryId { get; set; }
+    public int CategoryId { get; set; }
 }

@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Drawing;
 using System.IO;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text.Json;
 using T.Library.Model;
 using T.Library.Model.Interface;
@@ -98,13 +100,21 @@ namespace T.Web.Services.ProductService
         public async Task<PagingResponse<Product>> GetAll(ProductParameters productParameters)
         {
 
-            var queryStringParam = new Dictionary<string, string>
+            var queryStringParam = new Dictionary<string, string>();
+
+            Type modelType = productParameters.GetType();
+
+            PropertyInfo[] properties = modelType.GetProperties();
+
+            foreach (PropertyInfo property in properties)
             {
-                ["pageNumber"] = productParameters.PageNumber.ToString(),
-                ["searchText"] = productParameters.SearchText == null ? "" : productParameters.SearchText,
-                ["pageSize"] = productParameters.PageSize.ToString(),
-                ["orderBy"] = productParameters.OrderBy,
-            };
+                string propertyName = property.Name;
+
+                object value = property.GetValue(productParameters);
+
+                queryStringParam.Add(propertyName, value.ToString());
+            }
+
             var response = await _httpClient.GetAsync(QueryHelpers.AddQueryString($"api/product/{APIRoutes.GETALL}", queryStringParam));
 
             response.EnsureSuccessStatusCode();
