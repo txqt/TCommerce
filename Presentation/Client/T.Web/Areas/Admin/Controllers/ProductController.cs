@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Library.Model;
+using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
+using T.Web.Areas.Admin.Models.SearchModel;
 using T.Web.Attribute;
 using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
@@ -41,16 +44,31 @@ namespace T.Web.Areas.Admin.Controllers
             _categoryService = categoryService;
         }
 
-        public async Task<IActionResult> Index(ProductParameters productParameters)
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var model = new ProductSearchModel();
+
+            var category_list = await _categoryService.GetAllCategoryAsync();
+
+            category_list.Insert(0, new Category()
+            {
+                Id = 0,
+                Name = "All"
+            });
+
+            model.AvailableCategories = (category_list).Select(productAttribute => new SelectListItem
+            {
+                Text = productAttribute.Name,
+                Value = productAttribute.Id.ToString()
+            }).ToList();
+
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> GetAll(ProductParameters productParameters)
         {
             var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
-            Console.WriteLine(draw);
             var start = int.Parse(Request.Form["start"].FirstOrDefault());
             var length = int.Parse(Request.Form["length"].FirstOrDefault());
             int orderColumnIndex = int.Parse(Request.Form["order[0][column]"]);
@@ -525,19 +543,19 @@ namespace T.Web.Areas.Admin.Controllers
             });
         }
 
-        public async Task<IActionResult> GetListCategoryMapping(ProductCategoryModel productCategoryModel)
+        public async Task<IActionResult> GetListCategoryMapping(int productId)
         {
-            var product = (await _productService.GetByIdAsync(productCategoryModel.ProductId)).Data ??
+            var product = (await _productService.GetByIdAsync(productId)).Data ??
               throw new ArgumentException("No product found with the specified id");
 
             var productCategoryList = (await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data;
 
             var model = _mapper.Map<List<ProductCategoryModel>>(productCategoryList);
 
-            foreach(var item in model)
+            foreach (var item in model)
             {
                 var category = (await _categoryService.GetCategoryByIdAsync(item.CategoryId)).Data;
-                item.CategoryName = category.ParentCategoryId > 0 ? category.Name 
+                item.CategoryName = category.ParentCategoryId > 0 ? category.Name
                     + " >>> " + (await _categoryService.GetCategoryByIdAsync(category.ParentCategoryId)).Data.Name : category.Name;
             }
 
@@ -601,7 +619,7 @@ namespace T.Web.Areas.Admin.Controllers
             }
 
             productCategory = (await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data
-                .Where(x=>x.CategoryId == model.CategoryId).FirstOrDefault() ??
+                .Where(x => x.CategoryId == model.CategoryId).FirstOrDefault() ??
               throw new ArgumentException("No product category found with the specified id");
 
             SetStatusMessage($"Thêm thành công !");

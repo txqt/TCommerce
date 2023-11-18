@@ -36,8 +36,8 @@ namespace T.Web.Areas.Admin.Controllers
                     new ColumnDefinition { Data = "subtitle" },
                     new ColumnDefinition { Data = "price" },
                     new ColumnDefinition { Data = "picture.urlPath", RenderType = RenderType.RenderPicture },
-                    new ColumnDefinition { EditUrl = Url.Action("Edit", "Banner"), RenderType = RenderType.RenderButtonEdit },
-                    new ColumnDefinition { DeleteUrl = Url.Action("Delete", "Banner"), RenderType = RenderType.RenderButtonRemove },
+                    new ColumnDefinition("id") { EditUrl = Url.Action("Edit", "Banner"), RenderType = RenderType.RenderButtonEdit },
+                    new ColumnDefinition("id") { DeleteUrl = Url.Action("Delete", "Banner"), RenderType = RenderType.RenderButtonRemove },
                 }
             };
             return View(model);

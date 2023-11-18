@@ -1,14 +1,18 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using T.Library.Model;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Web.Areas.Admin.Models;
+using T.Web.Areas.Admin.Models.SearchModel;
 using T.Web.Attribute;
 using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
+using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers
 {
@@ -21,12 +25,16 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
         private readonly ICategoryModelService _prepareModelService;
+        private readonly IProductService _productService;
+        private readonly IProductCategoryService _productCategoryService;
 
-        public CategoryController(ICategoryService categoryService, IMapper mapper, ICategoryModelService prepareModelService)
+        public CategoryController(ICategoryService categoryService, IMapper mapper, ICategoryModelService prepareModelService, IProductService productService, IProductCategoryService productCategoryService)
         {
             _categoryService = categoryService;
             _mapper = mapper;
             _prepareModelService = prepareModelService;
+            _productService = productService;
+            _productCategoryService = productCategoryService;
         }
 
         public IActionResult Index()
@@ -40,9 +48,10 @@ namespace T.Web.Areas.Admin.Controllers
             var categoryList = await _categoryService.GetAllCategoryAsync();
 
             var listModel = _mapper.Map<List<CategoryModel>>(categoryList);
-            foreach(var item in listModel)
+
+            foreach (var item in listModel)
             {
-                if(item.ParentCategoryId > 0)
+                if (item.ParentCategoryId > 0)
                 {
                     item.ParentCategoryName = (await _categoryService.GetCategoryByIdAsync(item.ParentCategoryId)).Data.Name;
                 }
@@ -101,7 +110,7 @@ namespace T.Web.Areas.Admin.Controllers
             var category = (await _categoryService.GetCategoryByIdAsync(model.Id)).Data ??
                 throw new ArgumentException("No category found with the specified id");
 
-            category = _mapper.Map(model, category);
+            _mapper.Map(model, category);
 
             var result = await _categoryService.UpdateCategoryAsync(category);
             if (!result.Success)
@@ -110,9 +119,11 @@ namespace T.Web.Areas.Admin.Controllers
                 model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
                 return View(model);
             }
-
-            SetStatusMessage("Sửa thành công");
-            model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
+            else
+            {
+                SetStatusMessage("Sửa thành công");
+                model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
+            }
 
             return View(model);
         }
@@ -127,6 +138,132 @@ namespace T.Web.Areas.Admin.Controllers
                 return Json(new { success = false, message = result.Message });
             }
             return Json(new { success = true, message = result.Message });
+        }
+
+        public async Task<IActionResult> GetListCategoryMapping(int categoryId)
+        {
+            var category = (await _categoryService.GetCategoryByIdAsync(categoryId)).Data ??
+              throw new ArgumentException("Not found with the specified id");
+
+            var productCategoryList = (await _categoryService.GetProductCategoriesByCategoryIdAsync(categoryId));
+
+            var model = _mapper.Map<List<ProductCategoryModel>>(productCategoryList);
+
+            foreach (var item in model)
+            {
+                item.ProductName = (await _productService.GetByIdAsync(item.ProductId)).Data?.Name;
+            }
+
+            return Json(new
+            {
+                data = model
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategoryMapping(int id)
+        {
+
+            var result = await _categoryService.DeleteCategoryMappingById(id);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
+        }
+
+        public async Task<IActionResult> AddProductToCategory(int categoryId)
+        {
+            var category = (await _categoryService.GetCategoryByIdAsync(categoryId)).Data ??
+                throw new ArgumentException("Not found with the specified id");
+
+            var model = new AddProductToCategorySearchModel();
+
+            var category_list = await _categoryService.GetAllCategoryAsync();
+
+            category_list.Insert(0, new Category()
+            {
+                Id = 0,
+                Name = "All"
+            });
+
+            model.AvailableCategories = (category_list).Select(productAttribute => new SelectListItem
+            {
+                Text = productAttribute.Name,
+                Value = productAttribute.Id.ToString()
+            }).ToList();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetProductList(AddProductToCategorySearchModel model)
+        {
+            var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
+            var start = int.Parse(Request.Form["start"].FirstOrDefault());
+            var length = int.Parse(Request.Form["length"].FirstOrDefault());
+            int orderColumnIndex = int.Parse(Request.Form["order[0][column]"]);
+            string orderDirection = Request.Form["order[0][dir]"];
+            string orderColumnName = Request.Form["columns[" + orderColumnIndex + "][data]"];
+
+            string orderBy = orderColumnName + " " + orderDirection;
+            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+
+            // Create ProductParameters from DataTables parameters
+            var productParameter = new ProductParameters
+            {
+                PageNumber = start / length + 1,
+                PageSize = length,
+                SearchText = searchValue,
+                OrderBy = orderBy,
+                CategoryId = model.SearchByCategoryId
+            };
+
+            // Call the service to get the paged data
+            var pagingResponse = await _productService.GetAll(productParameter);
+
+            // Return the data in the format that DataTables expects
+            return Json(new DataTableResponse
+            {
+                Draw = draw,
+                RecordsTotal = pagingResponse.MetaData.TotalCount,
+                RecordsFiltered = pagingResponse.MetaData.TotalCount,
+                Data = pagingResponse.Items.Cast<object>().ToList()
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddProductToCategory(AddProductToCategoryModel model)
+        {
+            if (!model.SelectedProductIds.Any())
+            {
+                return View(new ProductSearchModel());
+            }
+
+            var existingProductCategories = await _categoryService.GetProductCategoriesByCategoryIdAsync(model.CategoryId);
+
+            var productCategoriesToAdd = model.SelectedProductIds.Except(existingProductCategories.Select(pc => pc.ProductId))
+                .Select(pid => new ProductCategory
+                {
+                    CategoryId = model.CategoryId,
+                    ProductId = pid,
+                    IsFeaturedProduct = false,
+                    DisplayOrder = 1
+                }).ToList();
+
+            var result = await _categoryService.BulkCreateProductCategoriesAsync(productCategoriesToAdd);
+
+            if (!result.Success)
+            {
+                return View(new AddProductToCategorySearchModel());
+            }
+            else
+            {
+                SetStatusMessage("Thêm thành công");
+                ViewBag.RefreshPage = true;
+            }
+
+            return View(new AddProductToCategorySearchModel());
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model ProductParameters
+﻿@model ProductSearchModel
 @{
     ViewData["Title"] = "Product List";
 }
@@ -71,16 +71,31 @@
             };
 }
 
-
-<form id="myForm" method="post" action="@Url.Action("Test", "Product")">
-    <label asp-for="CategoryId"></label>
-    <input asp-for="CategoryId" class="form-control" />
-    <button type="button" id="search-products" class="btn btn-primary btn-search">
-        <i class="fas fa-search"></i>
-        Search
-    </button>
-    <div class="table-responsive display" style="width:100%">
-        @await Html.PartialAsync("_Table", model)
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="col-auto">
+                    <label asp-for="CategoryId" class="col-form-label">Category</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" asp-items="Model.AvailableCategories" asp-for="CategoryId">
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-6">
+            </div>
+        </div>
+        <div class="button text-center p-4">
+            <button type="button" id="search-products" class="btn btn-primary btn-search">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+        </div>
     </div>
-    <button type="submit">Submit</button>
-</form>
+</div>
+
+
+<div class="table-responsive display" style="width:100%">
+    @await Html.PartialAsync("_Table", model)
+</div>

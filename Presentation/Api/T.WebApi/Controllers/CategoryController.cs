@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using T.Library.Model;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
@@ -10,7 +11,7 @@ using T.WebApi.Services.CategoryServices;
 
 namespace T.WebApi.Controllers
 {
-    [Route("api/category")]
+    [Route(APIRoutes.CATEGORY)]
     [ApiController]
     [CheckPermission(PermissionSystemName.ManageCategories)]
     public class CategoryController : ControllerBase
@@ -60,6 +61,32 @@ namespace T.WebApi.Controllers
         public async Task<ActionResult> Delete(int categoryId)
         {
             var result = await _categoryService.DeleteCategoryByIdAsync(categoryId);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{categoryId}/product-categories")]
+        public async Task<ActionResult<List<ProductCategory>>> GetProductCategoriesByCategoryIdAsync(int categoryId)
+        {
+            return await _categoryService.GetProductCategoriesByCategoryIdAsync(categoryId);
+        }
+
+        [HttpPost("bulk-product-categories")]
+        public async Task<ActionResult> BulkCreateProductCategoriesAsync(List<ProductCategory> productCategories)
+        {
+            var result = await _categoryService.BulkCreateProductCategoriesAsync(productCategories);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+        [HttpDelete("product-category/{productCategoryId}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> DeleteCategoryMappingById(int productCategoryId)
+        {
+            var result = await _categoryService.DeleteCategoryMappingById(productCategoryId);
             if (!result.Success)
                 return BadRequest(result);
 

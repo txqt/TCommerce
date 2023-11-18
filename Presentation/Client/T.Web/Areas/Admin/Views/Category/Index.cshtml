@@ -4,119 +4,52 @@
     ViewData["Title"] = "Danh sách thể loại";
 }
 
-<h1>Category List</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table" id="dataTable-category">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedOnUtc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedOnUtc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DisplayOrder)
-            </th>
-            <th></th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-
-<script>
-    $(document).ready(function () {
-        LoadTable();
-    });
-
-    $('#dataTable-category').on('click', '.deletePaBtn', function () {
-        var categoryId = $(this).data('categoryid'); // Lấy categoryid từ thuộc tính data của nút
-        // Hiển thị hộp thoại "confirm"
-        if (confirm("Bạn có chắc chắn muốn xóa?")) {
-            $.ajax({
-                url: "@Url.Action("DeleteCategory", "Category")",
-                type: "POST",
-                data: { id: categoryId },
-                success: function (response) {
-                    // Xử lý phản hồi từ API
-                    if (response.success) {
-                        LoadTable();
-                    } else {
-                        alert(response.message); // Hiển thị thông báo lỗi
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.log(xhr.responseText); // Hiển thị lỗi trong console
-                    alert("Đã xảy ra lỗi ."); // Hiển thị thông báo lỗi
+@{
+    var categoryTable = new DataTableViewModel()
+            {
+                TableTitle = "Danh sách thể loại",
+                CreateButtonName = "Tạo mới",
+                CreateUrl = Url.Action("Create", "Category"),
+                SearchButtonId = "search-categories",
+                GetDataUrl = Url.Action("GetAll", "Category"),
+                Columns = new List<ColumnDefinition>()
+                {
+                    new ColumnDefinition()
+                    {
+                        Data = "id",
+                        RenderType = RenderType.RenderCheckBox,
+                        IsMasterCheckBox = true,
+                        Orderable = false
+                    },
+                    new ColumnDefinition("name")
+                    {
+                        Title = nameof(Model.Name)
+                    },
+                    new ColumnDefinition("published")
+                    {
+                        Title = nameof(Model.Published),
+                        RenderType = RenderType.RenderBoolean
+                    },
+                    new ColumnDefinition("displayOrder")
+                    {
+                        Title = nameof(Model.DisplayOrder)
+                    },
+                    new ColumnDefinition("id")
+                    {
+                        EditUrl = Url.Action("Edit", "Category"),
+                        RenderType = RenderType.RenderButtonEdit,
+                        Title = "Edit",
+                        Orderable = false
+                    },
+                    new ColumnDefinition("id")
+                    {
+                        DeleteUrl = Url.Action("DeleteCategory", "Category"),
+                        RenderType = RenderType.RenderButtonRemove,
+                        Title = "Delete",
+                        Orderable = false
+                    },
                 }
-            });
-        }
-    });
+            };
+}
 
-    function LoadTable() {
-        $('#dataTable-category').DataTable().destroy();
-        $('#dataTable-category').DataTable({
-            ajax: {
-                url: "@Url.Action("GetAll", "Category")",
-                type: "GET",
-                datatype: "json",
-            },
-            columns: [
-                {
-                    data: null,
-                    render: function (data, type, row) {
-                        if (row.parentCategoryId > 0) {
-                            return row.name + " >>> " + row.parentCategoryName;
-                        }
-                        return row.name;
-                    }
-                },
-                { data: "description" },
-                {
-                    data: "createdOnUtc",
-                    render: function (data) {
-                        return moment(data).format("DD/MM/YYYY HH:mm:ss");
-                    }
-                },
-                {
-                    data: "updatedOnUtc",
-                    render: function (data) {
-                        return moment(data).format("DD/MM/YYYY HH:mm:ss");
-                    }
-                },
-                { data: "displayOrder" },
-                {
-                    data: null,
-                    render: function (data, type, row) {
-                        if (type === "display") {
-                            var editUrl = "@Url.Action("Edit", "Category", new { id = "__id__" })".replace("__id__", row.id);
-                            return '<a class="btn btn-info" href=" '+ editUrl +'" >Edit</a>';
-                        }
-                        return data;
-                    }
-                },
-                {
-                    data: null,
-                    render: function (data, type, row) {
-                        var categoryId = row.id
-                        if (type === "display") {
-                            return '<button class="btn btn-danger d-flex justify-content-center align-items-center deletePaBtn" data-categoryid="' + categoryId + '">Delete</button>';
-                        }
-                        return data;
-                    }
-                }
-            ]
-        });
-    }
-</script>
+@await Html.PartialAsync("_Table", categoryTable)

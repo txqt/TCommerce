@@ -93,7 +93,7 @@ namespace T.Library.Model.Common
         /// </summary>
         public bool ManuallyPriceRange { get; set; }
 
-        public List<ProductCategory> ProductCategories { get; set; }
+        public List<ProductCategory>? ProductCategories { get; set; }
         public bool Deleted { get; set; }
     }
 }

@@ -32,6 +32,8 @@ namespace T.Web.Areas.Admin.Models
         [Display(Name = "Tên thể loại")]
         public string CategoryName { get; set; }
 
+        public string ProductName { get; set; }
+
         public IList<SelectListItem> AvailableCategories { get; set; }
     }
 }

@@ -1,0 +1,83 @@
+﻿@model AddProductToCategorySearchModel
+@{
+    ViewData["Title"] = "AddProductToCategory";
+    Layout = "_EmptyLayout";
+}
+
+@if (ViewBag.RefreshPage == true)
+{
+    <script>
+        window.close();
+        window.opener.location.reload();
+    </script>
+}
+
+@{
+    var product = new Product();
+    var model = new DataTableViewModel()
+            {
+                // TableId = Guid.NewGuid().ToString(),
+                TableTitle = "Product List",
+                // Headers = new List<string>() {"Name", "Price", "StockQuantity", "Edit", "Delete" },
+                CreateButtonName = "Tạo sản phẩm mới",
+                SearchButtonId = "search-products",
+                Filters = new List<Filter>()
+                {
+                    new Filter(nameof(Model.SearchByCategoryId)),
+                },
+                GetDataUrl = Url.Action("GetProductList", "Category"),
+                ServerSide = true,
+                Columns = new List<ColumnDefinition>()
+                {
+                    new ColumnDefinition()
+                    {
+                        Data = "id",
+                        RenderType = RenderType.RenderCheckBox,
+                        CheckBoxName = nameof(AddProductToCategoryModel.SelectedProductIds),
+                        IsMasterCheckBox = true,
+                        Orderable = false,
+                        Width = 50,
+                    },
+                    new ColumnDefinition("name")
+                    {
+                        Title = nameof(product.Name)
+                    },
+                }
+            };
+}
+
+<form asp-action="AddProductToCategory" method="post" asp-route-categoryId="@Context.Request.Query["categoryId"]">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="col-auto">
+                        <label asp-for="SearchByCategoryId" class="col-form-label">Category</label>
+                    </div>
+                    <div class="col-auto">
+                        <select class="form-select" asp-items="Model.AvailableCategories" asp-for="SearchByCategoryId">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                </div>
+            </div>
+            <div class="button text-center p-4">
+                <button type="button" id="search-products" class="btn btn-primary btn-search">
+                    <i class="fas fa-search"></i>
+                    Search
+                </button>
+            </div>
+            <div class="table-responsive display" style="width:100%">
+                @await Html.PartialAsync("_Table", model)
+            </div>
+        </div>
+    </div>
+    <button type="submit" name="save" class="btn btn-primary">
+        <i class="far fa-save"></i>
+        Save
+    </button>
+</form>
+
+
+

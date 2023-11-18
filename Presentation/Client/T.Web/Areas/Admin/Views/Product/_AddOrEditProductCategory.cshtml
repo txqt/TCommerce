@@ -5,7 +5,7 @@
 <input hidden class="form-control" asp-for="ProductId" value="@Model.ProductId" />
 <div class="form-group">
     <label>Chọn thể loại cho sản phẩm</label>
-    <select class="form-control" id="@Html.DisplayNameFor(model => model.CategoryName)" asp-items="Model.AvailableCategories" asp-for="CategoryId">
+    <select class="form-select" id="@Html.DisplayNameFor(model => model.CategoryName)" asp-items="Model.AvailableCategories" asp-for="CategoryId">
     </select>
 </div>
 <div class="form-group">

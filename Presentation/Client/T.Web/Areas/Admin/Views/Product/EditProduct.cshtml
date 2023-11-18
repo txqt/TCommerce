@@ -87,43 +87,6 @@
             </div>
         </div>
     </div>
-    <div class="col-md-12" style="margin-top: 36px">
-        <div id="accordion-4">
-            <div class="card">
-                <div class="card-header" id="headingFour">
-                    <h5 class="mb-0">
-                        <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse-4" aria-expanded="true" aria-controls="collapse-4">
-                            Các thể loại đã được liên kết
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapse-4" class="collapse show" aria-labelledby="headingFour" data-parent="#accordion-4">
-                    <div class="card-body">
-                        @* @(await Html.PartialAsync("_ProductCategoryList", new ProductCategoryModel { ProductId = Model.Id })) *@
-                        @{
-                            var ProductCategoryList = new DataTableViewModel
-            {
-                // TableId = Guid.NewGuid().ToString(),
-                TableTitle = "Danh sách thể loại của sản phẩm",
-                CreateUrl = Url.Action("ProductCategoryMappingCreate", "Product", new { productId = Model.Id }),
-                // Headers = new List<string> { "CategoryName", "IsFeaturedProduct", "DisplayOrder", "Edit", "Delete" },
-                GetDataUrl = Url.Action("GetListCategoryMapping", "Product", new { productId = Model.Id }),
-                Columns = new List<ColumnDefinition>
-                        {
-                        new ColumnDefinition { Data = "categoryName", Title = "Category Name" },
-                        new ColumnDefinition { Data = "isFeaturedProduct", RenderType = RenderType.RenderBoolean, Title = "Is Featured Product" },
-                        new ColumnDefinition { Data = "displayOrder", Title = "Display Order" },
-                        new ColumnDefinition { Data = "id", EditUrl = Url.Action("EditProductCategory", "Product"), RenderType = RenderType.RenderButtonEdit, Title = "Edit" },
-                        new ColumnDefinition { Data = "id", DeleteUrl = Url.Action("DeleteProductCategory", "Product"), RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
-                        }
-            };
-                        }
-                        @await Html.PartialAsync("_Table", ProductCategoryList)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 @* @section Scripts

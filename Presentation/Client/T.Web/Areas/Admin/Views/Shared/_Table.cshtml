@@ -44,7 +44,7 @@
     </table>
 </div>
 <script>
-    
+
 
     function clearSelectAllCheckbox() {
         $('#selectAll').prop('checked', false);
@@ -59,7 +59,6 @@
         <text>
             $('#@Model.SearchButtonId').click(function () {
                 $('#@Model.TableId').DataTable().ajax.reload();
-                $('#@Model.TableId .checkboxGroups').prop('checked', false).change();
                 clearSelectAllCheckbox();
                 return false;
             });
@@ -105,7 +104,7 @@
                                 window.location.href = createUrl;
         </text>
     }
-                                                                                        },
+                                                                                            },
                     className: 'create-new-button btn btn-info'
                 };
                 buttons.unshift(createButton);
@@ -128,7 +127,7 @@
                 console.log(selectedIds);
             });
 
-                                LoadTable_@(Model.TableId)(tableId, url, buttons, serverSide);
+                                    LoadTable_@(Model.TableId)(tableId, url, buttons, serverSide);
         });
 
 
@@ -191,7 +190,7 @@
                             addAntiForgeryToken(data);
         </text>
     }
-                        return data;
+                            return data;
                 },
                 beforeSend: function () {
                     clearSelectAllCheckbox();
@@ -269,7 +268,7 @@
                 case RenderType.RenderButtonRemove:
                     <text>
                             render: function (data, type, row, meta) {
-                                return '<button class="@(column.ClassName ?? "btn btn-danger")"><i class="far fa-trash-alt deleteBtn" data-url="@(column.DeleteUrl + "?id=")' + row.id + '"></i>@column.Title</button>';
+                                return '<button class="@(column.ClassName ?? "btn btn-danger") deleteBtn" data-url="@(column.DeleteUrl + "?id=")' + row.id + '"><i class="far fa-trash-alt"></i> @column.Title</button>';
                             },
                     </text>
                     break;
@@ -278,9 +277,9 @@
                             render: function (data, type, row, meta) {
                                 // var editUrl = @column.EditUrl + '?id=' + row.id;
                                 if (@Model.PopupWindow.ToString().ToLower()) {
-                                    return '<button class="@(column.ClassName ?? "btn btn-info")" onclick="openPopup(\'' + editUrl + '\')">Edit</button>';
+                                    return '<button class="@(column.ClassName ?? "btn btn-info")" onclick="openPopup(\'' + editUrl + '\')"><i class="fas fa-pencil-alt"></i> Edit</button>';
                                 } else {
-                                    return '<a class="@(column.ClassName ?? "btn btn-info")" href="@(column.EditUrl + "?id=")' + data + '">Edit</a>';
+                                    return '<a class="@(column.ClassName ?? "btn btn-info")" href="@(column.EditUrl + "?id=")' + data + '"><i class="fas fa-pencil-alt"></i> Edit</a>';
                                 }
                             },
                     </text>
@@ -318,15 +317,15 @@
                     break;
             }
                     data: '@column.Data'
-                                                                                                    }
+                                                                                                            }
             @if (i != Model.Columns.Count - 1)
             {
                 <text>, </text>
             }
         </text>
     }
-                                                    ]
-                                        });
+                                                        ]
+                                            });
 
     $(tableId).on('click', '.deleteBtn', function () {
         var deleteUrl = $(this).data('url');
@@ -343,5 +342,5 @@
             });
         }
     });
-                                            }
+                                                }
 </script>

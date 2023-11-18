@@ -5,7 +5,7 @@
 }
 
 <h1>Sửa thể loại</h1>
-    
+
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -15,7 +15,7 @@
             <div class="form-group">
                 <label>Chọn thể loại cha</label>
                 <div class="dropdown">
-                    <select class="form-control dropdown-toggle" data-toggle="dropdown" asp-items="Model.AvailableCategories" asp-for="ParentCategoryId">
+                    <select class="form-select" dropdown-toggle" data-toggle="dropdown" asp-items="Model.AvailableCategories" asp-for="ParentCategoryId">
                     </select>
                     <div class="dropdown-menu">
                         <!-- Nội dung các mục trong dropdown -->
@@ -29,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control" ></textarea>
+                <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -55,6 +55,42 @@
                 <input type="submit" value="Edit" class="btn btn-primary" />
             </div>
         </form>
+    </div>
+</div>
+
+<div class="col-md-12" style="margin-top: 36px">
+    <div id="accordion-3">
+        <div class="card">
+            <div class="card-header" id="headingThree">
+                <h5 class="mb-0">
+                    <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse-3" aria-expanded="true" aria-controls="collapse-3">
+                        Products
+                    </button>
+                </h5>
+            </div>
+            <div id="collapse-3" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion-3">
+                <div class="card-body">
+                    @{
+                        var ProductCategoryList = new DataTableViewModel
+            {
+                TableTitle = "Products",
+                CreateUrl = Url.Action("AddProductToCategory", "Category", new { categoryId = Model.Id }),
+                GetDataUrl = Url.Action("GetListCategoryMapping", "Category", new { categoryId = Model.Id }),
+                PopupWindow = true,
+                Columns = new List<ColumnDefinition>
+                    {
+                    new ColumnDefinition { Data = "productName", Title = "Product Name" },
+                    new ColumnDefinition { Data = "isFeaturedProduct", RenderType = RenderType.RenderBoolean, Title = "Is Featured Product" },
+                    new ColumnDefinition { Data = "displayOrder", Title = "Display Order" },
+                    // new ColumnDefinition { Data = "id", EditUrl = Url.Action("EditProductCategory", "Product"), RenderType = RenderType.RenderButtonEdit, Title = "Edit" },
+                    new ColumnDefinition { Data = "id", DeleteUrl = Url.Action("DeleteCategoryMapping", "Category"), RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
+                    }
+            };
+                    }
+                    @await Html.PartialAsync("_Table", ProductCategoryList)
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

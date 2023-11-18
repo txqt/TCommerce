@@ -3,27 +3,28 @@ using System.Net.Http.Json;
 using T.Library.Model.Common;
 using System.Net.Http.Headers;
 using T.Library.Model.Interface;
+using T.Library.Model;
+using T.Web.Helpers;
 
 namespace T.Web.Services.CategoryService
 {
     public class CategoryService : ICategoryService
     {
-        private readonly HttpClient _httpClient;
-        public CategoryService(HttpClient httpClient)
+        private readonly HttpClientHelper _httpClientHelper;
+        private readonly string DEFAULT_ROUTE = APIRoutes.CATEGORY + "/";
+        public CategoryService(HttpClientHelper httpClientHelper)
         {
-            _httpClient = httpClient;
+            _httpClientHelper = httpClientHelper;
         }
 
         public async Task<List<Category>> GetAllCategoryAsync()
         {
-            var result = await _httpClient.GetAsync($"api/category/{APIRoutes.GETALL}");
-            return await result.Content.ReadFromJsonAsync<List<Category>>();
+            return await _httpClientHelper.GetAsync<List<Category>>(DEFAULT_ROUTE + APIRoutes.GETALL);
         }
 
         public async Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId)
         {
-            var result = await _httpClient.GetAsync($"api/category/{categoryId}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<Category>>();
+            return await _httpClientHelper.GetAsync<ServiceResponse<Category>>(DEFAULT_ROUTE + $"{categoryId}");
         }
 
         [Obsolete("This method is not needed in this project.")]
@@ -34,20 +35,32 @@ namespace T.Web.Services.CategoryService
 
         public async Task<ServiceResponse<bool>> CreateCategoryAsync(Category category)
         {
-            var result = await _httpClient.PostAsJsonAsync($"api/category", category);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await _httpClientHelper.PostAsJsonAsync<ServiceResponse<bool>>(DEFAULT_ROUTE, category);
         }
 
         public async Task<ServiceResponse<bool>> UpdateCategoryAsync(Category category)
         {
-            var result = await _httpClient.PutAsJsonAsync($"api/category", category);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await _httpClientHelper.PutAsJsonAsync<ServiceResponse<bool>>(DEFAULT_ROUTE, category);
         }
 
         public async Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id)
         {
-            var result = await _httpClient.DeleteAsync($"api/category/{id}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await _httpClientHelper.DeleteAsync<ServiceResponse<bool>>(DEFAULT_ROUTE + id);
+        }
+
+        public async Task<List<ProductCategory>> GetProductCategoriesByCategoryIdAsync(int categoryId)
+        {
+            return await _httpClientHelper.GetAsync<List<ProductCategory>>(DEFAULT_ROUTE + $"{categoryId}/product-categories");
+        }
+
+        public async Task<ServiceResponse<bool>> BulkCreateProductCategoriesAsync(List<ProductCategory> productCategories)
+        {
+            return await _httpClientHelper.PostAsJsonAsync<ServiceResponse<bool>>(DEFAULT_ROUTE + "bulk-product-categories", productCategories);
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteCategoryMappingById(int productCategoryId)
+        {
+            return await _httpClientHelper.DeleteAsync<ServiceResponse<bool>>(DEFAULT_ROUTE + $"product-category/{productCategoryId}");
         }
     }
 }

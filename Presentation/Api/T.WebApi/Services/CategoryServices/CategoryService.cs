@@ -15,17 +15,20 @@ namespace T.WebApi.Services.CategoryServices
     {
         private readonly IMapper _mapper;
         private readonly IRepository<Category> _categoryRepository;
+        private readonly IRepository<ProductCategory> _productCategoryRepository;
 
-        public CategoryService(IMapper mapper, IRepository<Category> categoryRepository)
+        public CategoryService(IMapper mapper, IRepository<Category> categoryRepository, IRepository<ProductCategory> productCategoryRepository)
         {
             _mapper = mapper;
             _categoryRepository = categoryRepository;
+            _productCategoryRepository = productCategoryRepository;
         }
 
         public async Task<ServiceResponse<bool>> CreateCategoryAsync(Category category)
         {
             try
             {
+                category.CreatedOnUtc = DateTime.UtcNow;
                 await _categoryRepository.CreateAsync(category);
                 return new ServiceSuccessResponse<bool>();
             }
@@ -39,6 +42,7 @@ namespace T.WebApi.Services.CategoryServices
         {
             try
             {
+                category.UpdatedOnUtc = DateTime.UtcNow;
                 await _categoryRepository.UpdateAsync(category);
                 return new ServiceSuccessResponse<bool>();
             }
@@ -90,6 +94,39 @@ namespace T.WebApi.Services.CategoryServices
                 Success = true
             };
             return response;
+        }
+
+        public async Task<List<ProductCategory>> GetProductCategoriesByCategoryIdAsync(int categoryId)
+        {
+            var productCategories = await _productCategoryRepository.Table.Where(x => x.CategoryId == categoryId).ToListAsync();
+
+            return productCategories;
+        }
+
+        public async Task<ServiceResponse<bool>> BulkCreateProductCategoriesAsync(List<ProductCategory> productCategories)
+        {
+            try
+            {
+                await _productCategoryRepository.BulkCreateAsync(productCategories);
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteCategoryMappingById(int productCategoryId)
+        {
+            try
+            {
+                await _productCategoryRepository.DeleteAsync(productCategoryId);
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>() { Message = ex.Message };
+            }
         }
     }
 }

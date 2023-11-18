@@ -86,6 +86,13 @@ namespace T.Web.Areas.Admin.Models
             Type = typeof(string);
         }
 
+        public Filter(string name, string modelName)
+        {
+            Name = name;
+            Type = typeof(string);
+            ModelName = modelName;
+        }
+
         public string Name { get; set; }
         public Type Type { get; set; }
         public string ParentName { get; set; }

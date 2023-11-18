@@ -9,6 +9,7 @@ namespace T.WebApi.Services.IRepositoryServices
         Task<IEnumerable<T>> GetAllAsync(bool includeDeleted = true);
         Task<T> GetByIdAsync(int id, bool includeDeleted = true);
         Task CreateAsync(T entity);
+        Task BulkCreateAsync(IEnumerable<T> entities);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
     }

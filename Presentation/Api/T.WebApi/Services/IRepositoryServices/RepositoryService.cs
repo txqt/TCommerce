@@ -88,5 +88,15 @@ namespace T.WebApi.Services.IRepositoryServices
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task BulkCreateAsync(IEnumerable<T> entities)
+        {
+            if (entities == null)
+            {
+                throw new ArgumentNullException(nameof(entities));
+            }
+
+            await Table.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+        }
     }
 }

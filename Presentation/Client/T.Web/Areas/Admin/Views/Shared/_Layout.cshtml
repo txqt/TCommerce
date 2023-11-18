@@ -110,47 +110,8 @@
     <script src="~/js/sb-admin-2.min.js"></script>
     
     @RenderSection("Scripts", required: false)
-    <script>
-        function openPopup(url) {
-            var screenWidth = window.screen.availWidth;
-            var screenHeight = window.screen.availHeight;
 
-            var popupWidth = 600;
-            var popupHeight = 90 * screenHeight / 100;
-
-            var leftPosition = (screenWidth - popupWidth) / 2;
-            var topPosition = 0;
-
-            var popupFeatures = 'width=' + popupWidth + ',height=' + popupHeight + ',left=' + leftPosition + ',top=' + topPosition + ',scrollbars=yes';
-
-            var popupWindow = window.open(url, 'Popup', popupFeatures);
-            popupWindow.focus();
-            return false;
-        }
-        var entityMap = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;',
-            '/': '&#x2F;',
-            '`': '&#x60;',
-            '=': '&#x3D;'
-        }, selectedIds = [];
-
-        function escapeHtml(string) {
-            return String(string).replace(/[&<>"'`=\/]/g, function (s) {
-                return entityMap[s];
-            });
-        }
-
-        function addAntiForgeryToken(n) {
-            n || (n = {});
-            var t = $("input[name=__RequestVerificationToken]");
-            return t.length && (n.__RequestVerificationToken = t.val()),
-                n
-        }
-    </script>
+    <script src="~/js/admin.site.js"></script>
 </body>
 
 </html>
