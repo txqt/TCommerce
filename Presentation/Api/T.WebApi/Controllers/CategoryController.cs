@@ -82,11 +82,34 @@ namespace T.WebApi.Controllers
 
             return Ok(result);
         }
+
+        [HttpPut("product-category")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> UpdateProductCategoryAsync(ProductCategory productCategory)
+        {
+            var result = await _categoryService.UpdateProductCategoryAsync(productCategory);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
         [HttpDelete("product-category/{productCategoryId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> DeleteCategoryMappingById(int productCategoryId)
         {
             var result = await _categoryService.DeleteCategoryMappingById(productCategoryId);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpGet("product-category/{productCategoryId}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> GetProductCategoryByIdAsync(int productCategoryId)
+        {
+            var result = await _categoryService.GetProductCategoryByIdAsync(productCategoryId);
             if (!result.Success)
                 return BadRequest(result);
 

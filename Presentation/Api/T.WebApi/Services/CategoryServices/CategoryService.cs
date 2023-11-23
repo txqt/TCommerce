@@ -116,6 +116,20 @@ namespace T.WebApi.Services.CategoryServices
             }
         }
 
+        public async Task<ServiceResponse<bool>> UpdateProductCategoryAsync(ProductCategory productCategory)
+        {
+            try
+            {
+                await _productCategoryRepository.UpdateAsync(productCategory);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>(ex.Message);
+            }
+
+            return new ServiceSuccessResponse<bool>();
+        }
+
         public async Task<ServiceResponse<bool>> DeleteCategoryMappingById(int productCategoryId)
         {
             try
@@ -127,6 +141,19 @@ namespace T.WebApi.Services.CategoryServices
             {
                 return new ServiceErrorResponse<bool>() { Message = ex.Message };
             }
+        }
+
+        public async Task<ServiceResponse<ProductCategory>> GetProductCategoryByIdAsync(int productCategoryId)
+        {
+            var productCategory = await _productCategoryRepository.Table
+                .FirstOrDefaultAsync(x => x.Id == productCategoryId);
+
+            var response = new ServiceResponse<ProductCategory>
+            {
+                Data = productCategory,
+                Success = true
+            };
+            return response;
         }
     }
 }

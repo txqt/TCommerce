@@ -104,7 +104,7 @@
                                 window.location.href = createUrl;
         </text>
     }
-                                                                                            },
+                                                                                                },
                     className: 'create-new-button btn btn-info'
                 };
                 buttons.unshift(createButton);
@@ -127,7 +127,149 @@
                 console.log(selectedIds);
             });
 
-                                    LoadTable_@(Model.TableId)(tableId, url, buttons, serverSide);
+                                        LoadTable_@(Model.TableId)(tableId, url, buttons, serverSide);
+
+            //Edit inline
+            $(tableId).on('init.dt', function () {
+                $('.btn_save').hide();
+                $('.btn_cancel').hide();
+            });
+
+            // //--->make div editable > start
+            // $(document).on('click', '.row_data', function (event) {
+            //     event.preventDefault();
+
+            //     if ($(this).attr('edit_type') == 'button') {
+            //         return false;
+            //     }
+
+            //     //make div editable
+            //     $(this).closest('div').attr('contenteditable', 'true');
+            //     //add bg css
+            //     $(this).addClass('bg-warning').css('padding', '5px');
+
+            //     $(this).focus();
+            // })
+
+            //--->button > edit > start
+            $(document).on('click', '.btn_edit', function (event) {
+                event.preventDefault();
+                var tbl_row = $(this).closest('tr');
+
+                tbl_row.find('.btn_save').show();
+                tbl_row.find('.btn_cancel').show();
+                tbl_row.find('.btn_edit').hide();
+
+                tbl_row.find('.row_data').each(function (index, val) {
+                    var cell = $(this);
+
+                    // Lưu giá trị ban đầu
+                    var originalEntry = cell.html();
+                    cell.attr('original_entry', originalEntry);
+
+                    if (cell.find('i').length > 0) {
+                        // Nếu ô chứa icon, thay thế bằng checkbox
+                        var iconHtml = cell.find('i').clone();
+                        var checkbox = $('<input type="checkbox">');
+                        checkbox.prop('checked', iconHtml.hasClass('fa-check'));
+                        cell.empty().append(checkbox);
+                    } else {
+                        // Nếu không phải icon, lưu giá trị bình thường
+                        cell.attr('contenteditable', 'true')
+                            .attr('edit_type', 'button')
+                            .addClass('bg-warning')
+                            .css('padding', '3px');
+                    }
+                });
+            });
+
+            //--->button > edit > end
+
+            $(document).on('click', '.btn_save', function (event) {
+                event.preventDefault();
+                var tbl_row = $(this).closest('tr');
+                var row_id = tbl_row.attr('row_id');
+
+                // Lấy dữ liệu từ các ô và đóng gói thành đối tượng
+                var dataToSend = {};
+                tbl_row.find('.row_data').each(function (index, val) {
+                    var col_name = $(this).attr('col_name');
+                    var col_val;
+
+                    // Xử lý ô chứa checkbox
+                    if ($(this).find('input[type=checkbox]').length > 0) {
+                        col_val = $(this).find('input[type=checkbox]').is(':checked');
+                    } else {
+                        col_val = $(this).html();
+                    }
+
+                    dataToSend[col_name] = col_val;
+                });
+
+                // Thêm giá trị row_id vào dữ liệu
+                dataToSend['id'] = row_id;
+                console.log(JSON.stringify(dataToSend));
+                // Gọi Ajax để lưu dữ liệu
+                $.ajax({
+                    url: '@Model.EditUrl',
+                    type: 'POST',
+                    data: JSON.stringify(dataToSend),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+                        // Cập nhật dữ liệu cho hàng được chọn
+                        tbl_row.data(dataToSend);
+
+                        // Cập nhật UI cho hàng được chọn
+                        tbl_row.find('.btn_edit').show();
+                        tbl_row.find('.row_data').attr('contenteditable', 'false').removeClass('bg-warning').css('padding', '');
+                        $('.btn_save, .btn_cancel').hide();
+
+                        tbl_row.find('input[type=checkbox]').each(function () {
+                            var isChecked = $(this).is(':checked');
+                            var iconHtml = isChecked ? '<i class="fas fa-check true-icon" value="true"></i>' : '<i class="fas fa-times false-icon" value="false"></i>';
+                            $(this).closest('.row_data').html(iconHtml);
+                        });
+                    },
+                    error: function (response) {
+                        alert(response.message);
+                    }
+                });
+
+                // Các bước còn lại giữ nguyên
+                // tbl_row.find('.row_data').attr('contenteditable', 'false').removeClass('bg-warning').css('padding', '');
+                // tbl_row.find('.btn_edit').show();
+                // $('.btn_save, .btn_cancel').hide();
+            });
+
+
+            //--->button > cancel > start
+            $(document).on('click', '.btn_cancel', function (event) {
+                event.preventDefault();
+
+                var tbl_row = $(this).closest('tr');
+
+                var row_id = tbl_row.attr('row_id');
+
+                //hide save and cacel buttons
+                tbl_row.find('.btn_save').hide();
+                tbl_row.find('.btn_cancel').hide();
+
+                //show edit button
+                tbl_row.find('.btn_edit').show();
+
+                //make the whole row editable
+                tbl_row.find('.row_data')
+                    .attr('edit_type', 'click')
+                    .removeClass('bg-warning')
+                    .css('padding', '')
+
+                tbl_row.find('.row_data').each(function (index, val) {
+                    $(this).html($(this).attr('original_entry'));
+                });
+            });
+
+            
+            //
         });
 
 
@@ -190,7 +332,7 @@
                             addAntiForgeryToken(data);
         </text>
     }
-                            return data;
+                                return data;
                 },
                 beforeSend: function () {
                     clearSelectAllCheckbox();
@@ -257,10 +399,19 @@
                         autoWidth: @column.AutoWidth.ToString().ToLowerInvariant(),
                 </text>
             }
-            @if (!string.IsNullOrEmpty(column.ClassName))
+            @if (!string.IsNullOrEmpty(column.ClassName) || column.Editable)
             {
                 <text>
-                        className: '@column.ClassName',
+                        className: '@column.ClassName @(column.Editable ? "row_data" : "")',
+                </text>
+            }
+            @if (column.Editable)
+            {
+                <text>
+                        createdCell: function (td, cellData, rowData, row, col) {
+                            $(td).attr('col_name', '@column.Data');
+                            $(td).closest('tr').attr('row_id', rowData.id);
+                        },
                 </text>
             }
             @switch (column.RenderType)
@@ -281,6 +432,15 @@
                                 } else {
                                     return '<a class="@(column.ClassName ?? "btn btn-info")" href="@(column.EditUrl + "?id=")' + data + '"><i class="fas fa-pencil-alt"></i> Edit</a>';
                                 }
+                            },
+                    </text>
+                    break;
+                case RenderType.RenderInlineEdit:
+                    <text>
+                            render: function (data, type, row, meta) {
+                                return '<span class="btn_edit" > <a href="#" class="btn btn-link " row_id="' + data + '" > Edit</a> </span>'
+                                    + '<span class="btn_save"> <a href="#" class="btn btn-link"  row_id="' + data + '"> Save</a> | </span>'
+                                    + '<span class="btn_cancel"> <a href="#" class="btn btn-link" row_id="' + data + '"> Cancel</a> | </span>';
                             },
                     </text>
                     break;
@@ -317,15 +477,15 @@
                     break;
             }
                     data: '@column.Data'
-                                                                                                            }
+                                                                                                                    }
             @if (i != Model.Columns.Count - 1)
             {
                 <text>, </text>
             }
         </text>
     }
-                                                        ]
-                                            });
+                                                            ]
+                                                });
 
     $(tableId).on('click', '.deleteBtn', function () {
         var deleteUrl = $(this).data('url');
@@ -342,5 +502,5 @@
             });
         }
     });
-                                                }
+                                                    }
 </script>

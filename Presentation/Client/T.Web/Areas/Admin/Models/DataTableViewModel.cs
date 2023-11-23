@@ -23,6 +23,8 @@ namespace T.Web.Areas.Admin.Models
         public bool ServerSide { get; set; } = false;
         public bool Processing { get; set; } = true;
         public List<Filter> Filters { get; set; }
+        public string EditUrl { get; set; }
+        public string DeleteUrl { get; set; }
     }
     public class ColumnDefinition
     {
@@ -66,6 +68,7 @@ namespace T.Web.Areas.Admin.Models
         public string ClassName { get; set; }
         public RenderType RenderType { get; set; }
         public string CheckBoxName { get; set; }
+        public bool Editable { get; set; }
     }
 
     public enum RenderType
@@ -75,7 +78,8 @@ namespace T.Web.Areas.Admin.Models
         RenderCheckBox,
         RenderPicture,
         RenderButtonRemove,
-        RenderButtonEdit
+        RenderButtonEdit,
+        RenderInlineEdit
     }
 
     public class Filter

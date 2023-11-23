@@ -62,5 +62,15 @@ namespace T.Web.Services.CategoryService
         {
             return await _httpClientHelper.DeleteAsync<ServiceResponse<bool>>(DEFAULT_ROUTE + $"product-category/{productCategoryId}");
         }
+
+        public async Task<ServiceResponse<bool>> UpdateProductCategoryAsync(ProductCategory productCategory)
+        {
+            return await _httpClientHelper.PutAsJsonAsync<ServiceResponse<bool>>(DEFAULT_ROUTE + $"product-category", productCategory);
+        }
+
+        public async Task<ServiceResponse<ProductCategory>> GetProductCategoryByIdAsync(int productCategoryId)
+        {
+            return await _httpClientHelper.GetAsync<ServiceResponse<ProductCategory>>(DEFAULT_ROUTE + $"product-category/{productCategoryId}");
+        }
     }
 }

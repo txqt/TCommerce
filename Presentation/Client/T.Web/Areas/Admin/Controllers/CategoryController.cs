@@ -26,15 +26,13 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly IMapper _mapper;
         private readonly ICategoryModelService _prepareModelService;
         private readonly IProductService _productService;
-        private readonly IProductCategoryService _productCategoryService;
 
-        public CategoryController(ICategoryService categoryService, IMapper mapper, ICategoryModelService prepareModelService, IProductService productService, IProductCategoryService productCategoryService)
+        public CategoryController(ICategoryService categoryService, IMapper mapper, ICategoryModelService prepareModelService, IProductService productService)
         {
             _categoryService = categoryService;
             _mapper = mapper;
             _prepareModelService = prepareModelService;
             _productService = productService;
-            _productCategoryService = productCategoryService;
         }
 
         public IActionResult Index()
@@ -154,6 +152,8 @@ namespace T.Web.Areas.Admin.Controllers
                 item.ProductName = (await _productService.GetByIdAsync(item.ProductId)).Data?.Name;
             }
 
+            model = model.OrderBy(x => x.DisplayOrder).ToList();
+
             return Json(new
             {
                 data = model
@@ -264,6 +264,23 @@ namespace T.Web.Areas.Admin.Controllers
             }
 
             return View(new AddProductToCategorySearchModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProductCategory([FromBody] ProductCategory model)
+        {
+            var productCategory = (await _categoryService.GetProductCategoryByIdAsync(model.Id)).Data ??
+                throw new ArgumentException("Not found with the specified id");
+
+            productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
+            productCategory.DisplayOrder = model.DisplayOrder;
+
+            var result = await _categoryService.UpdateProductCategoryAsync(productCategory);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
         }
     }
 }

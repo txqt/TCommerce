@@ -75,14 +75,16 @@
             {
                 TableTitle = "Products",
                 CreateUrl = Url.Action("AddProductToCategory", "Category", new { categoryId = Model.Id }),
+                EditUrl = Url.Action("UpdateProductCategory", "Category"),
+                DeleteUrl = Url.Action("DeleteCategoryMapping", "Category"),
                 GetDataUrl = Url.Action("GetListCategoryMapping", "Category", new { categoryId = Model.Id }),
                 PopupWindow = true,
                 Columns = new List<ColumnDefinition>
                     {
                     new ColumnDefinition { Data = "productName", Title = "Product Name" },
-                    new ColumnDefinition { Data = "isFeaturedProduct", RenderType = RenderType.RenderBoolean, Title = "Is Featured Product" },
-                    new ColumnDefinition { Data = "displayOrder", Title = "Display Order" },
-                    // new ColumnDefinition { Data = "id", EditUrl = Url.Action("EditProductCategory", "Product"), RenderType = RenderType.RenderButtonEdit, Title = "Edit" },
+                    new ColumnDefinition { Data = "isFeaturedProduct", RenderType = RenderType.RenderBoolean, Title = "Is Featured Product", Editable = true },
+                    new ColumnDefinition { Data = "displayOrder",Editable = true, Title = "Display Order" },
+                    new ColumnDefinition { Data = "id", EditUrl = Url.Action("UpdateProductCategory", "Category"), RenderType = RenderType.RenderInlineEdit, Title = "Edit" },
                     new ColumnDefinition { Data = "id", DeleteUrl = Url.Action("DeleteCategoryMapping", "Category"), RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
                     }
             };
