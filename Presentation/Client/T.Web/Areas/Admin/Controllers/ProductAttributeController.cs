@@ -28,14 +28,15 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 TableTitle = "Danh sách thuộc tính sản phẩm",
                 CreateUrl = Url.Action("Create", "ProductAttribute"),
-                //Headers = new List<string> { "Name", "Description", "Edit", "Delete" },
+                EditUrl = Url.Action("Edit", "ProductAttribute"),
+                DeleteUrl = Url.Action("Delete", "ProductAttribute"),
                 GetDataUrl = Url.Action("GetAll", "ProductAttribute"),
                 Columns = new List<ColumnDefinition>
                 {
                     new ColumnDefinition { Data = "name", Title = "Name" },
                     new ColumnDefinition { Data = "description", Title = "Description" },
-                    new ColumnDefinition { EditUrl = Url.Action("Edit", "ProductAttribute"), Title = "Edit", RenderType = RenderType.RenderButtonEdit },
-                    new ColumnDefinition { DeleteUrl = Url.Action("Delete", "ProductAttribute"), Title = "Delete", RenderType = RenderType.RenderButtonRemove },
+                    new ColumnDefinition { Title = "Edit", RenderType = RenderType.RenderButtonEdit },
+                    new ColumnDefinition { Title = "Delete", RenderType = RenderType.RenderButtonRemove },
                 }
             };
             return View(model);

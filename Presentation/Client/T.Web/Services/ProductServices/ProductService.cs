@@ -25,17 +25,12 @@ namespace T.Web.Services.ProductService
     public class ProductService : IProductService
     {
         private readonly HttpClient _httpClient;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JsonSerializerOptions _options;
-        private readonly IProductAttributeCommon _productAttributeService;
-        //private readonly IProductAttributeMappingService _productAttributeMappingService;
         private readonly IMapper _mapper;
-        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IProductAttributeCommon productAttributeService, /*IProductAttributeMappingService productAttributeMappingService,*/ IMapper mapper)
+        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IMapper mapper)
         {
             _options = options;
             _httpClient = httpClient;
-            _httpContextAccessor = httpContextAccessor;
-            _productAttributeService = productAttributeService;
             _mapper = mapper;
         }
 
@@ -162,6 +157,17 @@ namespace T.Web.Services.ProductService
         {
             var result = await _httpClient.GetAsync($"api/product/{productId}/attributes");
             return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductAttribute>>>();
+        }
+
+        public async Task<ServiceResponse<bool>> EditProductImageAsync(ProductPicture productPicture)
+        {
+            var result = await _httpClient.PutAsJsonAsync($"api/product/update-picture", productPicture);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<List<Product>>> GetAllProductsDisplayedOnHomepageAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

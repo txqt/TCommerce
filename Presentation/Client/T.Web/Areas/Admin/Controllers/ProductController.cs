@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
 using T.Library.Model;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
@@ -487,6 +488,22 @@ namespace T.Web.Areas.Admin.Controllers
                 return BadRequest(result);
             }
             return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UpdateProductImage(ProductPictureModel model)
+        {
+            var productPicture = new ProductPicture()
+            {
+                DisplayOrder = model.DisplayOrder,
+            };
+
+            var result = await _productService.EditProductImageAsync(productPicture);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
         }
 
         [HttpGet]

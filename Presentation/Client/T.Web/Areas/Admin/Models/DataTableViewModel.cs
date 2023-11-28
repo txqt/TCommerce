@@ -57,8 +57,6 @@ namespace T.Web.Areas.Admin.Models
         }
         public string Data { get; set; }
         public string Title { get; set; } = "";
-        public string EditUrl { get; set; }
-        public string DeleteUrl { get; set; }
         public bool IsMasterCheckBox { get; set; }
         public int Width { get; set; }
         public bool Visible { get; set; }

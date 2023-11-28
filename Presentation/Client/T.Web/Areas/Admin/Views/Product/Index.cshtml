@@ -25,6 +25,8 @@
                 // Headers = new List<string>() {"Name", "Price", "StockQuantity", "Edit", "Delete" },
                 CreateButtonName = "Tạo sản phẩm mới",
                 CreateUrl = Url.Action("CreateProduct", "Product"),
+                EditUrl = Url.Action("EditProduct", "Product"),
+                DeleteUrl = Url.Action("Delete", "Product"),
                 SearchButtonId = "search-products",
                 Filters = new List<Filter>()
                 {
@@ -55,14 +57,12 @@
                     },
                     new ColumnDefinition("id")
                     {
-                        EditUrl = Url.Action("EditProduct", "Product"),
                         RenderType = RenderType.RenderButtonEdit,
                         Title = "Edit",
                         Orderable = false
                     },
                     new ColumnDefinition("id")
                     {
-                        DeleteUrl = Url.Action("Delete", "Product"),
                         RenderType = RenderType.RenderButtonRemove,
                         Title = "Delete",
                         Orderable = false

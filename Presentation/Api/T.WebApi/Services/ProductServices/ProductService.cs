@@ -357,6 +357,18 @@ namespace T.WebApi.Services.ProductServices
             return response;
         }
 
+        public async Task<ServiceResponse<bool>> EditProductImageAsync(ProductPicture productPicture)
+        {
+            await _productPictureMappingRepository.UpdateAsync(productPicture);
+            return new ServiceSuccessResponse<bool>();
+        }
+
+        public async Task<ServiceResponse<List<Product>>> GetAllProductsDisplayedOnHomepageAsync()
+        {
+            //var products = await _productsRepository.Table.Where(x=>x.Published && x.ShowOnHomepage && !x.Deleted).OrderBy(x=>x.DisplayOrder).ToListAsync();
+            return new ServiceSuccessResponse<List<Product>>(await _productsRepository.Table.Where(x => x.Published && x.ShowOnHomepage && !x.Deleted).OrderBy(x => x.DisplayOrder).ToListAsync());
+        }
+
         #endregion
     }
 }

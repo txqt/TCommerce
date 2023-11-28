@@ -223,7 +223,7 @@
                         tbl_row.find('.btn_edit').show();
                         tbl_row.find('.row_data').attr('contenteditable', 'false').removeClass('bg-warning').css('padding', '');
                         $('.btn_save, .btn_cancel').hide();
-
+                            
                         tbl_row.find('input[type=checkbox]').each(function () {
                             var isChecked = $(this).is(':checked');
                             var iconHtml = isChecked ? '<i class="fas fa-check true-icon" value="true"></i>' : '<i class="fas fa-times false-icon" value="false"></i>';
@@ -419,18 +419,17 @@
                 case RenderType.RenderButtonRemove:
                     <text>
                             render: function (data, type, row, meta) {
-                                return '<button class="@(column.ClassName ?? "btn btn-danger") deleteBtn" data-url="@(column.DeleteUrl + "?id=")' + row.id + '"><i class="far fa-trash-alt"></i> @column.Title</button>';
+                                return '<button class="@(column.ClassName ?? "btn btn-danger") deleteBtn" data-url="@(Model.DeleteUrl + "?id=")' + row.id + '"><i class="far fa-trash-alt"></i> @column.Title</button>';
                             },
                     </text>
                     break;
                 case RenderType.RenderButtonEdit:
                     <text>
                             render: function (data, type, row, meta) {
-                                // var editUrl = @column.EditUrl + '?id=' + row.id;
                                 if (@Model.PopupWindow.ToString().ToLower()) {
                                     return '<button class="@(column.ClassName ?? "btn btn-info")" onclick="openPopup(\'' + editUrl + '\')"><i class="fas fa-pencil-alt"></i> Edit</button>';
                                 } else {
-                                    return '<a class="@(column.ClassName ?? "btn btn-info")" href="@(column.EditUrl + "?id=")' + data + '"><i class="fas fa-pencil-alt"></i> Edit</a>';
+                                    return '<a class="@(column.ClassName ?? "btn btn-info")" href="@(Model.EditUrl + "?id=")' + data + '"><i class="fas fa-pencil-alt"></i> Edit</a>';
                                 }
                             },
                     </text>

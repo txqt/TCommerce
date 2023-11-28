@@ -43,7 +43,7 @@ namespace T.Web.Helpers
             var result = await _httpClient.DeleteAsync(url);
             return await result.Content.ReadFromJsonAsync<T>();
         }
-        public async Task<T> PostAsFormDataAsync<T>(string url, object data, IFormFile file = null, string fileParamName = "file")
+        public async Task<T> PostAsFormDataAsync<T>(string url, object data, IFormFile file = null)
         {
             var content = new MultipartFormDataContent();
 
@@ -62,13 +62,13 @@ namespace T.Web.Helpers
             {
                 var streamContent = new StreamContent(file.OpenReadStream());
                 streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-                content.Add(streamContent, fileParamName, file.FileName);
+                content.Add(streamContent, nameof(file), file.FileName);
             }
 
             var response = await _httpClient.PostAsync(url, content);
             return await response.Content.ReadFromJsonAsync<T>();
         }
-        public async Task<T> PutAsFormDataAsync<T>(string url, object data, IFormFile file = null, string fileParamName = "file")
+        public async Task<T> PutAsFormDataAsync<T>(string url, object data, IFormFile file = null)
         {
             var content = new MultipartFormDataContent();
 
@@ -87,7 +87,7 @@ namespace T.Web.Helpers
             {
                 var streamContent = new StreamContent(file.OpenReadStream());
                 streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-                content.Add(streamContent, fileParamName, file.FileName);
+                content.Add(streamContent, nameof(file), file.FileName);
             }
 
             var response = await _httpClient.PutAsync(url, content);

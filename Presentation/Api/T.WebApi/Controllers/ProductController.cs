@@ -70,7 +70,7 @@ namespace T.WebApi.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> EditProduct(ProductModel model)
         {
-            
+
             var result = await _productService.EditProductAsync(model);
 
             if (!result.Success)
@@ -91,6 +91,14 @@ namespace T.WebApi.Controllers
             }
             return Ok(result);
         }
+
+        [HttpGet("show-on-home-page")]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetAllProductsDisplayedOnHomepageAsync()
+        {
+            var result = await _productService.GetAllProductsDisplayedOnHomepageAsync();
+            return Ok(result);
+        }
         #endregion
 
         #region ProductPicture
@@ -105,6 +113,20 @@ namespace T.WebApi.Controllers
         public async Task<ActionResult> AddProductImage(List<IFormFile> formFiles, int productId)
         {
             var result = await _productService.AddProductImage(formFiles, productId);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPut("update-picture")]
+        public async Task<ActionResult> EditProductImage(ProductPicture productPicture)
+        {
+            var product = await _productService.GetByIdAsync(productPicture.ProductId)
+                ?? throw new ArgumentNullException("Not found product");
+
+            var result = await _productService.EditProductImageAsync(productPicture);
             if (!result.Success)
             {
                 return BadRequest(result);

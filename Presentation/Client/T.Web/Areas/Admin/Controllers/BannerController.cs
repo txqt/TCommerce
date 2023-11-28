@@ -28,7 +28,8 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 TableTitle = "Danh sách Banner",
                 CreateUrl = Url.Action("Create", "Banner"),
-                //Headers = new List<string> { "Title", "Subtitle", "Price", "Image", "Edit", "Delete"},
+                EditUrl = Url.Action("Edit", "Banner"),
+                DeleteUrl = Url.Action("Delete", "Banner"),
                 GetDataUrl = Url.Action("GetAll", "Banner"),
                 Columns = new List<ColumnDefinition>
                 {
@@ -36,8 +37,8 @@ namespace T.Web.Areas.Admin.Controllers
                     new ColumnDefinition { Data = "subtitle" },
                     new ColumnDefinition { Data = "price" },
                     new ColumnDefinition { Data = "picture.urlPath", RenderType = RenderType.RenderPicture },
-                    new ColumnDefinition("id") { EditUrl = Url.Action("Edit", "Banner"), RenderType = RenderType.RenderButtonEdit },
-                    new ColumnDefinition("id") { DeleteUrl = Url.Action("Delete", "Banner"), RenderType = RenderType.RenderButtonRemove },
+                    new ColumnDefinition("id") { RenderType = RenderType.RenderButtonEdit },
+                    new ColumnDefinition("id") { RenderType = RenderType.RenderButtonRemove },
                 }
             };
             return View(model);

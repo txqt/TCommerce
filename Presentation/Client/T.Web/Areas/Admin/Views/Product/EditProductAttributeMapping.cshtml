@@ -11,8 +11,9 @@
                 TableId = "dataTable-pav",
                 TableTitle = $"Danh sách thuộc tính {Model.ProductAttributeName}",
                 CreateUrl = Url.Action("ProductAttributeValueCreate", "Product", new { productAttributeMappingId = Model.Id }),
+                EditUrl = Url.Action("EditProductAttributeValue", "Product"),
+                DeleteUrl = Url.Action("DeleteProductAttributeValue", "Product"),
                 CreateButtonName = "Tạo mới",
-                // Headers = new List<string> { "Name", "PriceAdjustment", "WeightAdjustment", "IsPreSelected", "PictureThumbnailUrl", "Edit", "Delete" },
                 GetDataUrl = Url.Action("GetValueProductMapping", "Product", new { id = Model.Id }),
                 PopupWindow = true,
                 Columns = new List<ColumnDefinition>
@@ -22,8 +23,8 @@
                     new ColumnDefinition { Data = "weightAdjustment" },
                     new ColumnDefinition { Data = "isPreSelected", RenderType = RenderType.RenderBoolean },
                     new ColumnDefinition { Data = "pictureThumbnailUrl" },
-                    new ColumnDefinition { EditUrl = Url.Action("EditProductAttributeValue", "Product"), RenderType = RenderType.RenderButtonEdit },
-                    new ColumnDefinition { DeleteUrl = Url.Action("DeleteProductAttributeValue", "Product"), RenderType = RenderType.RenderButtonRemove },
+                    new ColumnDefinition { RenderType = RenderType.RenderButtonEdit },
+                    new ColumnDefinition { RenderType = RenderType.RenderButtonRemove },
                     }
             };
 }

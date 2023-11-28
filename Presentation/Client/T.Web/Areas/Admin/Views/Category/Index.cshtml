@@ -10,6 +10,8 @@
                 TableTitle = "Danh sách thể loại",
                 CreateButtonName = "Tạo mới",
                 CreateUrl = Url.Action("Create", "Category"),
+                EditUrl = Url.Action("Edit", "Category"),
+                DeleteUrl = Url.Action("DeleteCategory", "Category"),
                 SearchButtonId = "search-categories",
                 GetDataUrl = Url.Action("GetAll", "Category"),
                 Columns = new List<ColumnDefinition>()
@@ -36,14 +38,12 @@
                     },
                     new ColumnDefinition("id")
                     {
-                        EditUrl = Url.Action("Edit", "Category"),
                         RenderType = RenderType.RenderButtonEdit,
                         Title = "Edit",
                         Orderable = false
                     },
                     new ColumnDefinition("id")
                     {
-                        DeleteUrl = Url.Action("DeleteCategory", "Category"),
                         RenderType = RenderType.RenderButtonRemove,
                         Title = "Delete",
                         Orderable = false
