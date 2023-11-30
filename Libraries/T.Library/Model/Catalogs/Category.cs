@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using T.Library.Model.Common;
 
-namespace T.Library.Model.Common
+namespace T.Library.Model.Catalogs
 {
     /// <summary>
     /// Represents a category

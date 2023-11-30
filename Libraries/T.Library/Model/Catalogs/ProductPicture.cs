@@ -1,4 +1,5 @@
-﻿using T.Library.Model.Common;
+﻿using T.Library.Model.Catalogs;
+using T.Library.Model.Common;
 
 namespace T.Library.Model
 {

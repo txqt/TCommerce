@@ -104,6 +104,7 @@ namespace T.WebApi.Services.DataSeederService
                         },
                     },
                     Categories = CategoriesDataSeed.Instance.GetAll().Where(x=>x.Name == CategoriesDataSeed.Fashion).ToList(),
+                    Manufacturers = ManufacturerDataSeed.Instance.GetAll().Where(x=>x.Name == ManufacturerDataSeed.GUCCI).ToList(),
                     ProductAttributes = ProductAttributesDataSeed.Instance.GetAll().Where(x=>x.Name == ProductAttributesDataSeed.Color).ToList(),
                     ProductAttributeValues = new List<ProductAttributeValue>()
                     {
@@ -171,6 +172,7 @@ namespace T.WebApi.Services.DataSeederService
                         }
                     },
                     Categories = CategoriesDataSeed.Instance.GetAll().Where(x=>x.Name == CategoriesDataSeed.Electronic).ToList(),
+                    Manufacturers = ManufacturerDataSeed.Instance.GetAll().Where(x=>x.Name == ManufacturerDataSeed.DIEN_MAY_XANH).ToList(),
                     ProductAttributes = ProductAttributesDataSeed.Instance.GetAll().Where(x=>x.Name == ProductAttributesDataSeed.Color).ToList(),
                     ProductAttributeValues = new List<ProductAttributeValue>()
                     {
@@ -238,6 +240,7 @@ namespace T.WebApi.Services.DataSeederService
                         }
                     },
                     Categories = CategoriesDataSeed.Instance.GetAll().Where(x=>x.Name == CategoriesDataSeed.Accessory).ToList(),
+                    Manufacturers = ManufacturerDataSeed.Instance.GetAll().Where(x=>x.Name == ManufacturerDataSeed.DIEN_MAY_XANH).ToList(),
                     ProductAttributes = ProductAttributesDataSeed.Instance.GetAll().Where(x=>x.Name == ProductAttributesDataSeed.Color).ToList(),
                     ProductAttributeValues = new List<ProductAttributeValue>()
                     {

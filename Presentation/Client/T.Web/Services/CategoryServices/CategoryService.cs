@@ -1,10 +1,10 @@
 ﻿using T.Library.Model.Response;
 using System.Net.Http.Json;
-using T.Library.Model.Common;
 using System.Net.Http.Headers;
 using T.Library.Model.Interface;
 using T.Library.Model;
 using T.Web.Helpers;
+using T.Library.Model.Catalogs;
 
 namespace T.Web.Services.CategoryService
 {
@@ -71,6 +71,11 @@ namespace T.Web.Services.CategoryService
         public async Task<ServiceResponse<ProductCategory>> GetProductCategoryByIdAsync(int productCategoryId)
         {
             return await _httpClientHelper.GetAsync<ServiceResponse<ProductCategory>>(DEFAULT_ROUTE + $"product-category/{productCategoryId}");
+        }
+
+        public Task<ServiceResponse<bool>> CreateProductCategoryAsync(ProductCategory productCategory)
+        {
+            throw new NotImplementedException();
         }
     }
 }

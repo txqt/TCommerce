@@ -29,18 +29,16 @@ namespace T.Web.Services.PrepareModel
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
-        private readonly IProductCategoryService productCategoryService;
         private string apiUrl = null;
         private readonly IConfiguration _configuration;
-        public ProductModelService(IProductAttributeCommon productAttributeService,/* IProductAttributeMappingService productAttributeMappingService,*/
-            IMapper mapper, IProductService productService, ICategoryService categoryService, IProductCategoryService productCategoryService, IConfiguration configuration)
+        public ProductModelService(IProductAttributeCommon productAttributeService,
+            IMapper mapper, IProductService productService, ICategoryService categoryService, IConfiguration configuration)
         {
             _productAttributeService = productAttributeService;
             //_productAttributeService = productAttributeMappingService;
             _mapper = mapper;
             _productService = productService;
             _categoryService = categoryService;
-            this.productCategoryService = productCategoryService;
             _configuration = configuration;
             apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
         }

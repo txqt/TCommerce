@@ -27,6 +27,7 @@ using T.WebApi.Services.DbManageService;
 using T.WebApi.Database;
 using T.WebApi.Services.BannerServices;
 using T.WebApi.Services.PictureServices;
+using T.WebApi.Services;
 
 namespace T.WebApi.Extensions
 {
@@ -130,6 +131,7 @@ namespace T.WebApi.Extensions
             services.AddScoped<IEmailSender, SendMailService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductAttributeService, ProductAttributeService>();
+            services.AddScoped<IManufacturerServicesCommon, ManufacturerServices>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IPictureService, PictureService>();

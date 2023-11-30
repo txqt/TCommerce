@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using T.Library.Model.Common;
+using T.Library.Model.Catalogs;
 
 namespace T.WebApi.Database.ConfigurationDatabase
 {

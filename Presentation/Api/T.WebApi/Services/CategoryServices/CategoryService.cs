@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using T.WebApi.Database.ConfigurationDatabase;
 using AutoMapper;
 using T.WebApi.Extensions;
-using T.Library.Model.Common;
 using T.Library.Model;
 using T.Library.Model.Interface;
 using Microsoft.AspNetCore.Mvc;
 using T.WebApi.Services.IRepositoryServices;
+using T.Library.Model.Catalogs;
 
 namespace T.WebApi.Services.CategoryServices
 {
@@ -101,6 +101,19 @@ namespace T.WebApi.Services.CategoryServices
             var productCategories = await _productCategoryRepository.Table.Where(x => x.CategoryId == categoryId).ToListAsync();
 
             return productCategories;
+        }
+
+        public async Task<ServiceResponse<bool>> CreateProductCategoryAsync(ProductCategory productCategory)
+        {
+            try
+            {
+                await _productCategoryRepository.CreateAsync(productCategory);
+                return new ServiceSuccessResponse<bool>();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceErrorResponse<bool>() { Message = ex.Message };
+            }
         }
 
         public async Task<ServiceResponse<bool>> BulkCreateProductCategoriesAsync(List<ProductCategory> productCategories)

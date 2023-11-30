@@ -1,5 +1,5 @@
 ﻿using T.Library.Model;
-using T.Library.Model.Common;
+using T.Library.Model.Catalogs;
 
 namespace T.WebApi.Services.DataSeederService
 {
@@ -9,5 +9,6 @@ namespace T.WebApi.Services.DataSeederService
         public List<Category> Categories { get; set; }
         public List<ProductAttribute> ProductAttributes { get; set; }
         public List<ProductAttributeValue> ProductAttributeValues { get; set; }
+        public List<Manufacturer> Manufacturers { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using T.Library.Model.Common;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Web.Areas.Admin.Models;
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
 
 namespace T.Library.Model
@@ -23,17 +24,17 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the name
         /// </summary>
-        [Required]public string? Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the short description
         /// </summary>
-        [Required] public string? ShortDescription { get; set; }
+        public string? ShortDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the full description
         /// </summary>
-        [Required] public string? FullDescription { get; set; }
+        public string? FullDescription { get; set; }
 
         /// <summary>
         /// Gets or sets the admin comment
@@ -259,5 +260,7 @@ namespace T.Library.Model
         public List<ProductPicture>? ProductPictures { get; set; }
 
         public List<ProductReview>? ProductReviews { get; set; }
+
+        public List<ProductManufacturer>? ProductManufacturers { get; set; }
     }
 }

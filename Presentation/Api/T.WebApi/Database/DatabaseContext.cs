@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using T.Library.Model;
 using T.Library.Model.Banners;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
 using T.Library.Model.Security;
 using T.Library.Model.Users;

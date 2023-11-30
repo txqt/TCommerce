@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using T.Library.Model.Common;
+using T.Library.Model.Catalogs;
 
 namespace T.Web.Services.HomePageServices
 {

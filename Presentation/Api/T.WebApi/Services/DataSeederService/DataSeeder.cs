@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Reflection;
 using T.Library.Model;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
@@ -21,10 +22,9 @@ namespace T.WebApi.Services.DataSeederService
         private readonly UserManager<User> _userManager;
         private readonly IProductService _productService;
         private readonly ICategoryService _categorySerivce;
-        private readonly IProductCategoryService _productCategorySerivce;
         private readonly IProductAttributeService _productAttributeService;
         private readonly ISecurityService _securityService;
-        //private readonly IPermissionRecordUserRoleMappingService _permissionRecordUserRoleMappingService;
+        private readonly IManufacturerServicesCommon _manufacturerServicesCommon;
 
         public DataSeeder(RoleManager<Role> roleManager,
             UserManager<User> userManager,
@@ -32,16 +32,16 @@ namespace T.WebApi.Services.DataSeederService
             ICategoryService categorySerivce,
             IProductCategoryService productCategorySerivce,
             IProductAttributeService productAttributeService,
-            ISecurityService permissionRecordService
-            /*IPermissionRecordUserRoleMappingService permissionRecordUserRoleMappingService*/)
+            ISecurityService permissionRecordService,
+            IManufacturerServicesCommon manufacturerServicesCommon)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _productService = productSerivce;
             _categorySerivce = categorySerivce;
-            _productCategorySerivce = productCategorySerivce;
             _productAttributeService = productAttributeService;
             _securityService = permissionRecordService;
+            this._manufacturerServicesCommon = manufacturerServicesCommon;
             //_permissionRecordUserRoleMappingService = permissionRecordUserRoleMappingService;
         }
 
@@ -53,6 +53,7 @@ namespace T.WebApi.Services.DataSeederService
                 if (sampleData)
                 {
                     await SeedCategoriesAsync();
+                    await SeedManufacturerAsync();
                     await SeedProductAttributeAsync();
                     await SeedProductsAsync();
                     await SeedUserAsync();
@@ -97,6 +98,15 @@ namespace T.WebApi.Services.DataSeederService
             }
 
         }
+
+        private async Task SeedManufacturerAsync()
+        {
+            foreach (var item in ManufacturerDataSeed.Instance.GetAll())
+            {
+                await _manufacturerServicesCommon.CreateManufacturerAsync(item);
+            }
+
+        }
         private async Task SeedProductsAsync()
         {
 
@@ -121,7 +131,7 @@ namespace T.WebApi.Services.DataSeederService
                             CategoryId = categoryId,
                             ProductId = productId
                         };
-                        await _productCategorySerivce.CreateProductCategoryAsync(productCategoryMapping);
+                        await _categorySerivce.CreateProductCategoryAsync(productCategoryMapping);
                     }
 
                     foreach (var pa in item.ProductAttributes)
@@ -146,6 +156,22 @@ namespace T.WebApi.Services.DataSeederService
                             };
                             await _productAttributeService.CreateProductAttributeValueAsync(productAttributeValue);
                         }
+                    }
+
+                    foreach(var pm in item.Manufacturers)
+                    {
+                        var manfacturerId = (await _manufacturerServicesCommon.GetManufacturerByNameAsync(pm.Name)).Data.Id;
+
+                        var productManufacturer = new ProductManufacturer()
+                        {
+                            ProductId = productId,
+                            ManufacturerId = manfacturerId
+                        };
+                        await _manufacturerServicesCommon.CreateProductManufacturerAsync(productManufacturer);
+
+                        var productManfacturer = (await _manufacturerServicesCommon.GetProductManufacturersByManufacturerIdAsync(manfacturerId))
+                                                    .Where(x=>x.ProductId == productId).FirstOrDefault() ??
+                                                    throw new ArgumentNullException("Cannot find product manufacturer mapping after create");
                     }
                 }
             }

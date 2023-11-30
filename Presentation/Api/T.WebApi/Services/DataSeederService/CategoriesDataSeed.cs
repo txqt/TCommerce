@@ -1,4 +1,4 @@
-﻿using T.Library.Model.Common;
+﻿using T.Library.Model.Catalogs;
 using T.WebApi.Extensions;
 
 namespace T.WebApi.Services.DataSeederService
@@ -47,12 +47,5 @@ namespace T.WebApi.Services.DataSeederService
                 },
             };
         }
-        //private static CategoriesSeed _instance;
-        //public static CategoriesSeed Instance()
-        //{
-        //    if (_instance == null)
-        //        _instance = new();
-        //    return _instance;
-        //}
     }
 }
