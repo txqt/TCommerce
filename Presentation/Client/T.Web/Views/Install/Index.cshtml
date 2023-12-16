@@ -74,11 +74,21 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
+        // Kiểm tra giá trị ban đầu của useWindowsAuth và ẩn hoặc hiển thị #sqlUserPass
+        if ($('#useWindowsAuth').is(':checked')) {
+            $('#sqlUserPass').fadeOut(0); // 0 milliseconds để ngay lập tức ẩn nếu đã được chọn
+        } else {
+            $('#sqlUserPass').fadeIn(0); // 0 milliseconds để ngay lập tức hiển thị nếu chưa được chọn
+        }
+
+        // Thêm sự kiện change để ẩn hoặc hiển thị #sqlUserPass khi checkbox thay đổi
         $('#useWindowsAuth').change(function () {
-            if (this.checked)
+            if (this.checked) {
                 $('#sqlUserPass').fadeOut('fast');
-            else
+            } else {
                 $('#sqlUserPass').fadeIn('fast');
+            }
         });
     });
+
 </script>
