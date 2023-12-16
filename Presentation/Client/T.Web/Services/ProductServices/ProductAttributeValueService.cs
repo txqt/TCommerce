@@ -7,7 +7,7 @@
 //{
 //    public interface IProductAttributeValueService
 //    {
-//        Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id);
+//        Task<ProductAttributeValue> GetProductAttributeValuesByIdAsync(int id);
 //        Task<ServiceResponse<bool>> AddOrUpdateProductAttributeValue(ProductAttributeValue productAttributeValue);
 //        Task<ServiceResponse<bool>> DeleteProductAttrbuteValue(int id);
 //    }
@@ -37,10 +37,10 @@
 //            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
 //        }
 
-//        public async Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id)
+//        public async Task<ProductAttributeValue> GetProductAttributeValuesByIdAsync(int id)
 //        {
 //            var result = await _httpClient.GetAsync($"api/product-attribute-value/{id}");
-//            return await result.Content.ReadFromJsonAsync<ServiceResponse<ProductAttributeValue>>();
+//            return await result.Content.ReadFromJsonAsync<ProductAttributeValue>();
 //        }
 //    }
 //}

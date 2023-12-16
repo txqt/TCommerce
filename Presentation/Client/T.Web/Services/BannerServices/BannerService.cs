@@ -21,19 +21,19 @@ namespace T.Web.Services.BannerServices
             return await _httpClientHelper.GetAsync<List<Banner>>($"{defaulApiRoute + APIRoutes.GETALL}");
         }
 
-        public async Task<ServiceResponse<Banner>> GetBannerByIdAsync(int id)
+        public async Task<Banner> GetBannerByIdAsync(int id)
         {
-            return await _httpClientHelper.GetAsync<ServiceResponse<Banner>>($"{defaulApiRoute + id}");
+            return await _httpClientHelper.GetAsync<Banner>($"{defaulApiRoute + id}");
         }
 
         public async Task<ServiceResponse<bool>> CreateBannerAsync(BannerViewModel banner)
         {
-            return await _httpClientHelper.PostAsFormDataAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
+            return await _httpClientHelper.PostWithFormFileAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
         }
 
         public async Task<ServiceResponse<bool>> UpdateBannerAsync(BannerViewModel banner)
         {
-            return await _httpClientHelper.PutAsFormDataAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
+            return await _httpClientHelper.PutWithFormFileAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
         }
 
         public async Task<ServiceResponse<bool>> DeleteBannerByIdAsync(int id)

@@ -4,33 +4,31 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using T.Library.Model;
 using T.Library.Model.Account;
+using T.Library.Model.Interface;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
 
-namespace T.Web.Services.AccountService
+namespace T.Web.Services.UserRegistrationServices
 {
-    public interface IAccountService
+    public interface IUserRegistrationService : IUserRegistrationServiceCommon
     {
-        Task<ServiceResponse<AuthResponseDto>> Login(LoginViewModel loginRequest);
+        Task<ServiceResponse<AuthResponseDto>> Login(AccessTokenRequestModel loginRequest);
         Task Logout();
-        Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest);
-        Task<ServiceResponse<string>> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel);
-        Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest resetPasswordRequest);
     }
-    public class AccountService : IAccountService
+    public class UserRegistrationService : IUserRegistrationService
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _options;
 
-        public AccountService(HttpClient httpClient, JsonSerializerOptions options)
+        public UserRegistrationService(HttpClient httpClient, JsonSerializerOptions options)
         {
             _httpClient = httpClient;
             _options = options;
         }
 
-        public async Task<ServiceResponse<AuthResponseDto>> Login(LoginViewModel loginRequest)
+        public async Task<ServiceResponse<AuthResponseDto>> Login(AccessTokenRequestModel loginRequest)
         {
-            var result = await _httpClient.PostAsJsonAsync("api/account/login", loginRequest);
+            var result = await _httpClient.PostAsJsonAsync("api/token/create", loginRequest);
             var content = await result.Content.ReadAsStringAsync();
             var loginResponse = JsonSerializer.Deserialize<ServiceResponse<AuthResponseDto>>(content, _options);
             if (!result.IsSuccessStatusCode)
@@ -47,15 +45,9 @@ namespace T.Web.Services.AccountService
             await _httpClient.PostAsync("api/account/logout", null);
         }
 
-        public async Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest)
+        public async Task<ServiceResponse<string>> SendResetPasswordEmail(string email)
         {
-            var result = await _httpClient.PostAsJsonAsync("api/account/register", registerRequest);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
-        }
-
-        public async Task<ServiceResponse<string>> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
-        {
-            var result = await _httpClient.PostAsync($"/api/account/forgot-password?email={forgotPasswordViewModel.Email}", null);
+            var result = await _httpClient.PostAsync($"/api/account/forgot-password?email={email}", null);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<string>>();
         }
 
@@ -63,6 +55,16 @@ namespace T.Web.Services.AccountService
         {
             var result = await _httpClient.PostAsJsonAsync("/api/account/reset-password", resetPasswordRequest);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+        }
+
+        public Task<ServiceResponse<string>> ConfirmEmail(string userId, string token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceResponse<string>> ChangePassword(ChangePasswordRequest model)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -38,15 +38,9 @@ namespace T.WebApi.Services.BannerServices
             }
             return result;
         }
-        public async Task<ServiceResponse<Banner>> GetBannerByIdAsync(int id)
+        public async Task<Banner> GetBannerByIdAsync(int id)
         {
-            var banner = await _bannerRepository.GetByIdAsync(id);
-
-            return new ServiceResponse<Banner>()
-            {
-                Data = banner,
-                Success = true,
-            };
+            return await _bannerRepository.GetByIdAsync(id);
         }
 
         public async Task<ServiceResponse<bool>> CreateBannerAsync(BannerViewModel model)

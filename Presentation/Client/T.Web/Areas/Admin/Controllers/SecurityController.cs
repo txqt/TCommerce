@@ -42,7 +42,7 @@ namespace T.Web.Areas.Admin.Controllers
                     if (!model.Allowed.ContainsKey(permissionRecord.SystemName))
                         model.Allowed[permissionRecord.SystemName] = new Dictionary<Guid, bool>();
                     model.Allowed[permissionRecord.SystemName][role.Id] =
-                        (await _securityService.GetPermissionMappingAsync(role.Id.ToString(), permissionRecord.Id)).Data != null;
+                        (await _securityService.GetPermissionMappingAsync(role.Id.ToString(), permissionRecord.Id)) != null;
                 }
             }
             return View(model);
@@ -73,7 +73,7 @@ namespace T.Web.Areas.Admin.Controllers
                         {
                             hasPermission = false;
                         }
-                        var mapping = (await _securityService.GetPermissionMappingAsync(role.Id.ToString(), permissionRecord.Id)).Data;
+                        var mapping = (await _securityService.GetPermissionMappingAsync(role.Id.ToString(), permissionRecord.Id));
 
 
                         // Nếu vai trò có quyền, thêm quyền vào vai trò

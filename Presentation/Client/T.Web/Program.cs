@@ -6,7 +6,6 @@ using T.Library.Model.JwtToken;
 using T.Web.Common;
 using T.Web.Helpers;
 using T.Web.Services;
-using T.Web.Services.AccountService;
 using T.Web.Services.BannerServices;
 using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
@@ -15,6 +14,7 @@ using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
 using T.Web.Services.ProductService;
 using T.Web.Services.SecurityServices;
+using T.Web.Services.UserRegistrationServices;
 using T.Web.Services.UserService;
 
 internal class Program
@@ -35,7 +35,7 @@ internal class Program
 
         builder.Services.AddTransient<IDatabaseControl, DatabaseControl>();
         builder.Services.AddAutoMapper(typeof(Program).Assembly);
-        builder.Services.AddTransient<IAccountService, AccountService>();
+        builder.Services.AddTransient<IUserRegistrationService, UserRegistrationService>();
         builder.Services.AddTransient<IProductService, ProductService>();
         builder.Services.AddTransient<IProductAttributeCommon, ProductAttributeService>();
         builder.Services.AddTransient<ISecurityService, SecurityService>();
@@ -45,7 +45,6 @@ internal class Program
         builder.Services.AddTransient<IUserModelService, UserModelService>();
         builder.Services.AddTransient<ICategoryService, CategoryService>();
         builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
-        builder.Services.AddTransient<IPermissionRecordService, PermissionRecordService>();
         builder.Services.AddTransient<IUserService, UserService>();
         builder.Services.AddTransient<IHomePageService, HomePageService>();
         builder.Services.AddTransient<IBannerService, BannerService>();

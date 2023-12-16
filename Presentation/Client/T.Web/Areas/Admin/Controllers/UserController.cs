@@ -75,7 +75,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var user = (await _userService.Get(id)).Data ??
+            var user = (await _userService.Get(id)) ??
                 throw new ArgumentException("No user found with the specified id");
 
             var model = await _prepareModelService.PrepareUserModelAsync(new UserViewModel(), user);
@@ -92,7 +92,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var user = (await _userService.Get(model.Id)).Data ??
+            var user = (await _userService.Get(model.Id)) ??
                 throw new ArgumentException("No user found with the specified id");
 
             user = _mapper.Map(model, user);

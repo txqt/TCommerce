@@ -21,12 +21,12 @@ namespace T.Web.Services.ManufacturerServices
             return await _httpClientHelper.GetAsync<List<Manufacturer>>(DEFAULT_URL);
         }
 
-        public Task<ServiceResponse<Manufacturer>> GetManufacturerByIdAsync(int manufacturerId)
+        public Task<Manufacturer> GetManufacturerByIdAsync(int manufacturerId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ServiceResponse<Manufacturer>> GetManufacturerByNameAsync(string manufacturerName)
+        public Task<Manufacturer> GetManufacturerByNameAsync(string manufacturerName)
         {
             throw new NotImplementedException();
         }
@@ -51,7 +51,7 @@ namespace T.Web.Services.ManufacturerServices
             throw new NotImplementedException();
         }
 
-        public Task<ServiceResponse<ProductManufacturer>> GetProductManufacturerByIdAsync(int productManufacturerId)
+        public Task<ProductManufacturer> GetProductManufacturerByIdAsync(int productManufacturerId)
         {
             throw new NotImplementedException();
         }

@@ -51,7 +51,7 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 if (item.ParentCategoryId > 0)
                 {
-                    item.ParentCategoryName = (await _categoryService.GetCategoryByIdAsync(item.ParentCategoryId)).Data.Name;
+                    item.ParentCategoryName = (await _categoryService.GetCategoryByIdAsync(item.ParentCategoryId)).Name;
                 }
             }
 
@@ -89,7 +89,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var category = (await _categoryService.GetCategoryByIdAsync(id)).Data ??
+            var category = await _categoryService.GetCategoryByIdAsync(id) ??
                 throw new ArgumentException("No category found with the specified id");
 
             var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModel(), category);
@@ -105,7 +105,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var category = (await _categoryService.GetCategoryByIdAsync(model.Id)).Data ??
+            var category = await _categoryService.GetCategoryByIdAsync(model.Id) ??
                 throw new ArgumentException("No category found with the specified id");
 
             _mapper.Map(model, category);
@@ -140,7 +140,7 @@ namespace T.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> GetListCategoryMapping(int categoryId)
         {
-            var category = (await _categoryService.GetCategoryByIdAsync(categoryId)).Data ??
+            var category = await _categoryService.GetCategoryByIdAsync(categoryId) ??
               throw new ArgumentException("Not found with the specified id");
 
             var productCategoryList = (await _categoryService.GetProductCategoriesByCategoryIdAsync(categoryId));
@@ -149,10 +149,10 @@ namespace T.Web.Areas.Admin.Controllers
 
             foreach (var item in model)
             {
-                item.ProductName = (await _productService.GetByIdAsync(item.ProductId)).Data?.Name;
+                item.ProductName = (await _productService.GetByIdAsync(item.ProductId))?.Name;
             }
 
-            model = model.OrderBy(x => x.DisplayOrder).ToList();
+            //model = model.OrderBy(x => x.DisplayOrder).ToList();
 
             return Json(new
             {
@@ -174,7 +174,7 @@ namespace T.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> AddProductToCategory(int categoryId)
         {
-            var category = (await _categoryService.GetCategoryByIdAsync(categoryId)).Data ??
+            var category = await _categoryService.GetCategoryByIdAsync(categoryId) ??
                 throw new ArgumentException("Not found with the specified id");
 
             var model = new AddProductToCategorySearchModel();
@@ -269,7 +269,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateProductCategory([FromBody] ProductCategory model)
         {
-            var productCategory = (await _categoryService.GetProductCategoryByIdAsync(model.Id)).Data ??
+            var productCategory = await _categoryService.GetProductCategoryByIdAsync(model.Id) ??
                 throw new ArgumentException("Not found with the specified id");
 
             productCategory.IsFeaturedProduct = model.IsFeaturedProduct;

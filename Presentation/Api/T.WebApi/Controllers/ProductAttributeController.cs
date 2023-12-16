@@ -13,7 +13,7 @@ using T.WebApi.Services.ProductServices;
 
 namespace T.WebApi.Controllers
 {
-    [Route("api/product-attribute")]
+    [Route("api/product-attributes")]
     [ApiController]
     [CheckPermission(PermissionSystemName.ManageAttributes)]
     public class ProductAttributeController : ControllerBase
@@ -24,7 +24,7 @@ namespace T.WebApi.Controllers
             _productAttributeSvc = productAttributeSvc;
         }
 
-        [HttpGet(APIRoutes.GETALL)]
+        [HttpGet()]
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await _productAttributeSvc.GetAllProductAttributeAsync());
@@ -40,12 +40,12 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<ProductAttribute>>> Get(int id)
+        public async Task<ActionResult<ProductAttribute>> Get(int id)
         {
             return await _productAttributeSvc.GetProductAttributeByIdAsync(id);
         }
 
-        [HttpPost(APIRoutes.CREATE)]
+        [HttpPost()]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateAsync(ProductAttribute productAttribute)
         {
@@ -56,7 +56,7 @@ namespace T.WebApi.Controllers
             }
             return Ok(result);
         }
-        [HttpPost("edit")]
+        [HttpPut("")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> EditAsync(ProductAttribute productAttribute)
         {
@@ -68,10 +68,10 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("delete/{Id}")]
-        public async Task<ActionResult> DeleteProduct(int Id)
+        [HttpDelete("id")]
+        public async Task<ActionResult> DeleteProduct(int id)
         {
-            var result = await _productAttributeSvc.DeleteProductAttributeByIdAsync(Id);
+            var result = await _productAttributeSvc.DeleteProductAttributeByIdAsync(id);
             if (!result.Success)
             {
                 return BadRequest(result);

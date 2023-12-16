@@ -24,7 +24,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("{manufacturerId}")]
-        public async Task<ActionResult<ServiceResponse<Manufacturer>>> Get(int manufacturerId)
+        public async Task<ActionResult<Manufacturer>> Get(int manufacturerId)
         {
             return await _manufacturerService.GetManufacturerByIdAsync(manufacturerId);
         }
@@ -102,12 +102,9 @@ namespace T.WebApi.Controllers
 
         [HttpGet("product-manufacturer/{manufacturerId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> GetProductManufacturerByIdAsync(int productManufacturerId)
+        public async Task<ActionResult<ProductManufacturer>> GetProductManufacturerByIdAsync(int productManufacturerId)
         {
             var result = await _manufacturerService.GetProductManufacturerByIdAsync(productManufacturerId);
-            if (!result.Success)
-                return BadRequest(result);
-
             return Ok(result);
         }
     }

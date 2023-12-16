@@ -8,8 +8,8 @@
 //    public interface IPermissionRecordUserRoleMappingService
 //    {
 //        Task<List<PermissionRecordUserRoleMapping>> GetAllPermissionRecordUserRoleMappingAsync();
-//        Task<ServiceResponse<PermissionRecordUserRoleMapping>> GetPermissionRecordUserRoleMappingByIdAsync(int id);
-//        Task<ServiceResponse<PermissionRecordUserRoleMapping>> GetByPermissionRecordIdAsync(int permissionRecordId);
+//        Task<PermissionRecordUserRoleMapping> GetPermissionRecordUserRoleMappingByIdAsync(int id);
+//        Task<PermissionRecordUserRoleMapping> GetByPermissionRecordIdAsync(int permissionRecordId);
 //        Task<ServiceResponse<bool>> CreateOrEditAsync(PermissionRecordUserRoleMapping permissionRecordUserRoleMapping);
 //        Task<ServiceResponse<bool>> DeletePermissionRecordUserRoleMappingByIdAsync(int id);
 //    }
@@ -61,11 +61,11 @@
 //            return await _context.PermissionRecordUserRoleMappings.ToListAsync();
 //        }
 
-//        public async Task<ServiceResponse<PermissionRecordUserRoleMapping>> GetByPermissionRecordIdAsync(int permissionRecordId)
+//        public async Task<PermissionRecordUserRoleMapping> GetByPermissionRecordIdAsync(int permissionRecordId)
 //        {
 //            var prurm = await _context.PermissionRecordUserRoleMappings.FirstOrDefaultAsync(x => x.PermissionRecordId == permissionRecordId);
 
-//            var response = new ServiceResponse<PermissionRecordUserRoleMapping>
+//            var response = new PermissionRecordUserRoleMapping
 //            {
 //                Data = prurm,
 //                Success = true
@@ -73,11 +73,11 @@
 //            return response;
 //        }
 
-//        public async Task<ServiceResponse<PermissionRecordUserRoleMapping>> GetPermissionRecordUserRoleMappingByIdAsync(int id)
+//        public async Task<PermissionRecordUserRoleMapping> GetPermissionRecordUserRoleMappingByIdAsync(int id)
 //        {
 //            var prurm = await _context.PermissionRecordUserRoleMappings.FirstOrDefaultAsync(x => x.Id == id);
 
-//            var response = new ServiceResponse<PermissionRecordUserRoleMapping>
+//            var response = new PermissionRecordUserRoleMapping
 //            {
 //                Data = prurm,
 //                Success = true

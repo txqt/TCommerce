@@ -8,7 +8,6 @@
 @{
     var pav = new DataTableViewModel
             {
-                TableId = "dataTable-pav",
                 TableTitle = $"Danh sách thuộc tính {Model.ProductAttributeName}",
                 CreateUrl = Url.Action("ProductAttributeValueCreate", "Product", new { productAttributeMappingId = Model.Id }),
                 EditUrl = Url.Action("EditProductAttributeValue", "Product"),

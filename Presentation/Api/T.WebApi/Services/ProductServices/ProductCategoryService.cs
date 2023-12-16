@@ -44,17 +44,12 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<ProductCategory>> GetProductCategoryById(int productCategoryId)
+        public async Task<ProductCategory> GetProductCategoryById(int productCategoryId)
         {
             var productCategory = await _productCategoryRepository.Table
                 .FirstOrDefaultAsync(x => x.Id == productCategoryId);
 
-            var response = new ServiceResponse<ProductCategory>
-            {
-                Data = productCategory,
-                Success = true
-            };
-            return response;
+            return productCategory;
         }
 
         //public async Task<List<ProductCategory>> GetAllProductCategoryAsync()
@@ -62,17 +57,12 @@ namespace T.WebApi.Services.ProductServices
         //    return (await _productCategoryRepository.GetAllAsync()).ToList();
         //}
 
-        public async Task<ServiceResponse<List<ProductCategory>>> GetProductCategoriesByProductId(int productId)
+        public async Task<List<ProductCategory>> GetProductCategoriesByProductId(int productId)
         {
             var productCategoryList = await _productCategoryRepository.Table.Where(x => x.ProductId == productId)
                .ToListAsync();
 
-            var response = new ServiceResponse<List<ProductCategory>>
-            {
-                Data = productCategoryList,
-                Success = true
-            };
-            return response;
+            return productCategoryList;
         }
 
         public async Task<ServiceResponse<bool>> UpdateProductCategoryAsync(ProductCategory productCategory)

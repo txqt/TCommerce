@@ -138,7 +138,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> EditProduct(int id)
         {
             var result = await _productService.GetByIdAsync(id);
-            return View(_mapper.Map<ProductModel>(result.Data));
+            return View(_mapper.Map<ProductModel>(result));
         }
 
         [HttpPost]
@@ -177,14 +177,14 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> GetAllAttribute(int productId)
         {
             var result = await _productService.GetAllProductAttributeByProductIdAsync(productId);
-            return Json(result.Data);
+            return Json(result);
         }
 
         [HttpGet]
         public virtual async Task<IActionResult> ProductAttributeMappingCreate(int productId)
         {
             //try to get a product with the specified id
-            var product = (await _productService.GetByIdAsync(productId)).Data ??
+            var product = (await _productService.GetByIdAsync(productId)) ??
               throw new ArgumentException("No product found with the specified id");
 
             //prepare model
@@ -201,10 +201,10 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var product = (await _productService.GetByIdAsync(model.ProductId)).Data ??
+            var product = (await _productService.GetByIdAsync(model.ProductId)) ??
               throw new ArgumentException("No product found with the specified id");
 
-            if ((await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id)).Data
+            if ((await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id))
               .Any(x => x.ProductAttributeId == model.ProductAttributeId))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
@@ -222,7 +222,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            productAttributeMapping = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id)).Data
+            productAttributeMapping = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id))
               .Where(x => x.ProductAttributeId == model.ProductAttributeId).FirstOrDefault() ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
@@ -236,10 +236,10 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> EditProductAttributeMapping(int id)
         {
-            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(id)).Data ??
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(id)) ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
-            var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)).Data ??
+            var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)) ??
               throw new ArgumentException("No product found with the specified id");
 
             var model = await _prepareModelService.PrepareProductAttributeMappingModelAsync(null, product, productAttributeMapping);
@@ -254,15 +254,15 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 return View(model);
             }
-            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(model.Id)).Data ??
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(model.Id)) ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
-            var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)).Data ??
+            var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)) ??
               throw new ArgumentException("No product found with the specified id");
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this attribute");
 
-            if ((await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id)).Data
+            if ((await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id))
               .Any(x => x.ProductAttributeId == model.ProductAttributeId && x.Id != productAttributeMapping.Id))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thuộc tính này");
@@ -312,7 +312,7 @@ namespace T.Web.Areas.Admin.Controllers
         public virtual async Task<IActionResult> ProductAttributeValueCreate(int productAttributeMappingId)
         {
             //try to get a product attribute mapping with the specified id
-            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeMappingId)).Data ??
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeMappingId)) ??
               throw new ArgumentException("No product attribute mapping found with the specified id");
 
             //try to get a product with the specified id
@@ -329,7 +329,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> ProductAttributeValueCreate(ProductAttributeValueModel model)
         {
             //try to get a product attribute mapping with the specified id
-            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(model.ProductAttributeMappingId)).Data;
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(model.ProductAttributeMappingId));
             if (productAttributeMapping == null)
                 return RedirectToAction(nameof(Index));
 
@@ -368,12 +368,12 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> EditProductAttributeValue(int id)
         {
             //try to get a product attribute value with the specified id
-            var productAttributeValue = (await _productAttributeService.GetProductAttributeValuesByIdAsync(id)).Data;
+            var productAttributeValue = (await _productAttributeService.GetProductAttributeValuesByIdAsync(id));
             if (productAttributeValue == null)
                 return RedirectToAction(nameof(Index));
 
             //try to get a product attribute mapping with the specified id
-            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeValue.ProductAttributeMappingId)).Data;
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeValue.ProductAttributeMappingId));
             if (productAttributeMapping == null)
                 return RedirectToAction(nameof(Index));
 
@@ -391,12 +391,12 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> EditProductAttributeValue(ProductAttributeValueModel model)
         {
             //try to get a product attribute value with the specified id
-            var productAttributeValue = (await _productAttributeService.GetProductAttributeValuesByIdAsync(model.Id)).Data;
+            var productAttributeValue = (await _productAttributeService.GetProductAttributeValuesByIdAsync(model.Id));
             if (productAttributeValue == null)
                 return RedirectToAction(nameof(Index));
 
             //try to get a product attribute mapping with the specified id
-            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeValue.ProductAttributeMappingId)).Data;
+            var productAttributeMapping = (await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeValue.ProductAttributeMappingId));
             if (productAttributeMapping == null)
                 return RedirectToAction(nameof(Index));
 
@@ -454,7 +454,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetListProductMapping(int productId)
         {
-            var product = (await _productService.GetByIdAsync(productId)).Data ??
+            var product = (await _productService.GetByIdAsync(productId)) ??
               throw new ArgumentException("No product found with the specified id");
 
             var model = await _prepareModelService.PrepareProductAttributeMappingListModelAsync(product);
@@ -468,7 +468,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetValueProductMapping(int id)
         {
-            var productAttributeMappingResponse = (await _productAttributeService.GetProductAttributeMappingByIdAsync(id)).Data ??
+            var productAttributeMappingResponse = (await _productAttributeService.GetProductAttributeMappingByIdAsync(id)) ??
               throw new ArgumentException("Not found with the specified id");
 
             var model = await _prepareModelService.PrepareProductAttributeValueListModelAsync(productAttributeMappingResponse);
@@ -509,7 +509,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> ListPhotos(int productId)
         {
-            var product = (await _productService.GetByIdAsync(productId)).Data ??
+            var product = (await _productService.GetByIdAsync(productId)) ??
               throw new ArgumentException("No product found with the specified id");
 
             var listphotos = await _prepareModelService.PrepareProductPictureModelAsync(product);
@@ -562,18 +562,18 @@ namespace T.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> GetListCategoryMapping(int productId)
         {
-            var product = (await _productService.GetByIdAsync(productId)).Data ??
+            var product = (await _productService.GetByIdAsync(productId)) ??
               throw new ArgumentException("No product found with the specified id");
 
-            var productCategoryList = (await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data;
+            var productCategoryList = (await _productCategoryService.GetProductCategoriesByProductId(product.Id));
 
             var model = _mapper.Map<List<ProductCategoryModel>>(productCategoryList);
 
             foreach (var item in model)
             {
-                var category = (await _categoryService.GetCategoryByIdAsync(item.CategoryId)).Data;
+                var category = (await _categoryService.GetCategoryByIdAsync(item.CategoryId));
                 item.CategoryName = category.ParentCategoryId > 0 ? category.Name
-                    + " >>> " + (await _categoryService.GetCategoryByIdAsync(category.ParentCategoryId)).Data.Name : category.Name;
+                    + " >>> " + (await _categoryService.GetCategoryByIdAsync(category.ParentCategoryId)).Name : category.Name;
             }
 
             return Json(new
@@ -586,7 +586,7 @@ namespace T.Web.Areas.Admin.Controllers
         public virtual async Task<IActionResult> ProductCategoryMappingCreate(int productId)
         {
             //try to get a product with the specified id
-            var product = (await _productService.GetByIdAsync(productId)).Data ??
+            var product = (await _productService.GetByIdAsync(productId)) ??
               throw new ArgumentException("No product found with the specified id");
 
             //prepare model
@@ -608,15 +608,15 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var category = (await _categoryService.GetCategoryByIdAsync(model.CategoryId)).Data ??
+            var category = (await _categoryService.GetCategoryByIdAsync(model.CategoryId)) ??
               throw new ArgumentException("No category found with the specified id");
 
-            var product = (await _productService.GetByIdAsync(model.ProductId)).Data ??
+            var product = (await _productService.GetByIdAsync(model.ProductId)) ??
               throw new ArgumentException("No product found with the specified id");
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this category");
 
-            if ((await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data
+            if ((await _productCategoryService.GetProductCategoriesByProductId(product.Id))
               .Any(x => x.CategoryId == category.Id && x.Id != model.Id))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thể loại này");
@@ -635,7 +635,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            productCategory = (await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data
+            productCategory = (await _productCategoryService.GetProductCategoriesByProductId(product.Id))
                 .Where(x => x.CategoryId == model.CategoryId).FirstOrDefault() ??
               throw new ArgumentException("No product category found with the specified id");
 
@@ -649,13 +649,13 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> EditProductCategory(int id)
         {
-            var productCategory = (await _productCategoryService.GetProductCategoryById(id)).Data ??
+            var productCategory = (await _productCategoryService.GetProductCategoryById(id)) ??
               throw new ArgumentException("No product category mapping found with the specified id");
 
-            var category = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)).Data ??
+            var category = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)) ??
               throw new ArgumentException("No category found with the specified id");
 
-            var product = (await _productService.GetByIdAsync(productCategory.ProductId)).Data ??
+            var product = (await _productService.GetByIdAsync(productCategory.ProductId)) ??
               throw new ArgumentException("No product found with the specified id");
 
             var model = await _prepareModelService.PrepareProductCategoryMappingModelAsync(null, product, productCategory);
@@ -670,18 +670,18 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 return View(model);
             }
-            var productCategory = (await _productCategoryService.GetProductCategoryById(model.Id)).Data ??
+            var productCategory = (await _productCategoryService.GetProductCategoryById(model.Id)) ??
               throw new ArgumentException("No product category mapping found with the specified id");
 
-            var category = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)).Data ??
+            var category = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)) ??
               throw new ArgumentException("No category found with the specified id");
 
-            var product = (await _productService.GetByIdAsync(productCategory.ProductId)).Data ??
+            var product = (await _productService.GetByIdAsync(productCategory.ProductId)) ??
               throw new ArgumentException("No product found with the specified id");
 
             ModelState.AddModelError(string.Empty, "This product has mapped with this category");
 
-            if ((await _productCategoryService.GetProductCategoriesByProductId(product.Id)).Data
+            if ((await _productCategoryService.GetProductCategoriesByProductId(product.Id))
               .Any(x => x.CategoryId == category.Id && x.Id != productCategory.Id))
             {
                 SetStatusMessage($"Sản phẩm [{product.Name}] đã liên kết với thể loại này");

@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using NuGet.Protocol.Plugins;
+﻿using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Http.Headers;
 using T.Library.Model.JwtToken;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
-using T.Web.Services.AccountService;
 
 namespace T.Web.Common
 {
@@ -36,7 +33,7 @@ namespace T.Web.Common
                 if (!string.IsNullOrEmpty(refreshToken))
                 {
                     var client = _clientFactory.CreateClient();
-                    RefreshTokenDto refreshTokenDto = new RefreshTokenDto()
+                    RefreshTokenRequestModel refreshTokenDto = new RefreshTokenRequestModel()
                     {
                         RefreshToken = refreshToken,
                         ReturnUrl = ""

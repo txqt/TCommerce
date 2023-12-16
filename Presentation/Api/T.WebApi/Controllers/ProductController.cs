@@ -13,7 +13,7 @@ using T.WebApi.Services.ProductServices;
 
 namespace T.WebApi.Controllers
 {
-    [Route("api/product")]
+    [Route("api/products")]
     [ApiController]
     //[CustomAuthorizationFilter(RoleName.Admin)]
     [CheckPermission(PermissionSystemName.ManageProducts)]
@@ -34,9 +34,8 @@ namespace T.WebApi.Controllers
         }
 
         #region Product
-        [HttpGet(APIRoutes.GETALL)]
+        [HttpGet("")]
         [AllowAnonymous]
-
         public async Task<ActionResult<List<Product>>> GetAll([FromQuery] ProductParameters productParameters)
         {
             var products = await _productService.GetAll(productParameters);
@@ -46,12 +45,12 @@ namespace T.WebApi.Controllers
 
         [HttpGet("{productId}")]
         [AllowAnonymous]
-        public async Task<ActionResult<ServiceResponse<Product>>> Get(int productId)
+        public async Task<ActionResult<Product>> Get(int productId)
         {
             return await _productService.GetByIdAsync(productId);
         }
 
-        [HttpPost()]
+        [HttpPost("")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> CreateProduct(Product product)
         {
@@ -66,7 +65,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPut()]
+        [HttpPut("{productId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> EditProduct(ProductModel model)
         {
@@ -92,7 +91,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("show-on-home-page")]
+        [HttpGet("homepage")]
         [AllowAnonymous]
         public async Task<ActionResult> GetAllProductsDisplayedOnHomepageAsync()
         {
@@ -104,12 +103,12 @@ namespace T.WebApi.Controllers
         #region ProductPicture
         [HttpGet("{productId}/pictures")]
         [AllowAnonymous]
-        public async Task<ActionResult<ServiceResponse<List<ProductPicture>>>> GetProductPicturesByProductIdAsync(int productId)
+        public async Task<ActionResult<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId)
         {
             return await _productService.GetProductPicturesByProductIdAsync(productId);
         }
 
-        [HttpPost("{productId}/upload-picture")]
+        [HttpPost("{productId}/pictures")]
         public async Task<ActionResult> AddProductImage(List<IFormFile> formFiles, int productId)
         {
             var result = await _productService.AddProductImage(formFiles, productId);
@@ -120,7 +119,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPut("update-picture")]
+        [HttpPut("pictures")]
         public async Task<ActionResult> EditProductImage(ProductPicture productPicture)
         {
             var product = await _productService.GetByIdAsync(productPicture.ProductId)
@@ -134,7 +133,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("picture-mapping-id/{pictureMappingId}")]
+        [HttpDelete("pictures/{pictureMappingId}")]
         public async Task<ActionResult> DeleteProductImage(int pictureMappingId)
         {
             var result = await _productService.DeleteProductImage(pictureMappingId);
@@ -145,7 +144,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{productId}/delete-all-picture")]
+        [HttpDelete("{productId}/pictures")]
         public async Task<ActionResult> DeleteAllPictureProduct(int productId)
         {
             var result = await _productService.DeleteAllProductImage(productId);
@@ -157,181 +156,178 @@ namespace T.WebApi.Controllers
         }
         #endregion
 
-        #region ProductAttribute
-        [AllowAnonymous]
-        [HttpGet("{productId}/attributes")]
-        public async Task<ActionResult> GetProductAttributes(int productId)
-        {
-            var result = await _productService.GetAllProductAttributeByProductIdAsync(productId);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
+        //#region ProductAttributeMapping
+        //[AllowAnonymous]
+        //[HttpGet("{productId}/attributes")]
+        //public async Task<ActionResult> GetProductAttributesMapping(int productId)
+        //{
+        //    return Ok(await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId));
+        //}
 
-        [AllowAnonymous]
-        [HttpGet("{productId}/attribute")]
-        public async Task<ActionResult<ServiceResponse<List<ProductAttributeMapping>>>> GetProductAttributesMapping(int productId)
-        {
-            return await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId);
-        }
+        //[HttpPost("attributes")]
+        //public async Task<ActionResult> CreateProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
+        //{
 
-        [HttpPost("attribute")]
-        public async Task<ActionResult> CreateProductAttributeMapping(ProductAttributeMapping productAttributeMapping)
-        {
+        //    var result = await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
 
-            var result = await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
+        //    return Ok(result);
+        //}
 
-            return Ok(result);
-        }
+        //[HttpPut("attributes")]
+        //public async Task<ActionResult> UpdateAttributeMapping(ProductAttributeMapping productAttributeMapping)
+        //{
+        //    //try to get a product with the specified id
+        //    var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)) ??
+        //      throw new ArgumentException("No product found with the specified id");
 
-        [HttpPut("attribute")]
-        public async Task<ActionResult> UpdateAttributeMapping(ProductAttributeMapping productAttributeMapping)
-        {
-            //try to get a product with the specified id
-            var product = (await _productService.GetByIdAsync(productAttributeMapping.ProductId)).Data ??
-              throw new ArgumentException("No product found with the specified id");
+        //    var productAttribute = (await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId)) ??
+        //        throw new ArgumentException("No product attribute found with the specified id");
 
-            var productAttribute = (await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId)).Data ??
-                throw new ArgumentException("No product attribute found with the specified id");
+        //    var result = await _productAttributeService.UpdateProductAttributeMappingAsync(productAttributeMapping);
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
 
-            var result = await _productAttributeService.UpdateProductAttributeMappingAsync(productAttributeMapping);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
+        //    return Ok(result);
+        //}
 
-            return Ok(result);
-        }
+        //[AllowAnonymous]
+        //[HttpGet("attributes/{productAttributeId}")]
+        //public async Task<ActionResult<ServiceResponse<ProductAttributeMapping>>> GetProductAttributeMappingByIdAsync(int productAttributeId)
+        //{
+        //    return Ok(await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeId));
+        //}
 
-        [AllowAnonymous]
-        [HttpGet("attribute/{productAttributeMappingId}")]
-        public async Task<ActionResult<ServiceResponse<ProductAttributeMapping>>> GetProductAttributeMappingByIdAsync(int productAttributeMappingId)
-        {
-            return await _productAttributeService.GetProductAttributeMappingByIdAsync(productAttributeMappingId);
-        }
+        //[HttpDelete("attributes/{productAttributeId}")]
+        //[ServiceFilter(typeof(ValidationFilterAttribute))]
+        //public async Task<ActionResult> DeleteProductAttributeMapping(int productAttributeId)
+        //{
+        //    var result = await _productAttributeService.DeleteProductAttributeMappingByIdAsync(productAttributeId);
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
+        //    return Ok(result);
+        //}
+        //#endregion
 
-        [HttpDelete("attribute/{productAttributeId}")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> DeleteProductAttributeMapping(int productAttributeId)
-        {
-            var result = await _productAttributeService.DeleteProductAttributeMappingByIdAsync(productAttributeId);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
-        #endregion
+        //#region ProductAttributeValue
+        //[AllowAnonymous]
+        //[HttpGet("attributes/{productAttributeId}/value")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<ActionResult> GetAttributeValues(int productAttributeId)
+        //{
+        //    var result = await _productAttributeService.GetProductAttributeValuesAsync(productAttributeId);
 
-        #region ProductAttributeValue
-        [AllowAnonymous]
-        [HttpGet("attribute/{productAttributeMappingId}/value")]
-        public async Task<ActionResult> GetAttributeValues(int productAttributeMappingId)
-        {
-            var result = await _productAttributeService.GetProductAttributeValuesAsync(productAttributeMappingId);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
+        //    if (result is null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(result);
+        //}
 
-        [HttpGet("attribute/value/{productAttributeValueId}")]
-        public async Task<IActionResult> GetAttributeValueById(int productAttributeValueId)
-        {
-            var result = await _productAttributeService.GetProductAttributeValuesByIdAsync(productAttributeValueId);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
+        //[HttpGet("attributes/value/{valueId}")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<IActionResult> GetAttributeValueById(int valueId)
+        //{
+        //    var result = await _productAttributeService.GetProductAttributeValuesByIdAsync(valueId);
 
-        [HttpPost("attribute/value")]
-        public async Task<ActionResult> CreateProductAttributeValue(ProductAttributeValue productAttributeValue)
-        {
-            var result = await _productAttributeService.CreateProductAttributeValueAsync(productAttributeValue);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
+        //    if (result is null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(result);
+        //}
 
-        [HttpPut("attribute/value")]
-        public async Task<ActionResult> UpdateProductAttributeValue(ProductAttributeValue productAttributeValue)
-        {
-            var result = await _productAttributeService.UpdateProductAttributeValueAsync(productAttributeValue);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
+        //[HttpPost("attributes/value")]
+        //[ProducesResponseType(StatusCodes.Status201Created)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public async Task<ActionResult> CreateProductAttributeValue(ProductAttributeValue productAttributeValue)
+        //{
+        //    var result = await _productAttributeService.CreateProductAttributeValueAsync(productAttributeValue);
 
-        [HttpDelete("attribute/value/{productAttributeValueId}")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> DeleteProductAttributeValue(int productAttributeValueId)
-        {
-            var result = await _productAttributeService.DeleteProductAttributeValueAsync(productAttributeValueId);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
-        #endregion
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
+        //    return Ok(result);
+        //}
 
-        #region ProductCategory
-        [HttpGet("category/{productCategoryId}")]
-        public async Task<ActionResult<ServiceResponse<ProductCategory>>> GetProductCategoryById(int productCategoryId)
-        {
-            return await _productCategoryService.GetProductCategoryById(productCategoryId);
-        }
+        //[HttpPut("attributes/value")]
+        //public async Task<ActionResult> UpdateProductAttributeValue(ProductAttributeValue productAttributeValue)
+        //{
+        //    var result = await _productAttributeService.UpdateProductAttributeValueAsync(productAttributeValue);
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
+        //    return Ok(result);
+        //}
 
-        [HttpGet("{productId}/categories")]
-        public async Task<ActionResult<ServiceResponse<List<ProductCategory>>>> GetByProductId(int productId)
-        {
-            return await _productCategoryService.GetProductCategoriesByProductId(productId);
-        }
+        //[HttpDelete("attributes/value/{valueId}")]
+        //[ServiceFilter(typeof(ValidationFilterAttribute))]
+        //public async Task<ActionResult> DeleteProductAttributeValue(int valueId)
+        //{
+        //    var result = await _productAttributeService.DeleteProductAttributeValueAsync(valueId);
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
+        //    return Ok(result);
+        //}
+        //#endregion
 
-        [HttpPost("category")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> CreateProductCategoryAsync(ProductCategory productCategory)
-        {
-            var result = await _productCategoryService.CreateProductCategoryAsync(productCategory);
-            if (!result.Success)
-                return BadRequest(result);
+        //#region ProductCategory
+        //[HttpGet("categories/{productCategoryId}")]
+        //public async Task<ActionResult<ProductCategory>> GetProductCategoryById(int productCategoryId)
+        //{
+        //    return await _productCategoryService.GetProductCategoryById(productCategoryId);
+        //}
 
-            return Ok(result);
-        }
+        //[HttpGet("{productId}/categories")]
+        //public async Task<ActionResult<List<ProductCategory>>> GetByProductId(int productId)
+        //{
+        //    return await _productCategoryService.GetProductCategoriesByProductId(productId);
+        //}
 
-        [HttpPut("category")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> UpdateProductCategoryAsync(ProductCategory productCategory)
-        {
-            var result = await _productCategoryService.UpdateProductCategoryAsync(productCategory);
-            if (!result.Success)
-                return BadRequest(result);
+        //[HttpPost("categories")]
+        //[ServiceFilter(typeof(ValidationFilterAttribute))]
+        //public async Task<ActionResult> CreateProductCategoryAsync(ProductCategory productCategory)
+        //{
+        //    var result = await _productCategoryService.CreateProductCategoryAsync(productCategory);
+        //    if (!result.Success)
+        //        return BadRequest(result);
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
 
-        [HttpDelete("category/{productCategoryId}")]
-        public async Task<ActionResult> DeleteProductCategoryAsync(int productCategoryId)
-        {
-            var result = await _productCategoryService.DeleteProductCategoryAsync(productCategoryId);
-            if (!result.Success)
-                return BadRequest(result);
+        //[HttpPut("categories")]
+        //[ServiceFilter(typeof(ValidationFilterAttribute))]
+        //public async Task<ActionResult> UpdateProductCategoryAsync(ProductCategory productCategory)
+        //{
+        //    var result = await _productCategoryService.UpdateProductCategoryAsync(productCategory);
+        //    if (!result.Success)
+        //        return BadRequest(result);
 
-            return Ok(result);
-        }
-        #endregion
+        //    return Ok(result);
+        //}
+
+        //[HttpDelete("categories/{productCategoryId}")]
+        //public async Task<ActionResult> DeleteProductCategoryAsync(int productCategoryId)
+        //{
+        //    var result = await _productCategoryService.DeleteProductCategoryAsync(productCategoryId);
+        //    if (!result.Success)
+        //        return BadRequest(result);
+
+        //    return Ok(result);
+        //}
+        //#endregion
     }
 }

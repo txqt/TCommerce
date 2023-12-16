@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.AspNetCore.Mvc;
 using T.Library.Model.Catalogs;
-using T.Library.Model.Users;
 using T.WebApi.Services.HomePageServices;
-using T.WebApi.Services.TokenHelpers;
 
 namespace T.WebApi.Controllers
 {
@@ -12,11 +8,9 @@ namespace T.WebApi.Controllers
     [ApiController]
     public class HomePageController : ControllerBase
     {
-        private readonly ITokenService _tokenService;
         private readonly IHomePageService _homePageService;
-        public HomePageController(ITokenService tokenService, IHomePageService homePageService)
+        public HomePageController(IHomePageService homePageService)
         {
-            _tokenService = tokenService;
             _homePageService = homePageService;
         }
 

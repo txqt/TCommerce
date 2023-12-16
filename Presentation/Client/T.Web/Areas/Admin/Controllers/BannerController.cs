@@ -80,7 +80,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var banner = (await _bannerService.GetBannerByIdAsync(id)).Data ??
+            var banner = await _bannerService.GetBannerByIdAsync(id) ??
                 throw new ArgumentException("Not found with the specified id");
 
             var model = await _prepareModelService.PrepareBannerModelAsync(new BannerViewModel(), banner);
@@ -98,7 +98,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var banner = (await _bannerService.GetBannerByIdAsync(model.Id)).Data ??
+            var banner = await _bannerService.GetBannerByIdAsync(model.Id) ??
                 throw new ArgumentException("Not found with the specified id");
 
             //banner = _mapper.Map(model, banner);

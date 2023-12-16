@@ -31,8 +31,8 @@
             {
                 TableTitle = "Danh sách thuộc tính sản phẩm",
                 CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
-                EditUrl = Url.Action("EditProductAttributeMapping", "Product", new { productId = Model.Id }),
-                DeleteUrl = Url.Action("DeleteProductAttributeMapping", "Product", new { productId = Model.Id }),
+                EditUrl = Url.Action("EditProductAttributeMapping"),
+                DeleteUrl = Url.Action("DeleteProductAttributeMapping"),
                 GetDataUrl = Url.Action("GetListProductMapping", "Product", new { productId = Model.Id }),
                 Columns = new List<ColumnDefinition>
                         {

@@ -1,67 +1,69 @@
-﻿//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-//using T.Library.Model;
-//using T.Library.Model.Response;
-//using T.Library.Model.Roles.RoleName;
-//using T.WebApi.Attribute;
-//using T.WebApi.Services.CategoryServices;
-//using T.WebApi.Services.ProductServices;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using T.Library.Model;
+using T.Library.Model.Interface;
+using T.Library.Model.Response;
+using T.Library.Model.Roles.RoleName;
+using T.WebApi.Attribute;
+using T.WebApi.Services.CategoryServices;
+using T.WebApi.Services.ProductServices;
 
-//namespace T.WebApi.Controllers
-//{
-//    [Route("api/product-category")]
-//    [ApiController]
-//    public class ProductCategoryController : ControllerBase
-//    {
-//        private readonly IProductCategoryService _productCategoryService;
-//        public ProductCategoryController(IProductCategoryService productCategoryService)
-//        {
-//            _productCategoryService = productCategoryService;
-//        }
+namespace T.WebApi.Controllers
+{
+    [Route("api/product-categories")]
+    [ApiController]
+    public class ProductCategoryController : ControllerBase
+    {
+        private readonly ICategoryService _categoryService;
 
-//        [HttpGet(APIRoutes.GetAll)]
-//        public async Task<ActionResult> GetAll() 
-//        {
-//            return Ok(await _productCategoryService.GetAllProductCategoryAsync());
-//        }
+        public ProductCategoryController(ICategoryService categoryService)
+        {
+            _categoryService = categoryService;
+        }
 
-//        [HttpGet("{id}")]
-//        public async Task<ActionResult<ServiceResponse<ProductCategory>>> Get(int id)
-//        {
-//            return await _productCategoryService.GetProductCategoryById(id);
-//        }
+        [HttpGet("by-category-id/{categoryId}")]
+        public async Task<ActionResult<List<ProductCategory>>> GetProductCategoriesByCategoryIdAsync(int categoryId)
+        {
+            return await _categoryService.GetProductCategoriesByCategoryIdAsync(categoryId);
+        }
 
-//        [HttpGet("{productId}/by-productId")]
-//        public async Task<ActionResult<ServiceResponse<List<ProductCategory>>>> GetByProductId(int productId)
-//        {
-//            return await _productCategoryService.GetProductCategoriesByProductId(productId);
-//        }
+        [HttpPost("bulk")]
+        public async Task<ActionResult> BulkCreateProductCategoriesAsync(List<ProductCategory> productCategories)
+        {
+            var result = await _categoryService.BulkCreateProductCategoriesAsync(productCategories);
+            if (!result.Success)
+                return BadRequest(result);
 
-//        [HttpGet("{categoryId}/by-categoryId")]
-//        public async Task<ActionResult<ServiceResponse<List<ProductCategory>>>> GetByCategoryId(int categoryId)
-//        {
-//            return await _productCategoryService.GetProductCategoriesByCategoryId(categoryId);
-//        }
+            return Ok(result);
+        }
 
-//        [HttpPost(APIRoutes.AddOrEdit)]
-//        [ServiceFilter(typeof(ValidationFilterAttribute))]
-//        public async Task<ActionResult> CreateOrEdit(ProductCategory productCategory)
-//        {
-//            var result = await _productCategoryService.UpdateProductCategoryAsync(productCategory);
-//            if(!result.Success)
-//                return BadRequest(result);
+        [HttpPut("")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> UpdateProductCategoryAsync(ProductCategory productCategory)
+        {
+            var result = await _categoryService.UpdateProductCategoryAsync(productCategory);
+            if (!result.Success)
+                return BadRequest(result);
 
-//            return Ok(result);
-//        }
+            return Ok(result);
+        }
 
-//        [HttpDelete("delete/{id}")]
-//        public async Task<ActionResult> Delete(int id)
-//        {
-//            var result = await _productCategoryService.DeleteProductCategoryAsync(id);
-//            if (!result.Success)
-//                return BadRequest(result);
+        [HttpDelete("{id}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> DeleteCategoryMappingById(int id)
+        {
+            var result = await _categoryService.DeleteCategoryMappingById(id);
+            if (!result.Success)
+                return BadRequest(result);
 
-//            return Ok(result);
-//        }
-//    }
-//}
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult<ProductCategory>> GetProductCategoryByIdAsync(int id)
+        {
+            return Ok(await _categoryService.GetProductCategoryByIdAsync(id));
+        }
+    }
+}

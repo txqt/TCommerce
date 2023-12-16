@@ -25,6 +25,22 @@ namespace T.Web.Areas.Admin.Models
         public List<Filter> Filters { get; set; }
         public string EditUrl { get; set; }
         public string DeleteUrl { get; set; }
+        public DefaultSort DefaultSort { get; set; }
+    }
+    public class DefaultSort
+    {
+        public DefaultSort()
+        {
+        }
+
+        public DefaultSort(int columnIndex, string order)
+        {
+            ColumnIndex = columnIndex;
+            Order = order;
+        }
+
+        public int ColumnIndex { get; set; }
+        public string Order { get; set; }
     }
     public class ColumnDefinition
     {

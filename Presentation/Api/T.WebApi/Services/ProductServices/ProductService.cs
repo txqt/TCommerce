@@ -75,14 +75,9 @@ namespace T.WebApi.Services.ProductServices
             return await PagedList<Product>.ToPagedList(query, productParameters.PageNumber, productParameters.PageSize);
         }
 
-        public async Task<ServiceResponse<Product>> GetByIdAsync(int id)
+        public async Task<Product> GetByIdAsync(int id)
         {
-            var response = new ServiceResponse<Product>
-            {
-                Data = (await _productsRepository.GetByIdAsync(id)),
-                Success = true
-            };
-            return response;
+            return await _productsRepository.GetByIdAsync(id);
         }
 
         public async Task<ServiceResponse<bool>> CreateProductAsync(Product product)
@@ -143,39 +138,26 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<ServiceResponse<List<ProductAttribute>>> GetAllProductAttributeByProductIdAsync(int productId)
+        public async Task<List<ProductAttribute>> GetAllProductAttributeByProductIdAsync(int productId)
         {
-            var result = await _productAttributeMappingRepository.Table
+            return await _productAttributeMappingRepository.Table
                     .Where(pam => pam.ProductId == productId)
                     .Select(pam => pam.ProductAttribute)
                     .ToListAsync();
-
-            if (result.Count == 0 || result is null)
-                return new ServiceErrorResponse<List<ProductAttribute>>();
-
-            return new ServiceSuccessResponse<List<ProductAttribute>>(result);
         }
 
-        public async Task<ServiceResponse<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId)
+        public async Task<List<ProductPicture>> GetProductPicturesByProductIdAsync(int productId)
         {
+            var productPicture = await _productPictureMappingRepository.Table.Where(x => x.ProductId == productId)
+                .Include(x => x.Picture)
+                .ToListAsync();
 
+            foreach (var pp in productPicture)
             {
-                var productPicture = await _productPictureMappingRepository.Table.Where(x => x.ProductId == productId)
-                    .Include(x => x.Picture)
-                    .ToListAsync();
-
-                foreach (var pp in productPicture)
-                {
-                    pp.Picture.UrlPath = APIUrl + pp.Picture.UrlPath;
-                }
-
-                var response = new ServiceResponse<List<ProductPicture>>
-                {
-                    Data = productPicture,
-                    Success = true
-                };
-                return response;
+                pp.Picture.UrlPath = APIUrl + pp.Picture.UrlPath;
             }
+
+            return productPicture;
         }
 
         public async Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId)
@@ -342,19 +324,11 @@ namespace T.WebApi.Services.ProductServices
             return APIUrl + fileName;
         }
 
-        public async Task<ServiceResponse<Product>> GetByNameAsync(string name)
+        public async Task<Product> GetByNameAsync(string name)
         {
-            var product = await _productsRepository.Table
+            return await _productsRepository.Table
                         .Where(x => x.Name != null && x.Name.ToLower() == name.ToLower())
                         .FirstOrDefaultAsync();
-
-            var response = new ServiceResponse<Product>
-            {
-                Data = product,
-                Success = true
-            };
-
-            return response;
         }
 
         public async Task<ServiceResponse<bool>> EditProductImageAsync(ProductPicture productPicture)
@@ -363,10 +337,9 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<ServiceResponse<List<Product>>> GetAllProductsDisplayedOnHomepageAsync()
+        public async Task<List<Product>> GetAllProductsDisplayedOnHomepageAsync()
         {
-            //var products = await _productsRepository.Table.Where(x=>x.Published && x.ShowOnHomepage && !x.Deleted).OrderBy(x=>x.DisplayOrder).ToListAsync();
-            return new ServiceSuccessResponse<List<Product>>(await _productsRepository.Table.Where(x => x.Published && x.ShowOnHomepage && !x.Deleted).OrderBy(x => x.DisplayOrder).ToListAsync());
+            return await _productsRepository.Table.Where(x => x.Published && x.ShowOnHomepage && !x.Deleted).OrderBy(x => x.DisplayOrder).ToListAsync();
         }
 
         #endregion

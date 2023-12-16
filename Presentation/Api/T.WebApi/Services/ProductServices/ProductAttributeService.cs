@@ -44,25 +44,15 @@ namespace T.WebApi.Services.ProductServices
             return (await _productAttributeRepository.GetAllAsync()).ToList();
         }
 
-        public async Task<ServiceResponse<ProductAttribute>> GetProductAttributeByIdAsync(int id)
+        public async Task<ProductAttribute> GetProductAttributeByIdAsync(int id)
         {
-            var response = new ServiceResponse<ProductAttribute>
-            {
-                Data = await _productAttributeRepository.GetByIdAsync(id),
-                Success = true
-            };
-            return response;
+            return await _productAttributeRepository.GetByIdAsync(id);
         }
 
-        public async Task<ServiceResponse<ProductAttribute>> GetProductAttributeByName(string name)
+        public async Task<ProductAttribute> GetProductAttributeByName(string name)
         {
-            var response = new ServiceResponse<ProductAttribute>
-            {
-                Data = await _productAttributeRepository.Table
-                    .FirstOrDefaultAsync(x => x.Name == name),
-                Success = true
-            };
-            return response;
+            return await _productAttributeRepository.Table
+                    .FirstOrDefaultAsync(x => x.Name == name);
         }
 
         public async Task<ServiceResponse<bool>> CreateProductAttributeAsync(ProductAttribute productAttribute)
@@ -105,30 +95,16 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<ProductAttributeMapping>> GetProductAttributeMappingByIdAsync(int id)
+        public async Task<ProductAttributeMapping> GetProductAttributeMappingByIdAsync(int id)
         {
-            var productAttributeMapping = await _productAttributeMappingRepository.GetByIdAsync(id);
-
-            var response = new ServiceResponse<ProductAttributeMapping>
-            {
-                Data = productAttributeMapping,
-                Success = true
-            };
-            return response;
+            return await _productAttributeMappingRepository.GetByIdAsync(id);
         }
 
-        public async Task<ServiceResponse<List<ProductAttributeMapping>>> GetProductAttributesMappingByProductIdAsync(int id)
+        public async Task<List<ProductAttributeMapping>> GetProductAttributesMappingByProductIdAsync(int id)
         {
-            var productAttributeMapping = await _productAttributeMappingRepository.Table.Where(x => x.ProductId == id)
+            return await _productAttributeMappingRepository.Table.Where(x => x.ProductId == id)
                 .Include(x => x.ProductAttribute)
                 .ToListAsync();
-
-            var response = new ServiceResponse<List<ProductAttributeMapping>>
-            {
-                Data = productAttributeMapping,
-                Success = true
-            };
-            return response;
         }
 
         public async Task<ServiceResponse<bool>> CreateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping)
@@ -170,24 +146,16 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ServiceResponse<List<ProductAttributeValue>>> GetProductAttributeValuesAsync(int productAttributeMappingId)
+        public async Task<List<ProductAttributeValue>> GetProductAttributeValuesAsync(int productAttributeMappingId)
         {
-            var productAttributeValue = await _productAttributeValueRepository.Table
+            return await _productAttributeValueRepository.Table
                                         .Where(pav => pav.ProductAttributeMappingId == productAttributeMappingId)
                                         .ToListAsync();
-
-            if (productAttributeValue.Count == 0 || productAttributeValue is null)
-                return new ServiceErrorResponse<List<ProductAttributeValue>>("Product Attribute Value Not Found");
-
-            return new ServiceSuccessResponse<List<ProductAttributeValue>>(productAttributeValue);
         }
 
-        public async Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id)
+        public async Task<ProductAttributeValue> GetProductAttributeValuesByIdAsync(int id)
         {
-            {
-                var pav = await _productAttributeValueRepository.GetByIdAsync(id);
-                return new ServiceSuccessResponse<ProductAttributeValue>(pav);
-            }
+            return await _productAttributeValueRepository.GetByIdAsync(id);
         }
 
         public async Task<ServiceResponse<bool>> CreateProductAttributeValueAsync(ProductAttributeValue productAttributeValue)

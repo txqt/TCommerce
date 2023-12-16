@@ -51,7 +51,7 @@ namespace T.Web.Services.PrepareModel
             //get product attribute mappings
 
             var result = (await _productAttributeService
-                                .GetProductAttributesMappingByProductIdAsync(product.Id)).Data;
+                                .GetProductAttributesMappingByProductIdAsync(product.Id));
 
             var pamList = _mapper.Map<List<ProductAttributeMappingModel>>(result);
 
@@ -69,7 +69,7 @@ namespace T.Web.Services.PrepareModel
                     Id = productAttributeMapping.Id
                 };
                 _mapper.Map(productAttributeMapping, model);
-                model.ProductAttributeName = (await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId)).Data.Name;
+                model.ProductAttributeName = (await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId)).Name;
                 model.ProductAttributeId = productAttributeMapping.ProductAttributeId;
                 model.TextPrompt = productAttributeMapping.TextPrompt;
                 model.IsRequired = productAttributeMapping.IsRequired;
@@ -101,7 +101,7 @@ namespace T.Web.Services.PrepareModel
             //get product attribute mappings
 
             var result = (await _productAttributeService
-                                .GetProductAttributeValuesAsync(productAttributeMapping.Id)).Data;
+                                .GetProductAttributeValuesAsync(productAttributeMapping.Id));
 
             var pamList = _mapper.Map<List<ProductAttributeValueModel>>(result);
 
@@ -143,7 +143,7 @@ namespace T.Web.Services.PrepareModel
                 model.Quantity = 1;
 
             //prepare picture models
-            var productPictures = (await _productService.GetProductPicturesByProductIdAsync(productAttributeMapping.ProductId)).Data;
+            var productPictures = (await _productService.GetProductPicturesByProductIdAsync(productAttributeMapping.ProductId));
             model.ProductPictureModels = productPictures.Select(productPicture => new ProductPictureModel
             {
                 Id = productPicture.Id,
@@ -167,7 +167,7 @@ namespace T.Web.Services.PrepareModel
                     Id = productCategory.Id
                 };
                 _mapper.Map(productCategory, model);
-                model.CategoryName = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)).Data.Name;
+                model.CategoryName = (await _categoryService.GetCategoryByIdAsync(productCategory.CategoryId)).Name;
                 model.CategoryId = productCategory.CategoryId;
                 model.IsFeaturedProduct = productCategory.IsFeaturedProduct;
                 model.DisplayOrder = productCategory.DisplayOrder;
@@ -192,7 +192,7 @@ namespace T.Web.Services.PrepareModel
 
             var model = new List<ProductPictureModel>();
 
-            var productPictures = (await _productService.GetProductPicturesByProductIdAsync(product.Id)).Data;
+            var productPictures = (await _productService.GetProductPicturesByProductIdAsync(product.Id));
 
             if (productPictures != null)
             {

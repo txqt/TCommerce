@@ -8,11 +8,18 @@ using System.Net.Http.Headers;
 using T.Library.Model.Security;
 using T.Library.Model.Interface;
 using T.Library.Model.Users;
+using T.Library.Model.RefreshToken;
+using T.Library.Model.Account;
+using Microsoft.AspNetCore.Mvc;
 
 namespace T.Web.Services.UserService
 {
-    public class UserService : IUserService
+    public interface IUserService : IUserServiceCommon
     {
+        Task<ServiceResponse<bool>> Register(RegisterRequest request);
+    }
+    public class UserService : IUserService
+{
         private readonly HttpClient _httpClient;
 
         public UserService(HttpClient httpClient)
@@ -37,10 +44,10 @@ namespace T.Web.Services.UserService
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
-        public async Task<ServiceResponse<UserModel>> Get(Guid id)
+        public async Task<UserModel> Get(Guid id)
         {
             var result = await _httpClient.GetAsync($"api/user/{id}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<UserModel>>();
+            return await result.Content.ReadFromJsonAsync<UserModel>();
         }
 
         public async Task<List<UserModel>> GetAllAsync()
@@ -54,7 +61,7 @@ namespace T.Web.Services.UserService
             throw new NotImplementedException();
         }
 
-        public Task<ServiceResponse<User>> GetCurrentUser()
+        public Task<User> GetCurrentUser()
         {
             throw new NotImplementedException();
         }
@@ -63,6 +70,17 @@ namespace T.Web.Services.UserService
         public Task<ServiceResponse<bool>> BanUser(string userId)
         {
             throw new NotImplementedException();
+        }
+
+        public Task<bool> Logout(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest)
+        {
+            var result = await _httpClient.PostAsJsonAsync("api/user/account/register", registerRequest);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
     }
 }

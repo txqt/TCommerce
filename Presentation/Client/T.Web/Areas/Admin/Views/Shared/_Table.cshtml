@@ -92,18 +92,18 @@
                 var createButton = {
                     text: '@(Model.CreateButtonName == null ? "Create" : Model.CreateButtonName)',
                     action: function (e, dt, node, config) {
-    @if (Model.PopupWindow)
-    {
-        <text>
-                                openPopup(createUrl);
-        </text>
-    }
-    else
-    {
-        <text>
-                                window.location.href = createUrl;
-        </text>
-    }
+                    @if (Model.PopupWindow)
+                    {
+                        <text>
+                                                openPopup(createUrl);
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                                                window.location.href = createUrl;
+                        </text>
+                    }
                                                                                                 },
                     className: 'create-new-button btn btn-info'
                 };
@@ -357,6 +357,14 @@
             pageLength: @Model.PageLength,
             serverSide: serverSide,
             processing: @Model.Processing.ToString().ToLower(),
+            @if(Model.DefaultSort != null)
+            {
+                <text>
+                order: [
+                        [@Model.DefaultSort.ColumnIndex, '@Model.DefaultSort.Order']
+                    ],
+                </text>
+            }
             ajax: ajaxSettings,
             buttons: buttons,
             columns: [
@@ -427,7 +435,7 @@
                     <text>
                             render: function (data, type, row, meta) {
                                 if (@Model.PopupWindow.ToString().ToLower()) {
-                                    return '<button class="@(column.ClassName ?? "btn btn-info")" onclick="openPopup(\'' + editUrl + '\')"><i class="fas fa-pencil-alt"></i> Edit</button>';
+                                return '<button class="@(column.ClassName ?? "btn btn-info")" onclick="openPopup(@(Model.EditUrl + "?id=")' + data +')"><i class="fas fa-pencil-alt"></i> Edit</button>';
                                 } else {
                                     return '<a class="@(column.ClassName ?? "btn btn-info")" href="@(Model.EditUrl + "?id=")' + data + '"><i class="fas fa-pencil-alt"></i> Edit</a>';
                                 }

@@ -8,7 +8,7 @@
 //{
 //    public interface IProductAttributeValueService
 //    {
-//        Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id);
+//        Task<ProductAttributeValue> GetProductAttributeValuesByIdAsync(int id);
 //        Task<ServiceResponse<bool>> AddOrUpdateProductAttributeValue(ProductAttributeValue productAttributeValue);
 //        Task<ServiceResponse<bool>> DeleteProductAttributeValue(int id);
 //    }
@@ -89,7 +89,7 @@
 //            }
 //        }
 
-//        public async Task<ServiceResponse<ProductAttributeValue>> GetProductAttributeValuesByIdAsync(int id)
+//        public async Task<ProductAttributeValue> GetProductAttributeValuesByIdAsync(int id)
 //        {
 //            {
 //                var pav = await _context.ProductAttributeValue.Where(x => x.Id == id).FirstOrDefaultAsync();

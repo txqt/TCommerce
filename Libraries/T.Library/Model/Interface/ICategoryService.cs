@@ -11,13 +11,13 @@ namespace T.Library.Model.Interface
     public interface ICategoryService
     {
         Task<List<Category>> GetAllCategoryAsync();
-        Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId);
-        Task<ServiceResponse<Category>> GetCategoryByNameAsync(string categoryName);
+        Task<Category> GetCategoryByIdAsync(int categoryId);
+        Task<Category> GetCategoryByNameAsync(string categoryName);
         Task<ServiceResponse<bool>> CreateCategoryAsync(Category category);
         Task<ServiceResponse<bool>> UpdateCategoryAsync(Category category);
         Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id);
         Task<List<ProductCategory>> GetProductCategoriesByCategoryIdAsync(int categoryId);
-        Task<ServiceResponse<ProductCategory>> GetProductCategoryByIdAsync(int productCategoryId);
+        Task<ProductCategory> GetProductCategoryByIdAsync(int productCategoryId);
         Task<ServiceResponse<bool>> CreateProductCategoryAsync(ProductCategory productCategory);
         Task<ServiceResponse<bool>> BulkCreateProductCategoriesAsync(List<ProductCategory> productCategories);
         Task<ServiceResponse<bool>> DeleteCategoryMappingById(int productCategoryId);

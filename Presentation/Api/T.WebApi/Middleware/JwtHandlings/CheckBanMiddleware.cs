@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using T.Library.Model.Users;
-using T.WebApi.Services.TokenHelpers;
+using T.WebApi.Services.TokenServices;
 
 namespace T.WebApi.Middleware.JwtHandlings
 {

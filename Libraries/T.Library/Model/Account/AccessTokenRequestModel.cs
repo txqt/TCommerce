@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace T.Library.Model
 {
-    public class LoginViewModel
+    public class AccessTokenRequestModel
     {
         [Required(ErrorMessage = "Phải nhập {0}")]
         [Display(Name = "Địa chỉ email hoặc tên tài khoản")]

@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
+using T.Library.Model.Account;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
@@ -8,6 +11,7 @@ using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Attribute;
+using T.WebApi.Services.UserRegistrations;
 using T.WebApi.Services.UserServices;
 
 namespace T.WebApi.Controllers
@@ -17,10 +21,14 @@ namespace T.WebApi.Controllers
     [CheckPermission(PermissionSystemName.ManageUsers)]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        private readonly IUserServiceCommon _userService;
+        private readonly IMapper _mapper;
+        private readonly IUserRegistrationService _userRegistrationService;
+        public UserController(IUserServiceCommon userService, IMapper mapper, IUserRegistrationService userRegistrationService)
         {
             _userService = userService;
+            _mapper = mapper;
+            _userRegistrationService = userRegistrationService;
         }
 
         [HttpGet(APIRoutes.GETALL)]
@@ -30,7 +38,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<UserModel>>> Get(Guid id)
+        public async Task<ActionResult<UserModel>> Get(Guid id)
         {
             return await _userService.Get(id);
         }
@@ -83,6 +91,87 @@ namespace T.WebApi.Controllers
                 return BadRequest(result);
             }
             return Ok(result);
+        }
+
+        [HttpPost("account/register")]
+        [AllowAnonymous]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> Register(RegisterRequest request)
+        {
+            var model = _mapper.Map<UserModel>(request);
+            var response = await _userService.CreateUserAsync(model);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("account/confirm-email")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+                return NotFound();
+
+            var result = await _userRegistrationService.ConfirmEmail(userId, token);
+
+            if (result.Success)
+            {
+                return Redirect($"{result.Data}/account/RegisterConfirmed");
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpPost("account/forgot-password")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [AllowAnonymous]
+        public async Task<ActionResult<ServiceResponse<string>>> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return NotFound(new ServiceErrorResponse<string>("Chưa nhập email"));
+
+            var result = await _userRegistrationService.SendResetPasswordEmail(email);
+
+            if (result.Success)
+                return Ok(result); // 200
+
+            return BadRequest(result); // 400
+        }
+
+        [HttpPost("account/reset-password")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
+        {
+            var result = await _userRegistrationService.ResetPassword(model);
+
+            if (result.Success)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        [HttpPost("account/change-password")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> ChangePasword(ChangePasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var result = await _userRegistrationService.ChangePassword(model);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
     }
 }

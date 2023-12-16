@@ -9,6 +9,5 @@ public class APIRoutes
     public const string GETALL = "all";
     public const string CREATE = "create";
     public const string UPDATE = "update";
-    public const string CATEGORY = "api/category";
 }
 

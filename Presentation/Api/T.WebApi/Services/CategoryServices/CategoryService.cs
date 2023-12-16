@@ -65,17 +65,10 @@ namespace T.WebApi.Services.CategoryServices
             }
         }
 
-        public async Task<ServiceResponse<Category>> GetCategoryByIdAsync(int categoryId)
+        public async Task<Category> GetCategoryByIdAsync(int categoryId)
         {
-            var category = await _categoryRepository.Table.Where(x => x.Deleted == false)
+            return await _categoryRepository.Table.Where(x => x.Deleted == false)
                 .FirstOrDefaultAsync(x => x.Id == categoryId);
-
-            var response = new ServiceResponse<Category>
-            {
-                Data = category,
-                Success = true
-            };
-            return response;
         }
 
         public async Task<List<Category>> GetAllCategoryAsync()
@@ -83,22 +76,15 @@ namespace T.WebApi.Services.CategoryServices
             return (await _categoryRepository.GetAllAsync()).ToList();
         }
 
-        public async Task<ServiceResponse<Category>> GetCategoryByNameAsync(string categoryName)
+        public async Task<Category> GetCategoryByNameAsync(string categoryName)
         {
-            var category = await _categoryRepository.Table.Where(x => x.Deleted == false)
+            return await _categoryRepository.Table.Where(x => x.Deleted == false)
                 .FirstOrDefaultAsync(x => x.Name == categoryName);
-
-            var response = new ServiceResponse<Category>
-            {
-                Data = category,
-                Success = true
-            };
-            return response;
         }
 
         public async Task<List<ProductCategory>> GetProductCategoriesByCategoryIdAsync(int categoryId)
         {
-            var productCategories = await _productCategoryRepository.Table.Where(x => x.CategoryId == categoryId).ToListAsync();
+            var productCategories = await _productCategoryRepository.Table.Where(x => x.CategoryId == categoryId).OrderByDescending(x=>x.DisplayOrder).ToListAsync();
 
             return productCategories;
         }
@@ -156,17 +142,10 @@ namespace T.WebApi.Services.CategoryServices
             }
         }
 
-        public async Task<ServiceResponse<ProductCategory>> GetProductCategoryByIdAsync(int productCategoryId)
+        public async Task<ProductCategory> GetProductCategoryByIdAsync(int productCategoryId)
         {
-            var productCategory = await _productCategoryRepository.Table
+            return await _productCategoryRepository.Table
                 .FirstOrDefaultAsync(x => x.Id == productCategoryId);
-
-            var response = new ServiceResponse<ProductCategory>
-            {
-                Data = productCategory,
-                Success = true
-            };
-            return response;
         }
     }
 }

@@ -7,19 +7,17 @@ using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 using T.Library.Model.Users;
-using T.WebApi.Services.AccountServices;
+
 using T.WebApi.Attribute;
 using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.CategoryServices;
 using T.WebApi.Services.UserServices;
 using T.WebApi.Services.HomePageServices;
-using T.WebApi.Services.DataSeederService;
 //using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.IdentityCustom;
 using T.WebApi.Services.IRepositoryServices;
 using T.Library.Model.Interface;
-using T.WebApi.Services.TokenHelpers;
 using T.Library.Model.Security;
 using T.WebApi.Services.SecurityServices;
 using T.Library.Model.Options;
@@ -28,6 +26,9 @@ using T.WebApi.Database;
 using T.WebApi.Services.BannerServices;
 using T.WebApi.Services.PictureServices;
 using T.WebApi.Services;
+using T.WebApi.ServicesSeederService;
+using T.WebApi.Services.TokenServices;
+using T.WebApi.Services.UserRegistrations;
 
 namespace T.WebApi.Extensions
 {
@@ -126,7 +127,6 @@ namespace T.WebApi.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IEmailSender, SendMailService>();
             services.AddScoped<IProductService, ProductService>();
@@ -135,7 +135,7 @@ namespace T.WebApi.Extensions
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IPictureService, PictureService>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserServiceCommon, UserService>();
             services.AddScoped<IHomePageService, HomePageService>();
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<DataSeeder>();
@@ -143,8 +143,8 @@ namespace T.WebApi.Extensions
             services.AddScoped<IBannerService, BannerService>();
             services.AddScoped<ValidationFilterAttribute>();
             services.AddScoped<DatabaseContextFactory>();
-            services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>)); ;
-
+            services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>));
+            services.AddScoped<IUserRegistrationService, UserRegistrationService>();
             return services;
         }
 
@@ -166,7 +166,8 @@ namespace T.WebApi.Extensions
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<DatabaseContext>()
                 .AddDefaultTokenProviders()
-                .AddPasswordValidator<CustomPasswordValidator<User>>();
+                .AddPasswordValidator<CustomPasswordValidator<User>>()
+                .AddTokenProvider<EmailConfirmationTokenProvider<User>>("emailconfirmation");
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -181,7 +182,14 @@ namespace T.WebApi.Extensions
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
                 options.Lockout.MaxFailedAccessAttempts = 3;
                 options.User.RequireUniqueEmail = true;
+                options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
             });
+
+            services.Configure<DataProtectionTokenProviderOptions>(opt =>
+                opt.TokenLifespan = TimeSpan.FromHours(2));
+
+            services.Configure<EmailConfirmationTokenProviderOptions>(opt =>
+                opt.TokenLifespan = TimeSpan.FromDays(3));
 
             return services;
         }

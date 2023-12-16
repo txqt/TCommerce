@@ -36,7 +36,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options
 builder.Services.AddCors(policy =>
 {
     policy.AddPolicy("CorsPolicy", opt => opt
-    .AllowAnyOrigin()
+    .WithOrigins("*")
     .AllowAnyHeader()
     .AllowAnyMethod()
     .WithExposedHeaders("X-Pagination"));
@@ -62,10 +62,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseCors("CorsPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors("CorsPolicy");
 //app.UseMiddleware<TokenManagerMiddleware>();
 app.ConfigureCustomExceptionMiddleware();
 

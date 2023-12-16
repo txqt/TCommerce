@@ -52,6 +52,17 @@ namespace T.WebApi.Profiles
 
             CreateMap<BannerViewModel, Banner>()
                 .ReverseMap();
+
+            CreateMap<RegisterRequest, UserModel>()
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Dob))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
+                .ForMember(dest => dest.ConfirmPassword, opt => opt.MapFrom(src => src.ConfirmPassword))
+                .ReverseMap();
         }
     }
 }

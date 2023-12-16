@@ -7,6 +7,7 @@ using T.Library.Model.Users;
 using T.WebApi.Attribute;
 using T.WebApi.Services.DataSeederService;
 using T.WebApi.Services.DbManageService;
+using T.WebApi.ServicesSeederService;
 
 namespace T.WebApi.Controllers
 {

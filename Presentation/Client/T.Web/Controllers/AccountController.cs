@@ -2,42 +2,38 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
-using NuGet.Protocol.Plugins;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using T.Library.Model;
 using T.Library.Model.Account;
-using T.Library.Model.JwtToken;
-using T.Library.Model.Response;
-using T.Web.Attribute;
-using T.Web.Extensions;
-using T.Web.Services.AccountService;
+using T.Web.Services.UserRegistrationServices;
+using T.Web.Services.UserService;
 
 namespace T.Web.Controllers
 {
     [Route("/account/[action]")]
     public class AccountController : BaseController
     {
-        private readonly IAccountService _accountService;
+        private readonly IUserRegistrationService _accountService;
+        private readonly IUserService _userService;
         private readonly IOptions<Library.Model.JwtToken.AuthorizationOptions> _jwtOptions;
 
-        public AccountController(IAccountService accountService, IOptions<Library.Model.JwtToken.AuthorizationOptions> jwtOptions)
+        public AccountController(IUserRegistrationService accountService, IOptions<Library.Model.JwtToken.AuthorizationOptions> jwtOptions, IUserService userService)
         {
             _accountService = accountService;
             _jwtOptions = jwtOptions;
+            _userService = userService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            var loginVM = new LoginViewModel()
+            var loginVM = new AccessTokenRequestModel()
             {
                 RememberMe = true
             };
@@ -46,7 +42,7 @@ namespace T.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel loginViewModel, string returnUrl = null)
+        public async Task<IActionResult> Login(AccessTokenRequestModel loginViewModel, string returnUrl = null)
         {
             if (!ModelState.IsValid)
                 return View(loginViewModel);
@@ -118,7 +114,7 @@ namespace T.Web.Controllers
             {
                 return View(registerRequest);
             }
-            var result = await _accountService.Register(registerRequest);
+            var result = await _userService.Register(registerRequest);
 
             if (!result.Success)
             {
@@ -138,18 +134,18 @@ namespace T.Web.Controllers
         }
         [HttpPost]
         [Route("/account/forgot-password")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
+        public async Task<IActionResult> ForgotPassword(string email)
         {
             if (!ModelState.IsValid)
             {
-                return View(forgotPasswordViewModel);
+                return View();
             }
-            var result = await _accountService.ForgotPassword(forgotPasswordViewModel);
+            var result = await _accountService.SendResetPasswordEmail(email);
 
             if (!result.Success)
             {
                 ModelState.AddModelError(string.Empty, result.Message);
-                return View(forgotPasswordViewModel);
+                return View();
             }
 
 

@@ -1,27 +1,22 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
-using T.WebApi.Database.ConfigurationDatabase;
-using T.WebApi.Extensions;
 using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.IRepositoryServices;
-using T.WebApi.Services.UserServices;
 
 namespace T.WebApi.Services.SecurityServices
 {
     public class SecurityService : ISecurityService
     {
-        private readonly IUserService _userService;
+        private readonly IUserServiceCommon _userService;
         private readonly IRepository<PermissionRecord> _permissionRepository;
         private readonly IRepository<PermissionRecordUserRoleMapping> _permissionMappingRepository;
         private readonly RoleManager<Role> _roleManager;
         private readonly ICacheService _cacheService;
-        public SecurityService(IUserService userService, IRepository<PermissionRecord> permissionRepository, IRepository<PermissionRecordUserRoleMapping> permissionMappingRepository, RoleManager<Role> roleManager, ICacheService cacheService)
+        public SecurityService(IUserServiceCommon userService, IRepository<PermissionRecord> permissionRepository, IRepository<PermissionRecordUserRoleMapping> permissionMappingRepository, RoleManager<Role> roleManager, ICacheService cacheService)
         {
             _userService = userService;
             _permissionRepository = permissionRepository;
@@ -41,7 +36,7 @@ namespace T.WebApi.Services.SecurityServices
             if (permissionRecord is null)
                 return false;
 
-            var user = (await _userService.GetCurrentUser()).Data;
+            var user = (await _userService.GetCurrentUser());
 
             if (user == null)
                 return false;
@@ -57,7 +52,7 @@ namespace T.WebApi.Services.SecurityServices
             if((await GetPermissionRecordBySystemNameAsync(permissionSystemname)) is null)
                 return false;
 
-            var user = (await _userService.GetCurrentUser()).Data;
+            var user = (await _userService.GetCurrentUser());
 
             if (user == null)
                 return false;
@@ -114,7 +109,7 @@ namespace T.WebApi.Services.SecurityServices
 
             // If the result was not in the cache, execute the method and store the result in the cache
             var permissions = await GetPermissionRecordsByCustomerRoleIdAsync(roleId);
-            foreach (var permission in permissions.Data)
+            foreach (var permission in permissions)
             {
                 if (permission.SystemName.Equals(permissionSystemName, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -161,40 +156,25 @@ namespace T.WebApi.Services.SecurityServices
             return (await _permissionRepository.GetAllAsync()).ToList();
         }
 
-        public async Task<ServiceResponse<PermissionRecord>> GetPermissionRecordByIdAsync(int permissionRecordId)
+        public async Task<PermissionRecord> GetPermissionRecordByIdAsync(int permissionRecordId)
         {
             var permissionRecord = await _permissionRepository.Table.FirstOrDefaultAsync(x => x.Id == permissionRecordId);
 
-            var response = new ServiceResponse<PermissionRecord>
-            {
-                Data = permissionRecord,
-                Success = true
-            };
-            return response;
+            return permissionRecord;
         }
 
-        public async Task<ServiceResponse<PermissionRecord>> GetPermissionRecordBySystemNameAsync(string permissionRecordSystenName)
+        public async Task<PermissionRecord> GetPermissionRecordBySystemNameAsync(string permissionRecordSystenName)
         {
             var permissionRecord = await _permissionRepository.Table.FirstOrDefaultAsync(x => x.SystemName == permissionRecordSystenName);
 
-            var response = new ServiceResponse<PermissionRecord>
-            {
-                Data = permissionRecord,
-                Success = true
-            };
-            return response;
+            return permissionRecord;
         }
 
-        public async Task<ServiceResponse<List<PermissionRecord>>> GetPermissionRecordsByCustomerRoleIdAsync(Guid roleId)
+        public async Task<List<PermissionRecord>> GetPermissionRecordsByCustomerRoleIdAsync(Guid roleId)
         {
             var permissionRecords = await _permissionMappingRepository.Table.Where(x => x.RoleId == roleId).Select(x=>x.PermissionRecord).ToListAsync();
 
-            var response = new ServiceResponse<List<PermissionRecord>>
-            {
-                Data = permissionRecords,
-                Success = true
-            };
-            return response;
+            return permissionRecords;
         }
 
         public async Task<ServiceResponse<bool>> UpdatePermissionRecord(PermissionRecord permissionRecord)
@@ -210,10 +190,10 @@ namespace T.WebApi.Services.SecurityServices
             }
         }
 
-        public async Task<ServiceResponse<PermissionRecordUserRoleMapping>> GetPermissionMappingAsync(string roleId, int permissionId)
+        public async Task<PermissionRecordUserRoleMapping> GetPermissionMappingAsync(string roleId, int permissionId)
         {
             var permissionMapping = await _permissionMappingRepository.Table.Where(x => x.RoleId.ToString() == roleId && x.PermissionRecordId == permissionId).FirstOrDefaultAsync();
-            return new ServiceSuccessResponse<PermissionRecordUserRoleMapping>() { Data = permissionMapping };
+            return permissionMapping;
         }
 
         public async Task<List<Role>> GetRoles()
@@ -221,10 +201,10 @@ namespace T.WebApi.Services.SecurityServices
             return await _roleManager.Roles.Include(r => r.PermissionRecordUserRoleMappings).ThenInclude(p => p.PermissionRecord).ToListAsync();
         }
 
-        public async Task<ServiceResponse<Role>> GetRoleByRoleId(string roleId)
+        public async Task<Role> GetRoleByRoleId(string roleId)
         {
             var role = await _roleManager.Roles.Include(r => r.PermissionRecordUserRoleMappings).FirstOrDefaultAsync(r => r.Id.ToString() == roleId);
-            return new ServiceSuccessResponse<Role>() { Data = role };
+            return role;
         }
 
         public async Task<ServiceResponse<bool>> CreatePermissionMappingAsync(PermissionRecordUserRoleMapping permissionMapping)

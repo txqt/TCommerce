@@ -23,20 +23,14 @@ namespace T.WebApi.Services
             return (await _manufacturerRepository.GetAllAsync()).ToList();
         }
 
-        public async Task<ServiceResponse<Manufacturer>> GetManufacturerByIdAsync(int manufacturerId)
+        public async Task<Manufacturer> GetManufacturerByIdAsync(int manufacturerId)
         {
-            return new ServiceResponse<Manufacturer>()
-            {
-                Data = await _manufacturerRepository.GetByIdAsync(manufacturerId),
-            };
+            return await _manufacturerRepository.GetByIdAsync(manufacturerId);
         }
 
-        public async Task<ServiceResponse<Manufacturer>> GetManufacturerByNameAsync(string manufacturerName)
+        public async Task<Manufacturer> GetManufacturerByNameAsync(string manufacturerName)
         {
-            return new ServiceResponse<Manufacturer>()
-            {
-                Data = await _manufacturerRepository.Table.FirstOrDefaultAsync(x=>x.Name == manufacturerName),
-            };
+            return await _manufacturerRepository.Table.FirstOrDefaultAsync(x => x.Name == manufacturerName);
         }
 
         public async Task<ServiceResponse<bool>> CreateManufacturerAsync(Manufacturer manufacturer)
@@ -62,12 +56,9 @@ namespace T.WebApi.Services
             return await _productManufacturerRepository.Table.Where(x => x.ManufacturerId == manufacturerId).ToListAsync();
         }
 
-        public async Task<ServiceResponse<ProductManufacturer>> GetProductManufacturerByIdAsync(int productManufacturerId)
+        public async Task<ProductManufacturer> GetProductManufacturerByIdAsync(int productManufacturerId)
         {
-            return new ServiceResponse<ProductManufacturer>()
-            {
-                Data = await _productManufacturerRepository.Table.FirstOrDefaultAsync(x => x.Id == productManufacturerId),
-            };
+            return await _productManufacturerRepository.Table.FirstOrDefaultAsync(x => x.Id == productManufacturerId);
         }
 
         public async Task<ServiceResponse<bool>> CreateProductManufacturerAsync(ProductManufacturer productManufacturer)

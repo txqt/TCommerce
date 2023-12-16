@@ -28,16 +28,18 @@ namespace T.WebApi.Controllers
 
         [HttpGet("role/{roleId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Role))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetRoleByRoleId(string roleId)
         {
             var result = await _securityService.GetRoleByRoleId(roleId);
 
-            if (result.Success)
+            if (result != null)
             {
                 return Ok(result);
             }
 
-            return BadRequest(result);
+            return NotFound();
         }
 
         [HttpGet("permissions")]
@@ -49,30 +51,34 @@ namespace T.WebApi.Controllers
 
         [HttpGet("role/{roleId}/permission/{permissionId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPermissonsRolesMapping(string roleId, int permissionId)
         {
             var result = await _securityService.GetPermissionMappingAsync(roleId, permissionId);
 
-            if (result.Success)
+            if (result is not null)
             {
                 return Ok(result);
             }
 
-            return BadRequest(result);
+            return NotFound(result);
         }
         
         [HttpGet("permission/{permissionId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMappingByPermissionRecordIdAsync(int permissionId)
         {
             var result = await _securityService.GetPermissionRecordByIdAsync(permissionId);
 
-            if (result.Success)
+            if (result is not null)
             {
                 return Ok(result);
             }
 
-            return BadRequest(result);
+            return NotFound();
         }
 
         [HttpPost("permission-mapping")]
@@ -128,16 +134,18 @@ namespace T.WebApi.Controllers
         [HttpGet("permission/system-name/{permissionRecordSystemName}")]
         [AllowAnonymous]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPermissionRecordBySystemNameAsync(string permissionRecordSystemName)
         {
             var result = await _securityService.GetPermissionRecordBySystemNameAsync(permissionRecordSystemName);
 
-            if (result.Success)
+            if (result is not null)
             {
                 return Ok(result);
             }
 
-            return BadRequest(result);
+            return NotFound();
         }
     }
 }

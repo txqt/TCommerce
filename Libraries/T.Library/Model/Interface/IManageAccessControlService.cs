@@ -13,9 +13,9 @@
 //    public interface IManageAccessControlService
 //    {
 //        Task<List<Role>> GetRoles();
-//        Task<ServiceResponse<Role>> GetRoleByRoleId(string roleId);
+//        Task<Role> GetRoleByRoleId(string roleId);
 //        Task<List<PermissionRecord>> GetPermissionRecords();
-//        Task<ServiceResponse<PermissionRecordUserRoleMapping>> GetPermissionRoleMappingAsync(string roleId, int permissionId);
+//        Task<PermissionRecordUserRoleMapping> GetPermissionRoleMappingAsync(string roleId, int permissionId);
 //        Task<ServiceResponse<bool>> CreatePermissionRoleAsync(PermissionRecordUserRoleMapping permissionRecordUserRoleMapping);
 //        Task<ServiceResponse<bool>> DeletePermissionRoleByIdAsync(int permissionMapping);
 //    }

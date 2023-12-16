@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
+using System;
 using System.Reflection;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
@@ -10,11 +10,10 @@ using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
-using T.WebApi.Database.ConfigurationDatabase;
-//using T.WebApi.Services.PermissionRecordUserRoleMappingServices;
 using T.WebApi.Services.ProductServices;
+using T.WebApi.Services.DataSeederService;
 
-namespace T.WebApi.Services.DataSeederService
+namespace T.WebApi.ServicesSeederService
 {
     public class DataSeeder
     {
@@ -120,11 +119,11 @@ namespace T.WebApi.Services.DataSeederService
 
                     await _productService.CreateProductAsync(product);
 
-                    var productId = (await _productService.GetByNameAsync(product.Name)).Data.Id;
+                    var productId = (await _productService.GetByNameAsync(product.Name)).Id;
 
                     foreach (var category in item.Categories)
                     {
-                        var categoryId = (await _categorySerivce.GetCategoryByNameAsync(category.Name.ToString())).Data.Id;
+                        var categoryId = (await _categorySerivce.GetCategoryByNameAsync(category.Name.ToString())).Id;
 
                         var productCategoryMapping = new ProductCategory()
                         {
@@ -136,7 +135,7 @@ namespace T.WebApi.Services.DataSeederService
 
                     foreach (var pa in item.ProductAttributes)
                     {
-                        var productAttributeId = (await _productAttributeService.GetProductAttributeByName(pa.Name.ToString())).Data.Id;
+                        var productAttributeId = (await _productAttributeService.GetProductAttributeByName(pa.Name.ToString())).Id;
 
                         var productAttributeMapping = new ProductAttributeMapping()
                         {
@@ -145,7 +144,7 @@ namespace T.WebApi.Services.DataSeederService
                         };
                         await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
 
-                        var productAttributeMappingId = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId)).Data.Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
+                        var productAttributeMappingId = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId)).Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
 
                         foreach (var pav in item.ProductAttributeValues)
                         {
@@ -160,7 +159,7 @@ namespace T.WebApi.Services.DataSeederService
 
                     foreach(var pm in item.Manufacturers)
                     {
-                        var manfacturerId = (await _manufacturerServicesCommon.GetManufacturerByNameAsync(pm.Name)).Data.Id;
+                        var manfacturerId = (await _manufacturerServicesCommon.GetManufacturerByNameAsync(pm.Name)).Id;
 
                         var productManufacturer = new ProductManufacturer()
                         {
@@ -255,7 +254,7 @@ namespace T.WebApi.Services.DataSeederService
                     {
                         var rolePermissionMapping = new PermissionRecordUserRoleMapping()
                         {
-                            PermissionRecordId = (await _securityService.GetPermissionRecordBySystemNameAsync(permission.SystemName)).Data.Id,
+                            PermissionRecordId = (await _securityService.GetPermissionRecordBySystemNameAsync(permission.SystemName)).Id,
                             RoleId = await GetRoleId(_roleManager, role.Name)
                         };
                         await _securityService.CreatePermissionMappingAsync(rolePermissionMapping);

@@ -82,7 +82,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var result = await _productAttributeService.GetProductAttributeByIdAsync(id);
-            return View(result.Data);
+            return View(result);
         }
 
         [HttpPost]
@@ -107,7 +107,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _productAttributeService.GetProductAttributeByIdAsync(id);
-            return View(result.Data);
+            return View(result);
         }
 
         //[HttpPost]

@@ -17,16 +17,16 @@ namespace T.Web.Services.ProductService
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<ServiceResponse<ProductCategory>> GetProductCategoryById(int productCategoryId)
+        public async Task<ProductCategory> GetProductCategoryById(int productCategoryId)
         {
             var result = await _httpClient.GetAsync($"api/product/category/{productCategoryId}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<ProductCategory>>();
+            return await result.Content.ReadFromJsonAsync<ProductCategory>();
         }
 
-        public async Task<ServiceResponse<List<ProductCategory>>> GetProductCategoriesByProductId(int productId)
+        public async Task<List<ProductCategory>> GetProductCategoriesByProductId(int productId)
         {
             var result = await _httpClient.GetAsync($"api/product/{productId}/categories");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<List<ProductCategory>>>();
+            return await result.Content.ReadFromJsonAsync<List<ProductCategory>>();
         }
 
         public async Task<ServiceResponse<bool>> CreateProductCategoryAsync(ProductCategory productCategory)
