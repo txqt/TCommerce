@@ -36,12 +36,12 @@
                 GetDataUrl = Url.Action("GetListProductMapping", "Product", new { productId = Model.Id }),
                 Columns = new List<ColumnDefinition>
                         {
-                        new ColumnDefinition { Data = "productAttributeName", Title = "Product Attribute Name" },
-                        new ColumnDefinition { Data = "textPrompt", Title = "Text Prompt" },
-                        new ColumnDefinition { Data = "isRequired", RenderType = RenderType.RenderBoolean, Title = "Is Required" },
-                        new ColumnDefinition { Data = "displayOrder", Title = "Display Order" },
-                        new ColumnDefinition { Data = "id", RenderType = RenderType.RenderButtonEdit, Title = "Edit" },
-                        new ColumnDefinition { Data = "id", RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
+                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.ProductAttributeName), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.ProductAttributeName)  },
+                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.TextPrompt), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.TextPrompt) },
+                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.IsRequired), RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.IsRequired) },
+                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.DisplayOrder), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.DisplayOrder) },
+                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.Id), RenderType = RenderType.RenderButtonEdit, Title = "Edit" },
+                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.Id), RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
                         }
             };
                         }
@@ -66,23 +66,23 @@
                         @* @(await Html.PartialAsync("_ProductPictureList", new ProductPictureModel { ProductId = Model.Id })) *@
                         @{
                             var productPictureList = new ProductPictureModel()
-                            {
-                                ProductId = Model.Id,
-                                DataTable = new DataTableViewModel()
-                                {
-                                    TableTitle = "Danh sách hình ảnh của " + Model.Name,
-                                    GetDataUrl = Url.Action("ListPhotos", "Product", new { productId = Model.Id }),
+            {
+                ProductId = Model.Id,
+                DataTable = new DataTableViewModel()
+                {
+                    TableTitle = "Danh sách hình ảnh của " + Model.Name,
+                    GetDataUrl = Url.Action("ListPhotos", "Product", new { productId = Model.Id }),
                     EditUrl = Url.Action("UpdateProductImage", "Product"),
-                                    DeleteUrl = Url.Action("DeletePhoto", "Product"),
-                                    Columns = new List<ColumnDefinition>
-                                        {
-                                        new ColumnDefinition { Data = "pictureUrl", RenderType = RenderType.RenderPicture, Title = "Picture" },
-                                        new ColumnDefinition { Data = "displayOrder", Title = "Display Order", Editable = true},
-                                        new ColumnDefinition { Data = "id", Title = "Edit", RenderType = RenderType.RenderInlineEdit},
-                                        new ColumnDefinition { Data = "id", RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
-                                        }
-                                }
-                            };
+                    DeleteUrl = Url.Action("DeletePhoto", "Product"),
+                    Columns = new List<ColumnDefinition>
+                        {
+                        new ColumnDefinition(nameof(ProductPictureModel.PictureUrl)) { RenderType = RenderType.RenderPicture, Title = "Picture" },
+                        new ColumnDefinition(nameof(ProductPictureModel.DisplayOrder)) { Title = "Display Order", Editable = true},
+                        new ColumnDefinition(nameof(ProductPictureModel.Id)) { Title = "Edit", RenderType = RenderType.RenderInlineEdit},
+                        new ColumnDefinition(nameof(ProductPictureModel.Id)) { RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
+                        }
+                }
+            };
                         }
                         @await Html.PartialAsync("_ProductPictureList", productPictureList)
                     </div>

@@ -6,6 +6,7 @@ using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
+using T.Web.Extensions;
 using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers
@@ -33,8 +34,8 @@ namespace T.Web.Areas.Admin.Controllers
                 GetDataUrl = Url.Action("GetAll", "ProductAttribute"),
                 Columns = new List<ColumnDefinition>
                 {
-                    new ColumnDefinition { Data = "name", Title = "Name" },
-                    new ColumnDefinition { Data = "description", Title = "Description" },
+                    new ColumnDefinition(nameof(ProductAttribute.Name)) {Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttribute>(m => m.Name) },
+                    new ColumnDefinition(nameof(ProductAttribute.Description)) {Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttribute>(m => m.Description) },
                     new ColumnDefinition { Title = "Edit", RenderType = RenderType.RenderButtonEdit },
                     new ColumnDefinition { Title = "Delete", RenderType = RenderType.RenderButtonRemove },
                 }
@@ -51,7 +52,8 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _productAttributeService.GetAllProductAttributeAsync();
-            return Json(new { data = result });
+            var json = new { data = result };
+            return this.JsonWithPascalCase(json);
         }
 
         [HttpGet]

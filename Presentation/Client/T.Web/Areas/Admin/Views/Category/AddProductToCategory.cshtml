@@ -13,12 +13,9 @@
 }
 
 @{
-    var product = new Product();
     var model = new DataTableViewModel()
             {
-                // TableId = Guid.NewGuid().ToString(),
                 TableTitle = "Product List",
-                // Headers = new List<string>() {"Name", "Price", "StockQuantity", "Edit", "Delete" },
                 CreateButtonName = "Tạo sản phẩm mới",
                 SearchButtonId = "search-products",
                 Filters = new List<Filter>()
@@ -29,18 +26,17 @@
                 ServerSide = true,
                 Columns = new List<ColumnDefinition>()
                 {
-                    new ColumnDefinition()
+                    new ColumnDefinition(nameof(Product.Id))
                     {
-                        Data = "id",
                         RenderType = RenderType.RenderCheckBox,
                         CheckBoxName = nameof(AddProductToCategoryModel.SelectedProductIds),
                         IsMasterCheckBox = true,
                         Orderable = false,
                         Width = 50,
                     },
-                    new ColumnDefinition("name")
+                    new ColumnDefinition(nameof(Product.Name))
                     {
-                        Title = nameof(product.Name)
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<Product>(m => m.Name)
                     },
                 }
             };

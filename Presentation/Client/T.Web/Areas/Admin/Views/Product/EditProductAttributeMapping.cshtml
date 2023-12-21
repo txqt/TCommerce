@@ -17,13 +17,13 @@
                 PopupWindow = true,
                 Columns = new List<ColumnDefinition>
                     {
-                    new ColumnDefinition { Data = "name" },
-                    new ColumnDefinition { Data = "priceAdjustment" },
-                    new ColumnDefinition { Data = "weightAdjustment" },
-                    new ColumnDefinition { Data = "isPreSelected", RenderType = RenderType.RenderBoolean },
-                    new ColumnDefinition { Data = "pictureThumbnailUrl" },
-                    new ColumnDefinition { RenderType = RenderType.RenderButtonEdit },
-                    new ColumnDefinition { RenderType = RenderType.RenderButtonRemove },
+                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.Name), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.Name) },
+                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.PriceAdjustment), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.PriceAdjustment) },
+                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.WeightAdjustment), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.WeightAdjustment) },
+                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.IsPreSelected), RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.IsPreSelected) },
+                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.PictureThumbnailUrl), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.PictureThumbnailUrl) },
+                    new ColumnDefinition(nameof(ProductAttributeValueModel.Id)) { RenderType = RenderType.RenderButtonEdit },
+                    new ColumnDefinition(nameof(ProductAttributeValueModel.Id)) { RenderType = RenderType.RenderButtonRemove },
                     }
             };
 }

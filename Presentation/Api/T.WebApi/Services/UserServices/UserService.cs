@@ -325,33 +325,6 @@ namespace T.WebApi.Services.UserServices
             return new ServiceSuccessResponse<string>("Reset password URL has been sent to the email successfully!");
         }
 
-        public async Task<ServiceResponse<AuthResponseDto>> RefreshToken(RefreshTokenRequestModel tokenDto)
-        {
-            if (tokenDto is null)
-            {
-                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "TokenDto is null" };
-            }
-
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.RefreshToken == tokenDto.RefreshToken);
-
-            if (user == null)
-                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "User not found" };
-            if (user.RefreshToken != tokenDto.RefreshToken)
-                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Invalid refresh token" };
-            if (user.RefreshTokenExpiryTime <= DateTime.Now)
-                return new ServiceErrorResponse<AuthResponseDto> { Success = false, Message = "Refresh token expired" };
-
-            var accessToken = await _tokenService.GenerateAccessToken(user);
-
-            var data = new AuthResponseDto()
-            {
-                AccessToken = accessToken,
-                RefreshToken = tokenDto.RefreshToken
-            };
-
-            return new ServiceErrorResponse<AuthResponseDto> { Success = true, Data = data };
-        }
-
         public async Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);

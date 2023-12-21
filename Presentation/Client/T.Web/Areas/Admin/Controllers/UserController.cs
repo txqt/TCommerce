@@ -7,6 +7,7 @@ using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Attribute;
+using T.Web.Extensions;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
 using T.Web.Services.UserService;
@@ -31,7 +32,26 @@ namespace T.Web.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            return View(new UserModel());
+            var model = new DataTableViewModel
+            {
+                TableTitle = "Danh sách User",
+                CreateUrl = Url.Action("Create", "User"),
+                EditUrl = Url.Action("Edit", "User"),
+                DeleteUrl = Url.Action("DeleteUser", "User"),
+                GetDataUrl = Url.Action("GetAll", "User"),
+                Columns = new List<ColumnDefinition>
+                {
+                    new ColumnDefinition(nameof(UserModel.FirstName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.FirstName) },
+                    new ColumnDefinition(nameof(UserModel.LastName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.LastName) },
+                    new ColumnDefinition(nameof(UserModel.Email)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.Email) },
+                    new ColumnDefinition(nameof(UserModel.UserName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.UserName) },
+                    new ColumnDefinition(nameof(UserModel.PhoneNumber)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.PhoneNumber) },
+                    new ColumnDefinition(nameof(UserModel.Deleted)) { RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.Deleted) },
+                    new ColumnDefinition(nameof(UserModel.Id)) { RenderType = RenderType.RenderButtonEdit },
+                    new ColumnDefinition(nameof(UserModel.Id)) { RenderType = RenderType.RenderButtonRemove },
+                }
+            };
+            return View(model);
         }
 
         [HttpGet]
@@ -39,7 +59,9 @@ namespace T.Web.Areas.Admin.Controllers
         {
             var userList = await _userService.GetAllAsync();
 
-            return Json(new { data = userList });
+            var model = new { data = userList };
+
+            return this.JsonWithPascalCase(model);
         }
 
         [HttpGet]

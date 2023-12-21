@@ -7,38 +7,36 @@ using T.Web.Helpers;
 
 namespace T.Web.Services.BannerServices
 {
-    public class BannerService : IBannerService
+    public class BannerService : HttpClientHelper, IBannerService
     {
-        private readonly HttpClientHelper _httpClientHelper;
         private readonly string defaulApiRoute = "api/banner/";
-        public BannerService(HttpClientHelper httpClientHelper)
+        public BannerService(HttpClient httpClient) : base(httpClient)
         {
-            _httpClientHelper = httpClientHelper;
         }
 
         public async Task<List<Banner>> GetAllBannerAsync()
         {
-            return await _httpClientHelper.GetAsync<List<Banner>>($"{defaulApiRoute + APIRoutes.GETALL}");
+            return await GetAsync<List<Banner>>($"{defaulApiRoute + APIRoutes.GETALL}");
         }
 
         public async Task<Banner> GetBannerByIdAsync(int id)
         {
-            return await _httpClientHelper.GetAsync<Banner>($"{defaulApiRoute + id}");
+            return await GetAsync<Banner>($"{defaulApiRoute + id}");
         }
 
         public async Task<ServiceResponse<bool>> CreateBannerAsync(BannerViewModel banner)
         {
-            return await _httpClientHelper.PostWithFormFileAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
+            return await PostWithFormFileAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
         }
 
         public async Task<ServiceResponse<bool>> UpdateBannerAsync(BannerViewModel banner)
         {
-            return await _httpClientHelper.PutWithFormFileAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
+            return await PutWithFormFileAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
         }
 
         public async Task<ServiceResponse<bool>> DeleteBannerByIdAsync(int id)
         {
-            return await _httpClientHelper.DeleteAsync<ServiceResponse<bool>>($"{defaulApiRoute + id}");
+            return await DeleteAsync<ServiceResponse<bool>>($"{defaulApiRoute + id}");
         }
     }
 }

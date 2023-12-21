@@ -24,7 +24,12 @@ internal class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddControllersWithViews();
+        builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+        {
+            //options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        }); ;
         builder.Services.AddTransient<JwtHandler>();
         builder.Services.AddHttpClient("", sp =>
         {
@@ -52,6 +57,7 @@ internal class Program
         builder.Services.AddTransient<UnauthorizedResponseHandler>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {
+            PropertyNamingPolicy = null,
             PropertyNameCaseInsensitive = true,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });

@@ -4,6 +4,7 @@ using T.Library.Model.Banners;
 using T.Library.Model.Interface;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
+using T.Web.Extensions;
 using T.Web.Services.PrepareModelServices;
 
 namespace T.Web.Areas.Admin.Controllers
@@ -33,12 +34,12 @@ namespace T.Web.Areas.Admin.Controllers
                 GetDataUrl = Url.Action("GetAll", "Banner"),
                 Columns = new List<ColumnDefinition>
                 {
-                    new ColumnDefinition { Data = "title" },
-                    new ColumnDefinition { Data = "subtitle" },
-                    new ColumnDefinition { Data = "price" },
-                    new ColumnDefinition { Data = "picture.urlPath", RenderType = RenderType.RenderPicture },
-                    new ColumnDefinition("id") { RenderType = RenderType.RenderButtonEdit },
-                    new ColumnDefinition("id") { RenderType = RenderType.RenderButtonRemove },
+                    new ColumnDefinition { Data = nameof(Banner.Title), Title = DisplayNameExtensions.GetPropertyDisplayName<Banner>(m=>m.Title) },
+                    new ColumnDefinition { Data = nameof(Banner.Subtitle), Title = DisplayNameExtensions.GetPropertyDisplayName<Banner>(m=>m.Subtitle) },
+                    new ColumnDefinition { Data = nameof(Banner.Price), Title = DisplayNameExtensions.GetPropertyDisplayName<Banner>(m=>m.Price) },
+                    new ColumnDefinition { Data = $"{nameof(Banner.Picture)}.{nameof(Banner.Picture.UrlPath)}", Title = DisplayNameExtensions.GetPropertyDisplayName<Banner>(m=>m.Picture), RenderType = RenderType.RenderPicture },
+                    new ColumnDefinition(nameof(Banner.Id)) { RenderType = RenderType.RenderButtonEdit },
+                    new ColumnDefinition(nameof(Banner.Id)) { RenderType = RenderType.RenderButtonRemove },
                 }
             };
             return View(model);
@@ -48,7 +49,8 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _bannerService.GetAllBannerAsync();
-            return Json(new { data = result });
+            var json = new { data = result };
+            return this.JsonWithPascalCase(json);
         }
 
         [HttpGet]

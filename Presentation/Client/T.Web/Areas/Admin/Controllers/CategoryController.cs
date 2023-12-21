@@ -9,6 +9,7 @@ using T.Library.Model.Security;
 using T.Web.Areas.Admin.Models;
 using T.Web.Areas.Admin.Models.SearchModel;
 using T.Web.Attribute;
+using T.Web.Extensions;
 using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
@@ -152,12 +153,12 @@ namespace T.Web.Areas.Admin.Controllers
                 item.ProductName = (await _productService.GetByIdAsync(item.ProductId))?.Name;
             }
 
-            //model = model.OrderBy(x => x.DisplayOrder).ToList();
-
-            return Json(new
+            var json = new
             {
                 data = model
-            });
+            };
+
+            return this.JsonWithPascalCase(json);
         }
 
         [HttpPost]
@@ -222,14 +223,15 @@ namespace T.Web.Areas.Admin.Controllers
             // Call the service to get the paged data
             var pagingResponse = await _productService.GetAll(productParameter);
 
-            // Return the data in the format that DataTables expects
-            return Json(new DataTableResponse
+            var json = new DataTableResponse<Product>
             {
                 Draw = draw,
                 RecordsTotal = pagingResponse.MetaData.TotalCount,
                 RecordsFiltered = pagingResponse.MetaData.TotalCount,
-                Data = pagingResponse.Items.Cast<object>().ToList()
-            });
+                Data = pagingResponse.Items
+            };
+
+            return this.JsonWithPascalCase(json);
         }
 
         [HttpPost]

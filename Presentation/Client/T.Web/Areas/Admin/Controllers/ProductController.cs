@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Text.Json;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
@@ -11,6 +14,7 @@ using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Areas.Admin.Models.SearchModel;
 using T.Web.Attribute;
+using T.Web.Extensions;
 using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.ProductService;
@@ -25,15 +29,14 @@ namespace T.Web.Areas.Admin.Controllers
     {
         private readonly IProductService _productService;
         private readonly IProductAttributeCommon _productAttributeService;
-        //private readonly IProductAttributeMappingService _productAttributeService;
-        //private readonly IProductAttributeValueService _productAttributeService;
         private readonly IMapper _mapper;
         private readonly IProductModelService _prepareModelService;
         private readonly IProductCategoryService _productCategoryService;
         private readonly ICategoryService _categoryService;
+        private readonly JsonSerializerOptions _options;
         public ProductController(IProductService productService, IMapper mapper, IProductAttributeCommon productAttributeService,
           //IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService,
-          IProductModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryService categoryService)
+          IProductModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryService categoryService, JsonSerializerOptions options)
         {
             _productService = productService;
             _mapper = mapper;
@@ -43,6 +46,7 @@ namespace T.Web.Areas.Admin.Controllers
             _prepareModelService = prepareModelService;
             _productCategoryService = productCategoryService;
             _categoryService = categoryService;
+            _options = options;
         }
 
         public async Task<IActionResult> Index()
@@ -92,14 +96,15 @@ namespace T.Web.Areas.Admin.Controllers
             // Call the service to get the paged data
             var pagingResponse = await _productService.GetAll(productParameter);
 
-            // Return the data in the format that DataTables expects
-            return Json(new DataTableResponse
+            var model = new DataTableResponse<Product>
             {
                 Draw = draw,
                 RecordsTotal = pagingResponse.MetaData.TotalCount,
                 RecordsFiltered = pagingResponse.MetaData.TotalCount,
-                Data = pagingResponse.Items.Cast<object>().ToList()
-            });
+                Data = pagingResponse.Items
+            };
+
+            return this.JsonWithPascalCase(model);
         }
 
         [HttpGet]
@@ -409,7 +414,7 @@ namespace T.Web.Areas.Admin.Controllers
                 //fill entity from model
                 productAttributeValue = _mapper.Map(model, productAttributeValue);
                 productAttributeValue.Quantity = model.CustomerEntersQty ? 1 : model.Quantity;
-                var result = await _productAttributeService.CreateProductAttributeValueAsync(productAttributeValue);
+                var result = await _productAttributeService.UpdateProductAttributeValueAsync(productAttributeValue);
 
                 if (!result.Success)
                 {
@@ -459,10 +464,12 @@ namespace T.Web.Areas.Admin.Controllers
 
             var model = await _prepareModelService.PrepareProductAttributeMappingListModelAsync(product);
 
-            return Json(new
+            var json = new
             {
                 data = model
-            });
+            };
+
+            return this.JsonWithPascalCase(json);
         }
 
         [HttpGet]
@@ -473,10 +480,9 @@ namespace T.Web.Areas.Admin.Controllers
 
             var model = await _prepareModelService.PrepareProductAttributeValueListModelAsync(productAttributeMappingResponse);
 
-            return Json(new
-            {
-                data = model
-            });
+            var json = new { data = model };
+
+            return this.JsonWithPascalCase(json);
         }
 
         [HttpPost]
@@ -514,11 +520,13 @@ namespace T.Web.Areas.Admin.Controllers
 
             var listphotos = await _prepareModelService.PrepareProductPictureModelAsync(product);
 
-            return Json(
+            var json =
               new
               {
                   data = listphotos
-              });
+              };
+
+            return this.JsonWithPascalCase(json);
         }
 
         [HttpPost]

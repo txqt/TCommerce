@@ -8,7 +8,7 @@
            multiple="multiple"
            accept=".jpg, .png" />
 
-    @*<span class="btn btn-primary" onclick="ClickButtoUpload()">Upload Hình ảnh</span>*@
+    @*<span class="btn btn-primary" onclick="ClickButtonUpload()">Upload Hình ảnh</span>*@
 
 
     <div id="box-photo-upload" class="d-flex flex-wrap photo-upload" data-id="@Model.ProductId">
@@ -17,7 +17,7 @@
 </div>
 
 <p class="d-flex justify-content-between">
-    <span class="btn btn-primary" onclick="ClickButtoUpload()">Upload Hình Ảnh</span>
+    <span class="btn btn-primary" onclick="ClickButtonUpload()">Upload Hình Ảnh</span>
     <span class="btn btn-danger" onclick="DeleteAllImages()">Xóa Tất Cả Ảnh</span>
 </p>
 
@@ -54,7 +54,7 @@
             }
         });
     }
-    function ClickButtoUpload() {
+    function ClickButtonUpload() {
         $("#selectfileupload").click();
     }
 

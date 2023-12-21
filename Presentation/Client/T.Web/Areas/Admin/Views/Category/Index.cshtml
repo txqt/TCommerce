@@ -14,35 +14,35 @@
                 DeleteUrl = Url.Action("DeleteCategory", "Category"),
                 SearchButtonId = "search-categories",
                 GetDataUrl = Url.Action("GetAll", "Category"),
+                DefaultSort = new DefaultSort(3, "desc"),
                 Columns = new List<ColumnDefinition>()
                 {
-                    new ColumnDefinition()
+                    new ColumnDefinition(nameof(CategoryModel.Id))
                     {
-                        Data = "id",
                         RenderType = RenderType.RenderCheckBox,
                         IsMasterCheckBox = true,
                         Orderable = false
                     },
-                    new ColumnDefinition("name")
+                    new ColumnDefinition(nameof(CategoryModel.Name))
                     {
-                        Title = nameof(Model.Name)
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<CategoryModel>(m=>m.Name)
                     },
-                    new ColumnDefinition("published")
+                    new ColumnDefinition(nameof(CategoryModel.Published))
                     {
-                        Title = nameof(Model.Published),
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<CategoryModel>(m=>m.Published),
                         RenderType = RenderType.RenderBoolean
                     },
-                    new ColumnDefinition("displayOrder")
+                    new ColumnDefinition(nameof(CategoryModel.DisplayOrder))
                     {
-                        Title = nameof(Model.DisplayOrder)
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<CategoryModel>(m=>m.DisplayOrder)
                     },
-                    new ColumnDefinition("id")
+                    new ColumnDefinition(nameof(CategoryModel.Id))
                     {
                         RenderType = RenderType.RenderButtonEdit,
                         Title = "Edit",
                         Orderable = false
                     },
-                    new ColumnDefinition("id")
+                    new ColumnDefinition(nameof(CategoryModel.Id))
                     {
                         RenderType = RenderType.RenderButtonRemove,
                         Title = "Delete",

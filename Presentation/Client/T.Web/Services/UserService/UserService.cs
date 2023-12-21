@@ -11,6 +11,7 @@ using T.Library.Model.Users;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Account;
 using Microsoft.AspNetCore.Mvc;
+using T.Web.Helpers;
 
 namespace T.Web.Services.UserService
 {
@@ -18,42 +19,34 @@ namespace T.Web.Services.UserService
     {
         Task<ServiceResponse<bool>> Register(RegisterRequest request);
     }
-    public class UserService : IUserService
-{
-        private readonly HttpClient _httpClient;
-
-        public UserService(HttpClient httpClient)
+    public class UserService : HttpClientHelper, IUserService
+    {
+        public UserService(HttpClient httpClient) : base(httpClient)
         {
-            _httpClient = httpClient;
         }
 
         public async Task<ServiceResponse<bool>> CreateUserAsync(UserModel model)
         {
-            var result = await _httpClient.PostAsJsonAsync($"api/user", model);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await PostAsJsonAsync<ServiceResponse<bool>>($"api/user", model);
         }
         public async Task<ServiceResponse<bool>> UpdateUserAsync(UserModel model)
         {
-            var result = await _httpClient.PutAsJsonAsync($"api/user", model);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await PutAsJsonAsync<ServiceResponse<bool>>($"api/user", model);
         }
 
         public async Task<ServiceResponse<bool>> DeleteUserByUserIdAsync(Guid id)
         {
-            var result = await _httpClient.DeleteAsync($"api/user/{id}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await DeleteAsync<ServiceResponse<bool>>($"api/user/{id}");
         }
 
         public async Task<UserModel> Get(Guid id)
         {
-            var result = await _httpClient.GetAsync($"api/user/{id}");
-            return await result.Content.ReadFromJsonAsync<UserModel>();
+            return await GetAsync<UserModel>($"api/user/{id}");
         }
 
         public async Task<List<UserModel>> GetAllAsync()
         {
-            var result = await _httpClient.GetAsync($"api/user/{APIRoutes.GETALL}");
-            return await result.Content.ReadFromJsonAsync<List<UserModel>>();
+            return await GetAsync<List<UserModel>>($"api/user/{APIRoutes.GETALL}");
         }
 
         public Task<List<Role>> GetRolesByUserAsync(User user)
@@ -79,8 +72,7 @@ namespace T.Web.Services.UserService
 
         public async Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest)
         {
-            var result = await _httpClient.PostAsJsonAsync("api/user/account/register", registerRequest);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await PostAsJsonAsync<ServiceResponse<bool>>("api/user/account/register", registerRequest);
         }
     }
 }

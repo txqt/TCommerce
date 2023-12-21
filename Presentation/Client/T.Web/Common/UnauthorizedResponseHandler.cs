@@ -38,7 +38,7 @@ namespace T.Web.Common
                         RefreshToken = refreshToken,
                         ReturnUrl = ""
                     };
-                    var refreshResponse = await client.PostAsJsonAsync("api/account/refresh", refreshTokenDto);
+                    var refreshResponse = await client.PostAsJsonAsync("api/token/refresh", refreshTokenDto);
 
                     if (refreshResponse.IsSuccessStatusCode)
                     {

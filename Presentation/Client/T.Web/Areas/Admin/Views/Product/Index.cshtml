@@ -2,74 +2,6 @@
 @{
     ViewData["Title"] = "Product List";
 }
-@* <!-- Page Heading -->
-<h1 class="h3 mb-2 text-gray-800">Tables</h1>
-<a class="btn btn-info" href="@Url.Action("CreateProduct", "Product")">New</a>
-<!-- DataTales Example -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            @await Html.PartialAsync("_ProductList", Model)
-        </div>
-    </div>
-</div> *@
-@{
-    var product = new Product();
-    var model = new DataTableViewModel()
-            {
-                // TableId = Guid.NewGuid().ToString(),
-                TableTitle = "Product List",
-                // Headers = new List<string>() {"Name", "Price", "StockQuantity", "Edit", "Delete" },
-                CreateButtonName = "Tạo sản phẩm mới",
-                CreateUrl = Url.Action("CreateProduct", "Product"),
-                EditUrl = Url.Action("EditProduct", "Product"),
-                DeleteUrl = Url.Action("Delete", "Product"),
-                SearchButtonId = "search-products",
-                Filters = new List<Filter>()
-                {
-                    new Filter(nameof(Model.CategoryId)),
-                },
-                GetDataUrl = Url.Action("GetAll", "Product"),
-                ServerSide = true,
-                Columns = new List<ColumnDefinition>()
-                {
-                    new ColumnDefinition()
-                    {
-                        Data = "id",
-                        RenderType = RenderType.RenderCheckBox,
-                        IsMasterCheckBox = true,
-                        Orderable = false
-                    },
-                    new ColumnDefinition("name")
-                    {
-                        Title = nameof(product.Name)
-                    },
-                    new ColumnDefinition("price")
-                    {
-                        Title = nameof(product.Price)
-                    },
-                    new ColumnDefinition("stockQuantity")
-                    {
-                        Title = nameof(product.StockQuantity)
-                    },
-                    new ColumnDefinition("id")
-                    {
-                        RenderType = RenderType.RenderButtonEdit,
-                        Title = "Edit",
-                        Orderable = false
-                    },
-                    new ColumnDefinition("id")
-                    {
-                        RenderType = RenderType.RenderButtonRemove,
-                        Title = "Delete",
-                        Orderable = false
-                    },
-                }
-            };
-}
 
 <div class="card">
     <div class="card-body">
@@ -95,6 +27,56 @@
     </div>
 </div>
 
+@{
+    var model = new DataTableViewModel()
+            {
+                TableTitle = "Product List",
+                CreateButtonName = "Tạo sản phẩm mới",
+                CreateUrl = Url.Action("CreateProduct", "Product"),
+                EditUrl = Url.Action("EditProduct", "Product"),
+                DeleteUrl = Url.Action("Delete", "Product"),
+                SearchButtonId = "search-products",
+                Filters = new List<Filter>()
+                {
+                    new Filter(nameof(Model.CategoryId)),
+                },
+                GetDataUrl = Url.Action("GetAll", "Product"),
+                ServerSide = true,
+                Columns = new List<ColumnDefinition>()
+                {
+                    new ColumnDefinition(nameof(Product.Id))
+                    {
+                        RenderType = RenderType.RenderCheckBox,
+                        IsMasterCheckBox = true,
+                        Orderable = false
+                    },
+                    new ColumnDefinition(nameof(Product.Name))
+                    {
+                        Title = nameof(Product.Name)
+                    },
+                    new ColumnDefinition(nameof(Product.Price))
+                    {
+                        Title = nameof(Product.Price)
+                    },
+                    new ColumnDefinition(nameof(Product.StockQuantity))
+                    {
+                        Title = nameof(Product.StockQuantity)
+                    },
+                    new ColumnDefinition(nameof(Product.Id))
+                    {
+                        RenderType = RenderType.RenderButtonEdit,
+                        Title = "Edit",
+                        Orderable = false
+                    },
+                    new ColumnDefinition(nameof(Product.Id))
+                    {
+                        RenderType = RenderType.RenderButtonRemove,
+                        Title = "Delete",
+                        Orderable = false
+                    },
+                }
+            };
+}
 
 <div class="table-responsive display" style="width:100%">
     @await Html.PartialAsync("_Table", model)

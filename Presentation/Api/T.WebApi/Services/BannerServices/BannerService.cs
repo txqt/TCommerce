@@ -112,16 +112,17 @@ namespace T.WebApi.Services.BannerServices
             try
             {
                 var banner = await _bannerRepository.GetByIdAsync(id);
-                if(banner.PictureId > 0)
+                await _bannerRepository.DeleteAsync(id);
+                var pictureId = banner.PictureId;
+                if (banner.PictureId > 0)
                 {
-                    var deletePictureResult = await _pictureService.DeletePictureByIdAsync(banner.PictureId);
+                    var deletePictureResult = await _pictureService.DeletePictureByIdAsync(pictureId);
                     if (!deletePictureResult.Success)
                     {
                         return ErrorResponse("Cannot delete picture");
                     }
                 }
 
-                await _bannerRepository.DeleteAsync(id);
                 return SuccessResponse();
             }
             catch (Exception ex)

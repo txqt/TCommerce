@@ -72,23 +72,23 @@
                 <div class="card-body">
                     @{
                         var ProductCategoryList = new DataTableViewModel
-                        {
-                            TableTitle = "Products",
-                            CreateUrl = Url.Action("AddProductToCategory", "Category", new { categoryId = Model.Id }),
-                            EditUrl = Url.Action("UpdateProductCategory", "Category"),
-                            DeleteUrl = Url.Action("DeleteCategoryMapping", "Category"),
-                            GetDataUrl = Url.Action("GetListCategoryMapping", "Category", new { categoryId = Model.Id }),
-                            PopupWindow = true,
-                            DefaultSort = new DefaultSort(3, "desc"),
-                            Columns = new List<ColumnDefinition>
-                                {
-                                new ColumnDefinition { Data = "productName", Title = "Product Name" },
-                                new ColumnDefinition { Data = "isFeaturedProduct", RenderType = RenderType.RenderBoolean, Title = "Is Featured Product", Editable = true },
-                                new ColumnDefinition { Data = "displayOrder",Editable = true, Title = "Display Order" },
-                                new ColumnDefinition { Data = "id", RenderType = RenderType.RenderInlineEdit, Title = "Edit" },
-                                new ColumnDefinition { Data = "id", RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
-                                }
-                        };
+            {
+                TableTitle = "Products",
+                CreateUrl = Url.Action("AddProductToCategory", "Category", new { categoryId = Model.Id }),
+                EditUrl = Url.Action("UpdateProductCategory", "Category"),
+                DeleteUrl = Url.Action("DeleteCategoryMapping", "Category"),
+                GetDataUrl = Url.Action("GetListCategoryMapping", "Category", new { categoryId = Model.Id }),
+                PopupWindow = true,
+                DefaultSort = new DefaultSort(3, "desc"),
+                Columns = new List<ColumnDefinition>
+                    {
+                    new ColumnDefinition(nameof(ProductCategoryModel.ProductName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<ProductCategoryModel>(m=>m.ProductName) },
+                    new ColumnDefinition(nameof(ProductCategoryModel.IsFeaturedProduct)) { RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductCategoryModel>(m=>m.IsFeaturedProduct), Editable = true },
+                    new ColumnDefinition(nameof(ProductCategoryModel.DisplayOrder)) { Editable = true, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductCategoryModel>(m=>m.DisplayOrder) },
+                    new ColumnDefinition(nameof(ProductCategoryModel.Id)) { RenderType = RenderType.RenderInlineEdit, Title = "Edit" },
+                    new ColumnDefinition(nameof(ProductCategoryModel.Id)) { RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
+                    }
+            };
                     }
                     @await Html.PartialAsync("_Table", ProductCategoryList)
                 </div>

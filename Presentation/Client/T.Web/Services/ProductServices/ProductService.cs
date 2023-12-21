@@ -14,6 +14,7 @@ using T.Library.Model.Paging;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
+using T.Web.Helpers;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace T.Web.Services.ProductService
@@ -22,74 +23,49 @@ namespace T.Web.Services.ProductService
     {
         Task<PagingResponse<Product>> GetAll(ProductParameters productParameters);
     }
-    public class ProductService : IProductService
+    public class ProductService : HttpClientHelper, IProductService
     {
-        private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _options;
         private readonly IMapper _mapper;
-        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IMapper mapper)
+        public ProductService(JsonSerializerOptions options, HttpClient httpClient, IMapper mapper) : base(httpClient)
         {
             _options = options;
-            _httpClient = httpClient;
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId)
+        public async Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> formFiles, int productId)
         {
-            using (var content = new MultipartFormDataContent())
-            {
-                foreach (var image in ListImages)
-                {
-                    var fileContent = new StreamContent(image.OpenReadStream());
-                    fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                    {
-                        Name = "formFiles",
-                        FileName = image.FileName
-                    };
-                    content.Add(fileContent);
-                }
-
-                var result = await _httpClient.PostAsync($"api/products/{productId}/upload-picture", content);
-                result.EnsureSuccessStatusCode();
-
-                return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
-            }
+            return await PutWithFormFileAsync<ServiceResponse<bool>>($"api/products/{productId}/pictures", formFiles);
         }
 
         public async Task<ServiceResponse<bool>> CreateProductAsync(Product product)
         {
-            var result = await _httpClient.PostAsJsonAsync($"api/products", product);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await PostAsJsonAsync<ServiceResponse<bool>>($"api/products", product);
         }
 
         public async Task<ServiceResponse<bool>> DeleteAllProductImage(int productId)
         {
-            var result = await _httpClient.DeleteAsync($"api/products/{productId}/delete-all-picture");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await DeleteAsync<ServiceResponse<bool>>($"api/products/{productId}/delete-all-picture");
         }
 
         public async Task<ServiceResponse<bool>> DeleteProductAsync(int productId)
         {
-            var result = await _httpClient.DeleteAsync($"api/products/{productId}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await DeleteAsync<ServiceResponse<bool>>($"api/products/{productId}");
         }
 
         public async Task<ServiceResponse<bool>> DeleteProductImage(int pictureMappingId)
         {
-            var result = await _httpClient.DeleteAsync($"api/products/picture-mapping-id/{pictureMappingId}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await DeleteAsync<ServiceResponse<bool>>($"api/products/picture-mapping-id/{pictureMappingId}");
         }
 
         public async Task<ServiceResponse<bool>> EditProductAsync(ProductModel product)
         {
-            var result = await _httpClient.PutAsJsonAsync($"api/products", product);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await PutAsJsonAsync<ServiceResponse<bool>>($"api/products", product);
         }
 
         public async Task<Product> GetByIdAsync(int id)
         {
-            var result = await _httpClient.GetAsync($"api/products/{id}");
-            return await result.Content.ReadFromJsonAsync<Product>();
+            return await GetAsync<Product>($"api/products/{id}");
         }
 
         public async Task<PagingResponse<Product>> GetAll(ProductParameters productParameters)
@@ -110,17 +86,15 @@ namespace T.Web.Services.ProductService
                 queryStringParam.Add(propertyName, value.ToString());
             }
 
-            var response = await _httpClient.GetAsync(QueryHelpers.AddQueryString($"api/products", queryStringParam));
-
-            response.EnsureSuccessStatusCode();
+            var response = await GetAsync<List<Product>>(QueryHelpers.AddQueryString($"api/products", queryStringParam), _options);
 
             var metaData = JsonSerializer
-                .Deserialize<MetaData>(response.Headers.GetValues("X-Pagination").First(), _options);
+                .Deserialize<MetaData>(LastResponse.Headers.GetValues("X-Pagination").First(), new JsonSerializerOptions());
 
-            var stream = await response.Content.ReadAsStreamAsync();
+            //var stream = await LastResponse.Content.ReadAsStreamAsync();
             var pagingResponse = new PagingResponse<Product>
             {
-                Items = await JsonSerializer.DeserializeAsync<List<Product>>(stream, _options),
+                Items = response,
                 MetaData = metaData
             };
 
@@ -129,8 +103,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<List<ProductPicture>> GetProductPicturesByProductIdAsync(int productId)
         {
-            var result = await _httpClient.GetAsync($"api/products/{productId}/pictures");
-            return await result.Content.ReadFromJsonAsync<List<ProductPicture>>();
+            return await GetAsync<List<ProductPicture>>($"api/products/{productId}/pictures");
         }
 
         public Task<List<Product>> GetAllNewestProduct()
@@ -155,14 +128,12 @@ namespace T.Web.Services.ProductService
 
         public async Task<List<ProductAttribute>> GetAllProductAttributeByProductIdAsync(int productId)
         {
-            var result = await _httpClient.GetAsync($"api/products/{productId}/attributes");
-            return await result.Content.ReadFromJsonAsync<List<ProductAttribute>>();
+            return await GetAsync<List<ProductAttribute>>($"api/products/{productId}/attributes");
         }
 
         public async Task<ServiceResponse<bool>> EditProductImageAsync(ProductPicture productPicture)
         {
-            var result = await _httpClient.PutAsJsonAsync($"api/products/update-picture", productPicture);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await PutAsJsonAsync<ServiceResponse<bool>>($"api/products/update-picture", productPicture);
         }
 
         public async Task<List<Product>> GetAllProductsDisplayedOnHomepageAsync()

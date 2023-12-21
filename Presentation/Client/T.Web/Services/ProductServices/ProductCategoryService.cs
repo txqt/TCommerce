@@ -4,47 +4,39 @@ using System.Net.Http.Json;
 using System.Net.Http.Headers;
 using T.Library.Model.Interface;
 using T.Library.Model.Common;
+using T.Web.Helpers;
 
 namespace T.Web.Services.ProductService
 {
-    public class ProductCategoryService : IProductCategoryService
+    public class ProductCategoryService : HttpClientHelper, IProductCategoryService
     {
-        private readonly HttpClient _httpClient;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public ProductCategoryService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
-        {
-            _httpClient = httpClient;
-            _httpContextAccessor = httpContextAccessor;
+        public ProductCategoryService(HttpClient httpClient) : base(httpClient)
+        { 
         }
 
         public async Task<ProductCategory> GetProductCategoryById(int productCategoryId)
         {
-            var result = await _httpClient.GetAsync($"api/product/category/{productCategoryId}");
-            return await result.Content.ReadFromJsonAsync<ProductCategory>();
+            return await GetAsync<ProductCategory>($"api/product/category/{productCategoryId}");
         }
 
         public async Task<List<ProductCategory>> GetProductCategoriesByProductId(int productId)
         {
-            var result = await _httpClient.GetAsync($"api/product/{productId}/categories");
-            return await result.Content.ReadFromJsonAsync<List<ProductCategory>>();
+            return await GetAsync<List<ProductCategory>>($"api/product/{productId}/categories");
         }
 
         public async Task<ServiceResponse<bool>> CreateProductCategoryAsync(ProductCategory productCategory)
         {
-            var result = await _httpClient.PostAsJsonAsync($"api/product/category", productCategory);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await PostAsJsonAsync<ServiceResponse<bool>>($"api/product/category", productCategory);
         }
 
         public async Task<ServiceResponse<bool>> UpdateProductCategoryAsync(ProductCategory productCategory)
         {
-            var result = await _httpClient.PutAsJsonAsync($"api/product/category", productCategory);
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await PutAsJsonAsync<ServiceResponse<bool>>($"api/product/category", productCategory);
         }
 
         public async Task<ServiceResponse<bool>> DeleteProductCategoryAsync(int productCategoryId)
         {
-            var result = await _httpClient.DeleteAsync($"api/product/category/{productCategoryId}");
-            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            return await DeleteAsync<ServiceResponse<bool>>($"api/product/category/{productCategoryId}");
         }
     }
 }
