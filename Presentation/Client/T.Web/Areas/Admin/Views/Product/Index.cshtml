@@ -2,7 +2,14 @@
 @{
     ViewData["Title"] = "Product List";
 }
-
+<div class="content-header p-2">
+    <div class="d-flex flex-row-reverse">
+        <button type="button" id="delete-selected" class="btn btn-danger">
+            <i class="far fa-trash-alt"></i>
+            Delete Selected
+        </button>
+    </div>
+</div>
 <div class="card">
     <div class="card-body">
         <div class="row">
@@ -28,7 +35,7 @@
 </div>
 
 @{
-    var model = new DataTableViewModel()
+    var modelTable = new DataTableViewModel()
             {
                 TableTitle = "Product List",
                 CreateButtonName = "Tạo sản phẩm mới",
@@ -79,5 +86,46 @@
 }
 
 <div class="table-responsive display" style="width:100%">
-    @await Html.PartialAsync("_Table", model)
+    @await Html.PartialAsync("_Table", modelTable)
 </div>
+
+<script>
+
+    $(document).ready(function () {
+        var message = 'Chưa chọn sản phẩm';
+        $('#delete-selected').bind('click', function () {
+            if (selectedIds.length > 0) {
+                message = 'Xóa sản phẩm id ' + selectedIds.join(', ') + '?';
+                if (confirm(message)) {
+                    var postData = {
+                        selectedIds: selectedIds
+                    };
+
+                    addAntiForgeryToken(postData);
+
+                    $.ajax({
+                        cache: false,
+                        type: "POST",
+                        url: "@(Url.Action("DeleteSelected", "Product"))",
+                        data: postData,
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert('Delete failed')
+                        },
+                        complete: function (jqXHR, textStatus) {
+                            if (jqXHR.status === 204) {
+                                alert('Nothing selected');
+                                return;
+                            }
+                            updateTable('#@modelTable.TableId');
+                        }
+                    });
+                    return false;
+                }
+            } else {
+                alert(message);
+            }
+        });
+
+    });
+
+</script>

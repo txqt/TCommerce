@@ -140,5 +140,10 @@ namespace T.Web.Services.ProductService
         {
             throw new NotImplementedException();
         }
+
+        public async Task<ServiceSuccessResponse<bool>> BulkDeleteProductsAsync(IEnumerable<int> productIds)
+        {
+            return await DeleteWithDataAsync<ServiceSuccessResponse<bool>>($"api/products/delete-list", productIds);
+        }
     }
 }

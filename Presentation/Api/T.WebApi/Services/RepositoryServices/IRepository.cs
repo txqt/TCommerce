@@ -12,5 +12,6 @@ namespace T.WebApi.Services.IRepositoryServices
         Task BulkCreateAsync(IEnumerable<T> entities);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
+        Task BulkDeleteAsync(IEnumerable<int> ids);
     }
 }

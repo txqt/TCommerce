@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
 using T.Library.Model.Common;
@@ -340,6 +341,12 @@ namespace T.WebApi.Services.ProductServices
         public async Task<List<Product>> GetAllProductsDisplayedOnHomepageAsync()
         {
             return await _productsRepository.Table.Where(x => x.Published && x.ShowOnHomepage && !x.Deleted).OrderBy(x => x.DisplayOrder).ToListAsync();
+        }
+
+        public async Task<ServiceSuccessResponse<bool>> BulkDeleteProductsAsync(IEnumerable<int> productIds)
+        {
+            await _productsRepository.BulkDeleteAsync(productIds);
+            return new ServiceSuccessResponse<bool>();
         }
 
         #endregion

@@ -25,6 +25,7 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
         Task<ServiceResponse<bool>> DeleteProductImage(int pictureMappingId);
         Task<ServiceResponse<bool>> DeleteAllProductImage(int productId);
-        Task<List<Product>> GetAllProductsDisplayedOnHomepageAsync(); 
+        Task<List<Product>> GetAllProductsDisplayedOnHomepageAsync();
+        Task<ServiceSuccessResponse<bool>> BulkDeleteProductsAsync(IEnumerable<int> productIds);
     }
 }

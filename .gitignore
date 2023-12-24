@@ -387,3 +387,5 @@ FodyWeavers.xsd
 
 **/Migrations/
 **/mailssave/
+
+**/uploads/*

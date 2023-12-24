@@ -59,6 +59,22 @@ namespace T.Web.Helpers
             return await HandleResponse<T>(response, jsonOptions);
         }
 
+        public async Task<T> DeleteWithDataAsync<T>(string url, object data, JsonSerializerOptions jsonOptions = null)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri(_httpClient.BaseAddress, url),
+                Content = content
+            });
+
+            _lastResponse = response;
+            return await HandleResponse<T>(response, jsonOptions);
+        }
+
+
         public async Task<T> PostWithFormFileAsync<T>(string url, object data, IFormFile file = null, JsonSerializerOptions jsonOptions = null)
         {
             var content = BuildMultipartFormDataContent(data, file);

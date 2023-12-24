@@ -98,5 +98,30 @@ namespace T.WebApi.Services.IRepositoryServices
             await Table.AddRangeAsync(entities);
             await _context.SaveChangesAsync();
         }
+        public async Task BulkDeleteAsync(IEnumerable<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                throw new ArgumentException("Danh sách ID không được rỗng.", nameof(ids));
+            }
+
+            var entitiesToDelete = await Table.Where(entity => ids.Contains(entity.Id)).ToListAsync();
+
+            foreach (var entity in entitiesToDelete)
+            {
+                if (entity is ISoftDeletedEntity deletableEntity)
+                {
+                    deletableEntity.Deleted = true; // Thực hiện soft delete
+                    _context.Entry(entity).State = EntityState.Modified;
+                }
+                else
+                {
+                    Table.Remove(entity); // Thực hiện hard delete nếu không hỗ trợ soft delete
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

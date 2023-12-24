@@ -56,7 +56,9 @@ namespace T.Web.Areas.Admin.Controllers
                 }
             }
 
-            return Json(new { data = listModel });
+            var json = new { data = listModel };
+
+            return this.JsonWithPascalCase(json);
         }
 
         [HttpGet]

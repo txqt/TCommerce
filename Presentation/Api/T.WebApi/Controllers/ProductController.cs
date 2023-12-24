@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 using T.Library.Model;
 using T.Library.Model.Interface;
@@ -84,6 +85,17 @@ namespace T.WebApi.Controllers
         public async Task<ActionResult> DeleteProduct(int productId)
         {
             var result = await _productService.DeleteProductAsync(productId);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpDelete("delete-list")]
+        public async Task<IActionResult> DeleteProductList(IEnumerable<int> productIds)
+        {
+            var result = await _productService.BulkDeleteProductsAsync(productIds);
             if (!result.Success)
             {
                 return BadRequest(result);

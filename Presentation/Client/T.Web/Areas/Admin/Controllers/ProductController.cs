@@ -178,6 +178,19 @@ namespace T.Web.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> DeleteSelected(ICollection<int> selectedIds)
+        {
+
+            if (selectedIds == null || !selectedIds.Any())
+                return NoContent();
+
+            var result = await _productService.BulkDeleteProductsAsync(selectedIds);
+
+            return Json(new { Result = true });
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllAttribute(int productId)
         {

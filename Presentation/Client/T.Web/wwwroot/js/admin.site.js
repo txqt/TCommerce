@@ -55,3 +55,13 @@ function addAntiForgeryToken(n) {
         n
 }
 
+function updateTable(n, t) {
+    $(n).DataTable().ajax.reload();
+    $(n).DataTable().columns.adjust();
+    t && clearSelectAllCheckbox(n)
+}
+
+function clearSelectAllCheckbox(n) {
+    $(n).prop('checked', false);
+}
+
