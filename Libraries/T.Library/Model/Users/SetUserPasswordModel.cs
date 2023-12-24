@@ -13,6 +13,6 @@ namespace T.Library.Model
         [DataType(DataType.Password)]
         [Display(Name = "Xác nhận mật khẩu")]
         [Compare("NewPassword", ErrorMessage = "Lặp lại mật khẩu không chính xác.")]
-        public string? ConfirmPassword { get; set; }\
+        public string? ConfirmPassword { get; set; }
   }
 }
