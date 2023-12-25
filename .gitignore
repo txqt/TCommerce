@@ -388,4 +388,4 @@ FodyWeavers.xsd
 **/Migrations/
 **/mailssave/
 
-/Presentation/Api/T.WebApi/wwwroot/uploads/*
+Presentation/Api/T.WebApi/wwwroot/uploads/*
