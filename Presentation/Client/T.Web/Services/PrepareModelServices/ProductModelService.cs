@@ -149,7 +149,7 @@ namespace T.Web.Services.PrepareModel
                 Id = productPicture.Id,
                 ProductId = productPicture.ProductId,
                 PictureId = productPicture.PictureId,
-                PictureUrl = apiUrl + productPicture.Picture.UrlPath,
+                PictureUrl = productPicture.Picture.UrlPath,
                 DisplayOrder = productPicture.DisplayOrder
             }).ToList();
 

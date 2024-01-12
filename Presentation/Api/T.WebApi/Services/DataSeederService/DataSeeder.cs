@@ -12,6 +12,8 @@ using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.DataSeederService;
+using AutoMapper;
+using T.Library.Model.ViewsModel;
 
 namespace T.WebApi.ServicesSeederService
 {
@@ -24,6 +26,7 @@ namespace T.WebApi.ServicesSeederService
         private readonly IProductAttributeService _productAttributeService;
         private readonly ISecurityService _securityService;
         private readonly IManufacturerServicesCommon _manufacturerServicesCommon;
+        private readonly IMapper _mapper;
 
         public DataSeeder(RoleManager<Role> roleManager,
             UserManager<User> userManager,
@@ -32,7 +35,8 @@ namespace T.WebApi.ServicesSeederService
             IProductCategoryService productCategorySerivce,
             IProductAttributeService productAttributeService,
             ISecurityService permissionRecordService,
-            IManufacturerServicesCommon manufacturerServicesCommon)
+            IManufacturerServicesCommon manufacturerServicesCommon,
+            IMapper mapper)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -41,6 +45,7 @@ namespace T.WebApi.ServicesSeederService
             _productAttributeService = productAttributeService;
             _securityService = permissionRecordService;
             this._manufacturerServicesCommon = manufacturerServicesCommon;
+            _mapper = mapper;
             //_permissionRecordUserRoleMappingService = permissionRecordUserRoleMappingService;
         }
 
@@ -116,8 +121,9 @@ namespace T.WebApi.ServicesSeederService
 
                 foreach (var product in item.Products)
                 {
+                    var model = _mapper.Map<ProductModel>(product);
 
-                    await _productService.CreateProductAsync(product);
+                    await _productService.CreateProductAsync(model);
 
                     var productId = (await _productService.GetByNameAsync(product.Name)).Id;
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.WebApi.Database.ConfigurationDatabase;
@@ -111,6 +112,11 @@ namespace T.WebApi.Services.ProductServices
         {
             try
             {
+                if(productAttributeMapping.AttributeControlTypeId <= 0)
+                {
+                    productAttributeMapping.AttributeControlType = AttributeControlType.DropdownList;
+                }
+
                 await _productAttributeMappingRepository.CreateAsync(productAttributeMapping);
                 return new ServiceSuccessResponse<bool>();
             }catch (Exception ex)
@@ -123,6 +129,10 @@ namespace T.WebApi.Services.ProductServices
         {
             try
             {
+                if (productAttributeMapping.AttributeControlTypeId <= 0)
+                {
+                    productAttributeMapping.AttributeControlType = AttributeControlType.DropdownList;
+                }
                 await _productAttributeMappingRepository.UpdateAsync(productAttributeMapping);
             }
             catch (Exception ex)
@@ -160,12 +170,20 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<ServiceResponse<bool>> CreateProductAttributeValueAsync(ProductAttributeValue productAttributeValue)
         {
+            if (productAttributeValue.ColorSquaresRgb is not null && !productAttributeValue.ColorSquaresRgb.Contains("#"))
+            {
+                productAttributeValue.ColorSquaresRgb.Insert(0, "#");
+            }
             await _productAttributeValueRepository.CreateAsync(productAttributeValue);
             return new ServiceSuccessResponse<bool>();
         }
 
         public async Task<ServiceResponse<bool>> UpdateProductAttributeValueAsync(ProductAttributeValue productAttributeValue)
         {
+            if (productAttributeValue.ColorSquaresRgb is not null && !productAttributeValue.ColorSquaresRgb.Contains("#"))
+            {
+                productAttributeValue.ColorSquaresRgb.Insert(0, "#");
+            }
             await _productAttributeValueRepository.UpdateAsync(productAttributeValue);
             return new ServiceSuccessResponse<bool>();
         }

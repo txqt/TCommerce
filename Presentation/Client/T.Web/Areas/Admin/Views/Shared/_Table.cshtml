@@ -416,7 +416,8 @@
                 case RenderType.RenderButtonRemove:
                     <text>
                             render: function (data, type, row, meta) {
-                                return '<button class="@(column.ClassName ?? "btn btn-danger") deleteBtn" data-url="@(Model.DeleteUrl + "?id=")' + row.id + '"><i class="far fa-trash-alt"></i></button>';
+                            var idToUse = row.Id !== undefined ? row.Id : row.id;
+                            return '<button class="@(column.ClassName ?? "btn btn-danger") deleteBtn" data-url="@(Model.DeleteUrl + "?id=")' + idToUse + '"><i class="far fa-trash-alt"></i></button>';
                             },
                     </text>
                     break;

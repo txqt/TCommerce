@@ -22,6 +22,7 @@ namespace T.Web.Services.ProductService
     public interface IProductService : IProductServiceCommon
     {
         Task<PagingResponse<Product>> GetAll(ProductParameters productParameters);
+
     }
     public class ProductService : HttpClientHelper, IProductService
     {
@@ -38,14 +39,14 @@ namespace T.Web.Services.ProductService
             return await PutWithFormFileAsync<ServiceResponse<bool>>($"api/products/{productId}/pictures", formFiles);
         }
 
-        public async Task<ServiceResponse<bool>> CreateProductAsync(Product product)
+        public async Task<ServiceResponse<bool>> CreateProductAsync(ProductModel product)
         {
             return await PostAsJsonAsync<ServiceResponse<bool>>($"api/products", product);
         }
 
         public async Task<ServiceResponse<bool>> DeleteAllProductImage(int productId)
         {
-            return await DeleteAsync<ServiceResponse<bool>>($"api/products/{productId}/delete-all-picture");
+            return await DeleteAsync<ServiceResponse<bool>>($"api/products/{productId}/pictures");
         }
 
         public async Task<ServiceResponse<bool>> DeleteProductAsync(int productId)
@@ -55,7 +56,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<ServiceResponse<bool>> DeleteProductImage(int pictureMappingId)
         {
-            return await DeleteAsync<ServiceResponse<bool>>($"api/products/picture-mapping-id/{pictureMappingId}");
+            return await DeleteAsync<ServiceResponse<bool>>($"api/products/pictures/{pictureMappingId}");
         }
 
         public async Task<ServiceResponse<bool>> EditProductAsync(ProductModel product)

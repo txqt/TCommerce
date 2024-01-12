@@ -126,9 +126,8 @@ namespace T.Web.Areas.Admin.Controllers
             {
                 return View(model);
             }
-            var product = _mapper.Map<Product>(model);
 
-            var result = await _productService.CreateProductAsync(product);
+            var result = await _productService.CreateProductAsync(model);
 
             if (!result.Success)
             {

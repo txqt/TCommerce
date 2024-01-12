@@ -176,7 +176,7 @@ namespace T.Web.Helpers
 
         private async Task<T> HandleResponse<T>(HttpResponseMessage response, JsonSerializerOptions jsonOptions = null)
         {
-            if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode && response.Content.Headers.ContentLength.HasValue && response.Content.Headers.ContentLength.Value > 0)
             {
                 return await response.Content.ReadFromJsonAsync<T>(jsonOptions);
             }

@@ -22,8 +22,8 @@
                     new ColumnDefinition { Data = nameof(ProductAttributeValueModel.WeightAdjustment), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.WeightAdjustment) },
                     new ColumnDefinition { Data = nameof(ProductAttributeValueModel.IsPreSelected), RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.IsPreSelected) },
                     new ColumnDefinition { Data = nameof(ProductAttributeValueModel.PictureThumbnailUrl), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.PictureThumbnailUrl) },
-                    new ColumnDefinition(nameof(ProductAttributeValueModel.Id)) { RenderType = RenderType.RenderButtonEdit },
-                    new ColumnDefinition(nameof(ProductAttributeValueModel.Id)) { RenderType = RenderType.RenderButtonRemove },
+                    new ColumnDefinition(nameof(ProductAttributeValueModel.Id)) { RenderType = RenderType.RenderButtonEdit, Orderable = false },
+                    new ColumnDefinition(nameof(ProductAttributeValueModel.Id)) { RenderType = RenderType.RenderButtonRemove, Orderable = false },
                     }
             };
 }

@@ -17,7 +17,7 @@ namespace T.Library.Model.Interface
         Task<Product> GetByIdAsync(int id);
         Task<Product> GetByNameAsync(string name);
         Task<List<ProductPicture>> GetProductPicturesByProductIdAsync(int productId);
-        Task<ServiceResponse<bool>> CreateProductAsync(Product product);
+        Task<ServiceResponse<bool>> CreateProductAsync(ProductModel model);
         Task<ServiceResponse<bool>> EditProductAsync(ProductModel model);
         Task<ServiceResponse<bool>> DeleteProductAsync(int productId);
         Task<List<ProductAttribute>> GetAllProductAttributeByProductIdAsync(int productId);

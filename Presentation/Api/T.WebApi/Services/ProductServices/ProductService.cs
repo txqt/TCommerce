@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using T.Library.Helpers;
 using T.Library.Model;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
@@ -8,6 +9,7 @@ using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Extensions;
 using T.WebApi.Services.IRepositoryServices;
+using T.WebApi.Services.UrlRecordServices;
 
 namespace T.WebApi.Services.ProductServices
 {
@@ -39,10 +41,12 @@ namespace T.WebApi.Services.ProductServices
         private string? APIUrl;
 
         private IMapper _mapper;
+
+        private readonly IUrlRecordService _urlRecordService;
         #endregion
 
         #region Ctor
-        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository)
+        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService)
         {
             _configuration = configuration;
             _environment = environment;
@@ -53,6 +57,7 @@ namespace T.WebApi.Services.ProductServices
             _pictureRepository = pictureRepository;
             _mapper = mapper;
             _productCategoryRepository = productCategoryRepository;
+            _urlRecordService = urlRecordService;
         }
         #endregion
 
@@ -81,14 +86,20 @@ namespace T.WebApi.Services.ProductServices
             return await _productsRepository.GetByIdAsync(id);
         }
 
-        public async Task<ServiceResponse<bool>> CreateProductAsync(Product product)
+        public async Task<ServiceResponse<bool>> CreateProductAsync(ProductModel model)
         {
             try
             {
+                var product = _mapper.Map<Product>(model);
+
                 product.CreatedOnUtc = DateTime.Now;
 
                 await _productsRepository.CreateAsync(product);
 
+                model.SeName = await _urlRecordService.ValidateSlug(product, model.SeName, product.Name, true);
+
+                await _urlRecordService.SaveSlugAsync(product, model.SeName);
+;
                 return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)
@@ -110,6 +121,10 @@ namespace T.WebApi.Services.ProductServices
                 product.UpdatedOnUtc = DateTime.Now;
 
                 await _productsRepository.UpdateAsync(product);
+
+                model.SeName = await _urlRecordService.ValidateSlug(product, model.SeName, product.Name, true);
+
+                await _urlRecordService.SaveSlugAsync(product, model.SeName);
             }
             catch (Exception ex)
             {
@@ -169,7 +184,7 @@ namespace T.WebApi.Services.ProductServices
             try
             {
 
-                string path = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/");
+                string path = Path.Combine(_environment.ContentRootPath, "wwwroot/images/");
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -182,7 +197,7 @@ namespace T.WebApi.Services.ProductServices
                         var fileExtension = Path.GetExtension(imageFile.FileName);
                         var newFileName = uniqueFileName + fileExtension;
 
-                        var file = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", newFileName);
+                        var file = Path.Combine(_environment.ContentRootPath, "wwwroot/images/", newFileName);
                         using (var fileStream = new FileStream(file, FileMode.Create))
                         {
                             await imageFile.CopyToAsync(fileStream);
@@ -190,7 +205,7 @@ namespace T.WebApi.Services.ProductServices
 
                         var picture = new Picture
                         {
-                            UrlPath = "/uploads/" + newFileName
+                            UrlPath = "/images/" + newFileName
                         };
                         await _pictureRepository.CreateAsync(picture);
 
@@ -228,9 +243,9 @@ namespace T.WebApi.Services.ProductServices
                 if (picture.UrlPath is null)
                     throw new ArgumentNullException("Cannot find Url path");
 
-                var fileName = picture.UrlPath.Replace("/uploads/", "");
+                var fileName = picture.UrlPath.Replace("/images/", "");
 
-                var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", fileName);
+                var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/images/", fileName);
                 if (File.Exists(filePath))
                 {
                     File.Delete(filePath);
@@ -264,8 +279,8 @@ namespace T.WebApi.Services.ProductServices
                     if (picture.UrlPath is null)
                         throw new ArgumentNullException("Cannot find Url path");
 
-                    var fileName = picture.UrlPath.Replace("/uploads/", "");
-                    var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads/", fileName);
+                    var fileName = picture.UrlPath.Replace("/images/", "");
+                    var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/images/", fileName);
                     if (File.Exists(filePath))
                     {
                         File.Delete(filePath);
@@ -315,7 +330,7 @@ namespace T.WebApi.Services.ProductServices
 
             if (productPicture is null)
             {
-                fileName = "/uploads/no-pictrue.png";
+                fileName = "/images/no-pictrue.png";
             }
             else
             {

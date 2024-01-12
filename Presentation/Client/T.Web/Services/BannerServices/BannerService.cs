@@ -9,34 +9,34 @@ namespace T.Web.Services.BannerServices
 {
     public class BannerService : HttpClientHelper, IBannerService
     {
-        private readonly string defaulApiRoute = "api/banner/";
+        private readonly string defaultApiRoute = "api/banner/";
         public BannerService(HttpClient httpClient) : base(httpClient)
         {
         }
 
         public async Task<List<Banner>> GetAllBannerAsync()
         {
-            return await GetAsync<List<Banner>>($"{defaulApiRoute + APIRoutes.GETALL}");
+            return await GetAsync<List<Banner>>($"{defaultApiRoute}");
         }
 
         public async Task<Banner> GetBannerByIdAsync(int id)
         {
-            return await GetAsync<Banner>($"{defaulApiRoute + id}");
+            return await GetAsync<Banner>($"{defaultApiRoute + id}");
         }
 
         public async Task<ServiceResponse<bool>> CreateBannerAsync(BannerViewModel banner)
         {
-            return await PostWithFormFileAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
+            return await PostWithFormFileAsync<ServiceResponse<bool>>($"{defaultApiRoute}", banner, banner.ImageFile);
         }
 
         public async Task<ServiceResponse<bool>> UpdateBannerAsync(BannerViewModel banner)
         {
-            return await PutWithFormFileAsync<ServiceResponse<bool>>($"{defaulApiRoute}", banner, banner.ImageFile);
+            return await PutWithFormFileAsync<ServiceResponse<bool>>($"{defaultApiRoute}", banner, banner.ImageFile);
         }
 
         public async Task<ServiceResponse<bool>> DeleteBannerByIdAsync(int id)
         {
-            return await DeleteAsync<ServiceResponse<bool>>($"{defaulApiRoute + id}");
+            return await DeleteAsync<ServiceResponse<bool>>($"{defaultApiRoute + id}");
         }
     }
 }

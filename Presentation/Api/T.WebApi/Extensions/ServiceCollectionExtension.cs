@@ -29,6 +29,7 @@ using T.WebApi.Services;
 using T.WebApi.ServicesSeederService;
 using T.WebApi.Services.TokenServices;
 using T.WebApi.Services.UserRegistrations;
+using T.WebApi.Services.UrlRecordServices;
 
 namespace T.WebApi.Extensions
 {
@@ -141,6 +142,7 @@ namespace T.WebApi.Extensions
             services.AddScoped<DataSeeder>();
             services.AddScoped<IDbManageService, DbManageService>();
             services.AddScoped<IBannerService, BannerService>();
+            services.AddScoped<IUrlRecordService, UrlRecordService>();
             services.AddScoped<ValidationFilterAttribute>();
             services.AddScoped<DatabaseContextFactory>();
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>));

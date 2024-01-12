@@ -3,11 +3,14 @@
     ViewData["Title"] = "Product List";
 }
 <div class="content-header p-2">
-    <div class="d-flex flex-row-reverse">
+    <div class="d-flex flex-row-reverse mx-2">
         <button type="button" id="delete-selected" class="btn btn-danger">
             <i class="far fa-trash-alt"></i>
             Delete Selected
         </button>
+        <a id="add-button" class="btn btn-success mx-2" href="@Url.Action("CreateProduct", "Product")">
+            Add New
+        </a>
     </div>
 </div>
 <div class="card">

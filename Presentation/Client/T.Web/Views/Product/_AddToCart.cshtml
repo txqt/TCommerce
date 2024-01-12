@@ -1,0 +1,30 @@
+﻿@model ProductDetailsModel.AddToCartModel
+<div class="product-details-action">
+
+    <span style="cursor: pointer" class="btn-product btn-cart" onclick="addproducttocart_details('@Url.ActionLink("AddProductToCartDetails", "Product", new {productId = Model.ProductId, shoppingCartTypeId = (int) ShoppingCartType.ShoppingCart})','#product-details-form')"><span>add to cart</span></span>
+
+    <div class="details-action-wrapper">
+        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+        <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+    </div><!-- End .details-action-wrapper -->
+
+</div><!-- End .product-details-action -->
+
+<script>
+    function addproducttocart_details(n, t) {
+        $.ajax({
+            url: n,
+            data: $(t).serialize(),
+            type: "POST",
+            // success: function (response) {
+            //     alert('Success: ' + response);
+            // },
+            // complete: function () {
+            //     alert('Request complete');
+            // },
+            // error: function (xhr, textStatus, errorThrown) {
+            //     alert('Failed: ' + textStatus + ', ' + errorThrown);
+            // }
+        });
+    }
+</script>

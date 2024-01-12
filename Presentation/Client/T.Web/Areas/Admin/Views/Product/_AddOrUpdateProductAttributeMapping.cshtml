@@ -12,9 +12,16 @@
     <label for="@Html.DisplayNameFor(model => model.DisplayOrder)">@Html.DisplayNameFor(model => model.DisplayOrder)</label>
     <input style="min-width: 100px; width: 300px" type="number" min="0" class="form-control" asp-for="DisplayOrder" id="@Html.DisplayNameFor(model => model.DisplayOrder)" aria-describedby="emailHelp" placeholder="@Html.DisplayNameFor(model => model.DisplayOrder)">
 </div>
-<div class="form-check">
-    <input type="checkbox" asp-for="IsRequired" class="form-check-input" id="@Html.DisplayNameFor(model => model.IsRequired)">
-    <label class="form-check-label" for="@Html.DisplayNameFor(model => model.IsRequired)">@Html.DisplayNameFor(model => model.IsRequired)</label>
+<div class="form-group">
+    <div class="form-check">
+        <input type="checkbox" asp-for="IsRequired" class="form-check-input" id="@Html.DisplayNameFor(model => model.IsRequired)">
+        <label class="form-check-label" for="@Html.DisplayNameFor(model => model.IsRequired)">@Html.DisplayNameFor(model => model.IsRequired)</label>
+    </div>
+</div>
+<div class="form-group">
+    <label for="@Html.DisplayNameFor(model => model.AttributeControlType)">AttributeControlType</label>
+    <select class="form-select" id="@Html.DisplayNameFor(model => model.AttributeControlType)" asp-items="@(await ((AttributeControlType)Model.AttributeControlTypeId).ToSelectListAsync())" asp-for="AttributeControlTypeId">
+    </select>
 </div>
 <button type="submit" class="btn btn-primary mt-2">Save</button>
 

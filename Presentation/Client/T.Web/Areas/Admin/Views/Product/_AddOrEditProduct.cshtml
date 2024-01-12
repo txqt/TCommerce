@@ -46,7 +46,11 @@
         </label>
     </div>
 </div>
-
+<div class="form-group">
+    <label asp-for="SeName" class="control-label"></label>
+    <input asp-for="SeName" class="form-control" />
+    <span asp-validation-for="SeName" class="text-danger"></span>
+</div>
 
 <div id="mark-as-new" style="display:none">
     <div class="form-group">

@@ -1,0 +1,142 @@
+﻿@model ProductDetailsModel
+
+@{
+    var onAttributeChangeFuncName = $"on_attribute_change_{Model.Id}";
+    var attributeChangeScriptsBuilder = new StringBuilder();
+    foreach (var attribute in Model.ProductAttributes)
+    {
+        var controlId = $"product_attribute_{attribute.Id}";
+        @switch (attribute.AttributeControlTypeId)
+        {
+            case (int)AttributeControlType.DropdownList:
+                attributeChangeScriptsBuilder.AppendFormat("$('#{0}').on('change', function(){{{1}();console.log({1});}});\n", controlId, onAttributeChangeFuncName);
+                break;
+            case (int)AttributeControlType.RadioList:
+            case (int)AttributeControlType.ColorSquares:
+            case (int)AttributeControlType.ImageSquares:
+                {
+                    foreach (var attributeValue in attribute.Values)
+                    {
+                        attributeChangeScriptsBuilder.AppendFormat("$('#{0}_{1}').on('click', function(){{$(this).parent('label').parent('span').addClass('active').siblings().removeClass('active'); {2}();console.log({1});}});\n", controlId, attributeValue.Id, onAttributeChangeFuncName);
+                    }
+                }
+                break;
+        }
+    }
+}
+
+@if (Model.ProductAttributes.Count > 0)
+{
+    @foreach (var attributeItem in Model.ProductAttributes)
+    {
+        var controlId = $"product_attribute_{attributeItem.Id}";
+        var textPrompt = !string.IsNullOrEmpty(attributeItem.TextPrompt) ? attributeItem.TextPrompt : attributeItem.Name;
+        <div class="details-filter-row details-row-size">
+            @if (attributeItem.IsRequired)
+            {
+                <span class="text-danger">*</span>
+            }
+            <label>
+                @attributeItem.Name
+            </label>
+
+
+            @switch (attributeItem.AttributeControlTypeId)
+            {
+                case (int)AttributeControlType.DropdownList:
+                    <div class="select-custom">
+                        <select data-attr="@(attributeItem.Id)" name="@(controlId)" id="@(controlId)" class="form-control">
+                            <option value="0" selected="selected">Select a @attributeItem.Name</option>
+                            @foreach (var attributeValue in attributeItem.Values)
+                            {
+                                <option data-attr-value="@attributeValue.Id" selected="@attributeValue.IsPreSelected" value="@attributeValue.Id">@attributeValue.Name</option>
+                            }
+                        </select>
+                    </div>
+                    break;
+                case (int)AttributeControlType.ColorSquares:
+                    <div class="product-nav product-nav-dots">
+                        @foreach (var attributeValue in attributeItem.Values)
+                        {
+                            <span class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)color-squares-@Model.Id">
+                                <label style="background: @attributeValue.ColorSquaresRgb;" for="@(controlId)_@(attributeValue.Id)" class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)">
+                                    <input hidden id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
+                                    <span class="sr-only" title="@attributeValue.Name">@attributeValue.Name</span>
+                                </label>
+                            </span>
+                        }
+                    </div>
+                    break;
+                case (int)AttributeControlType.ImageSquares:
+                    <div class="product-nav product-nav-thumbs">
+                        @foreach (var attributeValue in attributeItem.Values)
+                        {
+                            <span class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)image-squares-@Model.Id">
+                                <label for="@(controlId)_@(attributeValue.Id)" class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)">
+                                    <img src="@(attributeValue.ImageSquaresPictureModel.ImageUrl)" alt="product desc">
+                                    <input hidden id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
+                                </label>
+                            </span>
+                        }
+                    </div>
+
+                    break;
+            }
+        </div>
+    }
+}
+
+<script>
+    $(document).ready(function () {
+    @(onAttributeChangeFuncName)();
+    @Html.Raw(attributeChangeScriptsBuilder.ToString())
+                                });
+    function @(onAttributeChangeFuncName)() {
+        $.ajax({
+            cache: false,
+            url: "@Html.Raw(Url.ActionLink("ProductDetailsAttributeChange", "Product", new { productId = Model.Id }))",
+            data: $('#product-details-form').serialize(),
+            type: "POST",
+            success: function (data, textStatus, jqXHR) {
+                if (data.price) {
+                    $('.product-price-@Model.Id').text(data.price);
+                }
+                if (data.basepricepangv) {
+                    $('#base-price-pangv-@Model.Id').text(data.basepricepangv);
+                } else {
+                    $('#base-price-pangv-@Model.Id').hide();
+                }
+                if (data.sku) {
+                    $('#sku-@Model.Id').text(data.sku).parent(".sku").show();
+                } else {
+                    $('#sku-@Model.Id').parent(".sku").hide();
+                }
+                if (data.mpn) {
+                    $('#mpn-@Model.Id').text(data.mpn).parent(".manufacturer-part-number").show();
+                } else {
+                    $('#mpn-@Model.Id').parent(".manufacturer-part-number").hide();
+                }
+                if (data.gtin) {
+                    $('#gtin-@Model.Id').text(data.gtin).parent(".gtin").show();
+                } else {
+                    $('#gtin-@Model.Id').parent(".gtin").hide();
+                }
+                if (data.stockAvailability) {
+                    $('#stock-availability-value-@Model.Id').text(data.stockAvailability);
+                }
+                if (data.mainImage) {
+                    $('#product-main-image-@Model.Id').attr("src", data.mainImage);
+                    $('#product-main-image-anchor-@Model.Id').attr("href", data.mainImage);
+                }
+                else{
+                    $('#product-main-image-@Model.Id').hide();
+                    $('#product-main-image-anchor-@Model.Id').hide();
+                }
+                if (data.message) {
+                    alert(data.message);
+                }
+                $(document).trigger({ type: "product_attributes_changed", changedData: data });
+            }
+        });
+    }
+</script>

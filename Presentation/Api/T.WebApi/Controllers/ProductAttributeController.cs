@@ -24,6 +24,7 @@ namespace T.WebApi.Controllers
             _productAttributeSvc = productAttributeSvc;
         }
 
+        [AllowAnonymous]
         [HttpGet()]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -39,7 +40,8 @@ namespace T.WebApi.Controllers
             return Ok(products);
         }
 
-        [HttpGet("{id}")]
+		[AllowAnonymous]
+		[HttpGet("{id}")]
         public async Task<ActionResult<ProductAttribute>> Get(int id)
         {
             return await _productAttributeSvc.GetProductAttributeByIdAsync(id);

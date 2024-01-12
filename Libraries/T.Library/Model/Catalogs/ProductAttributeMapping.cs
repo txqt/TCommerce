@@ -1,5 +1,6 @@
 ﻿
 
+using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
 
 namespace T.Library.Model
@@ -67,6 +68,12 @@ namespace T.Library.Model
         public string? DefaultValue { get; set; }
 
         public int ConditionAttributeSelected { get; set; }
+
+        public AttributeControlType AttributeControlType
+        {
+            get => (AttributeControlType)AttributeControlTypeId;
+            set => AttributeControlTypeId = (int)value;
+        }
 
         public List<ProductAttributeValue>? ProductAttributeValue { get; set; }
         public Product? Product { get; set; }

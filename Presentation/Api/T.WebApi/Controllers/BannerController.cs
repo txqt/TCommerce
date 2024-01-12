@@ -17,7 +17,7 @@ namespace T.WebApi.Controllers
             _bannerService = bannerService;
         }
 
-        [HttpGet(APIRoutes.GETALL)]
+        [HttpGet()]
         public async Task<ActionResult> GetAllBannerAsync()
         {
             return Ok(await _bannerService.GetAllBannerAsync());
@@ -27,7 +27,6 @@ namespace T.WebApi.Controllers
         {
             return await _bannerService.GetBannerByIdAsync(id);
         }
-
 
         [HttpPost()]
         public async Task<ActionResult> CreateBannerAsync([FromForm] BannerViewModel banner)

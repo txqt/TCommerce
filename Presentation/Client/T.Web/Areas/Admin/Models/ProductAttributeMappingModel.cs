@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
 
 namespace T.Web.Areas.Admin.Models
@@ -35,8 +36,12 @@ namespace T.Web.Areas.Admin.Models
         [UIHint("Int32Nullable")]
         public int? ValidationFileMaximumSize { get; set; }
         public string DefaultValue { get; set; }
-
-        //public string ValidationRulesString { get; set; }
+        public int AttributeControlTypeId { get; set; }
+        public AttributeControlType AttributeControlType
+        {
+            get => (AttributeControlType)AttributeControlTypeId;
+            set => AttributeControlTypeId = (int)value;
+        }
 
         #endregion
     }

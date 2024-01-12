@@ -18,12 +18,12 @@ namespace T.Web.Controllers
         {
             if(!_webHostEnvironment.IsDevelopment())
             {
-                return Redirect("/home/index");
+                return RedirectToAction("Index", "Home");
             }
             var result = await _httpClient.GetAsync("api/db-manage/is-installed");
             if (result.IsSuccessStatusCode)
             {
-                return Redirect("/home/index");
+                return Redirect("ao-thun-nam");
             }
             return View(new StartupFormModel());
         }

@@ -53,12 +53,12 @@ namespace T.WebApi.Controllers
 
         [HttpPost("")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> CreateProduct(Product product)
+        public async Task<ActionResult> CreateProduct(ProductModel model)
         {
             //if (!await _permissionRecordService.AuthorizeAsync(DefaultPermission.ManageProducts))
             //    return Forbid();
 
-            var result = await _productService.CreateProductAsync(product);
+            var result = await _productService.CreateProductAsync(model);
             if (!result.Success)
             {
                 return BadRequest(result);

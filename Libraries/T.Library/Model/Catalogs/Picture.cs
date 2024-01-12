@@ -38,6 +38,7 @@ namespace T.Library.Model.Common
         public string? UrlPath { get; set; }
 
         public List<ProductPicture> ProductPictures { get; set; }
+
         public List<Banner> Banners { get; set; }
     }
 }
