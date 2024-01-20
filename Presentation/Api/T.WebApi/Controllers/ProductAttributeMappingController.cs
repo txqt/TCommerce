@@ -88,7 +88,7 @@ namespace T.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetAttributeValues(int id)
         {
-            var result = await _productAttributeService.GetProductAttributeValuesAsync(id);
+            var result = await _productAttributeService.GetProductAttributeValuesByMappingIdAsync(id);
 
             if (result is null)
             {

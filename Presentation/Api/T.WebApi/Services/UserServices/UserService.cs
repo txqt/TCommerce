@@ -222,7 +222,7 @@ namespace T.WebApi.Services.UserServices
             return password.ToString();
         }
 
-        public async Task<User> GetCurrentUser()
+        public async Task<UserModel> GetCurrentUser()
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -236,7 +236,9 @@ namespace T.WebApi.Services.UserServices
 
             var user = await _userManager.FindByNameAsync(username);
 
-            return user;
+            var userModel = _mapper.Map<UserModel>(user);
+
+            return userModel;
         }
 
         public async Task<List<Role>> GetRolesByUserAsync(User user)

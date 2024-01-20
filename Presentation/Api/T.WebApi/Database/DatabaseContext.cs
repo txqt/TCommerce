@@ -5,6 +5,7 @@ using T.Library.Model;
 using T.Library.Model.Banners;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
+using T.Library.Model.Orders;
 using T.Library.Model.Security;
 using T.Library.Model.Seo;
 using T.Library.Model.Users;
@@ -55,5 +56,6 @@ namespace T.WebApi.Database
         public DbSet<PermissionRecord> PermissionRecords { get; set; }
         public DbSet<PermissionRecordUserRoleMapping> PermissionRecordUserRoleMappings { get; set; }
         public DbSet<UrlRecord> UrlRecords { get; set; }
+        public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
     }
 }

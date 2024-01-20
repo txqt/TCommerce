@@ -16,7 +16,7 @@ namespace T.Library.Model.Orders
         /// <summary>
         /// Gets or sets the customer identifier
         /// </summary>
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the product identifier
@@ -61,6 +61,8 @@ namespace T.Library.Model.Orders
             get => (ShoppingCartType)ShoppingCartTypeId;
             set => ShoppingCartTypeId = (int)value;
         }
+
+        public string AttributeJson { get; set; }
 
         public List<ShoppingCartItemAttributeValue> ShoppingCartItemAttributeValues { get; set; }   
     }

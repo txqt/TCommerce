@@ -156,7 +156,7 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<List<ProductAttributeValue>> GetProductAttributeValuesAsync(int productAttributeMappingId)
+        public async Task<List<ProductAttributeValue>> GetProductAttributeValuesByMappingIdAsync(int productAttributeMappingId)
         {
             return await _productAttributeValueRepository.Table
                                         .Where(pav => pav.ProductAttributeMappingId == productAttributeMappingId)

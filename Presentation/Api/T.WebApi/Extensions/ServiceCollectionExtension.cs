@@ -30,6 +30,7 @@ using T.WebApi.ServicesSeederService;
 using T.WebApi.Services.TokenServices;
 using T.WebApi.Services.UserRegistrations;
 using T.WebApi.Services.UrlRecordServices;
+using T.WebApi.Services.ShoppingCartServices;
 
 namespace T.WebApi.Extensions
 {
@@ -147,6 +148,8 @@ namespace T.WebApi.Extensions
             services.AddScoped<DatabaseContextFactory>();
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>));
             services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+            services.AddScoped<IProductAttributeConverter, ProductAttributeConverter>();
+            services.AddScoped<IShoppingCartService, ShoppingCartService>();
             return services;
         }
 

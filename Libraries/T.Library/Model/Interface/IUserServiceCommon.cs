@@ -17,7 +17,7 @@ namespace T.Library.Model.Interface
         Task<List<UserModel>> GetAllAsync();
         Task<List<Role>> GetRolesByUserAsync(User user);
         Task<UserModel> Get(Guid id);
-        Task<User> GetCurrentUser();
+        Task<UserModel> GetCurrentUser();
         Task<ServiceResponse<bool>> CreateUserAsync(UserModel model);
         Task<ServiceResponse<bool>> UpdateUserAsync(UserModel model);
         Task<ServiceResponse<bool>> DeleteUserByUserIdAsync(Guid id);

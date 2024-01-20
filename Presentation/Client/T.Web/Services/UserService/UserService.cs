@@ -54,9 +54,9 @@ namespace T.Web.Services.UserService
             throw new NotImplementedException();
         }
 
-        public Task<User> GetCurrentUser()
+        public async Task<UserModel> GetCurrentUser()
         {
-            throw new NotImplementedException();
+            return await GetAsync<UserModel>($"api/user/me");
         }
 
 

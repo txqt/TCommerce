@@ -88,7 +88,7 @@ namespace T.Web.Services.ProductService
         #endregion
 
         #region ProductAttributeValue
-        public async Task<List<ProductAttributeValue>> GetProductAttributeValuesAsync(int productAttributeMappingId)
+        public async Task<List<ProductAttributeValue>> GetProductAttributeValuesByMappingIdAsync(int productAttributeMappingId)
         {
             return await GetAsync<List<ProductAttributeValue>>($"api/product-attribute-mappings/{productAttributeMappingId}/value");
         }

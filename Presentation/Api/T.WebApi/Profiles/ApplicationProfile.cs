@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using T.Library.Model;
 using T.Library.Model.Banners;
+using T.Library.Model.Orders;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
 
@@ -45,6 +46,8 @@ namespace T.WebApi.Profiles
                 .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Height))
                 .ForMember(dest => dest.AvailableStartDateTimeUtc, opt => opt.MapFrom(src => src.AvailableStartDateTimeUtc))
                 .ForMember(dest => dest.AvailableEndDateTimeUtc, opt => opt.MapFrom(src => src.AvailableEndDateTimeUtc))
+                .ForMember(dest => dest.CreatedOnUtc, opt => opt.MapFrom(src => src.CreatedOnUtc))
+                .ForMember(dest => dest.UpdatedOnUtc, opt => opt.MapFrom(src => src.UpdatedOnUtc))
                 .ReverseMap();
 
             CreateMap<User, UserModel>()
@@ -62,6 +65,15 @@ namespace T.WebApi.Profiles
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
                 .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
                 .ForMember(dest => dest.ConfirmPassword, opt => opt.MapFrom(src => src.ConfirmPassword))
+                .ReverseMap();
+
+            CreateMap<ShoppingCartItemModel, ShoppingCartItem>()
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(dest => dest.UpdatedOnUtc, opt => opt.MapFrom(src => src.UpdatedOnUtc))
+                .ForMember(dest => dest.CreatedOnUtc, opt => opt.MapFrom(src => src.CreatedOnUtc))
+                .ForMember(dest => dest.ShoppingCartType, opt => opt.MapFrom(src => src.ShoppingCartType))
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ReverseMap();
         }
     }

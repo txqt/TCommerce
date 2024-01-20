@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
+using T.Library.Model.ViewsModel;
 using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.IRepositoryServices;
 
@@ -16,13 +18,15 @@ namespace T.WebApi.Services.SecurityServices
         private readonly IRepository<PermissionRecordUserRoleMapping> _permissionMappingRepository;
         private readonly RoleManager<Role> _roleManager;
         private readonly ICacheService _cacheService;
-        public SecurityService(IUserServiceCommon userService, IRepository<PermissionRecord> permissionRepository, IRepository<PermissionRecordUserRoleMapping> permissionMappingRepository, RoleManager<Role> roleManager, ICacheService cacheService)
+        private readonly IMapper _mapper;
+        public SecurityService(IUserServiceCommon userService, IRepository<PermissionRecord> permissionRepository, IRepository<PermissionRecordUserRoleMapping> permissionMappingRepository, RoleManager<Role> roleManager, ICacheService cacheService, IMapper mapper)
         {
             _userService = userService;
             _permissionRepository = permissionRepository;
             _permissionMappingRepository = permissionMappingRepository;
             this._roleManager = roleManager;
             _cacheService = cacheService;
+            _mapper = mapper;
         }
 
 
@@ -36,10 +40,12 @@ namespace T.WebApi.Services.SecurityServices
             if (permissionRecord is null)
                 return false;
 
-            var user = (await _userService.GetCurrentUser());
+            var userModel = (await _userService.GetCurrentUser());
 
-            if (user == null)
+            if (userModel == null)
                 return false;
+
+            var user = _mapper.Map<User>(userModel);
 
             return await AuthorizeAsync(permissionRecord.SystemName, user);
         }
@@ -52,10 +58,12 @@ namespace T.WebApi.Services.SecurityServices
             if((await GetPermissionRecordBySystemNameAsync(permissionSystemname)) is null)
                 return false;
 
-            var user = (await _userService.GetCurrentUser());
+            var userModel = (await _userService.GetCurrentUser());
 
-            if (user == null)
+            if (userModel == null)
                 return false;
+
+            var user = _mapper.Map<User>(userModel);
 
             return await AuthorizeAsync(permissionSystemname, user);
         }

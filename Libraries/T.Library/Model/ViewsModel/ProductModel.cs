@@ -127,5 +127,14 @@ namespace T.Library.Model.ViewsModel
         public DateTime? AvailableEndDateTimeUtc { get; set; }
         
         public string SeName { get; set; }
+        /// <summary>
+        /// Gets or sets the date and time of product creation
+        /// </summary>
+        public DateTime CreatedOnUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time of product update
+        /// </summary>
+        public DateTime UpdatedOnUtc { get; set; }
     }
 }

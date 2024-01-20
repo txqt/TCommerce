@@ -57,6 +57,7 @@ namespace T.Library.Model.ViewsModel
             RoleNames = new List<string>();
         }
 
+        public bool HasShoppingCartItems { get; set; }
         public bool Deleted { get; set; }
     }
 }

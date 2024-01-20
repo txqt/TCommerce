@@ -31,6 +31,8 @@ namespace T.Library.Model.Users
 
         public bool RequirePasswordChange { get; set; }
 
+        public bool HasShoppingCartItems { get; set; }
+
         public bool Deleted { get; set; }
     }
 }

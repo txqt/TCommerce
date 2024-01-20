@@ -16,6 +16,7 @@ using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
 using T.Web.Services.ProductService;
 using T.Web.Services.SecurityServices;
+using T.Web.Services.ShoppingCartServices;
 using T.Web.Services.UrlRecordService;
 using T.Web.Services.UserRegistrationServices;
 using T.Web.Services.UserService;
@@ -61,6 +62,8 @@ internal class Program
         builder.Services.AddSingleton<HttpClientHelper>();
         builder.Services.AddTransient<UnauthorizedResponseHandler>();
         builder.Services.AddTransient<SlugRouteTransformer>();
+        builder.Services.AddTransient<IShoppingCartModelService, ShoppingCartModelService>();
+        builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {
             PropertyNamingPolicy = null,

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
@@ -8,6 +10,7 @@ using T.Web.Areas.Admin.Models;
 using T.Web.Models;
 using T.Web.Services.PictureServices;
 using T.Web.Services.ProductService;
+using T.Web.Services.ShoppingCartServices;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace T.Web.Controllers
@@ -17,12 +20,16 @@ namespace T.Web.Controllers
         private readonly IProductService _productService;
         private readonly IProductAttributeCommon _productAttributeService;
         private readonly IPictureService _pictureService;
+        private readonly IShoppingCartService _shoppingCartService;
+        private readonly IMapper _mapper;
 
-        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService)
+        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService, IShoppingCartService shoppingCartService, IMapper mapper)
         {
             _productService = productService;
             _productAttributeService = productAttributeService;
             _pictureService = pictureService;
+            _shoppingCartService = shoppingCartService;
+            _mapper = mapper;
         }
 
         public IActionResult Index()
@@ -61,7 +68,7 @@ namespace T.Web.Controllers
                 };
                 model.ProductAttributes.Add(attributeModel);
 
-                var attributeValues = await _productAttributeService.GetProductAttributeValuesAsync(attributeMappingItem.Id);
+                var attributeValues = await _productAttributeService.GetProductAttributeValuesByMappingIdAsync(attributeMappingItem.Id);
 
                 if (attributeValues.Count > 0)
                 {
@@ -76,9 +83,9 @@ namespace T.Web.Controllers
                             IsPreSelected = attributeValue.IsPreSelected,
                             CustomerEntersQty = attributeValue.CustomerEntersQty,
                             Quantity = attributeValue.Quantity,
-                            
+
                         };
-                        if(picture is not null)
+                        if (picture is not null)
                         {
                             valueModel.ImageSquaresPictureModel = new PictureModel()
                             {
@@ -93,7 +100,7 @@ namespace T.Web.Controllers
             }
 
             var productPictures = (await _productService.GetProductPicturesByProductIdAsync(product.Id));
-            if(productPictures.Any() || productPictures.Count > 0)
+            if (productPictures.Any() || productPictures.Count > 0)
             {
                 model.MainImage = new PictureModel
                 {
@@ -128,47 +135,57 @@ namespace T.Web.Controllers
         public async Task<IActionResult> ProductDetailsAttributeChange(int productId, IFormCollection form)
         {
             var product = await _productService.GetByIdAsync(productId);
-            var productAttributes = await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId);
-            var productAttributePrefix = "product_attribute_";
             var errors = new List<string>();
             var price = product.Price.ToString();
             var mainImage = string.Empty;
-            foreach (var attribute in productAttributes)
+
+            var productAttributePrefix = "product_attribute_";
+            foreach (var fromItem in form.Keys)
             {
-                var controlId = $"{productAttributePrefix}{attribute.Id}";
-                switch (attribute.AttributeControlType)
+                var mappingId = GetNumberFromPrefix(fromItem, productAttributePrefix);
+                var attributesMapping = await _productAttributeService.GetProductAttributeMappingByIdAsync(mappingId);
+
+                if (attributesMapping is not null)
                 {
-                    case AttributeControlType.DropdownList:
-                    case AttributeControlType.RadioList:
-                    case AttributeControlType.ColorSquares:
-                    case AttributeControlType.ImageSquares:
-                        {
-                            var ctrlAttributes = form[controlId];
-                            if (!StringValues.IsNullOrEmpty(ctrlAttributes))
+                    var controlId = $"{productAttributePrefix}{attributesMapping.Id}";
+
+                    switch (attributesMapping.AttributeControlType)
+                    {
+                        case AttributeControlType.DropdownList:
+                        case AttributeControlType.RadioList:
+                        case AttributeControlType.ColorSquares:
+                        case AttributeControlType.ImageSquares:
                             {
-                                var selectedAttributeId = int.Parse(ctrlAttributes);
-                                if (selectedAttributeId > 0)
+                                var ctrlAttributes = form[controlId];
+                                if (!StringValues.IsNullOrEmpty(ctrlAttributes))
                                 {
-                                    var productAttributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(selectedAttributeId);
-                                    if (productAttributeValue is not null)
+                                    var selectedAttributeId = int.Parse(ctrlAttributes);
+                                    if (selectedAttributeId > 0)
                                     {
-                                        if (productAttributeValue.PriceAdjustment > 0)
+                                        var productAttributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(selectedAttributeId);
+                                        if (productAttributeValue is not null)
                                         {
-                                            price = FinalPrice(decimal.Parse(price), productAttributeValue.PriceAdjustment, productAttributeValue.PriceAdjustmentUsePercentage);
+                                            if (productAttributeValue.PriceAdjustment > 0)
+                                            {
+                                                price = FinalPrice(decimal.Parse(price), productAttributeValue.PriceAdjustment, productAttributeValue.PriceAdjustmentUsePercentage);
+                                            }
+                                            if (productAttributeValue.PictureId > 0)
+                                            {
+                                                mainImage = (await _pictureService.GetPictureByIdAsync(productAttributeValue.PictureId)).UrlPath;
+                                            }
                                         }
-                                        if(productAttributeValue.PictureId > 0)
+                                        else
                                         {
-                                            mainImage = (await _pictureService.GetPictureByIdAsync(productAttributeValue.PictureId)).UrlPath;
+                                            throw new ArgumentNullException("Something went wrong.");
                                         }
                                     }
 
                                 }
-
                             }
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
@@ -194,63 +211,76 @@ namespace T.Web.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> AddProductToCartDetails(int productId, int shoppingCartTypeId, IFormCollection form)
         {
-            var productAttributes = await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId);
+            var product = await _productService.GetByIdAsync(productId);
+            var price = product.Price.ToString();
             var productAttributePrefix = "product_attribute_";
-            foreach(var item in form.Keys)
-            {
-                var value = form[item];
-            }
-            foreach (var attribute in productAttributes)
-            {
-                var controlId = $"{productAttributePrefix}{attribute.Id}";
-                switch (attribute.AttributeControlType)
-                {
-                    case AttributeControlType.DropdownList:
-                    case AttributeControlType.RadioList:
-                    case AttributeControlType.ColorSquares:
-                    case AttributeControlType.ImageSquares:
-                        {
-                            var ctrlAttributes = form[controlId];
-                            if (!StringValues.IsNullOrEmpty(ctrlAttributes))
-                            {
-                                var selectedAttributeId = int.Parse(ctrlAttributes);
-                                if (selectedAttributeId > 0)
-                                {
-                                    var productAttributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(selectedAttributeId);
-                                    if (productAttributeValue is not null)
-                                    {
+            var selectedAttributeValues = new List<int>();
 
+            var model = new ShoppingCartItemModel();
+            model.ProductId = product.Id;
+            model.ProductModel = _mapper.Map<ProductModel>(product);
+
+            foreach (var fromItem in form.Keys)
+            {
+                var mappingId = GetNumberFromPrefix(fromItem, productAttributePrefix);
+                var attributesMapping = await _productAttributeService.GetProductAttributeMappingByIdAsync(mappingId);
+
+                if (attributesMapping is not null)
+                {
+                    var controlId = $"{productAttributePrefix}{attributesMapping.Id}";
+
+                    switch (attributesMapping.AttributeControlType)
+                    {
+                        case AttributeControlType.DropdownList:
+                        case AttributeControlType.RadioList:
+                        case AttributeControlType.ColorSquares:
+                        case AttributeControlType.ImageSquares:
+                            {
+                                var ctrlAttributes = form[controlId];
+                                if (!StringValues.IsNullOrEmpty(ctrlAttributes))
+                                {
+                                    var selectedAttributeId = int.Parse(ctrlAttributes);
+                                    if (selectedAttributeId > 0)
+                                    {
+                                        var productAttributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(selectedAttributeId);
+                                        if (productAttributeValue is not null)
+                                        {
+                                            selectedAttributeValues.Add(productAttributeValue.Id);
+                                            if (productAttributeValue.PriceAdjustment > 0)
+                                            {
+                                                price = FinalPrice(decimal.Parse(price), productAttributeValue.PriceAdjustment, productAttributeValue.PriceAdjustmentUsePercentage);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            throw new ArgumentNullException("Something went wrong.");
+                                        }
                                     }
 
                                 }
-
                             }
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
+
+            var currentSciList = await _shoppingCartService.CreateAsync(model);
+            
             return Json(new { });
         }
-        // Phương thức để xóa phần tiền tố từ chuỗi
-        static string RemovePrefix(string input, string prefix)
+
+        static int GetNumberFromPrefix(string input, string prefix)
         {
             if (input.StartsWith(prefix))
             {
-                return input.Substring(prefix.Length);
-            }
-            return input;
-        }
+                string numberString = input.Substring(prefix.Length);
 
-        // Phương thức để lấy phần số từ phần tiền tố
-        static int GetNumberFromPrefix(string input, string prefix)
-        {
-            string numberString = RemovePrefix(input, prefix);
-            int number;
-            if (int.TryParse(numberString, out number))
-            {
-                return number;
+                if (int.TryParse(numberString, out int number))
+                {
+                    return number;
+                }
             }
             return -1; // Trả về -1 nếu không thể chuyển đổi thành số
         }
