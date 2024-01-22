@@ -2,34 +2,44 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using System;
+using System.Globalization;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
+using T.Web.Component;
 using T.Web.Models;
 using T.Web.Services.PictureServices;
+using T.Web.Services.PrepareModelServices;
 using T.Web.Services.ProductService;
 using T.Web.Services.ShoppingCartServices;
+using T.Web.Services.UserService;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace T.Web.Controllers
 {
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         private readonly IProductService _productService;
         private readonly IProductAttributeCommon _productAttributeService;
         private readonly IPictureService _pictureService;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IMapper _mapper;
+        private readonly IUserService _userService;
+        private static readonly char[] _separator = { ',' };
+        private readonly IShoppingCartModelService _sciModelService;
 
-        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService, IShoppingCartService shoppingCartService, IMapper mapper)
+        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService, IShoppingCartService shoppingCartService, IMapper mapper, IUserService userService, IShoppingCartModelService sciModelService)
         {
             _productService = productService;
             _productAttributeService = productAttributeService;
             _pictureService = pictureService;
             _shoppingCartService = shoppingCartService;
             _mapper = mapper;
+            _userService = userService;
+            _sciModelService = sciModelService;
         }
 
         public IActionResult Index()
@@ -74,7 +84,6 @@ namespace T.Web.Controllers
                 {
                     foreach (var attributeValue in attributeValues)
                     {
-                        var picture = await _pictureService.GetPictureByIdAsync(attributeValue.PictureId);
                         var valueModel = new ProductDetailsModel.ProductAttributeValueModel
                         {
                             Id = attributeValue.Id,
@@ -85,14 +94,18 @@ namespace T.Web.Controllers
                             Quantity = attributeValue.Quantity,
 
                         };
-                        if (picture is not null)
+                        if (attributeValue.PictureId > 0)
                         {
-                            valueModel.ImageSquaresPictureModel = new PictureModel()
+                            var picture = await _pictureService.GetPictureByIdAsync(attributeValue.PictureId);
+                            if (picture is not null)
                             {
-                                ImageUrl = picture.UrlPath,
-                                TitleAttribute = picture.TitleAttribute,
-                                AltAttribute = picture.AltAttribute
-                            };
+                                valueModel.ImageSquaresPictureModel = new PictureModel()
+                                {
+                                    ImageUrl = picture.UrlPath,
+                                    TitleAttribute = picture.TitleAttribute,
+                                    AltAttribute = picture.AltAttribute
+                                };
+                            }
                         }
                         attributeModel.Values.Add(valueModel);
                     }
@@ -137,7 +150,7 @@ namespace T.Web.Controllers
             var product = await _productService.GetByIdAsync(productId);
             var errors = new List<string>();
             var price = product.Price.ToString();
-            var mainImage = string.Empty;
+            var mainImage = (await _pictureService.GetPictureByIdAsync(product.Id)).UrlPath;
 
             var productAttributePrefix = "product_attribute_";
             foreach (var fromItem in form.Keys)
@@ -211,18 +224,25 @@ namespace T.Web.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> AddProductToCartDetails(int productId, int shoppingCartTypeId, IFormCollection form)
         {
+            var customer = await _userService.GetCurrentUser();
+
+            if (customer is null)
+            {
+                return NotFound();
+            }
             var product = await _productService.GetByIdAsync(productId);
-            var price = product.Price.ToString();
             var productAttributePrefix = "product_attribute_";
-            var selectedAttributeValues = new List<int>();
 
             var model = new ShoppingCartItemModel();
             model.ProductId = product.Id;
             model.ProductModel = _mapper.Map<ProductModel>(product);
+            model.UserId = customer.Id;
+            model.Attributes = new List<ShoppingCartItemModel.SelectedAttribute>();
+            var quantity = 1;
 
-            foreach (var fromItem in form.Keys)
+            foreach (var formKey in form.Keys)
             {
-                var mappingId = GetNumberFromPrefix(fromItem, productAttributePrefix);
+                var mappingId = GetNumberFromPrefix(formKey, productAttributePrefix);
                 var attributesMapping = await _productAttributeService.GetProductAttributeMappingByIdAsync(mappingId);
 
                 if (attributesMapping is not null)
@@ -245,11 +265,11 @@ namespace T.Web.Controllers
                                         var productAttributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(selectedAttributeId);
                                         if (productAttributeValue is not null)
                                         {
-                                            selectedAttributeValues.Add(productAttributeValue.Id);
-                                            if (productAttributeValue.PriceAdjustment > 0)
+                                            model.Attributes.Add(new ShoppingCartItemModel.SelectedAttribute()
                                             {
-                                                price = FinalPrice(decimal.Parse(price), productAttributeValue.PriceAdjustment, productAttributeValue.PriceAdjustmentUsePercentage);
-                                            }
+                                                ProductAttributeMappingId = attributesMapping.Id,
+                                                ProductAttributeValueIds = new List<int> { productAttributeValue.Id }
+                                            });
                                         }
                                         else
                                         {
@@ -260,15 +280,59 @@ namespace T.Web.Controllers
                                 }
                             }
                             break;
+                        case AttributeControlType.Checkboxes:
+                            {
+                                var cblAttributes = form[controlId];
+                                var selectedAttribute = new ShoppingCartItemModel.SelectedAttribute()
+                                {
+                                    ProductAttributeMappingId = attributesMapping.Id,
+                                    ProductAttributeValueIds = new List<int>()
+                                };
+
+                                if (!StringValues.IsNullOrEmpty(cblAttributes))
+                                {
+                                    foreach (var item in cblAttributes.ToString().Split(_separator, StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        var selectedAttributeId = int.Parse(item);
+                                        if (selectedAttributeId > 0)
+                                        {
+                                            selectedAttribute.ProductAttributeValueIds.Add(selectedAttributeId);
+                                        }
+                                    }
+                                }
+
+                                if (selectedAttribute.ProductAttributeValueIds.Any())
+                                {
+                                    model.Attributes.Add(selectedAttribute);
+                                }
+                            }
+                            break;
                         default:
                             break;
                     }
                 }
+                if (formKey.Equals($"addtocart_{product.Id}.EnteredQuantity", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    _ = int.TryParse(form[formKey], out quantity);
+                    model.Quantity = quantity;
+                    break;
+                }
             }
 
-            var currentSciList = await _shoppingCartService.CreateAsync(model);
-            
-            return Json(new { });
+            var createResult = await _shoppingCartService.CreateAsync(model);
+
+            if (createResult.Success)
+            {
+                var updateMiniCartSectionHtml = await RenderViewComponent(typeof(MiniCartDropDownViewComponent));
+
+                return Json(new { success = true, updateminicartsectionhtml = updateMiniCartSectionHtml });
+            }
+
+            return Json(new
+            {
+                success = false,
+                errors = createResult.Message.Split(",").ToArray()
+            });
         }
 
         static int GetNumberFromPrefix(string input, string prefix)

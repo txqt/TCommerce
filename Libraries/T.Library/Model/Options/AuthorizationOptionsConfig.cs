@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace T.Library.Model.JwtToken
 {
-    public class AuthorizationOptions
+    public class AuthorizationOptionsConfig
     {
-        public AuthorizationOptions()
+        public AuthorizationOptionsConfig()
         {
         }
 
-        public AuthorizationOptions(string accessTokenKey, string refreshTokenKey, int accessTokenExpirationInSenconds, int refreshTokenExpirationInSenconds, string issuer, string audience)
+        public AuthorizationOptionsConfig(string accessTokenKey, string refreshTokenKey, int accessTokenExpirationInSenconds, int refreshTokenExpirationInSenconds, string issuer, string audience)
         {
             AccessTokenKey = accessTokenKey;
             RefreshTokenKey = refreshTokenKey;

@@ -24,6 +24,7 @@ namespace T.Web.Controllers
             if (result.IsSuccessStatusCode)
             {
                 return Redirect("ao-thun-nam");
+                return RedirectToAction("Index", "Home");
             }
             return View(new StartupFormModel());
         }

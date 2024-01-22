@@ -28,7 +28,8 @@
     }
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+@*     <script src="~/js/jquery-3.6.0.min.countto.js"></script>
+    <script src="~/js/jquery-3.6.0.min.js"></script> *@
     @*FontAwesome*@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 
@@ -477,8 +478,14 @@
                                     </div>
                                 </div><!-- End .dropdown-menu -->
                             </div><!-- End .compare-dropdown -->
-                            @await Component.InvokeAsync("MiniCartDropDown")
-                            
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <div class="dropdown cart-dropdown" id="miniCartContainer">
+                                    @await Component.InvokeAsync("MiniCartDropDown")
+                                </div>
+                                <!-- End .cart-dropdown -->
+                            }
+
                         </div><!-- End .header-right -->
                     </div><!-- End .container -->
                 </div>

@@ -12,5 +12,6 @@ namespace T.Library.Model.Catalogs
         RadioList = 2,
         ImageSquares = 3,
         ColorSquares = 4,
+        Checkboxes = 5,
     }
 }

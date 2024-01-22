@@ -20,9 +20,9 @@ namespace T.Web.Controllers
     {
         private readonly IUserRegistrationService _accountService;
         private readonly IUserService _userService;
-        private readonly IOptions<Library.Model.JwtToken.AuthorizationOptions> _jwtOptions;
+        private readonly IOptions<Library.Model.JwtToken.AuthorizationOptionsConfig> _jwtOptions;
 
-        public AccountController(IUserRegistrationService accountService, IOptions<Library.Model.JwtToken.AuthorizationOptions> jwtOptions, IUserService userService)
+        public AccountController(IUserRegistrationService accountService, IOptions<Library.Model.JwtToken.AuthorizationOptionsConfig> jwtOptions, IUserService userService)
         {
             _accountService = accountService;
             _jwtOptions = jwtOptions;

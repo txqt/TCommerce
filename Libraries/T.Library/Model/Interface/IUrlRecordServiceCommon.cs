@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using T.Library.Model.Common;
 using T.Library.Model.Response;
 using T.Library.Model.Seo;
 using T.Library.Model.ViewsModel;
@@ -18,5 +19,6 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> DeleteUrlRecordByIdAsync(int id);
         Task<UrlRecord> GetBySlugAsync(string slug);
         Task<string> GetActiveSlugAsync(int entityId, string entityName);
+        
     }
 }

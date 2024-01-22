@@ -31,6 +31,7 @@ using T.WebApi.Services.TokenServices;
 using T.WebApi.Services.UserRegistrations;
 using T.WebApi.Services.UrlRecordServices;
 using T.WebApi.Services.ShoppingCartServices;
+using T.Library.Model.JwtToken;
 
 namespace T.WebApi.Extensions
 {
@@ -203,7 +204,7 @@ namespace T.WebApi.Extensions
         {
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
             services.Configure<UrlOptions>(configuration.GetSection("Url"));
-            services.Configure<Library.Model.JwtToken.AuthorizationOptions>(configuration.GetSection("Authorization"));
+            services.Configure<AuthorizationOptionsConfig>(configuration.GetSection("Authorization"));
             return services;
         }
 

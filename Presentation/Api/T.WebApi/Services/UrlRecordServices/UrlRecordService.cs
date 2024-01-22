@@ -12,6 +12,7 @@ namespace T.WebApi.Services.UrlRecordServices
     {
         Task SaveSlugAsync<T>(T entity, string slug) where T : BaseEntity;
         Task<string> ValidateSlug<T>(T entity, string seName, string name, bool ensureNotEmpty = false) where T : BaseEntity;
+        Task<string> GetSeNameAsync<T>(T entity) where T : BaseEntity;
     }
     public class UrlRecordService : IUrlRecordService
     {
@@ -70,6 +71,15 @@ namespace T.WebApi.Services.UrlRecordServices
                         select ur.Slug;
 
             return await query.FirstOrDefaultAsync() ?? string.Empty;
+        }
+
+        public virtual async Task<string> GetSeNameAsync<T>(T entity) where T : BaseEntity
+        {
+            ArgumentNullException.ThrowIfNull(entity);
+
+            var entityName = entity.GetType().Name;
+
+            return await GetActiveSlugAsync(entity.Id, entityName);
         }
 
         public virtual async Task SaveSlugAsync<T>(T entity, string slug) where T : BaseEntity

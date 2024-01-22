@@ -1,7 +1,15 @@
 ﻿@model ProductDetailsModel.AddToCartModel
+
+<div class="details-filter-row details-row-size">
+    <label for="qty">Qty:</label>
+    <div class="product-details-quantity">
+        <input asp-for="EnteredQuantity" type="number" id="qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
+    </div><!-- End .product-details-quantity -->
+</div>
 <div class="product-details-action">
 
-    <span style="cursor: pointer" class="btn-product btn-cart" onclick="addproducttocart_details('@Url.ActionLink("AddProductToCartDetails", "Product", new {productId = Model.ProductId, shoppingCartTypeId = (int) ShoppingCartType.ShoppingCart})','#product-details-form')"><span>add to cart</span></span>
+    <span style="cursor: pointer" id="add-to-cart-button-@Model.ProductId" class="btn-product btn-cart" onclick="addproducttocart_details('@Url.Action("AddProductToCartDetails", "Product", new {productId = Model.ProductId, shoppingCartTypeId = (int) ShoppingCartType.ShoppingCart})'
+,'#product-details-form')"><span>add to cart</span></span>
 
     <div class="details-action-wrapper">
         <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
@@ -16,15 +24,35 @@
             url: n,
             data: $(t).serialize(),
             type: "POST",
-            // success: function (response) {
-            //     alert('Success: ' + response);
-            // },
-            // complete: function () {
-            //     alert('Request complete');
-            // },
-            // error: function (xhr, textStatus, errorThrown) {
-            //     alert('Failed: ' + textStatus + ', ' + errorThrown);
-            // }
+            success: function (result) {
+                if (result.success) {
+                    $('#miniCartContainer').html(result.updateminicartsectionhtml);
+                    console.log(result.updateminicartsectionhtml);
+                    console.log(result);
+                } else {
+                    alert(result.errors.join('\n'));
+                }
+                
+            },
+            error: function () {
+                console.error('Something went wrong.');
+            }
+        });
+        $(document).ready(function () {
+            $("#@Html.IdFor(model => model.EnteredQuantity)").on("keydown", function (event) {
+                if (event.keyCode == 13) {
+                    $("#add-to-cart-button-@Model.ProductId").trigger("click");
+                    return false;
+                }
+            });
+
+            $("#product_enteredQuantity_@Model.ProductId").on("input propertychange paste", function () {
+                var data = {
+                    productId: @Model.ProductId,
+                    quantity: $('#product_enteredQuantity_@Model.ProductId').val()
+                };
+                $(document).trigger({ type: "product_quantity_changed", changedData: data });
+            });
         });
     }
 </script>

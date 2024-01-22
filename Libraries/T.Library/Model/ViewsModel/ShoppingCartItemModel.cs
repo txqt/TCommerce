@@ -28,13 +28,18 @@ namespace T.Library.Model.ViewsModel
 
         public int ProductId { get; set; }
 
-        public ProductModel ProductModel { get; set; }
+        public ProductModel? ProductModel { get; set; }
 
         public Guid UserId { get; set; }
         public class SelectedAttribute
         {
             public int ProductAttributeMappingId { get; set; }
             public List<int> ProductAttributeValueIds { get; set; }
+        }
+        public class ShoppingCartValidationResult
+        {
+            public bool IsValid { get; set; }
+            public List<string> Warnings { get; set; }
         }
     }
 }

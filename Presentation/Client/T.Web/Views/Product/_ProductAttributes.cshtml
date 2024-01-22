@@ -9,7 +9,7 @@
         @switch (attribute.AttributeControlTypeId)
         {
             case (int)AttributeControlType.DropdownList:
-                attributeChangeScriptsBuilder.AppendFormat("$('#{0}').on('change', function(){{{1}();console.log({1});}});\n", controlId, onAttributeChangeFuncName);
+                attributeChangeScriptsBuilder.AppendFormat("$('#{0}').on('change', function(){{{1}();}});\n", controlId, onAttributeChangeFuncName);
                 break;
             case (int)AttributeControlType.RadioList:
             case (int)AttributeControlType.ColorSquares:
@@ -17,7 +17,7 @@
                 {
                     foreach (var attributeValue in attribute.Values)
                     {
-                        attributeChangeScriptsBuilder.AppendFormat("$('#{0}_{1}').on('click', function(){{$(this).parent('label').parent('span').addClass('active').siblings().removeClass('active'); {2}();console.log({1});}});\n", controlId, attributeValue.Id, onAttributeChangeFuncName);
+                        attributeChangeScriptsBuilder.AppendFormat("$('#{0}_{1}').on('click', function(){{$(this).parent('label').parent('span').addClass('active').siblings().removeClass('active'); {2}();}});\n", controlId, attributeValue.Id, onAttributeChangeFuncName);
                     }
                 }
                 break;
@@ -83,6 +83,7 @@
                     break;
             }
         </div>
+        <!-- End .details-filter-row -->
     }
 }
 

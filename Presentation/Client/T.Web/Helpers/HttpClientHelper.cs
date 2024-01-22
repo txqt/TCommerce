@@ -176,15 +176,25 @@ namespace T.Web.Helpers
 
         private async Task<T> HandleResponse<T>(HttpResponseMessage response, JsonSerializerOptions jsonOptions = null)
         {
-            if (response.IsSuccessStatusCode && response.Content.Headers.ContentLength.HasValue && response.Content.Headers.ContentLength.Value > 0)
+            if (response.IsSuccessStatusCode)
+            {
+                if (typeof(T) == typeof(string))
+                {
+                    // Đọc và trả về nội dung dưới dạng chuỗi
+                    return (T)(object)await response.Content.ReadAsStringAsync();
+                }
+                else if (response.Content.Headers.ContentLength.HasValue && response.Content.Headers.ContentLength.Value > 0)
+                {
+                    // Đọc và chuyển đổi nội dung JSON thành đối tượng kiểu T
+                    return await response.Content.ReadFromJsonAsync<T>(jsonOptions);
+                }
+            }
+            else if(response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
                 return await response.Content.ReadFromJsonAsync<T>(jsonOptions);
             }
-            else
-            {
-                // Xử lý exception hoặc trả về giá trị mặc định tùy thuộc vào yêu cầu của bạn
-                return default(T);
-            }
+            // Xử lý exception hoặc trả về giá trị mặc định
+            return default(T);
         }
     }
 }

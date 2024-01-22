@@ -51,7 +51,7 @@ namespace T.Web.Services.PrepareModelServices
 
                     var cartProductIds = cart.Select(ci => ci.ProductId).ToArray();
 
-
+                    model.SubTotalValue = 0;
                     //products. sort descending (recently added products)
                     foreach (var sci in cart
                                  .OrderByDescending(x => x.Id)
@@ -65,35 +65,45 @@ namespace T.Web.Services.PrepareModelServices
                             Id = sci.Id,
                             ProductId = sci.ProductId,
                             ProductName = product.Name,
-                            //ProductSeName = await _urlRecordService.GetBySlugAsync(product.),
+                            ProductSeName = await _urlRecordService.GetActiveSlugAsync(product.Id, nameof(Product)),
                             Quantity = sci.Quantity,
+                            Price = product.Price.ToString("N0")
                         };
+
+                        model.SubTotalValue += product.Price * sci.Quantity;
 
                         var result = new StringBuilder();
 
-                        foreach (var selectedAttribute in sci.Attributes)
+                        if(sci.Attributes is not null)
                         {
-                            var productAttribute = await _productAttributeService.GetProductAttributeByIdAsync(selectedAttribute.ProductAttributeMappingId);
-                            var attributeName = productAttribute.Name;
-
-                            foreach (var attributeValueId in selectedAttribute.ProductAttributeValueIds)
+                            foreach (var selectedAttribute in sci.Attributes)
                             {
-                                var attributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(attributeValueId);
-                                var formattedAttribute = $"{attributeName}: {attributeValue.Name}";
+                                var productAttributeMapping = await _productAttributeService.GetProductAttributeMappingByIdAsync(selectedAttribute.ProductAttributeMappingId);
+                                var productAttribute = await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId);
 
+                                var attributeName = productAttribute.Name;
 
-
-                                if (!string.IsNullOrEmpty(formattedAttribute))
+                                foreach (var attributeValueId in selectedAttribute.ProductAttributeValueIds)
                                 {
-                                    if (result.Length > 0)
+                                    var attributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(attributeValueId);
+                                    var formattedAttribute = $"{attributeName}: {attributeValue.Name}";
+
+
+
+                                    if (!string.IsNullOrEmpty(formattedAttribute))
                                     {
-                                        result.Append(separator);
+                                        if (result.Length > 0)
+                                        {
+                                            result.Append(separator);
+                                        }
+                                        result.Append(formattedAttribute);
                                     }
-                                    result.Append(formattedAttribute);
                                 }
                             }
                         }
 
+                        cartItemModel.AttributeInfo = result.ToString();
+                        model.SubTotal = model.SubTotalValue.ToString("N0");
                         model.Items.Add(cartItemModel);
                     }
                 }

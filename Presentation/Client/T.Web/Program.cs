@@ -73,9 +73,9 @@ internal class Program
 
 
         var jwtSection = builder.Configuration.GetSection("Authorization");
-        var jwtOptions = new AuthorizationOptions();
+        var jwtOptions = new AuthorizationOptionsConfig();
         jwtSection.Bind(jwtOptions);
-        builder.Services.Configure<AuthorizationOptions>(jwtSection);
+        builder.Services.Configure<AuthorizationOptionsConfig>(jwtSection);
 
 
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
@@ -116,7 +116,11 @@ internal class Program
 
         //app.ConfigureCustomExceptionMiddleware();
 
-        app.MapDynamicControllerRoute<SlugRouteTransformer>("{slug}", state: null);
+        app.MapDynamicControllerRoute<SlugRouteTransformer>("{slug}");
+
+        app.MapControllerRoute(
+            name: "MyArea",
+            pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
         app.MapControllerRoute(
             name: "default",

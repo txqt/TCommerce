@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using T.Library.Model.Common;
 using T.Library.Model.Seo;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Services.UrlRecordServices;
@@ -67,6 +68,10 @@ namespace T.WebApi.Controllers
         {
             return Ok(await _urlRecordService.GetBySlugAsync(slug));
         }
-
+        [HttpGet("active-slug/{entityId}/{entityName}")]
+        public async Task<ActionResult> GetActiveSlugForEntityAsync(int entityId, string entityName)
+        {
+            return Ok(await _urlRecordService.GetActiveSlugAsync(entityId, entityName));
+        }
     }
 }

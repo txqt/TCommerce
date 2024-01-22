@@ -1,4 +1,5 @@
-﻿using T.Library.Model.Interface;
+﻿using T.Library.Model.Common;
+using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Seo;
 using T.Web.Helpers;
@@ -47,9 +48,14 @@ namespace T.Web.Services.UrlRecordService
             return await GetAsync<UrlRecord>(defaultApiRoute + $"slug/{slug}");
         }
 
-        public Task<string> GetActiveSlugAsync(int entityId, string entityName)
+        public async Task<string> GetActiveSlugAsync(int entityId, string entityName)
         {
-            throw new NotImplementedException();
+            return await GetAsync<string>(defaultApiRoute + $"active-slug/{entityId}/{entityName}");
+        }
+
+        public async Task<string> GetSeNameAsync<T>(T entity) where T : BaseEntity
+        {
+            return await PostAsJsonAsync<string>(defaultApiRoute + $"get-active-slug", entity);
         }
     }
 }

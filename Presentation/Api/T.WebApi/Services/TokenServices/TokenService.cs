@@ -37,14 +37,14 @@ namespace T.WebApi.Services.TokenServices
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailService;
         private readonly UserManager<User> _userManager;
-        private readonly IOptions<AuthorizationOptions> _jwtOptions;
+        private readonly IOptions<AuthorizationOptionsConfig> _jwtOptions;
         private readonly IOptions<UrlOptions> _urlOptions;
         private readonly IUserRegistrationService _userRegistrationService;
 
         public TokenService(UserManager<User> userManager,
                                SignInManager<User> signInManager,
                                IEmailSender emailService,
-                               IOptions<AuthorizationOptions> jwtOptions,
+                               IOptions<AuthorizationOptionsConfig> jwtOptions,
                                IOptions<UrlOptions> urlOptions,
                                IUserRegistrationService userRegistrationService)
         {

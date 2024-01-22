@@ -9,7 +9,7 @@ namespace T.Web.Services.ShoppingCartServices
     public interface IShoppingCartService : IShoppingCartItemCommon
     {
         Task<List<ShoppingCartItemModel>> GetShoppingCartAsync();
-        Task<List<ShoppingCartItemModel>> CreateAsync(ShoppingCartItemModel shoppingCartItem);
+        Task<ServiceResponse<bool>> CreateAsync(ShoppingCartItemModel shoppingCartItem);
     }
     public class ShoppingCartService : HttpClientHelper, IShoppingCartService
     {
@@ -19,9 +19,9 @@ namespace T.Web.Services.ShoppingCartServices
         {
         }
 
-        public async Task<List<ShoppingCartItemModel>> CreateAsync(ShoppingCartItemModel shoppingCartItem)
+        public async Task<ServiceResponse<bool>> CreateAsync(ShoppingCartItemModel shoppingCartItem)
         {
-            return await PostAsJsonAsync<List<ShoppingCartItemModel>>(defaultApi, shoppingCartItem);
+            return await PostAsJsonAsync<ServiceResponse<bool>>(defaultApi, shoppingCartItem);
         }
 
         public Task<ShoppingCartItem> GetById(int id)

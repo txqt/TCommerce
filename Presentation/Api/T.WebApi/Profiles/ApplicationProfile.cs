@@ -51,6 +51,7 @@ namespace T.WebApi.Profiles
                 .ReverseMap();
 
             CreateMap<User, UserModel>()
+                .ForMember(dest => dest.HasShoppingCartItems, opt => opt.MapFrom(src => src.HasShoppingCartItems))
                 .ReverseMap();
 
             CreateMap<BannerViewModel, Banner>()

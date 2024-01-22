@@ -103,9 +103,10 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<List<ProductAttributeMapping>> GetProductAttributesMappingByProductIdAsync(int id)
         {
-            return await _productAttributeMappingRepository.Table.Where(x => x.ProductId == id)
+            var list = await _productAttributeMappingRepository.Table.Where(x => x.ProductId == id)
                 .Include(x => x.ProductAttribute)
                 .ToListAsync();
+            return list;
         }
 
         public async Task<ServiceResponse<bool>> CreateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping)
