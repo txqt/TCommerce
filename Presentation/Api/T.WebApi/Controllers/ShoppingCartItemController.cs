@@ -53,11 +53,6 @@ namespace T.WebApi.Controllers
 
             var shoppingCartType = ShoppingCartType.ShoppingCart;
 
-            //if (!await CheckPermissions(customer.Id, shoppingCartType))
-            //{
-            //    return Unauthorized();
-            //}
-
             // load current shopping cart and return it as result of request
             var shoppingCartsObject = await LoadCurrentShoppingCartItems(shoppingCartType, customer);
 

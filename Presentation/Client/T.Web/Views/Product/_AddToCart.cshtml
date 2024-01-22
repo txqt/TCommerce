@@ -30,7 +30,7 @@
                     console.log(result.updateminicartsectionhtml);
                     console.log(result);
                 } else {
-                    alert(result.errors.join('\n'));
+                    toastr.warning(result.errors.join('\n'));
                 }
                 
             },
