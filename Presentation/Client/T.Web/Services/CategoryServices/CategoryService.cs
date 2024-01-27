@@ -75,5 +75,10 @@ namespace T.Web.Services.CategoryService
         {
             throw new NotImplementedException();
         }
+
+        public async Task<List<ProductCategory>> GetProductCategoriesByProductIdAsync(int productId)
+        {
+            return await GetAsync<List<ProductCategory>>($"api/product-categories/by-product-id/{productId}");
+        }
     }
 }

@@ -13,26 +13,28 @@ using T.Library.Model.ViewsModel;
 using T.WebApi.Attribute;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.ShoppingCartServices;
+using T.WebApi.Services.UserServices;
 using static T.Library.Model.ViewsModel.ShoppingCartItemModel;
 
 namespace T.WebApi.Controllers
 {
     [Route("api/shopping-cart-item")]
     [ApiController]
+    [CheckPermission]
     public class ShoppingCartItemController : ControllerBase
     {
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
-        private readonly IUserServiceCommon _userServiceCommon;
+        private readonly IUserService _userService;
         private readonly IProductAttributeConverter _productAttributeConverter;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IProductAttributeService _productAttribute;
 
-        public ShoppingCartItemController(IProductService productService, IMapper mapper, IUserServiceCommon userServiceCommon, IProductAttributeConverter productAttributeConverter, IShoppingCartService shoppingCartService, IProductAttributeService productAttribute)
+        public ShoppingCartItemController(IProductService productService, IMapper mapper, IUserService userService, IProductAttributeConverter productAttributeConverter, IShoppingCartService shoppingCartService, IProductAttributeService productAttribute)
         {
             _productService = productService;
             _mapper = mapper;
-            _userServiceCommon = userServiceCommon;
+            _userService = userService;
             _productAttributeConverter = productAttributeConverter;
             _shoppingCartService = shoppingCartService;
             _productAttribute = productAttribute;
@@ -41,10 +43,9 @@ namespace T.WebApi.Controllers
         [HttpGet("me")]
         [ProducesResponseType(typeof(ShoppingCartItemModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
-        [CheckPermission]
         public async Task<IActionResult> GetCurrentShoppingCart()
         {
-            var customer = await _userServiceCommon.GetCurrentUser();
+            var customer = await _userService.GetCurrentUser();
 
             if (customer is null)
             {
@@ -65,11 +66,9 @@ namespace T.WebApi.Controllers
         public async Task<IActionResult> CreateShoppingCartItem(
             ShoppingCartItemModel shoppingCartItemModel)
         {
-            var newShoppingCartItem = _mapper.Map<ShoppingCartItem>(shoppingCartItemModel);
+            var shoppingCartItem = _mapper.Map<ShoppingCartItem>(shoppingCartItemModel);
 
-            // We know that the product id and customer id will be provided because they are required by the validator.
-            // TODO: validate
-            var product = await _productService.GetByIdAsync(newShoppingCartItem.ProductId);
+            var product = await _productService.GetByIdAsync(shoppingCartItem.ProductId);
 
             if (product == null)
             {
@@ -84,27 +83,26 @@ namespace T.WebApi.Controllers
                 return BadRequest(new ServiceErrorResponse<bool>() { Message = string.Join(",", validateCart)});
             }
 
-            var customer = await _userServiceCommon.GetCurrentUser();
-
-            if (customer == null || customer.Id != newShoppingCartItem.UserId)
-            {
-                return Unauthorized();
-            }
 
             var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+            shoppingCartItem.AttributeJson = attributesJson;
 
-            newShoppingCartItem.AttributeJson = attributesJson;
-            newShoppingCartItem.ShoppingCartType = ShoppingCartType.ShoppingCart;
-            await SaveItemAsync(newShoppingCartItem);
+            var user = await _userService.GetCurrentUser();
 
-            var hasShoppingCartItems = !_shoppingCartService.IsUserShoppingCartEmpty(customer);
-            if (hasShoppingCartItems != customer.HasShoppingCartItems)
-            {
-                customer.HasShoppingCartItems = hasShoppingCartItems;
-                await _userServiceCommon.UpdateUserAsync(customer);
-            }
+            await _shoppingCartService.AddToCartAsync(user, shoppingCartItem.ShoppingCartType, product, attributesJson, shoppingCartItem.Quantity);
 
             return Ok(new ServiceSuccessResponse<bool>());
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSelectedItemShoppingCart(int id)
+        {
+            var result = await _shoppingCartService.DeleteAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
 
         private async Task<List<ShoppingCartItemModel>> LoadCurrentShoppingCartItems(ShoppingCartType shoppingCartType, UserModel user)
@@ -126,31 +124,55 @@ namespace T.WebApi.Controllers
 
             return model ??= null;
         }
-        protected async Task SaveItemAsync(ShoppingCartItem shoppingCartItem)
+
+        
+        [HttpPut("")]
+        [CheckPermission]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> UpdateShoppingCartItem(
+            List<ShoppingCartItemModel> shoppingCartItemModels)
         {
-            var user = await _userServiceCommon.GetCurrentUser();
-
-            var updatedShoppingCart = await _shoppingCartService.GetShoppingCartAsync(user, shoppingCartItem.ShoppingCartType);
-
-            var model = _mapper.Map<List<ShoppingCartItemModel>>(updatedShoppingCart);
-
-            if(model.Count > 0)
+            if(shoppingCartItemModels?.Count > 0)
             {
-                var existCI = updatedShoppingCart.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart).FirstOrDefault(x => x.AttributeJson == shoppingCartItem.AttributeJson);
-                if (existCI is not null)
+                foreach(var shoppingCartItemModel in shoppingCartItemModels)
                 {
-                    existCI.Quantity += shoppingCartItem.Quantity;
-                    await _shoppingCartService.UpdateAsync(existCI);
-                }
-                else
-                {
-                    await _shoppingCartService.CreateAsync(shoppingCartItem);
+                    //var shoppingCartItemForUpdate = await _shoppingCartService.GetById(shoppingCartItemModel.Id);
+                    //if(shoppingCartItemForUpdate is null)
+                    //{
+                    //    return NotFound();
+                    //}
+
+                    //shoppingCartItemForUpdate = _mapper.Map<ShoppingCartItem>(shoppingCartItemModel);
+                    var product = await _productService.GetByIdAsync(shoppingCartItemModel.ProductId);
+
+                    if (product == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var productAttributeMapping = await _productAttribute.GetProductAttributesMappingByProductIdAsync(product.Id);
+
+                    var validateCart = await _shoppingCartService.ValidateCart(productAttributeMapping, shoppingCartItemModel.Attributes);
+                    if (validateCart.Count > 0)
+                    {
+                        return BadRequest(new ServiceErrorResponse<bool>() { Message = string.Join(",", validateCart) });
+                    }
+
+
+                    var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+                    //shoppingCartItemForUpdate.AttributeJson = attributesJson;
+
+                    var user = await _userService.GetCurrentUser();
+
+                    await _shoppingCartService.UpdateCartItemAsync(user, shoppingCartItemModel.Id, shoppingCartItemModel.ShoppingCartType, attributesJson, shoppingCartItemModel.Quantity);
                 }
             }
             else
             {
-                await _shoppingCartService.CreateAsync(shoppingCartItem);
+                return NotFound();
             }
+
+            return Ok(new ServiceSuccessResponse<bool>());
         }
     }
 }

@@ -10,6 +10,7 @@ namespace T.Web.Services.ShoppingCartServices
     {
         Task<List<ShoppingCartItemModel>> GetShoppingCartAsync();
         Task<ServiceResponse<bool>> CreateAsync(ShoppingCartItemModel shoppingCartItem);
+        Task<ServiceResponse<bool>> UpdateAsync(List<ShoppingCartItemModel> shoppingCartItems);
     }
     public class ShoppingCartService : HttpClientHelper, IShoppingCartService
     {
@@ -23,6 +24,10 @@ namespace T.Web.Services.ShoppingCartServices
         {
             return await PostAsJsonAsync<ServiceResponse<bool>>(defaultApi, shoppingCartItem);
         }
+        public async Task<ServiceResponse<bool>> UpdateAsync(List<ShoppingCartItemModel> shoppingCartItems)
+        {
+            return await PutAsJsonAsync<ServiceResponse<bool>>(defaultApi, shoppingCartItems);
+        }
 
         public Task<ShoppingCartItem> GetById(int id)
         {
@@ -33,5 +38,11 @@ namespace T.Web.Services.ShoppingCartServices
         {
             return await GetAsync<List<ShoppingCartItemModel>>($"{defaultApi}/me");
         }
+
+        public async Task<ServiceResponse<bool>> DeleteAsync(int id)
+        {
+            return await DeleteAsync<ServiceResponse<bool>>($"{defaultApi}/{id}");
+        }
+
     }
 }

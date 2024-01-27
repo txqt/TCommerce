@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using T.Library.Model;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
@@ -36,7 +37,10 @@ namespace T.Web.Models
         public List<ProductAttributeModel> ProductAttributes { get; set; }
 
         public int Quantity { get; set; }
+
         public string SeName { get; set; }
+
+        public List<CategoryOfProduct> Categories { get; set; }
 
         public AddToCartModel AddToCart { get; set; }
         public class ProductAttributeModel : BaseEntity
@@ -102,7 +106,7 @@ namespace T.Web.Models
 
             public int Quantity { get; set; }
         }
-        public partial class AddToCartModel : BaseEntity
+        public class AddToCartModel : BaseEntity
         {
             public AddToCartModel()
             {
@@ -126,6 +130,11 @@ namespace T.Web.Models
             //updating existing shopping cart or wishlist item?
             public int UpdatedShoppingCartItemId { get; set; }
             public ShoppingCartType? UpdateShoppingCartItemType { get; set; }
+        }
+        public class CategoryOfProduct
+        {
+            public string CategoryName { get; set; }
+            public string SeName { get; set; }
         }
     }
     

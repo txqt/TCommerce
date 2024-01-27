@@ -1,4 +1,23 @@
-// Main Js File
+﻿// Main Js File
+function deleteshoppingcartitem(n) {
+    $.ajax({
+        url: n,
+        type: "POST",
+        success: function (result) {
+            if (result.success) {
+                $('#miniCartContainer').html(result.updateminicartsectionhtml);
+                $('#cartContainer').html(result.updatecartsectionhtml);
+                toastr.success("Đã xóa thành công");
+            } else {
+                toastr.warning(result.errors.join('<br>'));
+            }
+
+        },
+        error: function () {
+            console.error('Something went wrong.');
+        }
+    });
+}
 $(document).ready(function () {
     'use strict';
 
@@ -797,4 +816,16 @@ $(document).ready(function () {
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
     }
+    $(document).ajaxError(function (event, xhr, settings, thrownError) {
+        if (xhr.status == 401 || xhr.status == 403) {
+            if (xhr.status == 401) {
+                window.location.href = '/Account/Login';
+            } else {
+                window.location.href = '/AccessDenied';
+            }
+        } else {
+            console.error(xhr.responseText);
+        }
+    });
+    
 });

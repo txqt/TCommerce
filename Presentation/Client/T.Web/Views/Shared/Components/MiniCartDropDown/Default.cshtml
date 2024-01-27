@@ -1,55 +1,66 @@
 ﻿@model MiniShoppingCartModel
-<a href="#" onclick="javascript:void(0)" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-    <i class="icon-shopping-cart"></i>
-    <span class="cart-count">@Model.TotalProducts</span>
-</a>
+<div class="dropdown cart-dropdown" id="miniCartContainer">
+    <a href="/cart" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
+        <i class="icon-shopping-cart"></i>
+        <span class="cart-count">@Model.TotalProducts</span>
+    </a>
 
-@if (Model is not null)
-{
-    <div class="dropdown-menu dropdown-menu-right">
-        <div class="dropdown-cart-products">
-            @foreach (var item in Model.Items)
-            {
-                <div class="product">
-                    <div class="product-cart-details">
-                        <h4 class="product-title">
-                            <a href="@item.ProductSeName">@item.ProductName</a>
-                        </h4>
+    @if (Model is not null)
+    {
+        <div class="dropdown-menu dropdown-menu-right">
+            <div class="dropdown-cart-products">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="product">
+                        <div class="product-cart-details">
+                            <h4 class="product-title">
+                                <a href="@item.ProductSeName">@item.ProductName</a>
+                            </h4>
 
-                        <span class="cart-product-info">
-                            <span class="cart-product-qty">@item.Quantity</span>
-                            x @item.Price
-                        </span>
-                        <br />
-                        <span class="cart-product-info">
-                            @Html.Raw(item.AttributeInfo)
-                        </span>
-                    </div><!-- End .product-cart-details -->
+                            <span class="cart-product-info">
+                                <span class="cart-product-qty">@item.Quantity</span>
+                                x @item.Price
+                            </span>
+                            <br />
+                            <span class="cart-product-info">
+                                @Html.Raw(item.AttributeInfo)
+                            </span>
+                        </div><!-- End .product-cart-details -->
 
-                    <figure class="product-image-container">
-                        @if (item.Picture is not null)
-                        {
-                            <a href="@item.Picture.ImageUrl" class="product-image">
-                                <img src="@item.Picture.ImageUrl" alt="@item.Picture.AltAttribute">
-                            </a>
-                        }
-                    </figure>
-                    <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                </div>
+                        <figure class="product-image-container">
+                            @if (Model.ShowProductImages && item.Picture is not null)
+                            {
+                                <a href="@item.Picture.ImageUrl" class="product-image">
+                                    <img src="@item.Picture.ImageUrl" alt="@item.Picture.AltAttribute">
+                                </a>
+                            }
+                        </figure>
+                        <button onclick="deleteshoppingcartitem('@Url.Action("DeleteShoppingCartItem", "ShoppingCart", new{id = item.Id})')" class="btn-remove" title="Remove Product"><i class="icon-close"></i></button>
+                    </div>
 
-                <!-- End .product -->
-            }
-        </div><!-- End .cart-product -->
+                    <!-- End .product -->
+                }
+            </div><!-- End .cart-product -->
 
-        <div class="dropdown-cart-total">
-            <span>Total</span>
+            <div class="dropdown-cart-total">
+                <span>Total</span>
 
-            <span class="cart-total-price">@Model.SubTotal</span>
-        </div><!-- End .dropdown-cart-total -->
+                <span class="cart-total-price">@Model.SubTotal</span>
+            </div><!-- End .dropdown-cart-total -->
 
-        <div class="dropdown-cart-action">
-            <a href="cart.html" class="btn btn-primary">View Cart</a>
-            <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
-        </div><!-- End .dropdown-cart-total -->
-    </div>
-}
+            <div class="dropdown-cart-action">
+                @if (Model.DisplayShoppingCartButton)
+                {
+                    <a href="/cart" class="btn btn-primary">View Cart</a>
+                }
+                @if (Model.DisplayCheckoutButton)
+                {
+                    <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
+                }
+            </div><!-- End .dropdown-cart-total -->
+        </div>
+    }
+</div>
+<script>
+
+</script>

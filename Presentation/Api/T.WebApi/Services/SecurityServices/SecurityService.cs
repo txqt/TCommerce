@@ -6,26 +6,24 @@ using T.Library.Model.Response;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
-using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.IRepositoryServices;
+using T.WebApi.Services.UserServices;
 
 namespace T.WebApi.Services.SecurityServices
 {
     public class SecurityService : ISecurityService
     {
-        private readonly IUserServiceCommon _userService;
+        private readonly IUserService _userService;
         private readonly IRepository<PermissionRecord> _permissionRepository;
         private readonly IRepository<PermissionRecordUserRoleMapping> _permissionMappingRepository;
         private readonly RoleManager<Role> _roleManager;
-        private readonly ICacheService _cacheService;
         private readonly IMapper _mapper;
-        public SecurityService(IUserServiceCommon userService, IRepository<PermissionRecord> permissionRepository, IRepository<PermissionRecordUserRoleMapping> permissionMappingRepository, RoleManager<Role> roleManager, ICacheService cacheService, IMapper mapper)
+        public SecurityService(IUserService userService, IRepository<PermissionRecord> permissionRepository, IRepository<PermissionRecordUserRoleMapping> permissionMappingRepository, RoleManager<Role> roleManager, IMapper mapper)
         {
             _userService = userService;
             _permissionRepository = permissionRepository;
             _permissionMappingRepository = permissionMappingRepository;
             this._roleManager = roleManager;
-            _cacheService = cacheService;
             _mapper = mapper;
         }
 
@@ -108,12 +106,6 @@ namespace T.WebApi.Services.SecurityServices
             // Define a cache key
             string cacheKey = $"AuthorizeAsync-{permissionSystemName}-{roleId}";
 
-            // Try to get the result from the cache
-            bool? cachedResult = _cacheService.Get<bool?>(cacheKey);
-
-            // If the result was in the cache, return it
-            if (cachedResult.HasValue)
-                return cachedResult.Value;
 
             // If the result was not in the cache, execute the method and store the result in the cache
             var permissions = await GetPermissionRecordsByCustomerRoleIdAsync(roleId);
@@ -121,14 +113,9 @@ namespace T.WebApi.Services.SecurityServices
             {
                 if (permission.SystemName.Equals(permissionSystemName, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    // Store the result in the cache before returning it
-                    _cacheService.Set(cacheKey, true);
                     return true;
                 }
             }
-
-            // If no permission was found, store 'false' in the cache before returning it
-            _cacheService.Set(cacheKey, false);
 
             return false;
         }

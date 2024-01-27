@@ -53,9 +53,18 @@
                                 <div class="product-details-footer">
                                     <div class="product-cat">
                                         <span>Category:</span>
-                                        <a href="#">Women</a>,
-                                        <a href="#">Dresses</a>,
-                                        <a href="#">Yellow</a>
+                                        @if(Model.Categories.Count > 0)
+                                        {
+                                            var categories = Model.Categories;
+                                            for (int i = 0; i < categories.Count; i++)
+                                            {
+                                                <a href="@categories[i].SeName">@categories[i].CategoryName</a>
+                                                if(i < categories.Count - 1)
+                                                {
+                                                    <text>,</text>
+                                                }
+                                            }
+                                        }
                                     </div><!-- End .product-cat -->
 
                                     <div class="social-icons social-icons-sm">

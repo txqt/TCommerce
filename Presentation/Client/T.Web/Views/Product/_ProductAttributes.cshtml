@@ -54,6 +54,16 @@
                         </select>
                     </div>
                     break;
+                case (int)AttributeControlType.RadioList:
+                    {
+                        @foreach (var attributeValue in attributeItem.Values)
+                        {
+                            var attributeName = attributeValue.Name;
+                            <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected"/>
+                            <label for="@(controlId)_@(attributeValue.Id)">@attributeName</label>
+                        }
+                    }
+                    break;
                 case (int)AttributeControlType.ColorSquares:
                     <div class="product-nav product-nav-dots">
                         @foreach (var attributeValue in attributeItem.Values)
@@ -79,7 +89,6 @@
                             </span>
                         }
                     </div>
-
                     break;
             }
         </div>
@@ -91,7 +100,7 @@
     $(document).ready(function () {
     @(onAttributeChangeFuncName)();
     @Html.Raw(attributeChangeScriptsBuilder.ToString())
-                                });
+                                    });
     function @(onAttributeChangeFuncName)() {
         $.ajax({
             cache: false,
@@ -129,7 +138,7 @@
                     $('#product-main-image-@Model.Id').attr("src", data.mainImage);
                     $('#product-main-image-anchor-@Model.Id').attr("href", data.mainImage);
                 }
-                else{
+                else {
                     $('#product-main-image-@Model.Id').hide();
                     $('#product-main-image-anchor-@Model.Id').hide();
                 }

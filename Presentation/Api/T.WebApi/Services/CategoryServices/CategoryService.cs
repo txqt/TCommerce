@@ -8,6 +8,7 @@ using T.Library.Model.Interface;
 using Microsoft.AspNetCore.Mvc;
 using T.WebApi.Services.IRepositoryServices;
 using T.Library.Model.Catalogs;
+using T.WebApi.Services.UrlRecordServices;
 
 namespace T.WebApi.Services.CategoryServices
 {
@@ -16,12 +17,14 @@ namespace T.WebApi.Services.CategoryServices
         private readonly IMapper _mapper;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<ProductCategory> _productCategoryRepository;
+        private readonly IUrlRecordService _urlRecordService;
 
-        public CategoryService(IMapper mapper, IRepository<Category> categoryRepository, IRepository<ProductCategory> productCategoryRepository)
+        public CategoryService(IMapper mapper, IRepository<Category> categoryRepository, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService)
         {
             _mapper = mapper;
             _categoryRepository = categoryRepository;
             _productCategoryRepository = productCategoryRepository;
+            _urlRecordService = urlRecordService;
         }
 
         public async Task<ServiceResponse<bool>> CreateCategoryAsync(Category category)
@@ -30,6 +33,11 @@ namespace T.WebApi.Services.CategoryServices
             {
                 category.CreatedOnUtc = DateTime.UtcNow;
                 await _categoryRepository.CreateAsync(category);
+
+                var seName = await _urlRecordService.ValidateSlug(category, null, category.Name, true);
+
+                await _urlRecordService.SaveSlugAsync(category, seName);
+
                 return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)
@@ -146,6 +154,12 @@ namespace T.WebApi.Services.CategoryServices
         {
             return await _productCategoryRepository.Table
                 .FirstOrDefaultAsync(x => x.Id == productCategoryId);
+        }
+
+        public async Task<List<ProductCategory>> GetProductCategoriesByProductIdAsync(int productId)
+        {
+            return await _productCategoryRepository.Table.Where(x => x.ProductId == productId)
+                .ToListAsync();
         }
     }
 }

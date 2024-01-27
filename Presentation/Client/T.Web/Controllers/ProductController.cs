@@ -15,6 +15,7 @@ using T.Web.Services.PictureServices;
 using T.Web.Services.PrepareModelServices;
 using T.Web.Services.ProductService;
 using T.Web.Services.ShoppingCartServices;
+using T.Web.Services.UrlRecordService;
 using T.Web.Services.UserService;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -28,10 +29,11 @@ namespace T.Web.Controllers
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        private static readonly char[] _separator = { ',' };
         private readonly IShoppingCartModelService _sciModelService;
+        private readonly ICategoryService _categoryService;
+        private readonly IUrlRecordService _urlRecordService;
 
-        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService, IShoppingCartService shoppingCartService, IMapper mapper, IUserService userService, IShoppingCartModelService sciModelService)
+        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService, IShoppingCartService shoppingCartService, IMapper mapper, IUserService userService, IShoppingCartModelService sciModelService, ICategoryService categoryService, IUrlRecordService urlRecordService)
         {
             _productService = productService;
             _productAttributeService = productAttributeService;
@@ -40,13 +42,15 @@ namespace T.Web.Controllers
             _mapper = mapper;
             _userService = userService;
             _sciModelService = sciModelService;
+            _categoryService = categoryService;
+            _urlRecordService = urlRecordService;
         }
 
         public IActionResult Index()
         {
             return View();
         }
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id, int updatecartitemid = 0)
         {
             var product = await _productService.GetByIdAsync(id);
             var attributeMapping = await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id);
@@ -129,8 +133,7 @@ namespace T.Web.Controllers
 
                 model.ThumbImage = (await Task.WhenAll(pictureTasks)).ToList();
             }
-
-            model.AddToCart = new ProductDetailsModel.AddToCartModel()
+            var addToCartModel = new ProductDetailsModel.AddToCartModel()
             {
                 ProductId = product.Id,
                 DisableBuyButton = product.DisableBuyButton,
@@ -138,8 +141,41 @@ namespace T.Web.Controllers
                 AvailableForPreOrder = product.AvailableForPreOrder,
                 PreOrderAvailabilityStartDateTimeUtc = product.PreOrderAvailabilityStartDateTimeUtc,
                 PreOrderAvailabilityStartDateTimeUserTime = product.PreOrderAvailabilityStartDateTimeUtc.ToString(),
-
+                UpdateShoppingCartItemType = ShoppingCartType.ShoppingCart
             };
+
+            if(updatecartitemid > 0)
+            {
+                var carts = (await _shoppingCartService.GetShoppingCartAsync());
+                var cart = carts.FirstOrDefault(x => x.Id == updatecartitemid);
+                if (cart is null)
+                {
+                    throw new ArgumentNullException();
+                }
+
+                addToCartModel.UpdatedShoppingCartItemId = cart.Id;
+                addToCartModel.UpdateShoppingCartItemType = cart.ShoppingCartType;
+            }
+
+            model.AddToCart = addToCartModel;
+
+            var categoryIds = (await _categoryService.GetProductCategoriesByProductIdAsync(product.Id)).Select(x=>x.CategoryId).ToList();
+
+            var categories = new List<ProductDetailsModel.CategoryOfProduct>();
+
+            foreach(var categoryId in categoryIds)
+            {
+                var category = await _categoryService.GetCategoryByIdAsync(categoryId);
+                var categorySeName = await _urlRecordService.GetSeNameAsync(category);
+
+                categories.Add(new ProductDetailsModel.CategoryOfProduct()
+                {
+                    CategoryName = category.Name,
+                    SeName = string.IsNullOrWhiteSpace(categorySeName) ? "javascript:void(0)" : categorySeName
+                });
+            }
+
+            model.Categories = categories;
 
             return View(model);
         }
@@ -150,7 +186,12 @@ namespace T.Web.Controllers
             var product = await _productService.GetByIdAsync(productId);
             var errors = new List<string>();
             var price = product.Price.ToString();
-            var mainImage = (await _pictureService.GetPictureByIdAsync(product.Id)).UrlPath;
+            var picture = (await _pictureService.GetPictureByIdAsync(product.Id));
+            var mainImage = string.Empty;
+            if(picture != null)
+            {
+                mainImage = picture.UrlPath;
+            }
 
             var productAttributePrefix = "product_attribute_";
             foreach (var fromItem in form.Keys)
@@ -219,134 +260,6 @@ namespace T.Web.Controllers
             }
 
             return (productPrice + priceAdjustment).ToString("N0");
-        }
-
-        [HttpPost]
-        public virtual async Task<IActionResult> AddProductToCartDetails(int productId, int shoppingCartTypeId, IFormCollection form)
-        {
-            var customer = await _userService.GetCurrentUser();
-
-            if (customer is null)
-            {
-                return NotFound();
-            }
-            var product = await _productService.GetByIdAsync(productId);
-            var productAttributePrefix = "product_attribute_";
-
-            var model = new ShoppingCartItemModel();
-            model.ProductId = product.Id;
-            model.ProductModel = _mapper.Map<ProductModel>(product);
-            model.UserId = customer.Id;
-            model.Attributes = new List<ShoppingCartItemModel.SelectedAttribute>();
-            var quantity = 1;
-
-            foreach (var formKey in form.Keys)
-            {
-                var mappingId = GetNumberFromPrefix(formKey, productAttributePrefix);
-                var attributesMapping = await _productAttributeService.GetProductAttributeMappingByIdAsync(mappingId);
-
-                if (attributesMapping is not null)
-                {
-                    var controlId = $"{productAttributePrefix}{attributesMapping.Id}";
-
-                    switch (attributesMapping.AttributeControlType)
-                    {
-                        case AttributeControlType.DropdownList:
-                        case AttributeControlType.RadioList:
-                        case AttributeControlType.ColorSquares:
-                        case AttributeControlType.ImageSquares:
-                            {
-                                var ctrlAttributes = form[controlId];
-                                if (!StringValues.IsNullOrEmpty(ctrlAttributes))
-                                {
-                                    var selectedAttributeId = int.Parse(ctrlAttributes);
-                                    if (selectedAttributeId > 0)
-                                    {
-                                        var productAttributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(selectedAttributeId);
-                                        if (productAttributeValue is not null)
-                                        {
-                                            model.Attributes.Add(new ShoppingCartItemModel.SelectedAttribute()
-                                            {
-                                                ProductAttributeMappingId = attributesMapping.Id,
-                                                ProductAttributeValueIds = new List<int> { productAttributeValue.Id }
-                                            });
-                                        }
-                                        else
-                                        {
-                                            throw new ArgumentNullException("Something went wrong.");
-                                        }
-                                    }
-
-                                }
-                            }
-                            break;
-                        case AttributeControlType.Checkboxes:
-                            {
-                                var cblAttributes = form[controlId];
-                                var selectedAttribute = new ShoppingCartItemModel.SelectedAttribute()
-                                {
-                                    ProductAttributeMappingId = attributesMapping.Id,
-                                    ProductAttributeValueIds = new List<int>()
-                                };
-
-                                if (!StringValues.IsNullOrEmpty(cblAttributes))
-                                {
-                                    foreach (var item in cblAttributes.ToString().Split(_separator, StringSplitOptions.RemoveEmptyEntries))
-                                    {
-                                        var selectedAttributeId = int.Parse(item);
-                                        if (selectedAttributeId > 0)
-                                        {
-                                            selectedAttribute.ProductAttributeValueIds.Add(selectedAttributeId);
-                                        }
-                                    }
-                                }
-
-                                if (selectedAttribute.ProductAttributeValueIds.Any())
-                                {
-                                    model.Attributes.Add(selectedAttribute);
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                if (formKey.Equals($"addtocart_{product.Id}.EnteredQuantity", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    _ = int.TryParse(form[formKey], out quantity);
-                    model.Quantity = quantity;
-                    break;
-                }
-            }
-
-            var createResult = await _shoppingCartService.CreateAsync(model);
-
-            if (createResult.Success)
-            {
-                var updateMiniCartSectionHtml = await RenderViewComponent(typeof(MiniCartDropDownViewComponent));
-
-                return Json(new { success = true, updateminicartsectionhtml = updateMiniCartSectionHtml });
-            }
-
-            return Json(new
-            {
-                success = false,
-                errors = createResult.Message.Split(",").ToArray()
-            });
-        }
-
-        static int GetNumberFromPrefix(string input, string prefix)
-        {
-            if (input.StartsWith(prefix))
-            {
-                string numberString = input.Substring(prefix.Length);
-
-                if (int.TryParse(numberString, out int number))
-                {
-                    return number;
-                }
-            }
-            return -1; // Trả về -1 nếu không thể chuyển đổi thành số
         }
     }
 }

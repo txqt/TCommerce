@@ -1,5 +1,9 @@
 ﻿@model ProductDetailsModel.AddToCartModel
 
+@if (Model.UpdatedShoppingCartItemId > 0)
+{
+    <input asp-for="UpdatedShoppingCartItemId" type="hidden" />
+}
 <div class="details-filter-row details-row-size">
     <label for="qty">Qty:</label>
     <div class="product-details-quantity">
@@ -8,7 +12,7 @@
 </div>
 <div class="product-details-action">
 
-    <span style="cursor: pointer" id="add-to-cart-button-@Model.ProductId" class="btn-product btn-cart" onclick="addproducttocart_details('@Url.Action("AddProductToCartDetails", "Product", new {productId = Model.ProductId, shoppingCartTypeId = (int) ShoppingCartType.ShoppingCart})'
+    <span style="cursor: pointer" id="add-to-cart-button-@Model.ProductId" class="btn-product btn-cart" onclick="addproducttocart_details('@Url.Action("AddProductToCartDetails", "ShoppingCart", new {productId = Model.ProductId, shoppingCartTypeId = (int)Model.UpdateShoppingCartItemType})'
 ,'#product-details-form')"><span>add to cart</span></span>
 
     <div class="details-action-wrapper">
@@ -27,8 +31,7 @@
             success: function (result) {
                 if (result.success) {
                     $('#miniCartContainer').html(result.updateminicartsectionhtml);
-                    console.log(result.updateminicartsectionhtml);
-                    console.log(result);
+                    toastr.success("Đã thêm sản phẩm vào giỏ hàng");
                 } else {
                     toastr.warning(result.errors.join('<br>'));
                 }
@@ -46,13 +49,13 @@
                 }
             });
 
-            $("#product_enteredQuantity_@Model.ProductId").on("input propertychange paste", function () {
-                var data = {
-                    productId: @Model.ProductId,
-                    quantity: $('#product_enteredQuantity_@Model.ProductId').val()
-                };
-                $(document).trigger({ type: "product_quantity_changed", changedData: data });
-            });
+            // $("#product_enteredQuantity_@Model.ProductId").on("input propertychange paste", function () {
+            //     var data = {
+            //         productId: @Model.ProductId,
+            //         quantity: $('#product_enteredQuantity_@Model.ProductId').val()
+            //     };
+            //     $(document).trigger({ type: "product_quantity_changed", changedData: data });
+            // });
         });
     }
 </script>

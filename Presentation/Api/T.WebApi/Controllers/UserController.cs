@@ -21,10 +21,10 @@ namespace T.WebApi.Controllers
     [CheckPermission(PermissionSystemName.ManageUsers)]
     public class UserController : ControllerBase
     {
-        private readonly IUserServiceCommon _userService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly IUserRegistrationService _userRegistrationService;
-        public UserController(IUserServiceCommon userService, IMapper mapper, IUserRegistrationService userRegistrationService)
+        public UserController(IUserService userService, IMapper mapper, IUserRegistrationService userRegistrationService)
         {
             _userService = userService;
             _mapper = mapper;
@@ -58,7 +58,7 @@ namespace T.WebApi.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> UpdateUserAsync(UserModel model)
         {
-            var result = await _userService.UpdateUserAsync(model);
+            var result = await _userService.UpdateUserAsync(model, true);
             if (!result.Success)
                 return BadRequest(result);
 
@@ -77,6 +77,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("me")]
+        [CheckPermission]
         public async Task<ActionResult> GetCurrentUser()
         {
             return Ok(await _userService.GetCurrentUser());

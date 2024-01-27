@@ -22,7 +22,7 @@ namespace T.WebApi.Services.PictureServices
         /// <param name="file">IFormFile object containing the image to be saved.</param>
         /// <returns>ServiceResponse<bool> indicating the result of the storage operation.</returns>
         Task<ServiceResponse<int>> SavePictureWithoutEncryptFileName(IFormFile file);
-        
+
         Task<ServiceResponse<bool>> DeletePictureByIdAsync(int pictureId);
     }
 
@@ -64,7 +64,7 @@ namespace T.WebApi.Services.PictureServices
                     };
                     await _pictureRepository.CreateAsync(picture);
 
-                    var pictureId = (await _pictureRepository.Table.FirstOrDefaultAsync(x=>x.UrlPath.Contains(newFileName))).Id;
+                    var pictureId = (await _pictureRepository.Table.FirstOrDefaultAsync(x => x.UrlPath.Contains(newFileName))).Id;
 
                     return new ServiceSuccessResponse<int>() { Data = pictureId };
                 }
@@ -119,8 +119,11 @@ namespace T.WebApi.Services.PictureServices
         public async Task<Picture> GetPictureByIdAsync(int pictureId)
         {
             var picture = await _pictureRepository.GetByIdAsync(pictureId);
-            picture.UrlPath ??= "images/no-pictrue.jpg";
-            picture.UrlPath = APIUrl + picture.UrlPath;
+            if (picture is not null)
+            {
+                //picture.UrlPath = (string.IsNullOrEmpty(picture.UrlPath) || picture.UrlPath == null) ? "images/no-pictrue.jpg" : picture.UrlPath;
+                picture.UrlPath = APIUrl + picture.UrlPath;
+            }
             return picture;
         }
 

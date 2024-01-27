@@ -18,7 +18,6 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> UpdateUrlRecordAsync(UrlRecord model);
         Task<ServiceResponse<bool>> DeleteUrlRecordByIdAsync(int id);
         Task<UrlRecord> GetBySlugAsync(string slug);
-        Task<string> GetActiveSlugAsync(int entityId, string entityName);
         
     }
 }

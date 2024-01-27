@@ -15,5 +15,9 @@
                 list[n] = value;
             }
         }
+        public static async Task<T> FirstOrDefaultAsync<T>(this IEnumerable<T> source, Func<T, bool> predicate)
+        {
+            return await Task.Run(() => source.FirstOrDefault(predicate));
+        }
     }
 }

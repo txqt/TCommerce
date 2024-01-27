@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using T.Library.Model.Interface;
@@ -11,6 +12,7 @@ using T.Web.Services.BannerServices;
 using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
 using T.Web.Services.HomePageServices;
+using T.Web.Services.ManufacturerServices;
 using T.Web.Services.PictureServices;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
@@ -64,6 +66,7 @@ internal class Program
         builder.Services.AddTransient<SlugRouteTransformer>();
         builder.Services.AddTransient<IShoppingCartModelService, ShoppingCartModelService>();
         builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
+        builder.Services.AddTransient<IManufacturerService, ManufacturerService>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {
             PropertyNamingPolicy = null,
@@ -82,11 +85,12 @@ internal class Program
         {
             options.LoginPath = "/account/login";
             options.LogoutPath = "/account/logout";
+            options.AccessDeniedPath = "/AccessDenied";
         });
 
         builder.Services.AddSession(options =>
         {
-            options.IdleTimeout = TimeSpan.FromSeconds(1);
+            options.IdleTimeout = TimeSpan.FromMinutes(60);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
         });
@@ -124,8 +128,36 @@ internal class Program
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Install}/{action=Index}/{id?}");
+            pattern: "{controller=Home}/{action=Index}/{id?}");
 
+        app.MapControllerRoute(name: "cart",
+                pattern: "cart",
+                defaults: new { controller = "ShoppingCart", action = "Cart" });
+
+        bool hasRunOnce = false;
+
+        if (app.Environment.IsDevelopment() && !hasRunOnce)
+        {
+            app.MapGet("/", async context =>
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    var _httpClient = services.GetRequiredService<HttpClient>();
+                    var result = await _httpClient.GetAsync("api/db-manage/is-installed");
+
+                    if (result.IsSuccessStatusCode)
+                    {
+                        context.Response.Redirect("/Home/Index");
+                        hasRunOnce = true;
+                        return;
+                    }
+                }
+
+                context.Response.Redirect("/Install/Index");
+            });
+        }
+            
         app.Run();
     }
 }

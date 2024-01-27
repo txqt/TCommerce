@@ -4,6 +4,7 @@ using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Seo;
+using T.WebApi.Helpers;
 using T.WebApi.Services.IRepositoryServices;
 
 namespace T.WebApi.Services.UrlRecordServices
@@ -13,19 +14,22 @@ namespace T.WebApi.Services.UrlRecordServices
         Task SaveSlugAsync<T>(T entity, string slug) where T : BaseEntity;
         Task<string> ValidateSlug<T>(T entity, string seName, string name, bool ensureNotEmpty = false) where T : BaseEntity;
         Task<string> GetSeNameAsync<T>(T entity) where T : BaseEntity;
+        Task<string> GetActiveSlugAsync(int entityId, string entityName);
     }
     public class UrlRecordService : IUrlRecordService
     {
         private readonly IRepository<UrlRecord> _urlRecordRepository;
+        private readonly CacheHelper _cacheHelper;
 
-        public UrlRecordService(IRepository<UrlRecord> urlRecordRepository)
+        public UrlRecordService(IRepository<UrlRecord> urlRecordRepository, CacheHelper cacheHelper)
         {
             _urlRecordRepository = urlRecordRepository;
+            _cacheHelper = cacheHelper;
         }
 
         public async Task<List<UrlRecord>> GetAllAsync()
         {
-            return (await _urlRecordRepository.GetAllAsync()).ToList();
+            return await _cacheHelper.GetOrCreate(CacheKeys.UrlRecords, async ()=> (await _urlRecordRepository.GetAllAsync()).ToList());
         }
 
         public async Task<UrlRecord> GetByIdAsync(int id)
@@ -58,7 +62,7 @@ namespace T.WebApi.Services.UrlRecordServices
                         orderby ur.IsActive descending, ur.Id
                         select ur;
 
-            return await query.FirstOrDefaultAsync();
+            return await _cacheHelper.GetOrCreate(CacheKeys.UrlRecords + $"_slug/{slug}", async ()=> await query.FirstOrDefaultAsync());
         }
 
         public async Task<string> GetActiveSlugAsync(int entityId, string entityName)
@@ -70,7 +74,7 @@ namespace T.WebApi.Services.UrlRecordServices
                         orderby ur.Id descending
                         select ur.Slug;
 
-            return await query.FirstOrDefaultAsync() ?? string.Empty;
+            return await _cacheHelper.GetOrCreate(CacheKeys.UrlRecords + $"_active-slug/{entityId}_{entityName}", async () => await query.FirstOrDefaultAsync() ?? string.Empty);
         }
 
         public virtual async Task<string> GetSeNameAsync<T>(T entity) where T : BaseEntity

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using T.Library.Helpers;
 using T.Library.Model;
 using T.Library.Model.Common;
@@ -8,6 +9,7 @@ using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Extensions;
+using T.WebApi.Helpers;
 using T.WebApi.Services.IRepositoryServices;
 using T.WebApi.Services.UrlRecordServices;
 
@@ -43,10 +45,12 @@ namespace T.WebApi.Services.ProductServices
         private IMapper _mapper;
 
         private readonly IUrlRecordService _urlRecordService;
+
+        private readonly CacheHelper _cacheHelper;
         #endregion
 
         #region Ctor
-        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService)
+        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService, CacheHelper cacheHelper)
         {
             _configuration = configuration;
             _environment = environment;
@@ -58,6 +62,7 @@ namespace T.WebApi.Services.ProductServices
             _mapper = mapper;
             _productCategoryRepository = productCategoryRepository;
             _urlRecordService = urlRecordService;
+            _cacheHelper = cacheHelper;
         }
         #endregion
 
@@ -78,12 +83,15 @@ namespace T.WebApi.Services.ProductServices
                         select p;
             }
 
-            return await PagedList<Product>.ToPagedList(query, productParameters.PageNumber, productParameters.PageSize);
+            return await _cacheHelper.GetOrCreate(CacheKeys.Products, async () => await PagedList<Product>.ToPagedList(query, productParameters.PageNumber, productParameters.PageSize));
         }
 
         public async Task<Product> GetByIdAsync(int id)
         {
-            return await _productsRepository.GetByIdAsync(id);
+            return await _cacheHelper.GetOrCreate(
+                CacheKeys.Products + $"_{id}",
+                async () => await _productsRepository.GetByIdAsync(id)
+            );
         }
 
         public async Task<ServiceResponse<bool>> CreateProductAsync(ProductModel model)
@@ -99,7 +107,9 @@ namespace T.WebApi.Services.ProductServices
                 model.SeName = await _urlRecordService.ValidateSlug(product, model.SeName, product.Name, true);
 
                 await _urlRecordService.SaveSlugAsync(product, model.SeName);
-;
+                
+                _cacheHelper.Remove(CacheKeys.Products);
+
                 return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)
@@ -125,20 +135,9 @@ namespace T.WebApi.Services.ProductServices
                 model.SeName = await _urlRecordService.ValidateSlug(product, model.SeName, product.Name, true);
 
                 await _urlRecordService.SaveSlugAsync(product, model.SeName);
-            }
-            catch (Exception ex)
-            {
-                return new ServiceErrorResponse<bool>(ex.Message);
-            }
 
-            return new ServiceSuccessResponse<bool>();
-        }
-        public async Task<ServiceResponse<bool>> EditProduct(Product model)
-        {
-            try
-            {
-                model.UpdatedOnUtc = DateTime.Now;
-                await _productsRepository.UpdateAsync(model);
+                _cacheHelper.Remove(CacheKeys.Products);
+                _cacheHelper.Remove(CacheKeys.Products + $"_{model.Id}");
             }
             catch (Exception ex)
             {
@@ -151,15 +150,19 @@ namespace T.WebApi.Services.ProductServices
         public async Task<ServiceResponse<bool>> DeleteProductAsync(int productId)
         {
             await _productsRepository.DeleteAsync(productId);
+            _cacheHelper.Remove(CacheKeys.Products + $"_{productId}");
             return new ServiceSuccessResponse<bool>();
         }
 
         public async Task<List<ProductAttribute>> GetAllProductAttributeByProductIdAsync(int productId)
         {
-            return await _productAttributeMappingRepository.Table
+            return await _cacheHelper.GetOrCreate(
+                CacheKeys.ProductAttributes + $"_{productId}",
+                async () => await _productAttributeMappingRepository.Table
                     .Where(pam => pam.ProductId == productId)
                     .Select(pam => pam.ProductAttribute)
-                    .ToListAsync();
+                    .ToListAsync()
+            );
         }
 
         public async Task<List<ProductPicture>> GetProductPicturesByProductIdAsync(int productId)
@@ -173,13 +176,15 @@ namespace T.WebApi.Services.ProductServices
                 pp.Picture.UrlPath = APIUrl + pp.Picture.UrlPath;
             }
 
-            return productPicture;
+            return  _cacheHelper.GetOrCreate(
+                CacheKeys.ProductPictures + $"_{productId}",
+                () => productPicture
+            );
         }
 
         public async Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId)
         {
-            var product = await _productsRepository.GetByIdAsync(productId)
-                ?? throw new ArgumentException("No product found with the specified id");
+            ArgumentNullException.ThrowIfNull(GetByIdAsync(productId));
 
             try
             {
@@ -208,6 +213,7 @@ namespace T.WebApi.Services.ProductServices
                             UrlPath = "/images/" + newFileName
                         };
                         await _pictureRepository.CreateAsync(picture);
+                        _cacheHelper.Remove(CacheKeys.Pictures);
 
                         var productPicture = new ProductPicture
                         {
@@ -215,6 +221,7 @@ namespace T.WebApi.Services.ProductServices
                             PictureId = picture.Id
                         };
                         await _productPictureMappingRepository.CreateAsync(productPicture);
+                        _cacheHelper.Remove(CacheKeys.ProductPictures + $"_{productPicture.ProductId}");
                     }
                 }
                 return new ServiceResponse<bool>() { Message = "File upload successfully", Success = true };

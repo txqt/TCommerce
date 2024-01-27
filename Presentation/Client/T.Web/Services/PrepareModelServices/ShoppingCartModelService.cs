@@ -2,6 +2,7 @@
 using T.Library.Model;
 using T.Library.Model.Interface;
 using T.Web.Models;
+using T.Web.Services.PictureServices;
 using T.Web.Services.ProductService;
 using T.Web.Services.ShoppingCartServices;
 using T.Web.Services.UrlRecordService;
@@ -12,6 +13,7 @@ namespace T.Web.Services.PrepareModelServices
     public interface IShoppingCartModelService
     {
         Task<MiniShoppingCartModel> PrepareMiniShoppingCartModelAsync();
+        Task<ShoppingCartModel> PrepareShoppingCartModelAsync();
     }
     public class ShoppingCartModelService : IShoppingCartModelService
     {
@@ -20,14 +22,16 @@ namespace T.Web.Services.PrepareModelServices
         private readonly IProductService _productService;
         private readonly IUrlRecordService _urlRecordService;
         private readonly IProductAttributeCommon _productAttributeService;
+        private readonly IPictureService _pictureService;
 
-        public ShoppingCartModelService(IUserService userService, IShoppingCartService shoppingCartService, IProductService productService, IUrlRecordService urlRecordService, IProductAttributeCommon productAttributeService)
+        public ShoppingCartModelService(IUserService userService, IShoppingCartService shoppingCartService, IProductService productService, IUrlRecordService urlRecordService, IProductAttributeCommon productAttributeService, IPictureService pictureService)
         {
             _userService = userService;
             _shoppingCartService = shoppingCartService;
             _productService = productService;
             _urlRecordService = urlRecordService;
             _productAttributeService = productAttributeService;
+            _pictureService = pictureService;
         }
 
         public virtual async Task<MiniShoppingCartModel> PrepareMiniShoppingCartModelAsync()
@@ -41,7 +45,7 @@ namespace T.Web.Services.PrepareModelServices
             };
 
             //performance optimization (use "HasShoppingCartItems" property)
-            if (user.HasShoppingCartItems)
+            if (user is not null && user.HasShoppingCartItems)
             {
                 var cart = await _shoppingCartService.GetShoppingCartAsync();
 
@@ -65,7 +69,7 @@ namespace T.Web.Services.PrepareModelServices
                             Id = sci.Id,
                             ProductId = sci.ProductId,
                             ProductName = product.Name,
-                            ProductSeName = await _urlRecordService.GetActiveSlugAsync(product.Id, nameof(Product)),
+                            ProductSeName = await _urlRecordService.GetSeNameAsync(product),
                             Quantity = sci.Quantity,
                             Price = product.Price.ToString("N0")
                         };
@@ -75,6 +79,101 @@ namespace T.Web.Services.PrepareModelServices
                         var result = new StringBuilder();
 
                         if(sci.Attributes is not null)
+                        {
+                            foreach (var selectedAttribute in sci.Attributes)
+                            {
+                                var productAttributeMapping = await _productAttributeService.GetProductAttributeMappingByIdAsync(selectedAttribute.ProductAttributeMappingId);
+                                var productAttribute = await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId);
+
+                                var attributeName = productAttribute.Name;
+
+                                foreach (var attributeValueId in selectedAttribute.ProductAttributeValueIds)
+                                {
+                                    var attributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(attributeValueId);
+                                    var formattedAttribute = $"{attributeName}: {attributeValue.Name}";
+
+
+
+                                    if (!string.IsNullOrEmpty(formattedAttribute))
+                                    {
+                                        if (result.Length > 0)
+                                        {
+                                            result.Append(separator);
+                                        }
+                                        result.Append(formattedAttribute);
+                                    }
+                                }
+                            }
+                        }
+
+                        cartItemModel.AttributeInfo = result.ToString();
+                        model.SubTotal = model.SubTotalValue.ToString("N0");
+                        model.Items.Add(cartItemModel);
+                    }
+                }
+            }
+
+            return model;
+        }
+
+        public async Task<ShoppingCartModel> PrepareShoppingCartModelAsync()
+        {
+            var user = await _userService.GetCurrentUser();
+            var model = new ShoppingCartModel
+            {
+                //ShowProductImages = _shoppingCartSettings.ShowProductImagesInMiniShoppingCart,
+                //let's always display it
+                DisplayShoppingCartButton = true,
+            };
+
+            //performance optimization (use "HasShoppingCartItems" property)
+            if (user is not null && user.HasShoppingCartItems)
+            {
+                var cart = await _shoppingCartService.GetShoppingCartAsync();
+
+                if (cart.Any())
+                {
+                    model.TotalProducts = cart.Sum(item => item.Quantity);
+
+                    var cartProductIds = cart.Select(ci => ci.ProductId).ToArray();
+
+                    model.SubTotalValue = 0;
+                    //products. sort descending (recently added products)
+                    foreach (var sci in cart
+                                 .OrderByDescending(x => x.Id)
+                                 .ToList())
+                    {
+                        string separator = "<br />";
+                        var product = await _productService.GetByIdAsync(sci.ProductId);
+
+                        var cartItemModel = new ShoppingCartModel.ShoppingCartItemModel
+                        {
+                            Id = sci.Id,
+                            ProductId = sci.ProductId,
+                            ProductName = product.Name,
+                            ProductSeName = await _urlRecordService.GetSeNameAsync(product),
+                            Quantity = sci.Quantity,
+                            Price = product.Price.ToString("N0"),
+                            PriceValue = product.Price,
+                        };
+
+                        var productPictures = await _productService.GetProductPicturesByProductIdAsync(product.Id);
+                        if (productPictures?.Count > 0)
+                        {
+                            var picture = await _pictureService.GetPictureByIdAsync(productPictures.FirstOrDefault().PictureId);
+                            cartItemModel.Picture = new Library.Model.ViewsModel.PictureModel()
+                            {
+                                ImageUrl = picture.UrlPath,
+                                AltAttribute = picture.AltAttribute,
+                                TitleAttribute = picture.TitleAttribute,
+                            };
+                        }
+
+                        model.SubTotalValue += product.Price * sci.Quantity;
+
+                        var result = new StringBuilder();
+
+                        if (sci.Attributes is not null)
                         {
                             foreach (var selectedAttribute in sci.Attributes)
                             {

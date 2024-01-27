@@ -17,6 +17,7 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> UpdateCategoryAsync(Category category);
         Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id);
         Task<List<ProductCategory>> GetProductCategoriesByCategoryIdAsync(int categoryId);
+        Task<List<ProductCategory>> GetProductCategoriesByProductIdAsync(int productId);
         Task<ProductCategory> GetProductCategoryByIdAsync(int productCategoryId);
         Task<ServiceResponse<bool>> CreateProductCategoryAsync(ProductCategory productCategory);
         Task<ServiceResponse<bool>> BulkCreateProductCategoriesAsync(List<ProductCategory> productCategories);

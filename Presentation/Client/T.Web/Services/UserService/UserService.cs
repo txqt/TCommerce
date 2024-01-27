@@ -18,6 +18,7 @@ namespace T.Web.Services.UserService
     public interface IUserService : IUserServiceCommon
     {
         Task<ServiceResponse<bool>> Register(RegisterRequest request);
+        Task<ServiceResponse<bool>> UpdateUserAsync(UserModel model);
     }
     public class UserService : HttpClientHelper, IUserService
     {

@@ -6,11 +6,16 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 
 namespace T.Web.Controllers
 {
     public class BaseController : Controller
     {
+        private readonly IRazorViewEngine _razorViewEngine;
+        private readonly ITempDataProvider _tempDataProvider;
+        private readonly IServiceProvider _serviceProvider;
         protected void SetStatusMessage(string message)
         {
             TempData["StatusMessage"] = message;
@@ -24,7 +29,7 @@ namespace T.Web.Controllers
 
                 }
         }
-        public async Task<string> RenderViewComponent(Type viewComponent, object args = null)
+        public async Task<string> RenderViewComponentAsync(Type viewComponent, object args = null)
         {
 
             var sp = HttpContext.RequestServices;
@@ -46,6 +51,39 @@ namespace T.Web.Controllers
                 return writer.ToString();
             }
         }
+        public static async Task<string> RenderViewAsync(string viewName, ControllerContext controllerContext, object model, bool isPartial = false)
+        {
+            var actionContext = controllerContext as ActionContext;
+
+            var serviceProvider = controllerContext.HttpContext.RequestServices;
+            var razorViewEngine = serviceProvider.GetService(typeof(IRazorViewEngine)) as IRazorViewEngine;
+            var tempDataProvider = serviceProvider.GetService(typeof(ITempDataProvider)) as ITempDataProvider;
+
+            using (var sw = new StringWriter())
+            {
+                var viewResult = razorViewEngine.FindView(actionContext, viewName, !isPartial);
+
+                if (viewResult?.View == null)
+                    throw new ArgumentException($"{viewName} does not match any available view");
+
+                var viewDictionary =
+                    new ViewDataDictionary(new EmptyModelMetadataProvider(),
+                        new ModelStateDictionary())
+                    { Model = model };
+
+                var viewContext = new ViewContext(
+                    actionContext,
+                    viewResult.View,
+                    viewDictionary,
+                    new TempDataDictionary(actionContext.HttpContext, tempDataProvider),
+                    sw,
+                    new HtmlHelperOptions()
+                );
+
+                await viewResult.View.RenderAsync(viewContext);
+                return sw.ToString();
+            }
+        }
         public partial class NullView : IView
         {
             public static readonly NullView Instance = new();
@@ -58,6 +96,19 @@ namespace T.Web.Controllers
 
                 return Task.CompletedTask;
             }
+        }
+        public static int GetNumberFromPrefix(string input, string prefix)
+        {
+            if (input.StartsWith(prefix))
+            {
+                string numberString = input.Substring(prefix.Length);
+
+                if (int.TryParse(numberString, out int number))
+                {
+                    return number;
+                }
+            }
+            return -1; // Trả về -1 nếu không thể chuyển đổi thành số
         }
     }
 }

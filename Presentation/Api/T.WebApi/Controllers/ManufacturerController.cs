@@ -17,7 +17,7 @@ namespace T.WebApi.Controllers
             _manufacturerService = manufacturerService;
         }
 
-        [HttpGet(APIRoutes.GETALL)]
+        [HttpGet()]
         public async Task<ActionResult> GetAll()
         {
             return Ok(await _manufacturerService.GetAllManufacturerAsync());
@@ -68,7 +68,7 @@ namespace T.WebApi.Controllers
             return await _manufacturerService.GetProductManufacturersByManufacturerIdAsync(manufacturerId);
         }
 
-        [HttpPost("bulk-product-manufacturers")]
+        [HttpPost("/api/bulk-product-manufacturers")]
         public async Task<ActionResult> BulkCreateProductManufacturersAsync(List<ProductManufacturer> productManufacturers)
         {
             var result = await _manufacturerService.BulkCreateProductManufacturersAsync(productManufacturers);
@@ -78,7 +78,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPut("product-manufacturer")]
+        [HttpPut("/api/product-manufacturer")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> UpdateProductManufacturerAsync(ProductManufacturer productManufacturers)
         {
@@ -89,7 +89,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("product-manufacturer/{manufacturerId}")]
+        [HttpDelete("/api/product-manufacturer/{manufacturerId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> DeleteManufacturerByIdAsync(int manufacturerId)
         {
@@ -100,7 +100,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("product-manufacturer/{manufacturerId}")]
+        [HttpGet("/api/product-manufacturer/{manufacturerId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult<ProductManufacturer>> GetProductManufacturerByIdAsync(int productManufacturerId)
         {

@@ -20,7 +20,11 @@ using T.WebApi.Services.TokenServices;
 
 namespace T.WebApi.Services.UserServices
 {
-    public class UserService : IUserServiceCommon
+    public interface IUserService : IUserServiceCommon
+    {
+        Task<ServiceResponse<bool>> UpdateUserAsync(UserModel model, bool requiredRandomPassword = false);
+    }
+    public class UserService : IUserService
     {
         private readonly DatabaseContext _context;
         private readonly IMapper _mapper;
@@ -129,7 +133,7 @@ namespace T.WebApi.Services.UserServices
             return false;
         }
 
-        public async Task<ServiceResponse<bool>> UpdateUserAsync(UserModel model)
+        public async Task<ServiceResponse<bool>> UpdateUserAsync(UserModel model, bool requiredRandomPassword = false)
         {
             var user = await _userManager.FindByIdAsync(model.Id.ToString()) ??
                 throw new ArgumentNullException($"Cannot find user by id");
@@ -137,16 +141,14 @@ namespace T.WebApi.Services.UserServices
             if (!ValidateEmail(model.Email))
                 return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
-            if (await UserExistsByEmail(model.Email))
+            if (user.Email != model.Email && await UserExistsByEmail(model.Email))
                 return new ServiceErrorResponse<bool>("Email đã tồn tại");
 
-            if (await UserExistsByPhoneNumber(model.PhoneNumber))
+            if (user.PhoneNumber != model.PhoneNumber && await UserExistsByPhoneNumber(model.PhoneNumber))
                 return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
-            if (IsEmailUsername(model.UserName))
+            if (user.UserName != model.UserName && IsEmailUsername(model.UserName))
                 return new ServiceErrorResponse<bool>("Username không thể là 1 email");
-
-            model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
 
             if (model.RoleNames != null && model.RoleNames.Any())
             {
@@ -156,10 +158,18 @@ namespace T.WebApi.Services.UserServices
                 var roleResult = await _userManager.AddToRolesAsync(user, selectedRoles);
                 return new ServiceErrorResponse<bool>(FormatErrors(roleResult.Errors));
             }
+            var currentPasswordHash = user.PasswordHash;
+
+            user = _mapper.Map<User>(model);
 
             if (!string.IsNullOrEmpty(model.Password))
             {
+                model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
                 user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, model.Password);
+            }
+            else
+            {
+                user.PasswordHash = currentPasswordHash;
             }
 
             var result = await _userManager.UpdateAsync(user);

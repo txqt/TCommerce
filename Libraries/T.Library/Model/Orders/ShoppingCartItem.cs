@@ -63,7 +63,5 @@ namespace T.Library.Model.Orders
         }
 
         public string AttributeJson { get; set; }
-
-        public List<ShoppingCartItemAttributeValue> ShoppingCartItemAttributeValues { get; set; }   
     }
 }

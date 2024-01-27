@@ -28,7 +28,7 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets a value indicating whether the entity is required
         /// </summary>
-        public bool IsRequired { get; set; }
+        public bool IsRequired { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the attribute control type identifier

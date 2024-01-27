@@ -27,6 +27,12 @@ namespace T.WebApi.Controllers
             return await _categoryService.GetProductCategoriesByCategoryIdAsync(categoryId);
         }
 
+        [HttpGet("by-product-id/{productId}")]
+        public async Task<ActionResult<List<ProductCategory>>> GetProductCategoriesByProductIdAsync(int productId)
+        {
+            return await _categoryService.GetProductCategoriesByProductIdAsync(productId);
+        }
+
         [HttpPost("bulk")]
         public async Task<ActionResult> BulkCreateProductCategoriesAsync(List<ProductCategory> productCategories)
         {

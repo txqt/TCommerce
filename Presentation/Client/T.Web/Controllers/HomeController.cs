@@ -22,7 +22,7 @@ namespace T.Web.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return Redirect("/ao-thun-nam");
         }
 
         [HttpGet]

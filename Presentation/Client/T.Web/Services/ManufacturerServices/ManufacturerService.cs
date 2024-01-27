@@ -6,7 +6,11 @@ using T.Web.Helpers;
 
 namespace T.Web.Services.ManufacturerServices
 {
-    public class ManufacturerService : IManufacturerServicesCommon
+    public interface IManufacturerService : IManufacturerServicesCommon
+    {
+
+    }
+    public class ManufacturerService : IManufacturerService
     {
         private readonly HttpClientHelper _httpClientHelper;
         private const string DEFAULT_URL = "api/manufacturer";

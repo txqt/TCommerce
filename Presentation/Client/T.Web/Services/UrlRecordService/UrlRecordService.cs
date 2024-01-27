@@ -8,7 +8,7 @@ namespace T.Web.Services.UrlRecordService
 {
     public interface IUrlRecordService : IUrlRecordServiceCommon
     {
-
+        Task<string> GetSeNameAsync<T>(T entity) where T : BaseEntity;
     }
     public class UrlRecordService : HttpClientHelper, IUrlRecordService
     {
@@ -48,14 +48,16 @@ namespace T.Web.Services.UrlRecordService
             return await GetAsync<UrlRecord>(defaultApiRoute + $"slug/{slug}");
         }
 
-        public async Task<string> GetActiveSlugAsync(int entityId, string entityName)
+        private async Task<string> GetActiveSlugAsync(int entityId, string entityName)
         {
             return await GetAsync<string>(defaultApiRoute + $"active-slug/{entityId}/{entityName}");
         }
 
         public async Task<string> GetSeNameAsync<T>(T entity) where T : BaseEntity
         {
-            return await PostAsJsonAsync<string>(defaultApiRoute + $"get-active-slug", entity);
+            var entityId = entity.Id;
+            var entityName = entity.GetType().Name;
+            return await GetActiveSlugAsync(entityId, entityName);
         }
     }
 }

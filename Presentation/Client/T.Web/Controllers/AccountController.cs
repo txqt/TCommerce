@@ -15,7 +15,7 @@ using T.Web.Services.UserService;
 
 namespace T.Web.Controllers
 {
-    [Route("/account/[action]")]
+    [Route("account/[action]")]
     public class AccountController : BaseController
     {
         private readonly IUserRegistrationService _accountService;

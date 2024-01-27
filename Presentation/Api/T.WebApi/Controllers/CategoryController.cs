@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
@@ -29,6 +30,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Category>> Get(int id)
         {
             return await _categoryService.GetCategoryByIdAsync(id);

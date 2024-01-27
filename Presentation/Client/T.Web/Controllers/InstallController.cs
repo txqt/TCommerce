@@ -16,16 +16,16 @@ namespace T.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if(!_webHostEnvironment.IsDevelopment())
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            var result = await _httpClient.GetAsync("api/db-manage/is-installed");
-            if (result.IsSuccessStatusCode)
-            {
-                return Redirect("ao-thun-nam");
-                return RedirectToAction("Index", "Home");
-            }
+            //if(!_webHostEnvironment.IsDevelopment())
+            //{
+            //    return RedirectToAction("Index", "Home");
+            //}
+            //var result = await _httpClient.GetAsync("api/db-manage/is-installed");
+            //if (result.IsSuccessStatusCode)
+            //{
+            //    return Redirect("ao-thun-nam");
+            //    return RedirectToAction("Index", "Home");
+            //}
             return View(new StartupFormModel());
         }
 

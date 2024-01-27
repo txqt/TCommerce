@@ -7,9 +7,7 @@ using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 using T.Library.Model.Users;
-
 using T.WebApi.Attribute;
-using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.CategoryServices;
 using T.WebApi.Services.UserServices;
@@ -32,6 +30,7 @@ using T.WebApi.Services.UserRegistrations;
 using T.WebApi.Services.UrlRecordServices;
 using T.WebApi.Services.ShoppingCartServices;
 using T.Library.Model.JwtToken;
+using T.WebApi.Helpers;
 
 namespace T.WebApi.Extensions
 {
@@ -130,7 +129,6 @@ namespace T.WebApi.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IEmailSender, SendMailService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductAttributeService, ProductAttributeService>();
@@ -138,7 +136,7 @@ namespace T.WebApi.Extensions
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IPictureService, PictureService>();
-            services.AddScoped<IUserServiceCommon, UserService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IHomePageService, HomePageService>();
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<DataSeeder>();
@@ -151,6 +149,7 @@ namespace T.WebApi.Extensions
             services.AddScoped<IUserRegistrationService, UserRegistrationService>();
             services.AddScoped<IProductAttributeConverter, ProductAttributeConverter>();
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
+            services.AddScoped<CacheHelper>();
             return services;
         }
 

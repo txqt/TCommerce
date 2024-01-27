@@ -1,0 +1,44 @@
+﻿
+@{
+    var manufacturerTable = new DataTableViewModel()
+    {
+                TableTitle = "Danh sách nhà cung cấp",
+                CreateButtonName = "Tạo mới",
+                CreateUrl = Url.Action("Create", "Manufacturer"),
+                EditUrl = Url.Action("Edit", "Manufacturer"),
+                DeleteUrl = Url.Action("DeleteManufacturer", "Manufacturer"),
+                SearchButtonId = "search-categories",
+                GetDataUrl = Url.Action("GetAll", "Manufacturer"),
+                DefaultSort = new DefaultSort(2, "desc"),
+                Columns = new List<ColumnDefinition>()
+                {
+                    new ColumnDefinition(nameof(Manufacturer.Id))
+                    {
+                        RenderType = RenderType.RenderCheckBox,
+                        IsMasterCheckBox = true,
+                        Orderable = false
+                    },new ColumnDefinition(nameof(Manufacturer.Name))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<Manufacturer>(m=>m.Name)
+                    },
+                    new ColumnDefinition(nameof(Manufacturer.DisplayOrder))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<Manufacturer>(m=>m.DisplayOrder)
+                    },
+                    new ColumnDefinition(nameof(Manufacturer.Id))
+                    {
+                        RenderType = RenderType.RenderButtonEdit,
+                        Title = "Edit",
+                        Orderable = false
+                    },
+                    new ColumnDefinition(nameof(Manufacturer.Id))
+                    {
+                        RenderType = RenderType.RenderButtonRemove,
+                        Title = "Delete",
+                        Orderable = false
+                    },
+                }
+    };
+}
+
+@await Html.PartialAsync("_Table", manufacturerTable)

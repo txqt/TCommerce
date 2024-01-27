@@ -3,9 +3,9 @@ using T.Library.Model.ViewsModel;
 
 namespace T.Web.Models
 {
-    public class MiniShoppingCartModel
+    public class ShoppingCartModel
     {
-        public MiniShoppingCartModel()
+        public ShoppingCartModel()
         {
             Items = new List<ShoppingCartItemModel>();
         }
@@ -23,7 +23,7 @@ namespace T.Web.Models
         {
             public ShoppingCartItemModel()
             {
-                Picture = new PictureModel();
+                //Picture = new PictureModel();
             }
 
             public int ProductId { get; set; }
@@ -35,6 +35,7 @@ namespace T.Web.Models
             public int Quantity { get; set; }
 
             public string Price { get; set; }
+            public decimal PriceValue { get; set; }
 
             //public decimal UnitPriceValue { get; set; }
 
