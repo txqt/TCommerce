@@ -4,6 +4,7 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System;
 using System.Globalization;
+using System.Text;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
@@ -58,7 +59,7 @@ namespace T.Web.Controllers
             var model = new ProductDetailsModel()
             {
                 Id = product.Id,
-                Title = product.Name,
+                Title = product.Name + (product.Deleted ? " (Đã xóa)" : ""),
                 Price = product.Price,
                 OldPrice = product.OldPrice,
                 ShortDescription = product.ShortDescription,
@@ -144,7 +145,7 @@ namespace T.Web.Controllers
                 UpdateShoppingCartItemType = ShoppingCartType.ShoppingCart
             };
 
-            if(updatecartitemid > 0)
+            if (updatecartitemid > 0)
             {
                 var carts = (await _shoppingCartService.GetShoppingCartAsync());
                 var cart = carts.FirstOrDefault(x => x.Id == updatecartitemid);
@@ -155,15 +156,51 @@ namespace T.Web.Controllers
 
                 addToCartModel.UpdatedShoppingCartItemId = cart.Id;
                 addToCartModel.UpdateShoppingCartItemType = cart.ShoppingCartType;
+
+                var result = new StringBuilder();
+
+                if (cart.Attributes is not null)
+                {
+                    foreach (var selectedAttribute in cart.Attributes)
+                    {
+                        var productAttributeMapping = await _productAttributeService.GetProductAttributeMappingByIdAsync(selectedAttribute.ProductAttributeMappingId);
+                        var productAttribute = await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId);
+
+                        var attributeName = productAttribute.Name;
+
+                        foreach (var attributeValueId in selectedAttribute.ProductAttributeValueIds)
+                        {
+                            var attributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(attributeValueId);
+                            var formattedAttribute = $"{attributeName}: {attributeValue.Name}";
+
+
+
+                            if (!string.IsNullOrEmpty(formattedAttribute))
+                            {
+                                if (result.Length > 0)
+                                {
+                                    result.Append("<br/>");
+                                }
+                                result.Append(formattedAttribute);
+                            }
+                        }
+                    }
+                }
+
+                model.ItemUpdateInfo = new ProductDetailsModel.CartItemUpdateInfo()
+                {
+                    ProductName = product.Name,
+                    AttributeInfo = result.ToString()
+                };
             }
 
             model.AddToCart = addToCartModel;
 
-            var categoryIds = (await _categoryService.GetProductCategoriesByProductIdAsync(product.Id)).Select(x=>x.CategoryId).ToList();
+            var categoryIds = (await _categoryService.GetProductCategoriesByProductIdAsync(product.Id)).Select(x => x.CategoryId).ToList();
 
             var categories = new List<ProductDetailsModel.CategoryOfProduct>();
 
-            foreach(var categoryId in categoryIds)
+            foreach (var categoryId in categoryIds)
             {
                 var category = await _categoryService.GetCategoryByIdAsync(categoryId);
                 var categorySeName = await _urlRecordService.GetSeNameAsync(category);
@@ -188,7 +225,7 @@ namespace T.Web.Controllers
             var price = product.Price.ToString();
             var picture = (await _pictureService.GetPictureByIdAsync(product.Id));
             var mainImage = string.Empty;
-            if(picture != null)
+            if (picture != null)
             {
                 mainImage = picture.UrlPath;
             }

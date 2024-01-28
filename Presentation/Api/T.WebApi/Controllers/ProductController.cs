@@ -66,7 +66,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{productId}")]
+        [HttpPut("")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> EditProduct(ProductModel model)
         {

@@ -11,6 +11,23 @@
             <div class="product-details-top">
                 <form asp-route="Product" asp-route-sename="@Model.SeName" method="post" id="product-details-form">
                     <div class="row">
+                        @if (Model.AddToCart.UpdatedShoppingCartItemId > 0 && Model.ItemUpdateInfo is not null)
+                        {
+                            var itemToUpdateModel = Model.ItemUpdateInfo;
+                            <div class="col-md-12 mx-4 my-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="product-details text-center">
+                                            <h2 class="text-info">Đang sửa sản phẩm trong giỏ hàng:</h2>
+                                            <h1 class="product-title">@itemToUpdateModel.ProductName</h1>
+                                            <p>@itemToUpdateModel.AttributeInfo</p>
+                                            <p>@itemToUpdateModel.Quantity</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
                         <div class="col-md-6">
                             @await Html.PartialAsync("_ProductDetailsPictures", Model)
                         </div><!-- End .col-md-6 -->
@@ -40,9 +57,9 @@
                                 @{
                                     var dataDictAttributes = new ViewDataDictionary(ViewData);
                                     dataDictAttributes.TemplateInfo.HtmlFieldPrefix = $"attributes_{Model.Id}";
-                                    @await Html.PartialAsync("_ProductAttributes", Model)
+                                    @await Html.PartialAsync("_ProductAttributes", Model, dataDictAttributes)
                                 }
-                                
+
 
                                 @{
                                     var dataDictAddToCart = new ViewDataDictionary(ViewData);
@@ -53,13 +70,13 @@
                                 <div class="product-details-footer">
                                     <div class="product-cat">
                                         <span>Category:</span>
-                                        @if(Model.Categories.Count > 0)
+                                        @if (Model.Categories.Count > 0)
                                         {
                                             var categories = Model.Categories;
                                             for (int i = 0; i < categories.Count; i++)
                                             {
                                                 <a href="@categories[i].SeName">@categories[i].CategoryName</a>
-                                                if(i < categories.Count - 1)
+                                                if (i < categories.Count - 1)
                                                 {
                                                     <text>,</text>
                                                 }

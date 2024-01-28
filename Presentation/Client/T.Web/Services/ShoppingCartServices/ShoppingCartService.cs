@@ -1,4 +1,5 @@
-﻿using T.Library.Model.Interface;
+﻿using T.Library.Model;
+using T.Library.Model.Interface;
 using T.Library.Model.Orders;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
@@ -10,11 +11,14 @@ namespace T.Web.Services.ShoppingCartServices
     {
         Task<List<ShoppingCartItemModel>> GetShoppingCartAsync();
         Task<ServiceResponse<bool>> CreateAsync(ShoppingCartItemModel shoppingCartItem);
-        Task<ServiceResponse<bool>> UpdateAsync(List<ShoppingCartItemModel> shoppingCartItems);
+        Task<ServiceResponse<bool>> UpdateBatchAsync(List<ShoppingCartItemModel> shoppingCartItems);
+        Task<ServiceResponse<bool>> UpdateAsync(ShoppingCartItemModel shoppingCartItem);
+        Task<List<string>> GetWarningsShoppingCart(List<ShoppingCartItemModel> shoppingCartItemModels);
+        Task<List<string>> GetWarningShoppingCart(ShoppingCartItemModel shoppingCartItemModel);
     }
     public class ShoppingCartService : HttpClientHelper, IShoppingCartService
     {
-        private string defaultApi = "api/shopping-cart-item";
+        private string defaultApi = "api/shopping-cart-items";
 
         public ShoppingCartService(HttpClient httpClient) : base(httpClient)
         {
@@ -24,9 +28,9 @@ namespace T.Web.Services.ShoppingCartServices
         {
             return await PostAsJsonAsync<ServiceResponse<bool>>(defaultApi, shoppingCartItem);
         }
-        public async Task<ServiceResponse<bool>> UpdateAsync(List<ShoppingCartItemModel> shoppingCartItems)
+        public async Task<ServiceResponse<bool>> UpdateBatchAsync(List<ShoppingCartItemModel> shoppingCartItems)
         {
-            return await PutAsJsonAsync<ServiceResponse<bool>>(defaultApi, shoppingCartItems);
+            return await PutAsJsonAsync<ServiceResponse<bool>>($"{defaultApi}/batch", shoppingCartItems);
         }
 
         public Task<ShoppingCartItem> GetById(int id)
@@ -44,5 +48,24 @@ namespace T.Web.Services.ShoppingCartServices
             return await DeleteAsync<ServiceResponse<bool>>($"{defaultApi}/{id}");
         }
 
+        public async Task<ServiceResponse<bool>> UpdateAsync(ShoppingCartItemModel shoppingCartItem)
+        {
+            return await PutAsJsonAsync<ServiceResponse<bool>>(defaultApi, shoppingCartItem);
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteBatchAsync(List<int> ids)
+        {
+            return await DeleteWithDataAsync<ServiceResponse<bool>>($"{defaultApi}/delete-list", ids);
+        }
+
+        public async Task<List<string>> GetWarningsShoppingCart(List<ShoppingCartItemModel> shoppingCartItemModels)
+        {
+            return await GetWithDataAsync<List<string>>($"{defaultApi}/warnings", shoppingCartItemModels);
+        }
+
+        public async Task<List<string>> GetWarningShoppingCart(ShoppingCartItemModel shoppingCartItemModel)
+        {
+            return await GetWithDataAsync<List<string>>($"{defaultApi}/warning", shoppingCartItemModel);
+        }
     }
 }

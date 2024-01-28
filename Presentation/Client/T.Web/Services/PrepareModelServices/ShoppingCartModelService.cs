@@ -78,7 +78,7 @@ namespace T.Web.Services.PrepareModelServices
 
                         var result = new StringBuilder();
 
-                        if(sci.Attributes is not null)
+                        if (sci.Attributes is not null)
                         {
                             foreach (var selectedAttribute in sci.Attributes)
                             {
@@ -125,21 +125,21 @@ namespace T.Web.Services.PrepareModelServices
                 //let's always display it
                 DisplayShoppingCartButton = true,
             };
-
+            model.Warnings = new List<string>();
             //performance optimization (use "HasShoppingCartItems" property)
             if (user is not null && user.HasShoppingCartItems)
             {
-                var cart = await _shoppingCartService.GetShoppingCartAsync();
+                var carts = await _shoppingCartService.GetShoppingCartAsync();
 
-                if (cart.Any())
+                if (carts.Any())
                 {
-                    model.TotalProducts = cart.Sum(item => item.Quantity);
+                    model.TotalProducts = carts.Sum(item => item.Quantity);
 
-                    var cartProductIds = cart.Select(ci => ci.ProductId).ToArray();
+                    var cartProductIds = carts.Select(ci => ci.ProductId).ToArray();
 
                     model.SubTotalValue = 0;
                     //products. sort descending (recently added products)
-                    foreach (var sci in cart
+                    foreach (var sci in carts
                                  .OrderByDescending(x => x.Id)
                                  .ToList())
                     {
@@ -202,11 +202,15 @@ namespace T.Web.Services.PrepareModelServices
                         }
 
                         cartItemModel.AttributeInfo = result.ToString();
+                        cartItemModel.Warnings = await _shoppingCartService.GetWarningShoppingCart(sci);
                         model.SubTotal = model.SubTotalValue.ToString("N0");
                         model.Items.Add(cartItemModel);
                     }
+                    model.Warnings = await _shoppingCartService.GetWarningsShoppingCart(carts);
                 }
             }
+
+
 
             return model;
         }

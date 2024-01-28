@@ -17,13 +17,13 @@ namespace T.Web.Models
         public bool DisplayShoppingCartButton { get; set; } = true;
         public bool DisplayCheckoutButton { get; set; } = true;
         public bool ShowProductImages { get; set; }
-
+        public List<string> Warnings { get; set; }
 
         public partial class ShoppingCartItemModel : BaseEntity
         {
             public ShoppingCartItemModel()
             {
-                //Picture = new PictureModel();
+                Warnings = new List<string>();
             }
 
             public int ProductId { get; set; }
@@ -42,6 +42,8 @@ namespace T.Web.Models
             public string AttributeInfo { get; set; }
 
             public PictureModel Picture { get; set; }
+
+            public List<string> Warnings { get; set; }
         }
     }
 }

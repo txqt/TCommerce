@@ -1,5 +1,5 @@
 ﻿// Main Js File
-function deleteshoppingcartitem(n) {
+function deleteshoppingcartitem(n, loadScript = false) {
     $.ajax({
         url: n,
         type: "POST",
@@ -7,7 +7,13 @@ function deleteshoppingcartitem(n) {
             if (result.success) {
                 $('#miniCartContainer').html(result.updateminicartsectionhtml);
                 $('#cartContainer').html(result.updatecartsectionhtml);
-                toastr.success("Đã xóa thành công");
+                if (loadScript) {
+                    //reload update input quantity
+                    quantityInputs();
+                }
+                if (result.toString().message) {
+                    toastr.success(result.message);
+                }
             } else {
                 toastr.warning(result.errors.join('<br>'));
             }
@@ -18,11 +24,30 @@ function deleteshoppingcartitem(n) {
         }
     });
 }
+
+// Quantity Input - Cart page - Product Details pages
+function quantityInputs() {
+    if ($.fn.inputSpinner) {
+        $("input[type='number']").inputSpinner({
+            decrementButton: '<i class="icon-minus"></i>',
+            incrementButton: '<i class="icon-plus"></i>',
+            groupClass: 'input-spinner',
+            buttonsClass: 'btn-spinner',
+            buttonsWidth: '26px'
+        });
+    }
+}
+
 $(document).ready(function () {
     'use strict';
 
     owlCarousels();
     quantityInputs();
+
+    $(document).on('click', '#deleteCartItemButton', function () {
+        var url = $(this).data('url');
+        deleteshoppingcartitem(url);
+    });
 
     // Header Search Toggle
 
@@ -251,18 +276,7 @@ $(document).ready(function () {
 		// $('.product-countdown').countdown('pause');
 	}
 
-	// Quantity Input - Cart page - Product Details pages
-    function quantityInputs() {
-        if ( $.fn.inputSpinner ) {
-            $("input[type='number']").inputSpinner({
-                decrementButton: '<i class="icon-minus"></i>',
-                incrementButton: '<i class="icon-plus"></i>',
-                groupClass: 'input-spinner',
-                buttonsClass: 'btn-spinner',
-                buttonsWidth: '26px'
-            });
-        }
-    }
+	
 
     // Sticky Content - Sidebar - Social Icons etc..
     // Wrap elements with <div class="sticky-content"></div> if you want to make it sticky

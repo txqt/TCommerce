@@ -18,7 +18,7 @@ using static T.Library.Model.ViewsModel.ShoppingCartItemModel;
 
 namespace T.WebApi.Controllers
 {
-    [Route("api/shopping-cart-item")]
+    [Route("api/shopping-cart-items")]
     [ApiController]
     [CheckPermission]
     public class ShoppingCartItemController : ControllerBase
@@ -74,20 +74,17 @@ namespace T.WebApi.Controllers
             {
                 return NotFound();
             }
-
-            var productAttributeMapping = await _productAttribute.GetProductAttributesMappingByProductIdAsync(product.Id);
-
-            var validateCart = await _shoppingCartService.ValidateCart(productAttributeMapping, shoppingCartItemModel.Attributes);
-            if (validateCart.Count > 0)
-            {
-                return BadRequest(new ServiceErrorResponse<bool>() { Message = string.Join(",", validateCart)});
-            }
-
+            var user = await _userService.GetCurrentUser();
 
             var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
             shoppingCartItem.AttributeJson = attributesJson;
 
-            var user = await _userService.GetCurrentUser();
+            var warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
+
+            if (warnings.Any())
+            {
+                return BadRequest(new ServiceErrorResponse<bool>() { Message = string.Join(",", warnings) });
+            }
 
             await _shoppingCartService.AddToCartAsync(user, shoppingCartItem.ShoppingCartType, product, attributesJson, shoppingCartItem.Quantity);
 
@@ -97,7 +94,35 @@ namespace T.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSelectedItemShoppingCart(int id)
         {
+            var user = await _userService.GetCurrentUser();
+            var cart = await _shoppingCartService.GetById(id);
+            if (cart.UserId != user.Id)
+            {
+                return NotFound();
+            }
+
             var result = await _shoppingCartService.DeleteAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpDelete("delete-list")]
+        public async Task<IActionResult> DeleteBatchShoppingCart(List<int> ids)
+        {
+            var user = await _userService.GetCurrentUser();
+            foreach (var id in ids)
+            {
+                var cart = await _shoppingCartService.GetById(id);
+                if (cart.UserId != user.Id)
+                {
+                    return NotFound();
+                }
+            }
+
+            var result = await _shoppingCartService.DeleteBatchAsync(ids);
             if (result.Success)
             {
                 return Ok(result);
@@ -111,7 +136,7 @@ namespace T.WebApi.Controllers
 
             var model = _mapper.Map<List<ShoppingCartItemModel>>(updatedShoppingCart);
 
-            if(updatedShoppingCart.Count > 0)
+            if (updatedShoppingCart.Count > 0)
             {
                 foreach (var newShoppingCart in updatedShoppingCart)
                 {
@@ -125,24 +150,18 @@ namespace T.WebApi.Controllers
             return model ??= null;
         }
 
-        
-        [HttpPut("")]
+
+        [HttpPut("batch")]
         [CheckPermission]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> UpdateShoppingCartItem(
+        public async Task<IActionResult> UpdateShoppingCartItems(
             List<ShoppingCartItemModel> shoppingCartItemModels)
         {
-            if(shoppingCartItemModels?.Count > 0)
+            var user = await _userService.GetCurrentUser();
+            if (shoppingCartItemModels?.Count > 0)
             {
-                foreach(var shoppingCartItemModel in shoppingCartItemModels)
+                foreach (var shoppingCartItemModel in shoppingCartItemModels)
                 {
-                    //var shoppingCartItemForUpdate = await _shoppingCartService.GetById(shoppingCartItemModel.Id);
-                    //if(shoppingCartItemForUpdate is null)
-                    //{
-                    //    return NotFound();
-                    //}
-
-                    //shoppingCartItemForUpdate = _mapper.Map<ShoppingCartItem>(shoppingCartItemModel);
                     var product = await _productService.GetByIdAsync(shoppingCartItemModel.ProductId);
 
                     if (product == null)
@@ -150,21 +169,15 @@ namespace T.WebApi.Controllers
                         return NotFound();
                     }
 
-                    var productAttributeMapping = await _productAttribute.GetProductAttributesMappingByProductIdAsync(product.Id);
+                    var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
 
-                    var validateCart = await _shoppingCartService.ValidateCart(productAttributeMapping, shoppingCartItemModel.Attributes);
-                    if (validateCart.Count > 0)
+                    var warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
+                    if (warnings.Any())
                     {
-                        return BadRequest(new ServiceErrorResponse<bool>() { Message = string.Join(",", validateCart) });
+                        return BadRequest(new ServiceErrorResponse<bool>() { Message = string.Join(",", warnings) });
                     }
 
-
-                    var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
-                    //shoppingCartItemForUpdate.AttributeJson = attributesJson;
-
-                    var user = await _userService.GetCurrentUser();
-
-                    await _shoppingCartService.UpdateCartItemAsync(user, shoppingCartItemModel.Id, shoppingCartItemModel.ShoppingCartType, attributesJson, shoppingCartItemModel.Quantity);
+                    await _shoppingCartService.UpdateCartItemAsync(user, shoppingCartItemModel.Id, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
                 }
             }
             else
@@ -173,6 +186,64 @@ namespace T.WebApi.Controllers
             }
 
             return Ok(new ServiceSuccessResponse<bool>());
+        }
+
+        [HttpPut("")]
+        [CheckPermission]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> UpdateShoppingCartItem(
+            ShoppingCartItemModel shoppingCartItemModel)
+        {
+            var product = await _productService.GetByIdAsync(shoppingCartItemModel.ProductId);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userService.GetCurrentUser();
+
+            var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+
+            var warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
+            if (warnings.Any())
+            {
+                return BadRequest(new ServiceErrorResponse<bool>() { Message = string.Join(",", warnings) });
+            }
+
+            await _shoppingCartService.UpdateCartItemAsync(user, shoppingCartItemModel.Id, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
+
+            return Ok(new ServiceSuccessResponse<bool>());
+        }
+
+        [HttpGet("warnings")]
+        public async Task<IActionResult> GetWarningsShoppingCart(List<ShoppingCartItemModel> shoppingCartItemModels)
+        {
+            var user = await _userService.GetCurrentUser();
+            var warnings = new List<string>();
+            if (shoppingCartItemModels is not null)
+            {
+                foreach (var item in shoppingCartItemModels)
+                {
+                    var product = await _productService.GetByIdAsync(item.ProductId);
+                    var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(item.Attributes, product.Id);
+                    warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, item.ShoppingCartType, product, attributesJson, item.Quantity);
+                }
+            }
+            return new JsonResult(warnings);
+        }
+        [HttpGet("warning")]
+        public async Task<IActionResult> GetWarningShoppingCart(ShoppingCartItemModel shoppingCartItemModel)
+        {
+            var user = await _userService.GetCurrentUser();
+            var warnings = new List<string>();
+            if(shoppingCartItemModel is not null)
+            {
+                var product = await _productService.GetByIdAsync(shoppingCartItemModel.ProductId);
+                var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+                warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
+            }
+            return new JsonResult(warnings);
         }
     }
 }

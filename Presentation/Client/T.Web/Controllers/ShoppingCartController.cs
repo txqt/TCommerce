@@ -179,16 +179,12 @@ namespace T.Web.Controllers
             }
             else
             {
-                var listToUpdate = new List<ShoppingCartItemModel>
-                {
-                    model
-                };
-                result = await _shoppingCartService.UpdateAsync(listToUpdate);
+                result = await _shoppingCartService.UpdateAsync(model);
             }
 
             if (result.Success)
             {
-                return await RefreshCartView();
+                return await RefreshCartView("Success");
             }
 
             return Json(new
@@ -204,7 +200,7 @@ namespace T.Web.Controllers
 
             if (deleteResult.Success)
             {
-                return await RefreshCartView();
+                return await RefreshCartView("Xóa thành công");
             }
 
             return Json(new
@@ -259,15 +255,15 @@ namespace T.Web.Controllers
                     model.Add(cartNeedUpdate);
                 }
             }
-            await _shoppingCartService.UpdateAsync(model);
+            await _shoppingCartService.UpdateBatchAsync(model);
             return RedirectToAction(nameof(Cart));
         }
 
-        private async Task<JsonResult> RefreshCartView()
+        private async Task<JsonResult> RefreshCartView(string message)
         {
             var updateMiniCartSectionHtml = await RenderViewComponentAsync(typeof(MiniCartDropDownViewComponent));
             var updateCartSectionHtml = await RenderViewAsync("Cart", ControllerContext, await _sciModelService.PrepareShoppingCartModelAsync(), true);
-            return Json(new { success = true, updateminicartsectionhtml = updateMiniCartSectionHtml, updatecartsectionhtml = updateCartSectionHtml });
+            return Json(new { success = true, updateminicartsectionhtml = updateMiniCartSectionHtml, updatecartsectionhtml = updateCartSectionHtml, message });
         }
     }
 }

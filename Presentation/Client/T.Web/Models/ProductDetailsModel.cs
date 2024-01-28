@@ -42,6 +42,7 @@ namespace T.Web.Models
 
         public List<CategoryOfProduct> Categories { get; set; }
 
+        public CartItemUpdateInfo ItemUpdateInfo { get; set; }
         public AddToCartModel AddToCart { get; set; }
         public class ProductAttributeModel : BaseEntity
         {
@@ -135,6 +136,12 @@ namespace T.Web.Models
         {
             public string CategoryName { get; set; }
             public string SeName { get; set; }
+        }
+        public class CartItemUpdateInfo
+        {
+            public string ProductName { get; set; }
+            public string AttributeInfo { get; set; }
+            public string Quantity { get; set; }
         }
     }
     

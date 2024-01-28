@@ -11,14 +11,35 @@
     </div><!-- End .product-details-quantity -->
 </div>
 <div class="product-details-action">
+    @{
+        var cartButtonText = "add to cart";
+        if (Model.UpdatedShoppingCartItemId > 0 && Model.UpdateShoppingCartItemType.HasValue && Model.UpdateShoppingCartItemType.Value == ShoppingCartType.ShoppingCart)
+        {
+            cartButtonText = "update to cart";
+        }
+        else if (Model.UpdatedShoppingCartItemId > 0 && Model.UpdateShoppingCartItemType.HasValue && Model.UpdateShoppingCartItemType.Value == ShoppingCartType.Wishlist)
+        {
+            cartButtonText = "update to wishlist";
+        }
+    }
+    @if (!Model.DisableBuyButton)
+    {
+        <span style="cursor: pointer" id="add-to-cart-button-@Model.ProductId" class="btn-product btn-cart" onclick="addproducttocart_details('@Url.Action("AddProductToCartDetails", "ShoppingCart", new {productId = Model.ProductId, shoppingCartTypeId = (int)Model.UpdateShoppingCartItemType})','#product-details-form')"><span>@cartButtonText</span></span>
+    }
+    else
+    {
+        <span disabled class="btn-product btn-cart"><span>Không thể mua sản phẩm này nữa</span></span>
+    }
 
-    <span style="cursor: pointer" id="add-to-cart-button-@Model.ProductId" class="btn-product btn-cart" onclick="addproducttocart_details('@Url.Action("AddProductToCartDetails", "ShoppingCart", new {productId = Model.ProductId, shoppingCartTypeId = (int)Model.UpdateShoppingCartItemType})'
-,'#product-details-form')"><span>add to cart</span></span>
+    @if (Model.UpdatedShoppingCartItemId <= 0)
+    {
+        <div class="details-action-wrapper">
+            <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+            <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+        </div>
 
-    <div class="details-action-wrapper">
-        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-        <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
-    </div><!-- End .details-action-wrapper -->
+        <!-- End .details-action-wrapper -->
+    }
 
 </div><!-- End .product-details-action -->
 
@@ -35,7 +56,7 @@
                 } else {
                     toastr.warning(result.errors.join('<br>'));
                 }
-                
+
             },
             error: function () {
                 console.error('Something went wrong.');
