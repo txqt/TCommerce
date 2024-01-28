@@ -3,13 +3,6 @@
     ViewData["Title"] = "Giỏ hàng";
 }
 <div class="page-content" id="cartContainer">
-    @if (Model.Warnings is not null && Model.Warnings.Count > 0)
-    {
-        foreach (var warning in Model.Warnings)
-        {
-            <h4 class="text-danger">@warning</h4>
-        }
-    }
     @if (Model is not null && Model.Items.Count > 0)
     {
         <div class="cart">
@@ -34,20 +27,20 @@
                                     {
                                         foreach (var item in Model.Items)
                                         {
-                                            <tr style="@(item.Warnings?.Count > 0 ? "border: 5px solid red; border-radius: 15px;" : "")">
+                                            <tr style="@(item.Warnings?.Count > 0 ? "border: 0.2rem solid #FF0000;" : "")">
                                                 <td class="product-col">
                                                     <div class="product">
                                                         @if (item.Picture is not null)
                                                         {
                                                             <figure class="product-media">
-                                                                <a href="@item.ProductSeName">
+                                                                <a href="/@item.ProductSeName">
                                                                     <img src="@item.Picture.ImageUrl" alt="@item.ProductName">
                                                                 </a>
                                                             </figure>
                                                         }
 
                                                         <h3 class="product-title">
-                                                            <a href="@item.ProductSeName">@item.ProductName</a>
+                                                            <a href="/@item.ProductSeName">@item.ProductName</a>
                                                         </h3><!-- End .product-title -->
                                                         
                                                         <br />
@@ -83,7 +76,7 @@
                                     }
                                 </tbody>
                             </table><!-- End .table table-wishlist -->
-                            
+
                             <div class="cart-bottom">
                                 <button type="submit" href="#" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></button>
                             </div><!-- End .cart-bottom -->

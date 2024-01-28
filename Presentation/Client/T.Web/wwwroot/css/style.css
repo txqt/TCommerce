@@ -6456,7 +6456,7 @@ p {
     margin-bottom: 3rem;
 }
 
-.card {
+/*.card {
     border-radius: 0;
     margin-bottom: 0;
     border: none;
@@ -6538,7 +6538,7 @@ p {
     padding: 0.4rem 4rem 1.8rem 1.2rem;
     border: none;
     border-radius: 0;
-}
+}*/
 
 .accordion-icon .card-body {
     padding-left: 5.5rem !important;

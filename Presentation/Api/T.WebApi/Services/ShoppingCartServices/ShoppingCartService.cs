@@ -164,7 +164,7 @@ namespace T.WebApi.Services.ShoppingCartServices
             var currentCart = await GetById(cartId);
 
             //check if that other cart is current cart
-            if (otherCartWithSameParameters.Id == currentCart.Id)
+            if (otherCartWithSameParameters is not null && otherCartWithSameParameters.Id == currentCart.Id)
             {
                 otherCartWithSameParameters = null;
             }
@@ -226,24 +226,24 @@ namespace T.WebApi.Services.ShoppingCartServices
             //deleted
             if (product.Deleted)
             {
-                warnings.Add($"Sản phẩm {product.Name} đã bị xóa (tạm thời)");
+                warnings.Add($"Sản phẩm [{product.Name}] đã bị xóa (tạm thời)");
                 return warnings;
             }
 
             //published
             if (!product.Published)
             {
-                warnings.Add($"Sản phẩm {product.Name} chưa được xuất bản");
+                warnings.Add($"Sản phẩm [{product.Name}] chưa được xuất bản");
             }
 
             if (shoppingCartType == ShoppingCartType.ShoppingCart && product.DisableBuyButton)
             {
-                warnings.Add($"Sản phẩm {product.Name} này không được thêm vào giỏ hàng nữa");
+                warnings.Add($"Sản phẩm [{product.Name}] này không được thêm vào giỏ hàng nữa");
             }
 
             if (shoppingCartType == ShoppingCartType.Wishlist && product.DisableWishlistButton)
             {
-                warnings.Add($"Sản phẩm {product.Name} này không được thêm vào wishlist nữa");
+                warnings.Add($"Sản phẩm [{product.Name}] này không được thêm vào wishlist nữa");
             }
 
             if (quantity < product.OrderMinimumQuantity)
@@ -253,7 +253,7 @@ namespace T.WebApi.Services.ShoppingCartServices
 
             if (quantity > product.OrderMaximumQuantity)
             {
-                warnings.Add(string.Format(string.Format($"Số lượng {product.Name} nhiều nhất là {product.OrderMaximumQuantity}")));
+                warnings.Add(string.Format(string.Format($"Số lượng [{product.Name}] nhiều nhất là {product.OrderMaximumQuantity}")));
             }
 
             return warnings;
@@ -287,7 +287,7 @@ namespace T.WebApi.Services.ShoppingCartServices
                 if (attributeMapping.IsRequired)
                 {
                     var attributeName = (await _productAttribute.GetProductAttributeByIdAsync(attributeMapping.ProductAttributeId)).Name;
-                    warnings.Add($"Sản phẩm {product.Name} phải chọn {attributeName}");
+                    warnings.Add($"Sản phẩm [{product.Name}] phải chọn [{attributeName}]");
                 }
             }
 

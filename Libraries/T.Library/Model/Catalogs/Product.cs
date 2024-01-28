@@ -112,7 +112,7 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the order maximum quantity
         /// </summary>
-        public int OrderMaximumQuantity { get; set; }
+        public int OrderMaximumQuantity { get; set; } = 10;
 
         /// <summary>
         /// Gets or sets a value indicating whether this product is returnable (a customer is allowed to submit return request with this product)
@@ -221,7 +221,7 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published
         /// </summary>
-        public bool Published { get; set; }
+        public bool Published { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the date and time of product creation

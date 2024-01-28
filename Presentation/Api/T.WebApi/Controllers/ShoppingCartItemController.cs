@@ -79,7 +79,8 @@ namespace T.WebApi.Controllers
             var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
             shoppingCartItem.AttributeJson = attributesJson;
 
-            var warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
+            var warnings = new List<string>();
+            warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity));
 
             if (warnings.Any())
             {
@@ -171,7 +172,9 @@ namespace T.WebApi.Controllers
 
                     var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
 
-                    var warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
+                    var warnings = new List<string>();
+                    warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity));
+
                     if (warnings.Any())
                     {
                         return BadRequest(new ServiceErrorResponse<bool>() { Message = string.Join(",", warnings) });
@@ -227,7 +230,7 @@ namespace T.WebApi.Controllers
                 {
                     var product = await _productService.GetByIdAsync(item.ProductId);
                     var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(item.Attributes, product.Id);
-                    warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, item.ShoppingCartType, product, attributesJson, item.Quantity);
+                    warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, item.ShoppingCartType, product, attributesJson, item.Quantity));
                 }
             }
             return new JsonResult(warnings);
@@ -241,7 +244,7 @@ namespace T.WebApi.Controllers
             {
                 var product = await _productService.GetByIdAsync(shoppingCartItemModel.ProductId);
                 var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
-                warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
+                warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity));
             }
             return new JsonResult(warnings);
         }

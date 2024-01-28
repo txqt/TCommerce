@@ -187,10 +187,13 @@ namespace T.Web.Controllers
                 return await RefreshCartView("Success");
             }
 
+            var resultMessage = result.Message.Split(",").ToArray();
+            SetStatusMessage(string.Join("<br/>", resultMessage));
+
             return Json(new
             {
                 success = false,
-                errors = result.Message.Split(",").ToArray()
+                errors = resultMessage
             });
         }
         [HttpPost]
@@ -225,7 +228,12 @@ namespace T.Web.Controllers
 
         public virtual async Task<IActionResult> Cart()
         {
-            return View(await _sciModelService.PrepareShoppingCartModelAsync());
+            var model = await _sciModelService.PrepareShoppingCartModelAsync();
+            if(model.Warnings.Any())
+            {
+                SetStatusMessage(string.Join("<br/>", model.Warnings));
+            }
+            return View(model);
         }
         public virtual async Task<IActionResult> UpdateCart(IFormCollection form)
         {
