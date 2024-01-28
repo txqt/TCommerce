@@ -16312,6 +16312,22 @@ button:focus {
     width: 300px;
 }
 
+.div.table-cart .price-col {
+    width: 120px;
+}
+
+.div.table-cart .total-col {
+    width: 80px;
+}
+
+.div.table-cart .quantity-col {
+    width: 135px;
+}
+
+.div.table-cart .attributes-col {
+    width: 300px;
+}
+
 .cart-product-quantity {
     width: 100px;
 }
