@@ -23,7 +23,6 @@ using T.WebApi.Services.DbManageService;
 using T.WebApi.Database;
 using T.WebApi.Services.BannerServices;
 using T.WebApi.Services.PictureServices;
-using T.WebApi.Services;
 using T.WebApi.ServicesSeederService;
 using T.WebApi.Services.TokenServices;
 using T.WebApi.Services.UserRegistrations;
@@ -31,6 +30,7 @@ using T.WebApi.Services.UrlRecordServices;
 using T.WebApi.Services.ShoppingCartServices;
 using T.Library.Model.JwtToken;
 using T.WebApi.Helpers;
+using T.WebApi.Services.ManufacturerServices;
 
 namespace T.WebApi.Extensions
 {
@@ -149,7 +149,6 @@ namespace T.WebApi.Extensions
             services.AddScoped<IUserRegistrationService, UserRegistrationService>();
             services.AddScoped<IProductAttributeConverter, ProductAttributeConverter>();
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
-            services.AddScoped<CacheHelper>();
             return services;
         }
 

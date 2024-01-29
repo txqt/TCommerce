@@ -5,7 +5,7 @@ using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.WebApi.Services.IRepositoryServices;
 
-namespace T.WebApi.Services
+namespace T.WebApi.Services.ManufacturerServices
 {
     public class ManufacturerServices : IManufacturerServicesCommon
     {

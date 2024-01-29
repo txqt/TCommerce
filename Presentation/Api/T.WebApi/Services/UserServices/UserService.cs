@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Account;
 using T.WebApi.Services.TokenServices;
+using T.WebApi.Helpers;
 
 namespace T.WebApi.Services.UserServices
 {
@@ -35,7 +36,6 @@ namespace T.WebApi.Services.UserServices
         private readonly IOptions<UrlOptions> _urlOptions;
         private readonly ITokenService _tokenService;
         private readonly SignInManager<User> _signInManager;
-
         public UserService(IMapper mapper, DatabaseContext context, UserManager<User> userManager, RoleManager<Role> roleManager, IHttpContextAccessor httpContextAccessor, IEmailSender emailService, IOptions<UrlOptions> urlOptions, ITokenService tokenService, SignInManager<User> signInManager)
         {
             _mapper = mapper;

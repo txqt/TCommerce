@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
+using T.WebApi.Helpers;
 using T.WebApi.Services.IRepositoryServices;
 
 namespace T.WebApi.Services.PictureServices
@@ -99,8 +100,6 @@ namespace T.WebApi.Services.PictureServices
                     };
                     await _pictureRepository.CreateAsync(picture);
 
-                    await _pictureRepository.CreateAsync(picture);
-
                     var pictureId = (await _pictureRepository.Table.FirstOrDefaultAsync(x => x.UrlPath.Contains(imageFile.FileName))).Id;
 
                     return new ServiceSuccessResponse<int>() { Data = pictureId };
@@ -121,7 +120,6 @@ namespace T.WebApi.Services.PictureServices
             var picture = await _pictureRepository.GetByIdAsync(pictureId);
             if (picture is not null)
             {
-                //picture.UrlPath = (string.IsNullOrEmpty(picture.UrlPath) || picture.UrlPath == null) ? "images/no-pictrue.jpg" : picture.UrlPath;
                 picture.UrlPath = APIUrl + picture.UrlPath;
             }
             return picture;

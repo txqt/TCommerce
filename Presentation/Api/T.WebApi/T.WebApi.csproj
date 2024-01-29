@@ -33,8 +33,4 @@
     <ProjectReference Include="..\..\..\Libraries\T.Library\T.Library.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\ManufacturerServices\" />
-  </ItemGroup>
-
 </Project>

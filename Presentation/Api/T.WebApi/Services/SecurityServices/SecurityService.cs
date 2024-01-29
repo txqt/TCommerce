@@ -6,6 +6,7 @@ using T.Library.Model.Response;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
+using T.WebApi.Helpers;
 using T.WebApi.Services.IRepositoryServices;
 using T.WebApi.Services.UserServices;
 
@@ -81,6 +82,7 @@ namespace T.WebApi.Services.SecurityServices
                 return false;
 
             var userRoles = await _userService.GetRolesByUserAsync(user);
+
             foreach (var role in userRoles)
             {
                 if (await AuthorizeAsync(permissionSystemName, role.Id))
@@ -102,9 +104,6 @@ namespace T.WebApi.Services.SecurityServices
         {
             if (permissionSystemName is null)
                 return false;
-
-            // Define a cache key
-            string cacheKey = $"AuthorizeAsync-{permissionSystemName}-{roleId}";
 
 
             // If the result was not in the cache, execute the method and store the result in the cache
@@ -158,9 +157,9 @@ namespace T.WebApi.Services.SecurityServices
             return permissionRecord;
         }
 
-        public async Task<PermissionRecord> GetPermissionRecordBySystemNameAsync(string permissionRecordSystenName)
+        public async Task<PermissionRecord> GetPermissionRecordBySystemNameAsync(string permissionRecordSystemName)
         {
-            var permissionRecord = await _permissionRepository.Table.FirstOrDefaultAsync(x => x.SystemName == permissionRecordSystenName);
+            var permissionRecord = await _permissionRepository.Table.FirstOrDefaultAsync(x => x.SystemName == permissionRecordSystemName);
 
             return permissionRecord;
         }
