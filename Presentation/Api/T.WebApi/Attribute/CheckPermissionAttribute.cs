@@ -55,10 +55,7 @@ namespace T.WebApi.Attribute
             {
                 var securityService = context.HttpContext.RequestServices.GetService<ISecurityService>();
 
-                if (securityService == null)
-                {
-                    throw new ArgumentNullException("Something went wrong !");
-                }
+                ArgumentNullException.ThrowIfNull(securityService);
 
                 foreach (var permission in _permissions)
                 {

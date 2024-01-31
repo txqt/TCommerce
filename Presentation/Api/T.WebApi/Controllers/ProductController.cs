@@ -134,8 +134,9 @@ namespace T.WebApi.Controllers
         [HttpPut("pictures")]
         public async Task<ActionResult> EditProductImage(ProductPicture productPicture)
         {
-            var product = await _productService.GetByIdAsync(productPicture.ProductId)
-                ?? throw new ArgumentNullException("Not found product");
+            var product = await _productService.GetByIdAsync(productPicture.ProductId);
+
+            ArgumentNullException.ThrowIfNull(product);
 
             var result = await _productService.EditProductImageAsync(productPicture);
             if (!result.Success)

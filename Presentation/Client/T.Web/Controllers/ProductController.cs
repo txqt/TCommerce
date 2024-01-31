@@ -154,10 +154,7 @@ namespace T.Web.Controllers
             {
                 var carts = (await _shoppingCartService.GetShoppingCartAsync());
                 var cart = carts.FirstOrDefault(x => x.Id == updatecartitemid);
-                if (cart is null)
-                {
-                    throw new ArgumentNullException();
-                }
+                ArgumentNullException.ThrowIfNull(cart);
 
                 addToCartModel.UpdatedShoppingCartItemId = cart.Id;
                 addToCartModel.UpdateShoppingCartItemType = cart.ShoppingCartType;
@@ -259,20 +256,16 @@ namespace T.Web.Controllers
                                     if (selectedAttributeId > 0)
                                     {
                                         var productAttributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(selectedAttributeId);
-                                        if (productAttributeValue is not null)
+
+                                        ArgumentNullException.ThrowIfNull(productAttributeValue);
+
+                                        if (productAttributeValue.PriceAdjustment > 0)
                                         {
-                                            if (productAttributeValue.PriceAdjustment > 0)
-                                            {
-                                                price = FinalPrice(decimal.Parse(price), productAttributeValue.PriceAdjustment, productAttributeValue.PriceAdjustmentUsePercentage);
-                                            }
-                                            if (productAttributeValue.PictureId > 0)
-                                            {
-                                                mainImage = (await _pictureService.GetPictureByIdAsync(productAttributeValue.PictureId)).UrlPath;
-                                            }
+                                            price = FinalPrice(decimal.Parse(price), productAttributeValue.PriceAdjustment, productAttributeValue.PriceAdjustmentUsePercentage);
                                         }
-                                        else
+                                        if (productAttributeValue.PictureId > 0)
                                         {
-                                            throw new ArgumentNullException("Something went wrong.");
+                                            mainImage = (await _pictureService.GetPictureByIdAsync(productAttributeValue.PictureId)).UrlPath;
                                         }
                                     }
 

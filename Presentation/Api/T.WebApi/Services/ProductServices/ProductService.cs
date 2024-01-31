@@ -261,18 +261,21 @@ namespace T.WebApi.Services.ProductServices
         {
             try
             {
-                var productPicture = await _productPictureMappingRepository.GetByIdAsync(pictureMappingId)
-                    ?? throw new ArgumentException("This product is not mapped to this picture");
+                var productPicture = await _productPictureMappingRepository.GetByIdAsync(pictureMappingId);
 
-                var product = await _productsRepository.GetByIdAsync(productPicture.ProductId)
-                ?? throw new ArgumentException("No product found with the specified id");
+                ArgumentNullException.ThrowIfNull(productPicture);
 
+                var product = await _productsRepository.GetByIdAsync(productPicture.ProductId);
 
-                var picture = await _pictureRepository.GetByIdAsync(productPicture.PictureId)
-                    ?? throw new ArgumentException("No picture found with the specified id");
+                ArgumentNullException.ThrowIfNull(product);
 
-                if (picture.UrlPath is null)
-                    throw new ArgumentNullException("Cannot find Url path");
+                var picture = await _pictureRepository.GetByIdAsync(productPicture.PictureId);
+
+                ArgumentNullException.ThrowIfNull(picture);
+
+                if (picture.UrlPath is null);
+
+                ArgumentNullException.ThrowIfNull(picture.UrlPath);
 
                 var fileName = picture.UrlPath.Replace("/images/", "");
 

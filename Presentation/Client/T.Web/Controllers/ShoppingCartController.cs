@@ -94,18 +94,14 @@ namespace T.Web.Controllers
                                         if (selectedAttributeId > 0)
                                         {
                                             var productAttributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(selectedAttributeId);
-                                            if (productAttributeValue is not null)
+
+                                            ArgumentNullException.ThrowIfNull(productAttributeValue);
+
+                                            model.Attributes.Add(new ShoppingCartItemModel.SelectedAttribute()
                                             {
-                                                model.Attributes.Add(new ShoppingCartItemModel.SelectedAttribute()
-                                                {
-                                                    ProductAttributeMappingId = attributesMapping.Id,
-                                                    ProductAttributeValueIds = new List<int> { productAttributeValue.Id }
-                                                });
-                                            }
-                                            else
-                                            {
-                                                throw new ArgumentNullException("Something went wrong.");
-                                            }
+                                                ProductAttributeMappingId = attributesMapping.Id,
+                                                ProductAttributeValueIds = new List<int> { productAttributeValue.Id }
+                                            });
                                         }
 
                                     }
@@ -168,12 +164,12 @@ namespace T.Web.Controllers
                         model.Id = updatecartitem.Id;
                     }
                 }
-                
+
             }
 
             var result = new ServiceResponse<bool>();
 
-            if(updatecartitem is null)
+            if (updatecartitem is null)
             {
                 result = await _shoppingCartService.CreateAsync(model);
             }
@@ -229,7 +225,7 @@ namespace T.Web.Controllers
         public virtual async Task<IActionResult> Cart()
         {
             var model = await _sciModelService.PrepareShoppingCartModelAsync();
-            if(model.Warnings.Any())
+            if (model.Warnings.Any())
             {
                 SetStatusMessage(string.Join("<br/>", model.Warnings));
             }

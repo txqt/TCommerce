@@ -95,10 +95,7 @@ namespace T.WebApi.Services.IRepositoryServices
 
         public async Task CreateAsync(T entity)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
+            ArgumentNullException.ThrowIfNull(entity);
 
             // Add entity to the database
             await Table.AddAsync(entity);
@@ -109,10 +106,7 @@ namespace T.WebApi.Services.IRepositoryServices
 
         public async Task UpdateAsync(T entity)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
+            ArgumentNullException.ThrowIfNull(entity);
 
             // Update entity in the database
             _context.Entry(entity).State = EntityState.Modified;
@@ -150,10 +144,7 @@ namespace T.WebApi.Services.IRepositoryServices
 
         public async Task BulkCreateAsync(IEnumerable<T> entities)
         {
-            if (entities == null)
-            {
-                throw new ArgumentNullException(nameof(entities));
-            }
+            ArgumentNullException.ThrowIfNull(entities);
 
             await Table.AddRangeAsync(entities);
             await _context.SaveChangesAsync();

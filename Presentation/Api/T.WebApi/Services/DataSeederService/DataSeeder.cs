@@ -175,8 +175,8 @@ namespace T.WebApi.ServicesSeederService
                         await _manufacturerServicesCommon.CreateProductManufacturerAsync(productManufacturer);
 
                         var productManfacturer = (await _manufacturerServicesCommon.GetProductManufacturersByManufacturerIdAsync(manfacturerId))
-                                                    .Where(x=>x.ProductId == productId).FirstOrDefault() ??
-                                                    throw new ArgumentNullException("Cannot find product manufacturer mapping after create");
+                                                    .Where(x => x.ProductId == productId).FirstOrDefault();
+                        ArgumentNullException.ThrowIfNull(productManfacturer);
                     }
                 }
             }

@@ -45,8 +45,7 @@ namespace T.Web.Services.PrepareModel
 
         public async Task<List<ProductAttributeMappingModel>> PrepareProductAttributeMappingListModelAsync(Product product)
         {
-            if (product == null)
-                throw new ArgumentNullException(nameof(product));
+            ArgumentNullException.ThrowIfNull(product);
 
             //get product attribute mappings
 
@@ -95,8 +94,7 @@ namespace T.Web.Services.PrepareModel
 
         public async Task<List<ProductAttributeValueModel>> PrepareProductAttributeValueListModelAsync(ProductAttributeMapping productAttributeMapping)
         {
-            if (productAttributeMapping == null)
-                throw new ArgumentNullException(nameof(productAttributeMapping));
+            ArgumentNullException.ThrowIfNull(productAttributeMapping);
 
             //get product attribute mappings
 
@@ -112,8 +110,7 @@ namespace T.Web.Services.PrepareModel
         public async Task<ProductAttributeValueModel> PrepareProductAttributeValueModelAsync(ProductAttributeValueModel model,
             ProductAttributeMapping productAttributeMapping, ProductAttributeValue productAttributeValue)
         {
-            if (productAttributeMapping == null)
-                throw new ArgumentNullException(nameof(productAttributeMapping));
+            ArgumentNullException.ThrowIfNull(productAttributeMapping);
 
             if (productAttributeValue != null)
             {
@@ -187,8 +184,7 @@ namespace T.Web.Services.PrepareModel
 
         public async Task<List<ProductPictureModel>> PrepareProductPictureModelAsync(Product product)
         {
-            if (product == null)
-                throw new ArgumentNullException(nameof(product));
+            ArgumentNullException.ThrowIfNull(product);
 
             var model = new List<ProductPictureModel>();
 

@@ -32,10 +32,7 @@ namespace T.WebApi.Services.ProductServices
 
             foreach (var attribute in attributeDtos)
             {
-                if((await _productAttributeService.GetProductAttributeMappingByIdAsync(attribute.ProductAttributeMappingId)) is null)
-                {
-                    throw new ArgumentNullException($"No attribute mapping with this product :{productId}");
-                }
+                ArgumentNullException.ThrowIfNull((await _productAttributeService.GetProductAttributeMappingByIdAsync(attribute.ProductAttributeMappingId)));
             }
 
             attributesJson = JsonConvert.SerializeObject(attributeDtos); ;
