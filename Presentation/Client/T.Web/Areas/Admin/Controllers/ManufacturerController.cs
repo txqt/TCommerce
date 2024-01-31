@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Web.Areas.Admin.Models;
+using T.Web.Areas.Admin.Models.SearchModel;
 using T.Web.Extensions;
 using T.Web.Services.ManufacturerServices;
 
@@ -23,21 +26,236 @@ namespace T.Web.Areas.Admin.Controllers
             return View();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            var manufacturers = await _manufacturerService.GetAllManufacturerAsync();
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllAsync()
+        //{
+        //    var manufacturers = await _manufacturerService.GetAllManufacturerAsync();
 
-            var json = new { data = manufacturers };
+        //    var json = new { data = manufacturers };
 
-            return this.JsonWithPascalCase(json);
-        }
-        [HttpGet]
-        public async Task<IActionResult> Create()
-        {
-            return View(new Manufacturer());
-        }
-        //[HttpPost]
+        //    return this.JsonWithPascalCase(json);
+        //}
+        //[HttpGet]
         //public async Task<IActionResult> Create()
+        //{
+        //    return View(new Manufacturer());
+        //}
+        //[HttpPost]
+        //public async Task<IActionResult> Create(CategoryModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View(model);
+        //    }
+
+        //    var category = _mapper.Map<Category>(model);
+        //    var result = await _categoryService.CreateCategoryAsync(category);
+
+        //    if (!result.Success)
+        //    {
+        //        ModelState.AddModelError(string.Empty, result.Message);
+        //        return View(model);
+        //    }
+
+        //    return RedirectToAction(nameof(Index));
+        //}
+
+        //[HttpGet]
+        //public async Task<IActionResult> Edit(int id)
+        //{
+        //    var category = await _categoryService.GetCategoryByIdAsync(id) ??
+        //        throw new ArgumentException("No category found with the specified id");
+
+        //    var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModel(), category);
+
+        //    return View(model);
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> Edit(CategoryModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View(model);
+        //    }
+
+        //    var category = await _categoryService.GetCategoryByIdAsync(model.Id) ??
+        //        throw new ArgumentException("No category found with the specified id");
+
+        //    _mapper.Map(model, category);
+
+        //    var result = await _categoryService.UpdateCategoryAsync(category);
+        //    if (!result.Success)
+        //    {
+        //        SetStatusMessage($"{result.Message}");
+        //        model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
+        //        return View(model);
+        //    }
+        //    else
+        //    {
+        //        SetStatusMessage("Sửa thành công");
+        //        model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
+        //    }
+
+        //    return View(model);
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> DeleteCategory(int id)
+        //{
+
+        //    var result = await _categoryService.DeleteCategoryByIdAsync(id);
+        //    if (!result.Success)
+        //    {
+        //        return Json(new { success = false, message = result.Message });
+        //    }
+        //    return Json(new { success = true, message = result.Message });
+        //}
+
+        //public async Task<IActionResult> GetListCategoryMapping(int categoryId)
+        //{
+        //    var category = await _categoryService.GetCategoryByIdAsync(categoryId) ??
+        //      throw new ArgumentException("Not found with the specified id");
+
+        //    var productCategoryList = (await _categoryService.GetProductCategoriesByCategoryIdAsync(categoryId));
+
+        //    var model = _mapper.Map<List<ProductCategoryModel>>(productCategoryList);
+
+        //    foreach (var item in model)
+        //    {
+        //        item.ProductName = (await _productService.GetByIdAsync(item.ProductId))?.Name;
+        //    }
+
+        //    var json = new
+        //    {
+        //        data = model
+        //    };
+
+        //    return this.JsonWithPascalCase(json);
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> DeleteCategoryMapping(int id)
+        //{
+
+        //    var result = await _categoryService.DeleteCategoryMappingById(id);
+        //    if (!result.Success)
+        //    {
+        //        return Json(new { success = false, message = result.Message });
+        //    }
+        //    return Json(new { success = true, message = result.Message });
+        //}
+
+        //public async Task<IActionResult> AddProductToCategory(int categoryId)
+        //{
+        //    var category = await _categoryService.GetCategoryByIdAsync(categoryId) ??
+        //        throw new ArgumentException("Not found with the specified id");
+
+        //    var model = new AddProductToCategorySearchModel();
+
+        //    var category_list = await _categoryService.GetAllCategoryAsync();
+
+        //    category_list.Insert(0, new Category()
+        //    {
+        //        Id = 0,
+        //        Name = "All"
+        //    });
+
+        //    model.AvailableCategories = (category_list).Select(productAttribute => new SelectListItem
+        //    {
+        //        Text = productAttribute.Name,
+        //        Value = productAttribute.Id.ToString()
+        //    }).ToList();
+
+        //    return View(model);
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> GetProductList(AddProductToCategorySearchModel model)
+        //{
+        //    var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
+        //    var start = int.Parse(Request.Form["start"].FirstOrDefault());
+        //    var length = int.Parse(Request.Form["length"].FirstOrDefault());
+        //    int orderColumnIndex = int.Parse(Request.Form["order[0][column]"]);
+        //    string orderDirection = Request.Form["order[0][dir]"];
+        //    string orderColumnName = Request.Form["columns[" + orderColumnIndex + "][data]"];
+
+        //    string orderBy = orderColumnName + " " + orderDirection;
+        //    var searchValue = Request.Form["search[value]"].FirstOrDefault();
+
+        //    // Create ProductParameters from DataTables parameters
+        //    var productParameter = new ProductParameters
+        //    {
+        //        PageNumber = start / length + 1,
+        //        PageSize = length,
+        //        SearchText = searchValue,
+        //        OrderBy = orderBy,
+        //        CategoryId = model.SearchByCategoryId
+        //    };
+
+        //    // Call the service to get the paged data
+        //    var pagingResponse = await _productService.GetAll(productParameter);
+
+        //    var json = new DataTableResponse<Product>
+        //    {
+        //        Draw = draw,
+        //        RecordsTotal = pagingResponse.MetaData.TotalCount,
+        //        RecordsFiltered = pagingResponse.MetaData.TotalCount,
+        //        Data = pagingResponse.Items
+        //    };
+
+        //    return this.JsonWithPascalCase(json);
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> AddProductToCategory(AddProductToCategoryModel model)
+        //{
+        //    if (!model.SelectedProductIds.Any())
+        //    {
+        //        return View(new ProductSearchModel());
+        //    }
+
+        //    var existingProductCategories = await _categoryService.GetProductCategoriesByCategoryIdAsync(model.CategoryId);
+
+        //    var productCategoriesToAdd = model.SelectedProductIds.Except(existingProductCategories.Select(pc => pc.ProductId))
+        //        .Select(pid => new ProductCategory
+        //        {
+        //            CategoryId = model.CategoryId,
+        //            ProductId = pid,
+        //            IsFeaturedProduct = false,
+        //            DisplayOrder = 1
+        //        }).ToList();
+
+        //    var result = await _categoryService.BulkCreateProductCategoriesAsync(productCategoriesToAdd);
+
+        //    if (!result.Success)
+        //    {
+        //        return View(new AddProductToCategorySearchModel());
+        //    }
+        //    else
+        //    {
+        //        SetStatusMessage("Thêm thành công");
+        //        ViewBag.RefreshPage = true;
+        //    }
+
+        //    return View(new AddProductToCategorySearchModel());
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> UpdateProductCategory([FromBody] ProductCategory model)
+        //{
+        //    var productCategory = await _categoryService.GetProductCategoryByIdAsync(model.Id) ??
+        //        throw new ArgumentException("Not found with the specified id");
+
+        //    productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
+        //    productCategory.DisplayOrder = model.DisplayOrder;
+
+        //    var result = await _categoryService.UpdateProductCategoryAsync(productCategory);
+        //    if (!result.Success)
+        //    {
+        //        return Json(new { success = false, message = result.Message });
+        //    }
+        //    return Json(new { success = true, message = result.Message });
+        //}
     }
 }

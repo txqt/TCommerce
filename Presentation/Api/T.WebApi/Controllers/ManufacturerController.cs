@@ -7,7 +7,7 @@ using T.WebApi.Attribute;
 
 namespace T.WebApi.Controllers
 {
-    [Route("api/manufacturer")]
+    [Route("api/manufacturers")]
     [ApiController]
     public class ManufacturerController : ControllerBase
     {
@@ -23,10 +23,16 @@ namespace T.WebApi.Controllers
             return Ok(await _manufacturerService.GetAllManufacturerAsync());
         }
 
-        [HttpGet("{manufacturerId}")]
-        public async Task<ActionResult<Manufacturer>> Get(int manufacturerId)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Manufacturer>> Get(int id)
         {
-            return await _manufacturerService.GetManufacturerByIdAsync(manufacturerId);
+            return await _manufacturerService.GetManufacturerByIdAsync(id);
+        }
+        
+        [HttpGet("{manufacturerName}")]
+        public async Task<ActionResult<Manufacturer>> GetManufacturerByNameAsync(string manufacturerName)
+        {
+            return await _manufacturerService.GetManufacturerByNameAsync(manufacturerName);
         }
 
         [HttpPost()]
@@ -68,7 +74,7 @@ namespace T.WebApi.Controllers
             return await _manufacturerService.GetProductManufacturersByManufacturerIdAsync(manufacturerId);
         }
 
-        [HttpPost("/api/bulk-product-manufacturers")]
+        [HttpPost("/api/product-manufacturers/bulk")]
         public async Task<ActionResult> BulkCreateProductManufacturersAsync(List<ProductManufacturer> productManufacturers)
         {
             var result = await _manufacturerService.BulkCreateProductManufacturersAsync(productManufacturers);

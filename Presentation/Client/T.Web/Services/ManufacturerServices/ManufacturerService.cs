@@ -10,44 +10,42 @@ namespace T.Web.Services.ManufacturerServices
     {
 
     }
-    public class ManufacturerService : IManufacturerService
+    public class ManufacturerService : HttpClientHelper, IManufacturerService
     {
-        private readonly HttpClientHelper _httpClientHelper;
-        private const string DEFAULT_URL = "api/manufacturer";
+        private const string DEFAULT_URL = "api/manufacturers";
 
-        public ManufacturerService(HttpClientHelper httpClientHelper)
+        public ManufacturerService(HttpClient httpClient) : base(httpClient)
         {
-            this._httpClientHelper = httpClientHelper;
         }
 
         public async Task<List<Manufacturer>> GetAllManufacturerAsync()
         {
-            return await _httpClientHelper.GetAsync<List<Manufacturer>>(DEFAULT_URL);
+            return await GetAsync<List<Manufacturer>>(DEFAULT_URL);
         }
 
-        public Task<Manufacturer> GetManufacturerByIdAsync(int manufacturerId)
+        public async Task<Manufacturer> GetManufacturerByIdAsync(int manufacturerId)
         {
-            throw new NotImplementedException();
+            return await GetAsync<Manufacturer>(DEFAULT_URL + $"/{manufacturerId}");
         }
 
-        public Task<Manufacturer> GetManufacturerByNameAsync(string manufacturerName)
+        public async Task<Manufacturer> GetManufacturerByNameAsync(string manufacturerName)
         {
-            throw new NotImplementedException();
+            return await GetAsync<Manufacturer>(DEFAULT_URL + $"/{manufacturerName}");
         }
 
-        public Task<ServiceResponse<bool>> CreateManufacturerAsync(Manufacturer manufacturer)
+        public async Task<ServiceResponse<bool>> CreateManufacturerAsync(Manufacturer manufacturer)
         {
-            throw new NotImplementedException();
+            return await PostAsJsonAsync<ServiceResponse<bool>>(DEFAULT_URL, manufacturer);
         }
 
-        public Task<ServiceResponse<bool>> UpdateManufacturerAsync(Manufacturer manufacturer)
+        public async Task<ServiceResponse<bool>> UpdateManufacturerAsync(Manufacturer manufacturer)
         {
-            throw new NotImplementedException();
+            return await PutAsJsonAsync<ServiceResponse<bool>>(DEFAULT_URL, manufacturer);
         }
 
-        public Task<ServiceResponse<bool>> DeleteManufacturerByIdAsync(int id)
+        public async Task<ServiceResponse<bool>> DeleteManufacturerByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await DeleteAsync<ServiceResponse<bool>>(DEFAULT_URL + $"/{id}");
         }
 
         public Task<List<ProductManufacturer>> GetProductManufacturersByManufacturerIdAsync(int manufacturerId)

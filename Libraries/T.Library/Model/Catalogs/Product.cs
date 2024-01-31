@@ -102,7 +102,7 @@ namespace T.Library.Model
         /// </summary>
         public bool IsFreeShipping { get; set; }
 
-        [Required] public int StockQuantity { get; set; }
+        public int StockQuantity { get; set; }
 
         /// <summary>
         /// Gets or sets the order minimum quantity
