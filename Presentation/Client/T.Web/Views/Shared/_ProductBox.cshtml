@@ -1,0 +1,65 @@
+﻿@model ProductBoxModel
+@if (Model is not null)
+{
+    <div class="product product-2">
+        <figure class="product-media">
+            <span class="product-label label-circle label-top">Top</span>
+            @if (Model.ProductImage is not null)
+            {
+                <a href="/@Model.ProductSeName">
+                    <img src="@(Model.ProductImage.ImageUrl)" alt="@Model.ProductImage.AltAttribute" class="product-image">
+                </a>
+            }
+
+            @if (!Model.DisableWishlistButton)
+            {
+                <div class="product-action-vertical">
+                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                </div>
+
+                <!-- End .product-action -->
+            }
+
+            @if (!Model.DisableBuyButton)
+            {
+                <div class="product-action product-action-dark">
+                    <a href="/@Model.ProductSeName" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                    @* <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a> *@
+                </div>
+
+                <!-- End .product-action -->
+            }
+        </figure><!-- End .product-media -->
+
+        <div class="product-body">
+            @if (Model.Categories?.Count > 0)
+            {
+                var categories = Model.Categories;
+                <div class="product-cat">
+                    @for (int i = 0; i < categories.Count; i++)
+                    {
+                        <a href="/@categories[i].SeName">@categories[i].CategoryName</a>
+                        @if (i < Model.Categories.Count - 1)
+                        {
+                            <text>, </text>
+                        }
+                    }
+                </div>
+
+                <!-- End .product-cat -->
+            }
+            <h3 class="product-title"><a href="/@Model.ProductSeName">@Model.ProductName</a></h3><!-- End .product-title -->
+            <div class="product-price">
+                @(string.IsNullOrEmpty(Model.ProductPrice.OldPrice) ? $"{Model.ProductPrice.OldPrice}" : "")@Model.ProductPrice.Price
+            </div><!-- End .product-price -->
+            @* <div class="ratings-container">
+        <div class="ratings">
+        <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
+        </div><!-- End .ratings -->
+        <span class="ratings-text">( 4 Reviews )</span>
+        </div> *@<!-- End .rating-container -->
+        </div><!-- End .product-body -->
+    </div>
+
+    <!-- End .product -->
+}

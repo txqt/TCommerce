@@ -118,7 +118,7 @@ namespace T.WebApi.Services.PictureServices
         public async Task<Picture> GetPictureByIdAsync(int pictureId)
         {
             var picture = await _pictureRepository.GetByIdAsync(pictureId);
-            if (picture is not null)
+            if (picture is not null && !picture.UrlPath.Contains(APIUrl))
             {
                 picture.UrlPath = APIUrl + picture.UrlPath;
             }

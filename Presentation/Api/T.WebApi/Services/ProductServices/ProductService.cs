@@ -10,6 +10,7 @@ using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Extensions;
 using T.WebApi.Helpers;
+using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.IRepositoryServices;
 using T.WebApi.Services.UrlRecordServices;
 
@@ -17,7 +18,7 @@ namespace T.WebApi.Services.ProductServices
 {
     public interface IProductService : IProductServiceCommon
     {
-        Task<PagedList<Product>> GetAll(ProductParameters productParameters);
+        Task<PagedList<Product>> SearchProduct(ProductParameters productParameters);
     }
     /// <summary>
     /// Product service
@@ -45,10 +46,12 @@ namespace T.WebApi.Services.ProductServices
         private IMapper _mapper;
 
         private readonly IUrlRecordService _urlRecordService;
+
+        private readonly ICacheService _cacheService;
         #endregion
 
         #region Ctor
-        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService)
+        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService, ICacheService cacheService)
         {
             _configuration = configuration;
             _environment = environment;
@@ -60,27 +63,65 @@ namespace T.WebApi.Services.ProductServices
             _mapper = mapper;
             _productCategoryRepository = productCategoryRepository;
             _urlRecordService = urlRecordService;
+            _cacheService = cacheService;
         }
         #endregion
 
         #region Methods
-        public async Task<PagedList<Product>> GetAll(ProductParameters productParameters)
+        public async Task<PagedList<Product>> SearchProduct(ProductParameters productParameters)
         {
-            var query = _productsRepository.Table
-                .SearchByString(productParameters.SearchText)
-                .Sort(productParameters.OrderBy)//sort by product coloumn 
-                .Include(x => x.ProductPictures)
-                .Where(x => x.Deleted == false);
-
-            if (productParameters.CategoryId > 0)
+            string GetKey()
             {
-                query = from p in _productsRepository.Table
-                        join pc in _productCategoryRepository.Table on p.Id equals pc.ProductId
-                        where pc.CategoryId == productParameters.CategoryId
-                        select p;
+                if (productParameters is null)
+                    return null;
+                var properties = GetType().GetProperties();
+                var keyParts = properties.Select(prop => prop.GetValue(productParameters)?.ToString() ?? "null");
+                return string.Join("_", keyParts);
             }
 
-            return await PagedList<Product>.ToPagedList(query, productParameters.PageNumber, productParameters.PageSize);
+            var cacheKey = CacheKeysDefault<Product>.AllPrefix + GetKey();
+
+            // Attempt to get data from cache
+            var cachedData = _cacheService.GetData<PagedList<Product>>(cacheKey);
+
+            if (cachedData != null)
+            {
+                // Return data from cache
+                return cachedData;
+            }
+            else
+            {
+                var query = _productsRepository.Query;
+
+                if (productParameters.ids != null && productParameters.ids.Count > 0)
+                {
+                    query = query.Where(p => productParameters.ids.Contains(p.Id));
+                }
+
+                if (productParameters.CategoryId > 0)
+                {
+                    query = from p in query
+                            join pc in _productCategoryRepository.Table on p.Id equals pc.ProductId
+                            where pc.CategoryId == productParameters.CategoryId
+                            select p;
+                }
+
+                query = query.SearchByString(productParameters.SearchText)
+                   .Sort(productParameters.OrderBy)// sắp xếp theo cột sản phẩm 
+                   .Include(x => x.ProductPictures)
+                   .Where(x => x.Deleted == false);
+
+                query = query.OrderBy(product => product.Id);
+
+
+                var result = await PagedList<Product>.ToPagedList
+                    (query, productParameters.PageNumber, productParameters.PageSize);
+
+                // Store data in cache with an expiration time (adjust as needed)
+                _cacheService.SetData(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(10));
+
+                return result;
+            }
         }
 
         public async Task<Product> GetByIdAsync(int id)
@@ -344,7 +385,17 @@ namespace T.WebApi.Services.ProductServices
 
         public async Task<List<Product>> GetAllProductsDisplayedOnHomepageAsync()
         {
-            return await _productsRepository.Table.Where(x => x.Published && x.ShowOnHomepage && !x.Deleted).OrderBy(x => x.DisplayOrder).ToListAsync();
+            var products = await _productsRepository.GetAllAsync(query =>
+            {
+                return from p in query
+                       orderby p.DisplayOrder, p.Id
+                       where p.Published &&
+                             !p.Deleted &&
+                             p.ShowOnHomepage
+                       select p;
+            }, CacheKeysDefault<Product>.AllPrefix + "home-page");
+
+            return products.ToList();
         }
 
         public async Task<ServiceSuccessResponse<bool>> BulkDeleteProductsAsync(IEnumerable<int> productIds)

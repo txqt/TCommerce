@@ -13,9 +13,6 @@ namespace T.Web.Controllers
 {
     public class BaseController : Controller
     {
-        private readonly IRazorViewEngine _razorViewEngine;
-        private readonly ITempDataProvider _tempDataProvider;
-        private readonly IServiceProvider _serviceProvider;
         protected void SetStatusMessage(string message)
         {
             TempData["StatusMessage"] = message;
@@ -109,6 +106,10 @@ namespace T.Web.Controllers
                 }
             }
             return -1; // Trả về -1 nếu không thể chuyển đổi thành số
+        }
+        protected virtual IActionResult InvokeHttp404()
+        {
+            return Redirect("/page-not-found");
         }
     }
 }

@@ -17,20 +17,17 @@
 
 <partial name="_ProductNavigation" />
 
-@* @section Scripts
-    {
-    @await Html.PartialAsync("_Summernote", new Summernote("#ShortDescription"))
-    @await Html.PartialAsync("_Summernote", new Summernote("#FullDescription", false))
-} *@
 
-<script>
-    $('#markasnewcheckbox').change(function () {
-        if ($(this).is(":checked")) {
-            $('#mark-as-new').css('display', 'block');
-        } else {
-            $('#mark-as-new').css('display', 'none');
-        }
-    });
+@Html.Script(@<text>
+        <script>
+            $('#markasnewcheckbox').change(function () {
+                if ($(this).is(":checked")) {
+                    $('#mark-as-new').css('display', 'block');
+                } else {
+                    $('#mark-as-new').css('display', 'none');
+                }
+            });
 
-</script>
+        </script>
+    </text>)
 

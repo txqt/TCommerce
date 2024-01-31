@@ -24,6 +24,7 @@ namespace T.Web.Models
             public ShoppingCartItemModel()
             {
                 Warnings = new List<string>();
+                Picture = new PictureModel();
             }
 
             public int ProductId { get; set; }

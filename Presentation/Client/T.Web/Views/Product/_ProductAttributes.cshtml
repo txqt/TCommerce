@@ -138,10 +138,10 @@
                     $('#product-main-image-@Model.Id').attr("src", data.mainImage);
                     $('#product-main-image-anchor-@Model.Id').attr("href", data.mainImage);
                 }
-                else {
+                @* else {
                     $('#product-main-image-@Model.Id').hide();
                     $('#product-main-image-anchor-@Model.Id').hide();
-                }
+                } *@
                 if (data.message) {
                     alert(data.message);
                 }

@@ -54,6 +54,11 @@ namespace T.Web.Controllers
         public async Task<IActionResult> Details(int id, int updatecartitemid = 0)
         {
             var product = await _productService.GetByIdAsync(id);
+            if (product is null || product.Deleted)
+            {
+                return InvokeHttp404();
+            }
+
             var attributeMapping = await _productAttributeService.GetProductAttributesMappingByProductIdAsync(product.Id);
 
             var model = new ProductDetailsModel()

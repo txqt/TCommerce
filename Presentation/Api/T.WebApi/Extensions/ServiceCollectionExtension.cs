@@ -31,6 +31,7 @@ using T.WebApi.Services.ShoppingCartServices;
 using T.Library.Model.JwtToken;
 using T.WebApi.Helpers;
 using T.WebApi.Services.ManufacturerServices;
+using T.WebApi.Services.CacheServices;
 
 namespace T.WebApi.Extensions
 {
@@ -149,6 +150,7 @@ namespace T.WebApi.Extensions
             services.AddScoped<IUserRegistrationService, UserRegistrationService>();
             services.AddScoped<IProductAttributeConverter, ProductAttributeConverter>();
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
+            services.AddScoped<ICacheService, CacheService>();
             return services;
         }
 

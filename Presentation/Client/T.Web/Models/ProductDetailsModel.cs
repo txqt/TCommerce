@@ -14,6 +14,7 @@ namespace T.Web.Models
         {
             ProductAttributes = new List<ProductAttributeModel>();
             ThumbImage = new List<PictureModel>();
+            MainImage = new PictureModel();
         }
 
         public int Id { get; set; }

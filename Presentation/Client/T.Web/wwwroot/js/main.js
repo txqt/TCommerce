@@ -10,6 +10,7 @@ function deleteshoppingcartitem(n, loadScript = false) {
                 if (loadScript) {
                     //reload update input quantity
                     quantityInputs();
+                    SetPictureDefault();
                 }
                 if (result.toString().message) {
                     toastr.success(result.message);
@@ -22,6 +23,25 @@ function deleteshoppingcartitem(n, loadScript = false) {
         error: function () {
             console.error('Something went wrong.');
         }
+    });
+}
+
+var allImages = document.querySelectorAll('img');
+var defaultImageSet = false;
+
+function SetPictureDefault() {
+    allImages = document.querySelectorAll('img');
+    defaultImageSet = false;
+    allImages.forEach(function (image) {
+        if (!image.src || image.src.trim() === '') {
+            image.src = '/images/no-picture.png';
+            defaultImageSet = true;
+        }
+
+        image.addEventListener('error', function () {
+            image.src = '/images/no-picture.png';
+            defaultImageSet = true;
+        });
     });
 }
 
@@ -43,7 +63,7 @@ $(document).ready(function () {
 
     owlCarousels();
     quantityInputs();
-
+    SetPictureDefault();
     $(document).on('click', '#deleteCartItemButton', function () {
         var url = $(this).data('url');
         deleteshoppingcartitem(url);

@@ -8,20 +8,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
     @{
         var cssFiles = new List<string>
-    {
-    // "~/css/site.css",
-    "~/T.Web.styles.css",
-    "~/css/plugins/owl-carousel/owl.carousel.css",
-    "~/css/plugins/magnific-popup/magnific-popup.css",
-    "~/css/plugins/jquery.countdown.css",
-    "~/css/style.css",
-    "~/css/skins/skin-demo-3.css",
-    "~/css/demos/demo-3.css",
-    "~/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css",
-    "//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css",
-    //"~/css/bootstrap.min.css",
-    // Thêm tên tệp CSS khác nếu cần thiết
-    };
+        {
+        "~/T.Web.styles.css",
+        "~/css/plugins/owl-carousel/owl.carousel.css",
+        "~/css/plugins/magnific-popup/magnific-popup.css",
+        "~/css/plugins/jquery.countdown.css",
+        "~/css/style.css",
+        "~/css/skins/skin-demo-3.css",
+        "~/css/demos/demo-3.css",
+        "~/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css",
+        "//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css",
+        };
     }
     @foreach (var cssFile in cssFiles)
     {
@@ -46,16 +43,6 @@
     <meta name="msapplication-TileColor" content="#cc9966">
     <meta name="msapplication-config" content="~/images/icons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
-    @*<link rel="stylesheet" href="~/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css">*@
-    @* <!-- Plugins CSS File -->
-    <link rel="stylesheet" href="~/css/bootstrap.min.css">
-    <link rel="stylesheet" href="~/css/plugins/owl-carousel/owl.carousel.css">
-    <link rel="stylesheet" href="~/css/plugins/magnific-popup/magnific-popup.css">
-    <link rel="stylesheet" href="~/css/plugins/jquery.countdown.css">
-    <!-- Main CSS File -->
-    <link rel="stylesheet" href="~/css/style.css">
-    <link rel="stylesheet" href="~/css/skins/skin-demo-3.css">
-    <link rel="stylesheet" href="~/css/demos/demo-3.css">*@
 </head>
 <body>
 
@@ -819,12 +806,11 @@
     <script src="~/js/main.js"></script>
     <script src="~/js/demos/demo-3.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script>
-        
-    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
     @* <script src="~/js/site.js" asp-append-version="true"></script> *@
     @await RenderSectionAsync("Scripts", required: false)
+    @Html.RenderScripts()
 </body>
 
 </html>

@@ -81,7 +81,12 @@ namespace T.WebApi.Services.CategoryServices
 
         public async Task<List<Category>> GetAllCategoryAsync()
         {
-            return (await _categoryRepository.GetAllAsync()).ToList();
+            return (await _categoryRepository.GetAllAsync(x =>
+            {
+                return from c in x
+                       where c.Deleted == false
+                       select c;
+            })).ToList();
         }
 
         public async Task<Category> GetCategoryByNameAsync(string categoryName)

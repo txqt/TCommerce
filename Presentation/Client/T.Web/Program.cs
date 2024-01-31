@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Routing;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,7 +12,6 @@ using T.Web.Services;
 using T.Web.Services.BannerServices;
 using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
-using T.Web.Services.HomePageServices;
 using T.Web.Services.ManufacturerServices;
 using T.Web.Services.PictureServices;
 using T.Web.Services.PrepareModel;
@@ -57,7 +57,6 @@ internal class Program
         builder.Services.AddTransient<ICategoryService, CategoryService>();
         builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
         builder.Services.AddTransient<IUserService, UserService>();
-        builder.Services.AddTransient<IHomePageService, HomePageService>();
         builder.Services.AddTransient<IBannerService, BannerService>();
         builder.Services.AddTransient<IUrlRecordService, UrlRecordService>();
         builder.Services.AddTransient<IPictureService, PictureService>();
@@ -133,6 +132,10 @@ internal class Program
         app.MapControllerRoute(name: "cart",
                 pattern: "cart",
                 defaults: new { controller = "ShoppingCart", action = "Cart" });
+
+        app.MapControllerRoute(name: "PageNotFound",
+            pattern: $"page-not-found",
+            defaults: new { controller = "Common", action = "PageNotFound" });
 
         bool hasRunOnce = false;
 

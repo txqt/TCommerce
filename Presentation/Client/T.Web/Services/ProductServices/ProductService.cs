@@ -1,21 +1,13 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.CodeAnalysis;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Drawing;
-using System.IO;
-using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text.Json;
 using T.Library.Model;
 using T.Library.Model.Interface;
-using T.Library.Model.Paging;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
-using T.Web.Areas.Admin.Models;
 using T.Web.Helpers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace T.Web.Services.ProductService
 {
@@ -75,17 +67,30 @@ namespace T.Web.Services.ProductService
             var queryStringParam = new Dictionary<string, string>();
 
             Type modelType = productParameters.GetType();
-
             PropertyInfo[] properties = modelType.GetProperties();
 
             foreach (PropertyInfo property in properties)
             {
                 string propertyName = property.Name;
-
                 object value = property.GetValue(productParameters);
 
-                queryStringParam.Add(propertyName, value.ToString());
+                // Kiểm tra kiểu dữ liệu của giá trị
+                if (value != null)
+                {
+                    if (value is List<int>)
+                    {
+                        // Xử lý trường hợp List<int>
+                        List<int> listValue = (List<int>)value;
+                        queryStringParam.Add(propertyName, string.Join(",", listValue));
+                    }
+                    else
+                    {
+                        // Xử lý các trường hợp khác
+                        queryStringParam.Add(propertyName, value.ToString());
+                    }
+                }
             }
+
 
             var response = await GetAsync<List<Product>>(QueryHelpers.AddQueryString($"api/products", queryStringParam), _options);
 
@@ -139,7 +144,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<List<Product>> GetAllProductsDisplayedOnHomepageAsync()
         {
-            throw new NotImplementedException();
+            return await GetAsync<List<Product>>($"api/products/show-on-home-page");
         }
 
         public async Task<ServiceSuccessResponse<bool>> BulkDeleteProductsAsync(IEnumerable<int> productIds)
