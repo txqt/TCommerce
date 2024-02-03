@@ -256,6 +256,26 @@ namespace T.WebApi.Services.ShoppingCartServices
                 warnings.Add(string.Format(string.Format($"Số lượng [{product.Name}] nhiều nhất là {product.OrderMaximumQuantity}")));
             }
 
+            var availableStartDateError = false;
+            if (product.AvailableStartDateTimeUtc.HasValue)
+            {
+                var availableStartDateTime = DateTime.SpecifyKind(product.AvailableStartDateTimeUtc.Value, DateTimeKind.Utc);
+                if (availableStartDateTime.CompareTo(DateTime.UtcNow) > 0)
+                {
+                    warnings.Add("Sản phẩm này chưa có sẵn");
+                    availableStartDateError = true;
+                }
+            }
+
+            if (!product.AvailableEndDateTimeUtc.HasValue || availableStartDateError)
+                return warnings;
+
+            var availableEndDateTime = DateTime.SpecifyKind(product.AvailableEndDateTimeUtc.Value, DateTimeKind.Utc);
+            if (availableEndDateTime.CompareTo(DateTime.UtcNow) < 0)
+            {
+                warnings.Add("Sản phẩm này chưa có sẵn");
+            }
+
             return warnings;
         }
 

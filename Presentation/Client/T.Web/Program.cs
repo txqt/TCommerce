@@ -16,6 +16,7 @@ using T.Web.Services.ManufacturerServices;
 using T.Web.Services.PictureServices;
 using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
+using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Web.Services.ProductService;
 using T.Web.Services.SecurityServices;
 using T.Web.Services.ShoppingCartServices;
@@ -66,6 +67,8 @@ internal class Program
         builder.Services.AddTransient<IShoppingCartModelService, ShoppingCartModelService>();
         builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
         builder.Services.AddTransient<IManufacturerService, ManufacturerService>();
+        builder.Services.AddTransient<IManufacturerModelService, ManufacturerModelService>();
+        builder.Services.AddTransient<IBaseAdminModelService, BaseAdminModelService>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {
             PropertyNamingPolicy = null,

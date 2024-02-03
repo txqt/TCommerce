@@ -7,7 +7,6 @@ namespace T.Web.Areas.Admin.Models
         public DataTableViewModel()
         {
             TableId = Guid.NewGuid().ToString().Replace("-", "");
-
         }
 
         public string TableId { get; set; }

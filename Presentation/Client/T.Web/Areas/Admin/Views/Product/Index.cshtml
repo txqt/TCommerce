@@ -26,6 +26,13 @@
                 </div>
             </div>
             <div class="col-sm-6">
+                <div class="col-auto">
+                    <label asp-for="ManufacturerId" class="col-form-label">Manufacturer</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" asp-items="Model.AvailableManufacturers" asp-for="ManufacturerId">
+                    </select>
+                </div>
             </div>
         </div>
         <div class="button text-center p-4">
@@ -49,6 +56,7 @@
                 Filters = new List<Filter>()
                 {
                     new Filter(nameof(Model.CategoryId)),
+                    new Filter(nameof(Model.ManufacturerId)),
                 },
                 GetDataUrl = Url.Action("GetAll", "Product"),
                 ServerSide = true,

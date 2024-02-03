@@ -5,7 +5,7 @@ using T.Library.Model.Interface;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Extensions;
-using T.Web.Services.PrepareModelServices;
+using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 
 namespace T.Web.Areas.Admin.Controllers
 {

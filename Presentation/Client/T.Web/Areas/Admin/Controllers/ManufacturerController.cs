@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
@@ -7,6 +8,8 @@ using T.Web.Areas.Admin.Models;
 using T.Web.Areas.Admin.Models.SearchModel;
 using T.Web.Extensions;
 using T.Web.Services.ManufacturerServices;
+using T.Web.Services.PrepareModelServices.PrepareAdminModel;
+using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers
 {
@@ -15,10 +18,18 @@ namespace T.Web.Areas.Admin.Controllers
     public class ManufacturerController : BaseAdminController
     {
         private readonly IManufacturerService _manufacturerService;
+        private readonly ICategoryService _categoryService;
+        private readonly IProductService _productService;
+        private readonly IMapper _mapper;
+        private readonly IManufacturerModelService _manufacturerModelService;
 
-        public ManufacturerController(IManufacturerService manufacturerService)
+        public ManufacturerController(IManufacturerService manufacturerService, IProductService productService, IMapper mapper, ICategoryService categoryService, IManufacturerModelService manufacturerModelService)
         {
             _manufacturerService = manufacturerService;
+            _productService = productService;
+            _mapper = mapper;
+            _categoryService = categoryService;
+            _manufacturerModelService = manufacturerModelService;
         }
 
         public IActionResult Index()
@@ -26,236 +37,225 @@ namespace T.Web.Areas.Admin.Controllers
             return View();
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllAsync()
-        //{
-        //    var manufacturers = await _manufacturerService.GetAllManufacturerAsync();
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var manufacturers = await _manufacturerService.GetAllManufacturerAsync();
 
-        //    var json = new { data = manufacturers };
+            var json = new { data = manufacturers };
 
-        //    return this.JsonWithPascalCase(json);
-        //}
-        //[HttpGet]
-        //public async Task<IActionResult> Create()
-        //{
-        //    return View(new Manufacturer());
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> Create(CategoryModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+            return this.JsonWithPascalCase(json);
+        }
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View(new Manufacturer());
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create(Manufacturer model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
-        //    var category = _mapper.Map<Category>(model);
-        //    var result = await _categoryService.CreateCategoryAsync(category);
+            var result = await _manufacturerService.CreateManufacturerAsync(model);
 
-        //    if (!result.Success)
-        //    {
-        //        ModelState.AddModelError(string.Empty, result.Message);
-        //        return View(model);
-        //    }
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View(model);
+            }
 
-        //    return RedirectToAction(nameof(Index));
-        //}
+            return RedirectToAction(nameof(Index));
+        }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Edit(int id)
-        //{
-        //    var category = await _categoryService.GetCategoryByIdAsync(id) ??
-        //        throw new ArgumentException("No category found with the specified id");
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var manufacturer = await _manufacturerService.GetManufacturerByIdAsync(id);
 
-        //    var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModel(), category);
+            ArgumentNullException.ThrowIfNull(manufacturer);
 
-        //    return View(model);
-        //}
+            //var model = await _prepareModelService.PrepareManufacturerAsync(new Manufacturer(), manufacturer);
 
-        //[HttpPost]
-        //public async Task<IActionResult> Edit(CategoryModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+            return View(manufacturer);
+        }
 
-        //    var category = await _categoryService.GetCategoryByIdAsync(model.Id) ??
-        //        throw new ArgumentException("No category found with the specified id");
+        [HttpPost]
+        public async Task<IActionResult> Edit(Manufacturer model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
-        //    _mapper.Map(model, category);
+            var manufacturer = await _manufacturerService.GetManufacturerByIdAsync(model.Id);
 
-        //    var result = await _categoryService.UpdateCategoryAsync(category);
-        //    if (!result.Success)
-        //    {
-        //        SetStatusMessage($"{result.Message}");
-        //        model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
-        //        return View(model);
-        //    }
-        //    else
-        //    {
-        //        SetStatusMessage("Sửa thành công");
-        //        model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
-        //    }
+            ArgumentNullException.ThrowIfNull(manufacturer);
 
-        //    return View(model);
-        //}
+            var result = await _manufacturerService.UpdateManufacturerAsync(manufacturer);
 
-        //[HttpPost]
-        //public async Task<IActionResult> DeleteCategory(int id)
-        //{
+            if (!result.Success)
+            {
+                SetStatusMessage($"{result.Message}");
+                return View(model);
+            }
+            else
+            {
+                SetStatusMessage("Sửa thành công");
+            }
 
-        //    var result = await _categoryService.DeleteCategoryByIdAsync(id);
-        //    if (!result.Success)
-        //    {
-        //        return Json(new { success = false, message = result.Message });
-        //    }
-        //    return Json(new { success = true, message = result.Message });
-        //}
+            return View(model);
+        }
 
-        //public async Task<IActionResult> GetListCategoryMapping(int categoryId)
-        //{
-        //    var category = await _categoryService.GetCategoryByIdAsync(categoryId) ??
-        //      throw new ArgumentException("Not found with the specified id");
+        [HttpPost]
+        public async Task<IActionResult> DeleteManufacturer(int id)
+        {
 
-        //    var productCategoryList = (await _categoryService.GetProductCategoriesByCategoryIdAsync(categoryId));
+            var result = await _manufacturerService.DeleteManufacturerByIdAsync(id);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
+        }
 
-        //    var model = _mapper.Map<List<ProductCategoryModel>>(productCategoryList);
+        public async Task<IActionResult> GetProductManufacturerMapping(int manufacturerId)
+        {
+            var manufacturer = await _manufacturerService.GetManufacturerByIdAsync(manufacturerId) ??
+              throw new ArgumentException("Not found with the specified id");
 
-        //    foreach (var item in model)
-        //    {
-        //        item.ProductName = (await _productService.GetByIdAsync(item.ProductId))?.Name;
-        //    }
+            var productManufacturerList = (await _manufacturerService.GetProductManufacturersByManufacturerIdAsync(manufacturerId));
 
-        //    var json = new
-        //    {
-        //        data = model
-        //    };
+            var models = _mapper.Map<List<ProductManufacturerModel>>(productManufacturerList);
 
-        //    return this.JsonWithPascalCase(json);
-        //}
+            await Task.WhenAll(models.Select(async model =>
+            {
+                var product = await _productService.GetByIdAsync(model.ProductId);
+                model.ProductName = product?.Name;
+            }));
 
-        //[HttpPost]
-        //public async Task<IActionResult> DeleteCategoryMapping(int id)
-        //{
+            var json = new
+            {
+                data = models
+            };
 
-        //    var result = await _categoryService.DeleteCategoryMappingById(id);
-        //    if (!result.Success)
-        //    {
-        //        return Json(new { success = false, message = result.Message });
-        //    }
-        //    return Json(new { success = true, message = result.Message });
-        //}
+            return this.JsonWithPascalCase(json);
+        }
 
-        //public async Task<IActionResult> AddProductToCategory(int categoryId)
-        //{
-        //    var category = await _categoryService.GetCategoryByIdAsync(categoryId) ??
-        //        throw new ArgumentException("Not found with the specified id");
+        [HttpPost]
+        public async Task<IActionResult> DeleteManufacturerMapping(int id)
+        {
 
-        //    var model = new AddProductToCategorySearchModel();
+            var result = await _manufacturerService.DeleteManufacturerMappingById(id);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
+        }
 
-        //    var category_list = await _categoryService.GetAllCategoryAsync();
+        public async Task<IActionResult> AddProductToManufacturer(int manufacturerId)
+        {
+            //var Manufacturer = await _manufacturerService.GetManufacturerByIdAsync(ManufacturerId) ??
+            //    throw new ArgumentException("Not found with the specified id");
+            ArgumentNullException.ThrowIfNull(await _manufacturerService.GetManufacturerByIdAsync(manufacturerId));
 
-        //    category_list.Insert(0, new Category()
-        //    {
-        //        Id = 0,
-        //        Name = "All"
-        //    });
+            var model = new AddProductToManufacturerSearchModel();
 
-        //    model.AvailableCategories = (category_list).Select(productAttribute => new SelectListItem
-        //    {
-        //        Text = productAttribute.Name,
-        //        Value = productAttribute.Id.ToString()
-        //    }).ToList();
+            model = await _manufacturerModelService.PrepareAddProductToManufacturerSearchModel(model);
 
-        //    return View(model);
-        //}
+            return View(model);
+        }
 
-        //[HttpPost]
-        //public async Task<IActionResult> GetProductList(AddProductToCategorySearchModel model)
-        //{
-        //    var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
-        //    var start = int.Parse(Request.Form["start"].FirstOrDefault());
-        //    var length = int.Parse(Request.Form["length"].FirstOrDefault());
-        //    int orderColumnIndex = int.Parse(Request.Form["order[0][column]"]);
-        //    string orderDirection = Request.Form["order[0][dir]"];
-        //    string orderColumnName = Request.Form["columns[" + orderColumnIndex + "][data]"];
+        [HttpPost]
+        public async Task<IActionResult> GetProductList(AddProductToManufacturerSearchModel model)
+        {
+            var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
+            var start = int.Parse(Request.Form["start"].FirstOrDefault());
+            var length = int.Parse(Request.Form["length"].FirstOrDefault());
+            int orderColumnIndex = int.Parse(Request.Form["order[0][column]"]);
+            string orderDirection = Request.Form["order[0][dir]"];
+            string orderColumnName = Request.Form["columns[" + orderColumnIndex + "][data]"];
 
-        //    string orderBy = orderColumnName + " " + orderDirection;
-        //    var searchValue = Request.Form["search[value]"].FirstOrDefault();
+            string orderBy = orderColumnName + " " + orderDirection;
+            var searchValue = Request.Form["search[value]"].FirstOrDefault();
 
-        //    // Create ProductParameters from DataTables parameters
-        //    var productParameter = new ProductParameters
-        //    {
-        //        PageNumber = start / length + 1,
-        //        PageSize = length,
-        //        SearchText = searchValue,
-        //        OrderBy = orderBy,
-        //        CategoryId = model.SearchByCategoryId
-        //    };
+            // Create ProductParameters from DataTables parameters
+            var productParameter = new ProductParameters
+            {
+                PageNumber = start / length + 1,
+                PageSize = length,
+                SearchText = searchValue,
+                OrderBy = orderBy,
+                ManufacturerId = model.SearchByManufacturerId,
+                CategoryId = model.SearchByCategoryId
+            };
 
-        //    // Call the service to get the paged data
-        //    var pagingResponse = await _productService.GetAll(productParameter);
+            // Call the service to get the paged data
+            var pagingResponse = await _productService.GetAll(productParameter);
 
-        //    var json = new DataTableResponse<Product>
-        //    {
-        //        Draw = draw,
-        //        RecordsTotal = pagingResponse.MetaData.TotalCount,
-        //        RecordsFiltered = pagingResponse.MetaData.TotalCount,
-        //        Data = pagingResponse.Items
-        //    };
+            var json = new DataTableResponse<Product>
+            {
+                Draw = draw,
+                RecordsTotal = pagingResponse.MetaData.TotalCount,
+                RecordsFiltered = pagingResponse.MetaData.TotalCount,
+                Data = pagingResponse.Items
+            };
 
-        //    return this.JsonWithPascalCase(json);
-        //}
+            return this.JsonWithPascalCase(json);
+        }
 
-        //[HttpPost]
-        //public async Task<IActionResult> AddProductToCategory(AddProductToCategoryModel model)
-        //{
-        //    if (!model.SelectedProductIds.Any())
-        //    {
-        //        return View(new ProductSearchModel());
-        //    }
+        [HttpPost]
+        public async Task<IActionResult> AddProductToManufacturer(AddProductToManufacturerModel model)
+        {
+            if (!model.SelectedProductIds.Any())
+            {
+                return View(new ProductSearchModel());
+            }
 
-        //    var existingProductCategories = await _categoryService.GetProductCategoriesByCategoryIdAsync(model.CategoryId);
+            var existingProductManufacturers = await _manufacturerService.GetProductManufacturersByManufacturerIdAsync(model.ManufacturerId);
 
-        //    var productCategoriesToAdd = model.SelectedProductIds.Except(existingProductCategories.Select(pc => pc.ProductId))
-        //        .Select(pid => new ProductCategory
-        //        {
-        //            CategoryId = model.CategoryId,
-        //            ProductId = pid,
-        //            IsFeaturedProduct = false,
-        //            DisplayOrder = 1
-        //        }).ToList();
+            var productManufacturersToAdd = model.SelectedProductIds.Except(existingProductManufacturers.Select(pc => pc.ProductId))
+                .Select(pid => new ProductManufacturer
+                {
+                    ManufacturerId = model.ManufacturerId,
+                    ProductId = pid,
+                    IsFeaturedProduct = false,
+                    DisplayOrder = 1
+                }).ToList();
 
-        //    var result = await _categoryService.BulkCreateProductCategoriesAsync(productCategoriesToAdd);
+            var result = await _manufacturerService.BulkCreateProductManufacturersAsync(productManufacturersToAdd);
 
-        //    if (!result.Success)
-        //    {
-        //        return View(new AddProductToCategorySearchModel());
-        //    }
-        //    else
-        //    {
-        //        SetStatusMessage("Thêm thành công");
-        //        ViewBag.RefreshPage = true;
-        //    }
+            if (!result.Success)
+            {
+                return View(new AddProductToManufacturerSearchModel());
+            }
+            else
+            {
+                SetStatusMessage("Thêm thành công");
+                ViewBag.RefreshPage = true;
+            }
 
-        //    return View(new AddProductToCategorySearchModel());
-        //}
+            return View(new AddProductToManufacturerSearchModel());
+        }
 
-        //[HttpPost]
-        //public async Task<IActionResult> UpdateProductCategory([FromBody] ProductCategory model)
-        //{
-        //    var productCategory = await _categoryService.GetProductCategoryByIdAsync(model.Id) ??
-        //        throw new ArgumentException("Not found with the specified id");
+        [HttpPost]
+        public async Task<IActionResult> UpdateProductManufacturer([FromBody] ProductManufacturer model)
+        {
+            var productManufacturer = await _manufacturerService.GetProductManufacturerByIdAsync(model.Id) ??
+                throw new ArgumentException("Not found with the specified id");
 
-        //    productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
-        //    productCategory.DisplayOrder = model.DisplayOrder;
+            productManufacturer.IsFeaturedProduct = model.IsFeaturedProduct;
+            productManufacturer.DisplayOrder = model.DisplayOrder;
 
-        //    var result = await _categoryService.UpdateProductCategoryAsync(productCategory);
-        //    if (!result.Success)
-        //    {
-        //        return Json(new { success = false, message = result.Message });
-        //    }
-        //    return Json(new { success = true, message = result.Message });
-        //}
+            var result = await _manufacturerService.UpdateProductManufacturerAsync(productManufacturer);
+            if (!result.Success)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+            return Json(new { success = true, message = result.Message });
+        }
     }
 }

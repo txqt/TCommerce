@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using T.Library.Helpers;
 using T.Library.Model;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
@@ -41,6 +42,8 @@ namespace T.WebApi.Services.ProductServices
 
         private readonly IRepository<ProductCategory> _productCategoryRepository;
 
+        private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
+
         private string? APIUrl;
 
         private IMapper _mapper;
@@ -51,7 +54,7 @@ namespace T.WebApi.Services.ProductServices
         #endregion
 
         #region Ctor
-        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService, ICacheService cacheService)
+        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService, ICacheService cacheService, IRepository<ProductManufacturer> productManufacturerRepository)
         {
             _configuration = configuration;
             _environment = environment;
@@ -64,6 +67,7 @@ namespace T.WebApi.Services.ProductServices
             _productCategoryRepository = productCategoryRepository;
             _urlRecordService = urlRecordService;
             _cacheService = cacheService;
+            _productManufacturerRepository = productManufacturerRepository;
         }
         #endregion
 
@@ -72,9 +76,7 @@ namespace T.WebApi.Services.ProductServices
         {
             string GetKey()
             {
-                if (productParameters is null)
-                    return null;
-                var properties = GetType().GetProperties();
+                var properties = typeof(ProductParameters).GetProperties();
                 var keyParts = properties.Select(prop => prop.GetValue(productParameters)?.ToString() ?? "null");
                 return string.Join("_", keyParts);
             }
@@ -103,6 +105,14 @@ namespace T.WebApi.Services.ProductServices
                     query = from p in query
                             join pc in _productCategoryRepository.Table on p.Id equals pc.ProductId
                             where pc.CategoryId == productParameters.CategoryId
+                            select p;
+                }
+
+                if (productParameters.ManufacturerId > 0)
+                {
+                    query = from p in query
+                            join pc in _productManufacturerRepository.Table on p.Id equals pc.ProductId
+                            where pc.ManufacturerId == productParameters.ManufacturerId
                             select p;
                 }
 

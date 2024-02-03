@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Web.Services.CategoryService;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
+using T.Web.Areas.Admin.Models.SearchModel;
+using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 
 namespace T.Web.Services.PrepareModel
 {
@@ -21,26 +23,23 @@ namespace T.Web.Services.PrepareModel
         Task<List<ProductPictureModel>> PrepareProductPictureModelAsync(Product product);
         Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
             Product product, ProductCategory productCategory);
+        Task<ProductSearchModel> PrepareProductSearchModelModelAsync(ProductSearchModel model);
     }
     public class ProductModelService : IProductModelService
     {
         private readonly IProductAttributeCommon _productAttributeService;
-        //private readonly IProductAttributeMappingService _productAttributeService;
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
-        private string apiUrl = null;
-        private readonly IConfiguration _configuration;
+        private readonly IBaseAdminModelService _baseAdminModelService;
         public ProductModelService(IProductAttributeCommon productAttributeService,
-            IMapper mapper, IProductService productService, ICategoryService categoryService, IConfiguration configuration)
+            IMapper mapper, IProductService productService, ICategoryService categoryService, IBaseAdminModelService baseAdminModelService)
         {
             _productAttributeService = productAttributeService;
-            //_productAttributeService = productAttributeMappingService;
             _mapper = mapper;
             _productService = productService;
             _categoryService = categoryService;
-            _configuration = configuration;
-            apiUrl = _configuration.GetSection("Url:ApiUrl").Value;
+            _baseAdminModelService = baseAdminModelService;
         }
 
         public async Task<List<ProductAttributeMappingModel>> PrepareProductAttributeMappingListModelAsync(Product product)
@@ -205,5 +204,11 @@ namespace T.Web.Services.PrepareModel
             return model;
         }
 
+        public async Task<ProductSearchModel> PrepareProductSearchModelModelAsync(ProductSearchModel model)
+        {
+            await _baseAdminModelService.PrepareSelectListCategoryAsync(model.AvailableCategories);
+            await _baseAdminModelService.PrepareSelectListManufactureAsync(model.AvailableManufacturers);
+            return model;
+        }
     }
 }

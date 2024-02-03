@@ -3,22 +3,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Web.Areas.Admin.Models;
+using T.Web.Areas.Admin.Models.SearchModel;
 
-namespace T.Web.Services.PrepareModelServices
+namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
 {
     public interface ICategoryModelService
     {
         Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
+        Task<AddProductToCategorySearchModel> PrepareAddProductToCategorySearchModel(AddProductToCategorySearchModel model);
     }
     public class CategoryModelService : ICategoryModelService
     {
         private readonly IMapper _mapper;
         private readonly ICategoryService _categoryService;
+        private readonly IBaseAdminModelService _baseAdminModelService;
 
-        public CategoryModelService(IMapper mapper, ICategoryService categoryService)
+        public CategoryModelService(IMapper mapper, ICategoryService categoryService, IBaseAdminModelService baseAdminModelService)
         {
             _mapper = mapper;
             _categoryService = categoryService;
+            _baseAdminModelService = baseAdminModelService;
         }
 
         public async Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category)
@@ -32,18 +36,14 @@ namespace T.Web.Services.PrepareModelServices
                 _mapper.Map(category, model);
             }
 
-            var listcategory = (await _categoryService.GetAllCategoryAsync());
-            listcategory.Insert(0, new Category()
-            {
-                Name = "Không có danh mục cha",
-                Id = -1
-            });
-            model.AvailableCategories = (listcategory).Select(productAttribute => new SelectListItem
-            {
-                Text = productAttribute.Name,
-                Value = productAttribute.Id.ToString()
-            }).ToList();
+            await _baseAdminModelService.PrepareSelectListCategoryAsync(model.AvailableCategories);
 
+            return model;
+        }
+
+        public async Task<AddProductToCategorySearchModel> PrepareAddProductToCategorySearchModel(AddProductToCategorySearchModel model)
+        {
+            await _baseAdminModelService.PrepareSelectListCategoryAsync(model.AvailableCategories);
             return model;
         }
     }

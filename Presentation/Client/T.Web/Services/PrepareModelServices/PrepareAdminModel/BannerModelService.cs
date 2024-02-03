@@ -5,7 +5,7 @@ using T.Library.Model.Interface;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 
-namespace T.Web.Services.PrepareModelServices
+namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
 {
     public interface IBannerModelService
     {

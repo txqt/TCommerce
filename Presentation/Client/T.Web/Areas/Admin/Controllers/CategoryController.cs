@@ -12,7 +12,7 @@ using T.Web.Attribute;
 using T.Web.Extensions;
 using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
-using T.Web.Services.PrepareModelServices;
+using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers
@@ -141,7 +141,7 @@ namespace T.Web.Areas.Admin.Controllers
             return Json(new { success = true, message = result.Message });
         }
 
-        public async Task<IActionResult> GetListCategoryMapping(int categoryId)
+        public async Task<IActionResult> GetProductCategoryMapping(int categoryId)
         {
             var category = await _categoryService.GetCategoryByIdAsync(categoryId) ??
               throw new ArgumentException("Not found with the specified id");
@@ -182,19 +182,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             var model = new AddProductToCategorySearchModel();
 
-            var category_list = await _categoryService.GetAllCategoryAsync();
-
-            category_list.Insert(0, new Category()
-            {
-                Id = 0,
-                Name = "All"
-            });
-
-            model.AvailableCategories = (category_list).Select(productAttribute => new SelectListItem
-            {
-                Text = productAttribute.Name,
-                Value = productAttribute.Id.ToString()
-            }).ToList();
+            model = await _prepareModelService.PrepareAddProductToCategorySearchModel(model);
 
             return View(model);
         }

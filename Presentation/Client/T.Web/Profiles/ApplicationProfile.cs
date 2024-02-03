@@ -93,6 +93,15 @@ namespace T.Web.Profiles
                 .ForMember(dest => dest.Product, opt => opt.Ignore())
                 .ReverseMap();
 
+            CreateMap<ProductManufacturerModel, ProductManufacturer>()
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.ManufacturerId, opt => opt.MapFrom(src => src.ManufacturerId))
+                .ForMember(dest => dest.IsFeaturedProduct, opt => opt.MapFrom(src => src.IsFeaturedProduct))
+                .ForMember(dest => dest.DisplayOrder, opt => opt.MapFrom(src => src.DisplayOrder))
+                .ForMember(dest => dest.Manufacturer, opt => opt.Ignore())
+                .ForMember(dest => dest.Product, opt => opt.Ignore())
+                .ReverseMap();
+
             CreateMap<BannerViewModel, Banner>()
                 .ReverseMap();
         }

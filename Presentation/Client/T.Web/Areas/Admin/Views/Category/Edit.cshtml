@@ -77,7 +77,7 @@
                 CreateUrl = Url.Action("AddProductToCategory", "Category", new { categoryId = Model.Id }),
                 EditUrl = Url.Action("UpdateProductCategory", "Category"),
                 DeleteUrl = Url.Action("DeleteCategoryMapping", "Category"),
-                GetDataUrl = Url.Action("GetListCategoryMapping", "Category", new { categoryId = Model.Id }),
+                GetDataUrl = Url.Action("GetProductCategoryMapping", "Category", new { categoryId = Model.Id }),
                 PopupWindow = true,
                 DefaultSort = new DefaultSort(3, "desc"),
                 Columns = new List<ColumnDefinition>

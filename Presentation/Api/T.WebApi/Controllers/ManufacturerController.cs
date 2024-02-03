@@ -29,7 +29,7 @@ namespace T.WebApi.Controllers
             return await _manufacturerService.GetManufacturerByIdAsync(id);
         }
         
-        [HttpGet("{manufacturerName}")]
+        [HttpGet("/manufacturerName/{manufacturerName}")]
         public async Task<ActionResult<Manufacturer>> GetManufacturerByNameAsync(string manufacturerName)
         {
             return await _manufacturerService.GetManufacturerByNameAsync(manufacturerName);
@@ -74,6 +74,16 @@ namespace T.WebApi.Controllers
             return await _manufacturerService.GetProductManufacturersByManufacturerIdAsync(manufacturerId);
         }
 
+        [HttpPost("/api/product-manufacturers")]
+        public async Task<ActionResult> CreateProductManufacturerAsync(ProductManufacturer productManufacturer)
+        {
+            var result = await _manufacturerService.CreateProductManufacturerAsync(productManufacturer);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
         [HttpPost("/api/product-manufacturers/bulk")]
         public async Task<ActionResult> BulkCreateProductManufacturersAsync(List<ProductManufacturer> productManufacturers)
         {
@@ -84,7 +94,7 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPut("/api/product-manufacturer")]
+        [HttpPut("/api/product-manufacturers")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> UpdateProductManufacturerAsync(ProductManufacturer productManufacturers)
         {
@@ -95,18 +105,18 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("/api/product-manufacturer/{manufacturerId}")]
+        [HttpDelete("/api/product-manufacturers/{productManufacturerId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> DeleteManufacturerByIdAsync(int manufacturerId)
+        public async Task<ActionResult> DeleteManufacturerMappingById(int productManufacturerId)
         {
-            var result = await _manufacturerService.DeleteManufacturerByIdAsync(manufacturerId);
+            var result = await _manufacturerService.DeleteManufacturerMappingById(productManufacturerId);
             if (!result.Success)
                 return BadRequest(result);
 
             return Ok(result);
         }
 
-        [HttpGet("/api/product-manufacturer/{manufacturerId}")]
+        [HttpGet("/api/product-manufacturers/{manufacturerId}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult<ProductManufacturer>> GetProductManufacturerByIdAsync(int productManufacturerId)
         {

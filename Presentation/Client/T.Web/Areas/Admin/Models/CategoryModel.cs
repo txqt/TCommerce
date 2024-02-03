@@ -89,6 +89,6 @@ namespace T.Web.Areas.Admin.Models
         /// </summary>
         public bool ManuallyPriceRange { get; set; }
 
-        public IList<SelectListItem> AvailableCategories { get; set; }
+        public List<SelectListItem> AvailableCategories { get; set; }
     }
 }

@@ -10,6 +10,45 @@
     </div>
 </div>
 
+<div class="col-md-12" style="margin-top: 36px">
+    <div id="accordion-3">
+        <div class="card">
+            <div class="card-header" id="headingThree">
+                <h5 class="mb-0">
+                    <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse-3" aria-expanded="true" aria-controls="collapse-3">
+                        Products
+                    </button>
+                </h5>
+            </div>
+            <div id="collapse-3" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion-3">
+                <div class="card-body">
+                    @{
+                        var ProductManufacturerList = new DataTableViewModel
+                        {
+                            TableTitle = "Products",
+                            CreateUrl = Url.Action("AddProductToManufacturer", "Manufacturer", new { manufacturerId = Model.Id }),
+                            EditUrl = Url.Action("UpdateProductManufacturer", "Manufacturer"),
+                            DeleteUrl = Url.Action("DeleteManufacturerMapping", "Manufacturer"),
+                            GetDataUrl = Url.Action("GetProductManufacturerMapping", "Manufacturer", new { manufacturerId = Model.Id }),
+                            PopupWindow = true,
+                            DefaultSort = new DefaultSort(3, "desc"),
+                            Columns = new List<ColumnDefinition>
+                                {
+                                new ColumnDefinition(nameof(ProductManufacturerModel.ProductName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<ProductManufacturerModel>(m=>m.ProductName) },
+                                new ColumnDefinition(nameof(ProductManufacturerModel.IsFeaturedProduct)) { RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductManufacturerModel>(m=>m.IsFeaturedProduct), Editable = true },
+                                new ColumnDefinition(nameof(ProductManufacturerModel.DisplayOrder)) { Editable = true, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductManufacturerModel>(m=>m.DisplayOrder) },
+                                new ColumnDefinition(nameof(ProductManufacturerModel.Id)) { RenderType = RenderType.RenderInlineEdit, Title = "Edit" },
+                                new ColumnDefinition(nameof(ProductManufacturerModel.Id)) { RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
+                                }
+                        };
+                    }
+                    @await Html.PartialAsync("_Table", ProductManufacturerList)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div>
     <a asp-action="Index">Back to List</a>
 </div>

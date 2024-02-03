@@ -17,6 +17,7 @@ using T.Web.Attribute;
 using T.Web.Extensions;
 using T.Web.Services.CategoryService;
 using T.Web.Services.PrepareModel;
+using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers
@@ -53,19 +54,7 @@ namespace T.Web.Areas.Admin.Controllers
         {
             var model = new ProductSearchModel();
 
-            var category_list = await _categoryService.GetAllCategoryAsync();
-
-            category_list.Insert(0, new Category()
-            {
-                Id = 0,
-                Name = "All"
-            });
-
-            model.AvailableCategories = (category_list).Select(productAttribute => new SelectListItem
-            {
-                Text = productAttribute.Name,
-                Value = productAttribute.Id.ToString()
-            }).ToList();
+            model = await _prepareModelService.PrepareProductSearchModelModelAsync(model);
 
             return View(model);
         }
@@ -73,36 +62,9 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAll(ProductParameters productParameters)
         {
-            var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
-            var start = int.Parse(Request.Form["start"].FirstOrDefault());
-            var length = int.Parse(Request.Form["length"].FirstOrDefault());
-            int orderColumnIndex = int.Parse(Request.Form["order[0][column]"]);
-            string orderDirection = Request.Form["order[0][dir]"];
-            string orderColumnName = Request.Form["columns[" + orderColumnIndex + "][data]"];
+            var pagingResponse = await _productService.GetAll(productParameters);
 
-            string orderBy = orderColumnName + " " + orderDirection;
-            var searchValue = Request.Form["search[value]"].FirstOrDefault();
-
-            // Create ProductParameters from DataTables parameters
-            var productParameter = new ProductParameters
-            {
-                PageNumber = start / length + 1,
-                PageSize = length,
-                SearchText = searchValue,
-                OrderBy = orderBy,
-                CategoryId = productParameters.CategoryId
-            };
-
-            // Call the service to get the paged data
-            var pagingResponse = await _productService.GetAll(productParameter);
-
-            var model = new DataTableResponse<Product>
-            {
-                Draw = draw,
-                RecordsTotal = pagingResponse.MetaData.TotalCount,
-                RecordsFiltered = pagingResponse.MetaData.TotalCount,
-                Data = pagingResponse.Items
-            };
+            var model = ToDatatableReponse<Product>(pagingResponse.MetaData.TotalCount, pagingResponse.MetaData.TotalCount, pagingResponse.Items);
 
             return this.JsonWithPascalCase(model);
         }

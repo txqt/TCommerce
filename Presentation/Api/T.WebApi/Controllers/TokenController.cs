@@ -52,23 +52,5 @@ namespace T.WebApi.Controllers
 
             return Ok(response);
         }
-
-        [Authorize]
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            // Lấy token từ header Authorization của request
-            string token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            string? rawUserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (!Guid.TryParse(rawUserId, out Guid userId))
-            {
-                return Unauthorized();
-            }
-
-            //var result = await _tokenService.Logout(userId);
-            return NoContent();
-        }
     }
 }
