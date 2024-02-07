@@ -736,9 +736,9 @@ namespace T.Web.Areas.Admin.Controllers
 
         #region RelatedProduct
         [HttpPost]
-        public async Task<IActionResult> DeleteRelatedProductAsync(int relatedProductId)
+        public async Task<IActionResult> DeleteRelatedProductAsync(int id)
         {
-            var result = await _productService.DeleteRelatedProductAsync(relatedProductId);
+            var result = await _productService.DeleteRelatedProductAsync(id);
 
             return ReturnJsonByServiceResult(result);
         }
