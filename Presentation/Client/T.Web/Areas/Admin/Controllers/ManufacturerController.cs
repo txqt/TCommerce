@@ -18,12 +18,12 @@ namespace T.Web.Areas.Admin.Controllers
     public class ManufacturerController : BaseAdminController
     {
         private readonly IManufacturerService _manufacturerService;
-        private readonly ICategoryService _categoryService;
+        private readonly ICategoryServiceCommon _categoryService;
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
         private readonly IManufacturerModelService _manufacturerModelService;
 
-        public ManufacturerController(IManufacturerService manufacturerService, IProductService productService, IMapper mapper, ICategoryService categoryService, IManufacturerModelService manufacturerModelService)
+        public ManufacturerController(IManufacturerService manufacturerService, IProductService productService, IMapper mapper, ICategoryServiceCommon categoryService, IManufacturerModelService manufacturerModelService)
         {
             _manufacturerService = manufacturerService;
             _productService = productService;
@@ -162,7 +162,7 @@ namespace T.Web.Areas.Admin.Controllers
             //    throw new ArgumentException("Not found with the specified id");
             ArgumentNullException.ThrowIfNull(await _manufacturerService.GetManufacturerByIdAsync(manufacturerId));
 
-            var model = new AddProductToManufacturerSearchModel();
+            var model = new ProductManufacturerSearchModel();
 
             model = await _manufacturerModelService.PrepareAddProductToManufacturerSearchModel(model);
 
@@ -170,45 +170,22 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetProductList(AddProductToManufacturerSearchModel model)
+        public async Task<IActionResult> GetProductList(ProductManufacturerSearchModel searchModel)
         {
-            var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
-            var start = int.Parse(Request.Form["start"].FirstOrDefault());
-            var length = int.Parse(Request.Form["length"].FirstOrDefault());
-            int orderColumnIndex = int.Parse(Request.Form["order[0][column]"]);
-            string orderDirection = Request.Form["order[0][dir]"];
-            string orderColumnName = Request.Form["columns[" + orderColumnIndex + "][data]"];
+            var productParameters = ExtractQueryStringParameters<ProductParameters>();
 
-            string orderBy = orderColumnName + " " + orderDirection;
-            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+            productParameters.CategoryIds = new List<int> { searchModel.SearchByCategoryId };
+            productParameters.ManufacturerIds = new List<int> { searchModel.SearchByManufacturerId };
 
-            // Create ProductParameters from DataTables parameters
-            var productParameter = new ProductParameters
-            {
-                PageNumber = start / length + 1,
-                PageSize = length,
-                SearchText = searchValue,
-                OrderBy = orderBy,
-                ManufacturerId = model.SearchByManufacturerId,
-                CategoryId = model.SearchByCategoryId
-            };
+            var pagingResponse = await _productService.GetAll(productParameters);
 
-            // Call the service to get the paged data
-            var pagingResponse = await _productService.GetAll(productParameter);
+            var model = ToDatatableReponse<Product>(pagingResponse.MetaData.TotalCount, pagingResponse.MetaData.TotalCount, pagingResponse.Items);
 
-            var json = new DataTableResponse<Product>
-            {
-                Draw = draw,
-                RecordsTotal = pagingResponse.MetaData.TotalCount,
-                RecordsFiltered = pagingResponse.MetaData.TotalCount,
-                Data = pagingResponse.Items
-            };
-
-            return this.JsonWithPascalCase(json);
+            return this.JsonWithPascalCase(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProductToManufacturer(AddProductToManufacturerModel model)
+        public async Task<IActionResult> AddProductToManufacturer(AddProductManufacturerModel model)
         {
             if (!model.SelectedProductIds.Any())
             {
@@ -230,7 +207,7 @@ namespace T.Web.Areas.Admin.Controllers
 
             if (!result.Success)
             {
-                return View(new AddProductToManufacturerSearchModel());
+                return View(new ProductManufacturerSearchModel());
             }
             else
             {
@@ -238,7 +215,7 @@ namespace T.Web.Areas.Admin.Controllers
                 ViewBag.RefreshPage = true;
             }
 
-            return View(new AddProductToManufacturerSearchModel());
+            return View(new ProductManufacturerSearchModel());
         }
 
         [HttpPost]

@@ -8,6 +8,7 @@ using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Web.Areas.Admin.Models.SearchModel;
 using T.Web.Services.PrepareModelServices.PrepareAdminModel;
+using T.Library.Model.ViewsModel;
 
 namespace T.Web.Services.PrepareModel
 {
@@ -24,16 +25,18 @@ namespace T.Web.Services.PrepareModel
         Task<ProductCategoryModel> PrepareProductCategoryMappingModelAsync(ProductCategoryModel model,
             Product product, ProductCategory productCategory);
         Task<ProductSearchModel> PrepareProductSearchModelModelAsync(ProductSearchModel model);
+        Task<RelatedProductSearchModel> PrepareRelatedProductSearchModel(RelatedProductSearchModel model);
+        Task<ProductEditModel> PrepareProductEditModelModelAsync(Product product, ProductEditModel model);
     }
     public class ProductModelService : IProductModelService
     {
         private readonly IProductAttributeCommon _productAttributeService;
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
-        private readonly ICategoryService _categoryService;
+        private readonly ICategoryServiceCommon _categoryService;
         private readonly IBaseAdminModelService _baseAdminModelService;
         public ProductModelService(IProductAttributeCommon productAttributeService,
-            IMapper mapper, IProductService productService, ICategoryService categoryService, IBaseAdminModelService baseAdminModelService)
+            IMapper mapper, IProductService productService, ICategoryServiceCommon categoryService, IBaseAdminModelService baseAdminModelService)
         {
             _productAttributeService = productAttributeService;
             _mapper = mapper;
@@ -205,6 +208,31 @@ namespace T.Web.Services.PrepareModel
         }
 
         public async Task<ProductSearchModel> PrepareProductSearchModelModelAsync(ProductSearchModel model)
+        {
+            await _baseAdminModelService.PrepareSelectListCategoryAsync(model.AvailableCategories);
+            await _baseAdminModelService.PrepareSelectListManufactureAsync(model.AvailableManufacturers);
+            return model;
+        }
+
+        public async Task<ProductEditModel> PrepareProductEditModelModelAsync(Product product, ProductEditModel model)
+        {
+            if(product is not null)
+            {
+                model ??= new ProductEditModel()
+                {
+                    Id = product.Id,
+                };
+
+                _mapper.Map(product, model);
+            }
+
+
+            await _baseAdminModelService.PrepareSelectListCategoryAsync(model.AvailableCategories);
+
+            return model;
+        }
+
+        public async Task<RelatedProductSearchModel> PrepareRelatedProductSearchModel(RelatedProductSearchModel model)
         {
             await _baseAdminModelService.PrepareSelectListCategoryAsync(model.AvailableCategories);
             await _baseAdminModelService.PrepareSelectListManufactureAsync(model.AvailableManufacturers);

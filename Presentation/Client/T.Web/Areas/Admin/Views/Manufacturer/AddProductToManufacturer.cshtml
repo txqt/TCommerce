@@ -1,4 +1,4 @@
-﻿@model AddProductToManufacturerSearchModel
+﻿@model ProductManufacturerSearchModel
 @{
     ViewData["Title"] = "AddProductToManufacturerSearchModel";
     Layout = "_EmptyLayout";
@@ -30,7 +30,7 @@
                     new ColumnDefinition(nameof(Product.Id))
                     {
                         RenderType = RenderType.RenderCheckBox,
-                        CheckBoxName = nameof(AddProductToManufacturerModel.SelectedProductIds),
+                        CheckBoxName = nameof(AddProductManufacturerModel.SelectedProductIds),
                         IsMasterCheckBox = true,
                         Orderable = false,
                         Width = 50,

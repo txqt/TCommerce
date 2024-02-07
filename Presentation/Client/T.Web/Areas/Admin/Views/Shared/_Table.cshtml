@@ -15,7 +15,7 @@
 <br />
 
 <div class="table-responsive display" style="width:100%">
-    <table class="table table-success table-striped table-hover" id="@Model.TableId">
+    <table class="table table-success table-striped table-hover" id="@Model.TableId" style="width:100%">
         <thead>
             <tr>
                 @foreach (var column in Model.Columns)
@@ -140,7 +140,7 @@
             // })
 
             //--->button > edit > start
-            $(document).on('click', '.btn_edit', function (event) {
+            $(tableId).on('click', '.btn_edit', function (event) {
                 event.preventDefault();
                 var tbl_row = $(this).closest('tr');
 
@@ -173,8 +173,9 @@
 
             //--->button > edit > end
 
-            $(document).on('click', '.btn_save', function (event) {
+            $(tableId).on('click', '.btn_save', function (event) {
                 event.preventDefault();
+                console.log('tableid: ' + tableId);
                 var tbl_row = $(this).closest('tr');
                 var row_id = tbl_row.attr('row_id');
 
@@ -231,9 +232,9 @@
 
 
             //--->button > cancel > start
-            $(document).on('click', '.btn_cancel', function (event) {
+            $(tableId).on('click', '.btn_cancel', function (event) {
                 event.preventDefault();
-
+                
                 var tbl_row = $(this).closest('tr');
 
                 var row_id = tbl_row.attr('row_id');

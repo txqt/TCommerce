@@ -31,10 +31,10 @@ namespace T.Web.Controllers
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly IShoppingCartModelService _sciModelService;
-        private readonly ICategoryService _categoryService;
+        private readonly ICategoryServiceCommon _categoryService;
         private readonly IUrlRecordService _urlRecordService;
 
-        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService, IShoppingCartService shoppingCartService, IMapper mapper, IUserService userService, IShoppingCartModelService sciModelService, ICategoryService categoryService, IUrlRecordService urlRecordService)
+        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService, IShoppingCartService shoppingCartService, IMapper mapper, IUserService userService, IShoppingCartModelService sciModelService, ICategoryServiceCommon categoryService, IUrlRecordService urlRecordService)
         {
             _productService = productService;
             _productAttributeService = productAttributeService;

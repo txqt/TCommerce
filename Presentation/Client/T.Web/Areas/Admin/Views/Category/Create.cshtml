@@ -7,55 +7,11 @@
 <h1>Tạo thể loại</h1>
 
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label>Chọn thể loại cha</label>
-                <div class="dropdown">
-                    <select class="form-select" dropdown-toggle" data-toggle="dropdown" asp-items="Model.AvailableCategories" asp-for="ParentCategoryId">
-                    </select>
-                    <div class="dropdown-menu">
-                        <!-- Nội dung các mục trong dropdown -->
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="ShowOnHomepage" /> @Html.DisplayNameFor(model => model.ShowOnHomepage)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="IncludeInTopMenu" /> @Html.DisplayNameFor(model => model.IncludeInTopMenu)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="DisplayOrder" class="control-label"></label>
-                <input asp-for="DisplayOrder" class="form-control" />
-                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+<t-accordion>
+    <form asp-action="Create">
+        @await Html.PartialAsync("_CreateOrEdit", Model)
+    </form>
+</t-accordion>
 
 <div>
     <a asp-action="Index">Back to List</a>

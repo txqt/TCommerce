@@ -2,9 +2,9 @@
 
 namespace T.Web.Areas.Admin.Models.SearchModel
 {
-    public class AddProductToCategorySearchModel : QueryStringParameters
+    public class RelatedProductSearchModel : QueryStringParameters
     {
-        public AddProductToCategorySearchModel()
+        public RelatedProductSearchModel()
         {
             AvailableCategories = new List<SelectListItem>();
             AvailableManufacturers = new List<SelectListItem>();

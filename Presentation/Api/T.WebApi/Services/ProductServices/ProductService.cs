@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Data.SqlTypes;
 using T.Library.Helpers;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
@@ -19,7 +20,22 @@ namespace T.WebApi.Services.ProductServices
 {
     public interface IProductService : IProductServiceCommon
     {
-        Task<PagedList<Product>> SearchProduct(ProductParameters productParameters);
+        Task<PagedList<Product>> SearchProduct(int pageNumber = 0,
+        int pageSize = int.MaxValue,
+        IList<int> categoryIds = null,
+        IList<int> manufacturerIds = null,
+        bool excludeFeaturedProducts = false,
+        decimal? priceMin = null,
+        decimal? priceMax = null,
+        int productTagId = 0,
+        string keywords = null,
+        bool searchDescriptions = false,
+        bool searchManufacturerPartNumber = true,
+        bool searchSku = true,
+        bool searchProductTags = false,
+        string orderBy = null,
+        bool showHidden = false,
+        List<int> ids = null);
     }
     /// <summary>
     /// Product service
@@ -44,6 +60,8 @@ namespace T.WebApi.Services.ProductServices
 
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
 
+        private readonly IRepository<RelatedProduct> _relatedProductRepository;
+
         private string? APIUrl;
 
         private IMapper _mapper;
@@ -54,7 +72,7 @@ namespace T.WebApi.Services.ProductServices
         #endregion
 
         #region Ctor
-        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService, ICacheService cacheService, IRepository<ProductManufacturer> productManufacturerRepository)
+        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService, ICacheService cacheService, IRepository<ProductManufacturer> productManufacturerRepository, IRepository<RelatedProduct> relatedProductRepository)
         {
             _configuration = configuration;
             _environment = environment;
@@ -68,20 +86,77 @@ namespace T.WebApi.Services.ProductServices
             _urlRecordService = urlRecordService;
             _cacheService = cacheService;
             _productManufacturerRepository = productManufacturerRepository;
+            _relatedProductRepository = relatedProductRepository;
         }
         #endregion
 
         #region Methods
-        public async Task<PagedList<Product>> SearchProduct(ProductParameters productParameters)
+        public async Task<PagedList<Product>> SearchProduct(int pageNumber = 0,
+        int pageSize = int.MaxValue,
+        IList<int> categoryIds = null,
+        IList<int> manufacturerIds = null,
+        bool excludeFeaturedProducts = false,
+        decimal? priceMin = null,
+        decimal? priceMax = null,
+        int productTagId = 0,
+        string keywords = null,
+        bool searchDescriptions = false,
+        bool searchManufacturerPartNumber = true,
+        bool searchSku = true,
+        bool searchProductTags = false,
+        string orderBy = null,
+        bool showHidden = false,
+        List<int> ids = null)
         {
-            string GetKey()
+            var query = _productsRepository.Query;
+
+
+            if (!showHidden)
+                query = query.Where(p => p.Published);
+
+            if (ids != null && ids.Count > 0)
             {
-                var properties = typeof(ProductParameters).GetProperties();
-                var keyParts = properties.Select(prop => prop.GetValue(productParameters)?.ToString() ?? "null");
-                return string.Join("_", keyParts);
+                query = query.Where(p => ids.Contains(p.Id));
             }
 
-            var cacheKey = CacheKeysDefault<Product>.AllPrefix + GetKey();
+
+            var t = await query.ToListAsync();
+            if (categoryIds is not null)
+            {
+                categoryIds.Remove(0);
+                if (categoryIds.Any())
+                    query = from p in query
+                            join pc in _productCategoryRepository.Table on p.Id equals pc.ProductId
+                            where categoryIds.Contains(pc.CategoryId)
+                            select p;
+            }
+
+            if (manufacturerIds is not null)
+            {
+                manufacturerIds.Remove(0);
+                if (manufacturerIds.Any())
+                    query = from p in query
+                            join pm in _productManufacturerRepository.Table on p.Id equals pm.ProductId
+                            where manufacturerIds.Contains(pm.ManufacturerId)
+                            select p;
+            }
+
+            query = query.SearchByString(keywords)
+               .Sort(orderBy)
+               .Include(x => x.ProductPictures)
+               .Where(x => x.Deleted == false);
+
+            query = from p in query
+                    where !p.Deleted &&
+                          (showHidden ||
+                           DateTime.UtcNow >= (p.AvailableStartDateTimeUtc ?? SqlDateTime.MinValue.Value) &&
+                           DateTime.UtcNow <= (p.AvailableEndDateTimeUtc ?? SqlDateTime.MaxValue.Value)
+                          ) &&
+                          (priceMin == null || p.Price >= priceMin) &&
+                          (priceMax == null || p.Price <= priceMax)
+                    select p;
+
+            var cacheKey = CacheKeysDefault<Product>.AllPrefix + query.Expression;
 
             // Attempt to get data from cache
             var cachedData = _cacheService.GetData<PagedList<Product>>(cacheKey);
@@ -93,39 +168,9 @@ namespace T.WebApi.Services.ProductServices
             }
             else
             {
-                var query = _productsRepository.Query;
-
-                if (productParameters.ids != null && productParameters.ids.Count > 0)
-                {
-                    query = query.Where(p => productParameters.ids.Contains(p.Id));
-                }
-
-                if (productParameters.CategoryId > 0)
-                {
-                    query = from p in query
-                            join pc in _productCategoryRepository.Table on p.Id equals pc.ProductId
-                            where pc.CategoryId == productParameters.CategoryId
-                            select p;
-                }
-
-                if (productParameters.ManufacturerId > 0)
-                {
-                    query = from p in query
-                            join pc in _productManufacturerRepository.Table on p.Id equals pc.ProductId
-                            where pc.ManufacturerId == productParameters.ManufacturerId
-                            select p;
-                }
-
-                query = query.SearchByString(productParameters.SearchText)
-                   .Sort(productParameters.OrderBy)// sắp xếp theo cột sản phẩm 
-                   .Include(x => x.ProductPictures)
-                   .Where(x => x.Deleted == false);
-
-                query = query.OrderBy(product => product.Id);
-
 
                 var result = await PagedList<Product>.ToPagedList
-                    (query, productParameters.PageNumber, productParameters.PageSize);
+                    (query, pageNumber, pageSize);
 
                 // Store data in cache with an expiration time (adjust as needed)
                 _cacheService.SetData(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(10));
@@ -166,8 +211,9 @@ namespace T.WebApi.Services.ProductServices
 
             try
             {
-                var product = (await _productsRepository.Table.Include(x => x.AttributeMappings).FirstOrDefaultAsync(x => x.Id == model.Id))
-                    ?? throw new ArgumentException("No product found with the specified id");
+                var product = (await _productsRepository.Table.Include(x => x.AttributeMappings).FirstOrDefaultAsync(x => x.Id == model.Id));
+
+                ArgumentNullException.ThrowIfNull(product);
 
                 _mapper.Map(model, product);
 
@@ -196,13 +242,13 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<List<ProductAttribute>> GetAllProductAttributeByProductIdAsync(int productId)
-        {
-            return await _productAttributeMappingRepository.Table
-                    .Where(pam => pam.ProductId == productId)
-                    .Select(pam => pam.ProductAttribute)
-                    .ToListAsync();
-        }
+        //public async Task<List<ProductAttribute>> GetAllProductAttributeByProductIdAsync(int productId)
+        //{
+        //    return await _productAttributeMappingRepository.Table
+        //            .Where(pam => pam.ProductId == productId)
+        //            .Select(pam => pam.ProductAttribute)
+        //            .ToListAsync();
+        //}
 
         public async Task<List<ProductPicture>> GetProductPicturesByProductIdAsync(int productId)
         {
@@ -283,7 +329,7 @@ namespace T.WebApi.Services.ProductServices
 
                 ArgumentNullException.ThrowIfNull(picture);
 
-                if (picture.UrlPath is null);
+                if (picture.UrlPath is null) ;
 
                 ArgumentNullException.ThrowIfNull(picture.UrlPath);
 
@@ -415,6 +461,95 @@ namespace T.WebApi.Services.ProductServices
         {
             await _productsRepository.BulkDeleteAsync(productIds);
             return new ServiceSuccessResponse<bool>();
+        }
+
+        #endregion
+
+        #region Related products
+
+        /// <summary>
+        /// Deletes a related product
+        /// </summary>
+        /// <param name="relatedProduct">Related product</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task<ServiceResponse<bool>> DeleteRelatedProductAsync(int relatedProductId)
+        {
+            await _relatedProductRepository.DeleteAsync(relatedProductId);
+            return new ServiceSuccessResponse<bool>();
+        }
+
+        /// <summary>
+        /// Gets related products by product identifier
+        /// </summary>
+        /// <param name="productId">The first product identifier</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the related products
+        /// </returns>
+        public virtual async Task<List<RelatedProduct>> GetRelatedProductsByProductId1Async(int productId, bool showHidden = false)
+        {
+            var query = from rp in _relatedProductRepository.Table
+                        join p in _productsRepository.Table on rp.ProductId2 equals p.Id
+                        where rp.ProductId1 == productId &&
+                              !p.Deleted &&
+                              (showHidden || p.Published)
+                        orderby rp.DisplayOrder, rp.Id
+                        select rp;
+
+            var relatedProducts = (await _relatedProductRepository.GetAllAsync(x =>
+            {
+                return query;
+            })).ToList();
+
+            return relatedProducts;
+        }
+
+        /// <summary>
+        /// Gets a related product
+        /// </summary>
+        /// <param name="relatedProductId">Related product identifier</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the related product
+        /// </returns>
+        public virtual async Task<RelatedProduct> GetRelatedProductByIdAsync(int relatedProductId)
+        {
+            return await _relatedProductRepository.GetByIdAsync(relatedProductId);
+        }
+
+        /// <summary>
+        /// Inserts a related product
+        /// </summary>
+        /// <param name="relatedProduct">Related product</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task<ServiceResponse<bool>> CreateRelatedProductAsync(RelatedProduct relatedProduct)
+        {
+            await _relatedProductRepository.CreateAsync(relatedProduct);
+            return new ServiceSuccessResponse<bool>();
+        }
+
+        /// <summary>
+        /// Updates a related product
+        /// </summary>
+        /// <param name="relatedProduct">Related product</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task<ServiceResponse<bool>> UpdateRelatedProductAsync(RelatedProduct relatedProduct)
+        {
+            await _relatedProductRepository.UpdateAsync(relatedProduct);
+            return new ServiceSuccessResponse<bool>();
+        }
+
+        /// <summary>
+        /// Finds a related product item by specified identifiers
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="productId1">The first product identifier</param>
+        /// <param name="productId2">The second product identifier</param>
+        /// <returns>Related product</returns>
+        public virtual RelatedProduct FindRelatedProduct(IList<RelatedProduct> source, int productId1, int productId2)
+        {
+            return source.FirstOrDefault(rp => rp.ProductId1 == productId1 && rp.ProductId2 == productId2);
         }
 
         #endregion

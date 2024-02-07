@@ -1,0 +1,21 @@
+﻿@model ProductEditModel
+
+@{
+    var RelatedProductListModel = new DataTableViewModel
+            {
+                TableTitle = "Danh sách các sản phẩm liên quan",
+                CreateUrl = Url.Action("AddRelatedProductPopup", "Product", new { productId = Model.Id }),
+                EditUrl = Url.Action("UpdateRelatedProduct", "Product"),
+                DeleteUrl = Url.Action("DeleteRelatedProduct"),
+                GetDataUrl = Url.Action("GetRelatedProductsByProductId1", "Product", new { productId = Model.Id }),
+                PopupWindow = true,
+                Columns = new List<ColumnDefinition>
+        {
+        new ColumnDefinition { Data = nameof(RelatedProductModel.Product2Name), Title = DisplayNameExtensions.GetPropertyDisplayName<RelatedProductModel>(p => p.Product2Name)  },
+        new ColumnDefinition { Data = nameof(RelatedProductModel.DisplayOrder), Title = DisplayNameExtensions.GetPropertyDisplayName<RelatedProductModel>(p => p.DisplayOrder), Editable = true },
+        new ColumnDefinition { Data = nameof(RelatedProductModel.Id), RenderType = RenderType.RenderInlineEdit, Title = "Edit" },
+        new ColumnDefinition { Data = nameof(RelatedProductModel.Id), RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
+        }
+            };
+}
+@await Html.PartialAsync("_Table", RelatedProductListModel)

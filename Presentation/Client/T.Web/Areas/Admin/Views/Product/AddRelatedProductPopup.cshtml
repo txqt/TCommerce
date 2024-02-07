@@ -1,6 +1,6 @@
-﻿@model ProductCategorySearchModel
+﻿@model RelatedProductSearchModel
 @{
-    ViewData["Title"] = "AddProductToCategory";
+    ViewData["Title"] = "RelatedProductSearchModel";
     Layout = "_EmptyLayout";
 }
 
@@ -21,15 +21,16 @@
                 Filters = new List<Filter>()
                 {
                     new Filter(nameof(Model.SearchByCategoryId)),
+                    new Filter(nameof(Model.SearchByManufacturerId)),
                 },
-                GetDataUrl = Url.Action("GetProductList", "Category"),
+                GetDataUrl = Url.Action("RelatedProductList", "Product"),
                 ServerSide = true,
                 Columns = new List<ColumnDefinition>()
                 {
                     new ColumnDefinition(nameof(Product.Id))
                     {
                         RenderType = RenderType.RenderCheckBox,
-                        CheckBoxName = nameof(AddProductCategoryModel.SelectedProductIds),
+                        CheckBoxName = nameof(AddProductManufacturerModel.SelectedProductIds),
                         IsMasterCheckBox = true,
                         Orderable = false,
                         Width = 50,
@@ -42,10 +43,19 @@
             };
 }
 
-<form asp-action="AddProductToCategory" method="post" asp-route-categoryId="@Context.Request.Query["categoryId"]">
+<form asp-action="AddRelatedProductPopup" method="post" asp-route-productId="@Context.Request.Query["productId"]">
     <div class="card">
         <div class="card-body">
             <div class="row">
+                <div class="col-sm-6">
+                    <div class="col-auto">
+                        <label asp-for="SearchByManufacturerId" class="col-form-label">Manufacturer</label>
+                    </div>
+                    <div class="col-auto">
+                        <select class="form-select" asp-items="Model.AvailableManufacturers" asp-for="SearchByManufacturerId">
+                        </select>
+                    </div>
+                </div>
                 <div class="col-sm-6">
                     <div class="col-auto">
                         <label asp-for="SearchByCategoryId" class="col-form-label">Category</label>
@@ -54,8 +64,6 @@
                         <select class="form-select" asp-items="Model.AvailableCategories" asp-for="SearchByCategoryId">
                         </select>
                     </div>
-                </div>
-                <div class="col-sm-6">
                 </div>
             </div>
             <div class="button text-center p-4">

@@ -1,4 +1,4 @@
-﻿@model ProductPictureModel
+﻿@model ProductEditModel
 
 <div class="border border-primary" hidden>
     <input class="collapse"
@@ -11,7 +11,7 @@
     @*<span class="btn btn-primary" onclick="ClickButtonUpload()">Upload Hình ảnh</span>*@
 
 
-    <div id="box-photo-upload" class="d-flex flex-wrap photo-upload" data-id="@Model.ProductId">
+    <div id="box-photo-upload" class="d-flex flex-wrap photo-upload" data-id="@Model.Id">
     </div>
 
 </div>
@@ -21,13 +21,29 @@
     <span class="btn btn-danger" onclick="DeleteAllImages()">Xóa Tất Cả Ảnh</span>
 </p>
 
-
-@await Html.PartialAsync("_Table", Model.DataTable)
+@{
+    var picturePictures = new DataTableViewModel
+            {
+                TableTitle = "Products",
+                EditUrl = Url.Action("UpdateProductImage", "Product"),
+                DeleteUrl = Url.Action("DeletePhoto", "Product"),
+                GetDataUrl = Url.Action("ListPhotos", "Product", new { productId = Model.Id }),
+                PopupWindow = true,
+                Columns = new List<ColumnDefinition>
+                        {
+                        new ColumnDefinition(nameof(ProductPictureModel.PictureUrl)) { RenderType = RenderType.RenderPicture, Title = "Picture" },
+                        new ColumnDefinition(nameof(ProductPictureModel.DisplayOrder)) { Title = "Display Order", Editable = true},
+                        new ColumnDefinition(nameof(ProductPictureModel.Id)) { Title = "Edit", RenderType = RenderType.RenderInlineEdit},
+                        new ColumnDefinition(nameof(ProductPictureModel.Id)) { RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
+                        }
+            };
+}
+@await Html.PartialAsync("_Table", picturePictures)
 
 <script>
-    var tableId = "#@Model.DataTable.TableId";
-    var url = "@Model.DataTable.GetDataUrl";
-    var columns = @Html.Raw(Json.Serialize(Model.DataTable.Columns));
+    var tableId = "#@picturePictures.TableId";
+    var url = "@picturePictures.GetDataUrl";
+    var columns = @Html.Raw(Json.Serialize(picturePictures.Columns));
 
     function AutoUploadPhoto() {
         var formFiles = $("#selectfileupload").prop("files");
@@ -38,7 +54,7 @@
         var id = $("#box-photo-upload").data("id");
 
         $.ajax({
-            url: "@Url.Action("AddProductImage", "Product", new {productId = Model.ProductId})",
+            url: "@Url.Action("AddProductImage", "Product", new {productId = Model.Id})",
             type: "POST",
             data: formData,
             contentType: false,
@@ -64,7 +80,7 @@
             $.ajax({
                 url: "@Url.Action("DeleteAllPhotos", "Product")", // Đường dẫn xử lý yêu cầu xóa tất cả ảnh
                 type: "POST",
-                data: { productId: @Model.ProductId }, // Dữ liệu gửi kèm (nếu cần)
+                data: { productId: @Model.Id }, // Dữ liệu gửi kèm (nếu cần)
                 success: function (response) {
                     // Xử lý phản hồi từ API
                     if (response.success) {

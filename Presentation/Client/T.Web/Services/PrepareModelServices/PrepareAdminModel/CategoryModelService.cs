@@ -10,15 +10,15 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
     public interface ICategoryModelService
     {
         Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
-        Task<AddProductToCategorySearchModel> PrepareAddProductToCategorySearchModel(AddProductToCategorySearchModel model);
+        Task<ProductCategorySearchModel> PrepareAddProductToCategorySearchModel(ProductCategorySearchModel model);
     }
     public class CategoryModelService : ICategoryModelService
     {
         private readonly IMapper _mapper;
-        private readonly ICategoryService _categoryService;
+        private readonly ICategoryServiceCommon _categoryService;
         private readonly IBaseAdminModelService _baseAdminModelService;
 
-        public CategoryModelService(IMapper mapper, ICategoryService categoryService, IBaseAdminModelService baseAdminModelService)
+        public CategoryModelService(IMapper mapper, ICategoryServiceCommon categoryService, IBaseAdminModelService baseAdminModelService)
         {
             _mapper = mapper;
             _categoryService = categoryService;
@@ -41,7 +41,7 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
             return model;
         }
 
-        public async Task<AddProductToCategorySearchModel> PrepareAddProductToCategorySearchModel(AddProductToCategorySearchModel model)
+        public async Task<ProductCategorySearchModel> PrepareAddProductToCategorySearchModel(ProductCategorySearchModel model)
         {
             await _baseAdminModelService.PrepareSelectListCategoryAsync(model.AvailableCategories);
             return model;

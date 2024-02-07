@@ -1,32 +1,13 @@
 ﻿@model ProductAttributeMappingModel
 
 <h3 class="text-info">Sửa thuộc tính liên kết với sản phẩm</h3>
-<form method="post" style="background-color: #fff; padding: 20px; border-radius: 10px">
-    @(await Html.PartialAsync("_AddOrUpdateProductAttributeMapping", Model))
-</form> 
+<t-accordion>
+    <form method="post" style="background-color: #fff; padding: 20px; border-radius: 10px">
+        @(await Html.PartialAsync("_CreateOrEditProductAttributeMapping", Model))
+    </form>
+</t-accordion>
 <hr />
-@{
-    var pav = new DataTableViewModel
-            {
-                TableTitle = $"Danh sách thuộc tính {Model.ProductAttributeName}",
-                CreateUrl = Url.Action("ProductAttributeValueCreate", "Product", new { productAttributeMappingId = Model.Id }),
-                EditUrl = Url.Action("EditProductAttributeValue", "Product"),
-                DeleteUrl = Url.Action("DeleteProductAttributeValue", "Product"),
-                CreateButtonName = "Tạo mới",
-                GetDataUrl = Url.Action("GetValueProductMapping", "Product", new { id = Model.Id }),
-                PopupWindow = true,
-                Columns = new List<ColumnDefinition>
-                    {
-                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.Name), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.Name) },
-                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.PriceAdjustment), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.PriceAdjustment) },
-                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.WeightAdjustment), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.WeightAdjustment) },
-                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.IsPreSelected), RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.IsPreSelected) },
-                    new ColumnDefinition { Data = nameof(ProductAttributeValueModel.PictureThumbnailUrl), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeValueModel>(p => p.PictureThumbnailUrl) },
-                    new ColumnDefinition(nameof(ProductAttributeValueModel.Id)) { RenderType = RenderType.RenderButtonEdit, Orderable = false },
-                    new ColumnDefinition(nameof(ProductAttributeValueModel.Id)) { RenderType = RenderType.RenderButtonRemove, Orderable = false },
-                    }
-            };
-}
-@await Html.PartialAsync("_Table", pav)
-@* @(await Html.PartialAsync("_ProductAttributeValueList", new ProductAttributeValueModel() { ProductAttributeMappingId = Model.Id })) *@
+<t-accordion asp-title="Danh sách giá trị của liên kết này">
+    @await Html.PartialAsync("_CreateOrEditProductAttributeMapping.ValueList")
+</t-accordion>
 <partial name="_ProductNavigation" />

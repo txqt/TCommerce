@@ -1,4 +1,4 @@
-﻿@model ProductModel
+﻿@model ProductEditModel
 
 @{
     ViewData["Title"] = "EditProduct";
@@ -7,90 +7,20 @@
 <h1>Sửa sản phẩm @Model.Name</h1>
 <partial name="_ProductNavigation" />
 <hr />
-<div class="row">
-    <div class="col-md-12">
-        <form asp-action="EditProduct" style="background-color: #fff; padding: 20px; border-radius: 10px">
-            @(await Html.PartialAsync("_AddOrEditProduct"))
-        </form>
-    </div>
-    <div class="col-md-12" style="margin-top: 36px">
-        <div id="accordion-2">
-            <div class="card">
-                <div class="card-header" id="headingTwo">
-                    <h5 class="mb-0">
-                        <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse-2" aria-expanded="true" aria-controls="collapse-2">
-                            Thuộc tính sản phẩm
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapse-2" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion-2">
-                    <div class="card-body">
-                        @* @(await Html.PartialAsync("_ProductAttributeMappingList", new ProductAttributeMappingModel { ProductId = Model.Id })) *@
-                        @{
-                            var ProductAttributeMappingListModel = new DataTableViewModel
-            {
-                TableTitle = "Danh sách thuộc tính sản phẩm",
-                CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
-                EditUrl = Url.Action("EditProductAttributeMapping"),
-                DeleteUrl = Url.Action("DeleteProductAttributeMapping"),
-                GetDataUrl = Url.Action("GetListProductMapping", "Product", new { productId = Model.Id }),
-                Columns = new List<ColumnDefinition>
-                        {
-                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.ProductAttributeName), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.ProductAttributeName)  },
-                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.TextPrompt), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.TextPrompt) },
-                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.IsRequired), RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.IsRequired) },
-                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.DisplayOrder), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.DisplayOrder) },
-                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.Id), RenderType = RenderType.RenderButtonEdit, Title = "Edit" },
-                        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.Id), RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
-                        }
-            };
-                        }
-                        @await Html.PartialAsync("_Table", ProductAttributeMappingListModel)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12" style="margin-top: 36px">
-        <div id="accordion-3">
-            <div class="card">
-                <div class="card-header" id="headingThree">
-                    <h5 class="mb-0">
-                        <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse-3" aria-expanded="true" aria-controls="collapse-3">
-                            Hình ảnh
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapse-3" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion-3">
-                    <div class="card-body">
-                        @* @(await Html.PartialAsync("_ProductPictureList", new ProductPictureModel { ProductId = Model.Id })) *@
-                        @{
-                            var productPictureList = new ProductPictureModel()
-            {
-                ProductId = Model.Id,
-                DataTable = new DataTableViewModel()
-                {
-                    TableTitle = "Danh sách hình ảnh của " + Model.Name,
-                    GetDataUrl = Url.Action("ListPhotos", "Product", new { productId = Model.Id }),
-                    EditUrl = Url.Action("UpdateProductImage", "Product"),
-                    DeleteUrl = Url.Action("DeletePhoto", "Product"),
-                    Columns = new List<ColumnDefinition>
-                        {
-                        new ColumnDefinition(nameof(ProductPictureModel.PictureUrl)) { RenderType = RenderType.RenderPicture, Title = "Picture" },
-                        new ColumnDefinition(nameof(ProductPictureModel.DisplayOrder)) { Title = "Display Order", Editable = true},
-                        new ColumnDefinition(nameof(ProductPictureModel.Id)) { Title = "Edit", RenderType = RenderType.RenderInlineEdit},
-                        new ColumnDefinition(nameof(ProductPictureModel.Id)) { RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
-                        }
-                }
-            };
-                        }
-                        @await Html.PartialAsync("_ProductPictureList", productPictureList)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<t-accordion asp-id="product-detail-@Model.Id" asp-title="Chi tiết sản phẩm [@Model.Name]" asp-collapsed="false">
+    <form asp-action="EditProduct" style="background-color: #fff; padding: 20px; border-radius: 10px">
+        @(await Html.PartialAsync("_CreateOrEditProduct"))
+    </form>
+</t-accordion>
+<t-accordion asp-id="attributes-@Model.Id" asp-title="Thuộc tính [@Model.Name]" asp-collapsed="true">
+    @await Html.PartialAsync("_CreateOrEditProduct.ProductAttributeMappingList")
+</t-accordion>
+<t-accordion asp-id="pictures-@Model.Id" asp-title="Ảnh [@Model.Name]" asp-collapsed="true">
+    @await Html.PartialAsync("_CreateOrEditProduct.ProductPictureList")
+</t-accordion>
+<t-accordion asp-id="related-product-@Model.Id" asp-title="Related product [@Model.Name]" asp-collapsed="true">
+    @await Html.PartialAsync("_CreateOrEdit.RelatedProductList")
+</t-accordion>
 
 @Html.Script(@<text>
         <script>

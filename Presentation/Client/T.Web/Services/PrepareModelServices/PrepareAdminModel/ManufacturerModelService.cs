@@ -4,7 +4,7 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
 {
     public interface IManufacturerModelService
     {
-        Task<AddProductToManufacturerSearchModel> PrepareAddProductToManufacturerSearchModel(AddProductToManufacturerSearchModel model);
+        Task<ProductManufacturerSearchModel> PrepareAddProductToManufacturerSearchModel(ProductManufacturerSearchModel model);
     }
     public class ManufacturerModelService : IManufacturerModelService
     {
@@ -15,7 +15,7 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
             _baseAdminModelService = baseAdminModelService;
         }
 
-        public async Task<AddProductToManufacturerSearchModel> PrepareAddProductToManufacturerSearchModel(AddProductToManufacturerSearchModel model)
+        public async Task<ProductManufacturerSearchModel> PrepareAddProductToManufacturerSearchModel(ProductManufacturerSearchModel model)
         {
             await _baseAdminModelService.PrepareSelectListCategoryAsync(model.AvailableCategories);
             await _baseAdminModelService.PrepareSelectListManufactureAsync(model.AvailableManufacturers);

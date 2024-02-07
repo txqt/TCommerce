@@ -55,7 +55,7 @@ internal class Program
         builder.Services.AddTransient<ICategoryModelService, CategoryModelService>();
         builder.Services.AddTransient<IBannerModelService, BannerModelService>();
         builder.Services.AddTransient<IUserModelService, UserModelService>();
-        builder.Services.AddTransient<ICategoryService, CategoryService>();
+        builder.Services.AddTransient<ICategoryServiceCommon, CategoryService>();
         builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
         builder.Services.AddTransient<IUserService, UserService>();
         builder.Services.AddTransient<IBannerService, BannerService>();

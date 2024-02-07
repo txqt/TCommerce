@@ -14,6 +14,7 @@ using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.DataSeederService;
 using AutoMapper;
 using T.Library.Model.ViewsModel;
+using T.WebApi.Services.CategoryServices;
 
 namespace T.WebApi.ServicesSeederService
 {

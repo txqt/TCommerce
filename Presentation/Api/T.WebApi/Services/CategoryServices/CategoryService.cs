@@ -12,6 +12,10 @@ using T.WebApi.Services.UrlRecordServices;
 
 namespace T.WebApi.Services.CategoryServices
 {
+    public interface ICategoryService : ICategoryServiceCommon
+    {
+        Task<ServiceResponse<bool>> BulkUpdateProductCategoryAsync(List<ProductCategory> productCategories);
+    }
     public class CategoryService : ICategoryService
     {
         private readonly IMapper _mapper;
@@ -142,7 +146,7 @@ namespace T.WebApi.Services.CategoryServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<ServiceResponse<bool>> DeleteCategoryMappingById(int productCategoryId)
+        public async Task<ServiceResponse<bool>> DeleteProductCategoryMappingById(int productCategoryId)
         {
             try
             {
@@ -165,6 +169,11 @@ namespace T.WebApi.Services.CategoryServices
         {
             return await _productCategoryRepository.Table.Where(x => x.ProductId == productId)
                 .ToListAsync();
+        }
+
+        public Task<ServiceResponse<bool>> BulkUpdateProductCategoryAsync(List<ProductCategory> productCategories)
+        {
+            throw new NotImplementedException();
         }
     }
 }

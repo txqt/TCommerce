@@ -20,8 +20,8 @@ namespace T.Web.Component
         private readonly IUrlRecordService _urlRecordService;
         private readonly IPictureService _pictureService;
         private readonly IMapper _mapper;
-        private readonly ICategoryService _categoryService;
-        public HomePageProductsViewComponent(IProductService productService, IUrlRecordService urlRecordService, IPictureService pictureService, IMapper mapper, ICategoryService categoryService)
+        private readonly ICategoryServiceCommon _categoryService;
+        public HomePageProductsViewComponent(IProductService productService, IUrlRecordService urlRecordService, IPictureService pictureService, IMapper mapper, ICategoryServiceCommon categoryService)
         {
             _productService = productService;
             _urlRecordService = urlRecordService;
@@ -37,7 +37,7 @@ namespace T.Web.Component
             {
                 new HomePageModel()
                 {
-                    Title = "Feartured",
+                    Title = "Featured",
                     ProductList = (await Task.WhenAll(productsHomePage.Select(async product => new ProductBoxModel
                     {
                         ProductName = product.Name,

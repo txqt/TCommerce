@@ -58,7 +58,7 @@ namespace T.WebApi.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> DeleteCategoryMappingById(int id)
         {
-            var result = await _categoryService.DeleteCategoryMappingById(id);
+            var result = await _categoryService.DeleteProductCategoryMappingById(id);
             if (!result.Success)
                 return BadRequest(result);
 

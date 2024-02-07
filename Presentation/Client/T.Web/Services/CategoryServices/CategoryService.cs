@@ -8,7 +8,7 @@ using T.Library.Model.Catalogs;
 
 namespace T.Web.Services.CategoryService
 {
-    public class CategoryService : HttpClientHelper, ICategoryService
+    public class CategoryService : HttpClientHelper, ICategoryServiceCommon
     {
         private readonly string DEFAULT_ROUTE = "api/categories/";
         public CategoryService(HttpClient httpClient) : base(httpClient)
@@ -56,7 +56,7 @@ namespace T.Web.Services.CategoryService
             return await PostAsJsonAsync<ServiceResponse<bool>>("api/product-categories/bulk", productCategories);
         }
 
-        public async Task<ServiceResponse<bool>> DeleteCategoryMappingById(int productCategoryId)
+        public async Task<ServiceResponse<bool>> DeleteProductCategoryMappingById(int productCategoryId)
         {
             return await DeleteAsync<ServiceResponse<bool>>($"api/product-categories/{productCategoryId}");
         }

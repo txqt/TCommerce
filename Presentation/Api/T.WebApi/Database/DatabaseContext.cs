@@ -57,5 +57,6 @@ namespace T.WebApi.Database
         public DbSet<PermissionRecordUserRoleMapping> PermissionRecordUserRoleMappings { get; set; }
         public DbSet<UrlRecord> UrlRecords { get; set; }
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
+        public DbSet<RelatedProduct> RelatedProducts { get; set; }
     }
 }

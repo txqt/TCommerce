@@ -8,7 +8,7 @@ using T.Library.Model.Response;
 
 namespace T.Library.Model.Interface
 {
-    public interface ICategoryService
+    public interface ICategoryServiceCommon
     {
         Task<List<Category>> GetAllCategoryAsync();
         Task<Category> GetCategoryByIdAsync(int categoryId);
@@ -21,7 +21,7 @@ namespace T.Library.Model.Interface
         Task<ProductCategory> GetProductCategoryByIdAsync(int productCategoryId);
         Task<ServiceResponse<bool>> CreateProductCategoryAsync(ProductCategory productCategory);
         Task<ServiceResponse<bool>> BulkCreateProductCategoriesAsync(List<ProductCategory> productCategories);
-        Task<ServiceResponse<bool>> DeleteCategoryMappingById(int productCategoryId);
+        Task<ServiceResponse<bool>> DeleteProductCategoryMappingById(int productCategoryId);
         Task<ServiceResponse<bool>> UpdateProductCategoryAsync(ProductCategory productCategory);
     }
 }

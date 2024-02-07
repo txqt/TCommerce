@@ -2,15 +2,17 @@
 
 namespace T.Web.Areas.Admin.Models.SearchModel
 {
-    public class ProductSearchModel
+    public class ProductManufacturerSearchModel
     {
-        public ProductSearchModel()
+        public ProductManufacturerSearchModel()
         {
             AvailableCategories = new List<SelectListItem>();
             AvailableManufacturers = new List<SelectListItem>();
         }
-        public int CategoryId { get; set; }
-        public int ManufacturerId { get; set; }
+
+        public int SearchByCategoryId { get; set; }
+        public int SearchByManufacturerId { get; set; }
+
         public List<SelectListItem> AvailableCategories { get; set; }
         public List<SelectListItem> AvailableManufacturers { get; set; }
     }

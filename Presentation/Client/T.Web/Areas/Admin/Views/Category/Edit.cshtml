@@ -8,94 +8,16 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input asp-for="Id" hidden />
-            <div class="form-group">
-                <label>Chọn thể loại cha</label>
-                <div class="dropdown">
-                    <select class="form-select" dropdown-toggle" data-toggle="dropdown" asp-items="Model.AvailableCategories" asp-for="ParentCategoryId">
-                    </select>
-                    <div class="dropdown-menu">
-                        <!-- Nội dung các mục trong dropdown -->
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="ShowOnHomepage" /> @Html.DisplayNameFor(model => model.ShowOnHomepage)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="IncludeInTopMenu" /> @Html.DisplayNameFor(model => model.IncludeInTopMenu)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="DisplayOrder" class="control-label"></label>
-                <input asp-for="DisplayOrder" class="form-control" />
-                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Edit" class="btn btn-primary" />
-            </div>
+    <t-accordion asp-id="category-detail-@Model.Id" asp-title="Chi tiết thể loại [@Model.Name]" asp-collapsed="false">
+        <form asp-action="Edit" style="background-color: #fff; padding: 20px; border-radius: 10px">
+            @await Html.PartialAsync("_CreateOrEdit", Model)
         </form>
-    </div>
+    </t-accordion>
 </div>
 
-<div class="col-md-12" style="margin-top: 36px">
-    <div id="accordion-3">
-        <div class="card">
-            <div class="card-header" id="headingThree">
-                <h5 class="mb-0">
-                    <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse-3" aria-expanded="true" aria-controls="collapse-3">
-                        Products
-                    </button>
-                </h5>
-            </div>
-            <div id="collapse-3" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion-3">
-                <div class="card-body">
-                    @{
-                        var ProductCategoryList = new DataTableViewModel
-            {
-                TableTitle = "Products",
-                CreateUrl = Url.Action("AddProductToCategory", "Category", new { categoryId = Model.Id }),
-                EditUrl = Url.Action("UpdateProductCategory", "Category"),
-                DeleteUrl = Url.Action("DeleteCategoryMapping", "Category"),
-                GetDataUrl = Url.Action("GetProductCategoryMapping", "Category", new { categoryId = Model.Id }),
-                PopupWindow = true,
-                DefaultSort = new DefaultSort(3, "desc"),
-                Columns = new List<ColumnDefinition>
-                    {
-                    new ColumnDefinition(nameof(ProductCategoryModel.ProductName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<ProductCategoryModel>(m=>m.ProductName) },
-                    new ColumnDefinition(nameof(ProductCategoryModel.IsFeaturedProduct)) { RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductCategoryModel>(m=>m.IsFeaturedProduct), Editable = true },
-                    new ColumnDefinition(nameof(ProductCategoryModel.DisplayOrder)) { Editable = true, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductCategoryModel>(m=>m.DisplayOrder) },
-                    new ColumnDefinition(nameof(ProductCategoryModel.Id)) { RenderType = RenderType.RenderInlineEdit, Title = "Edit" },
-                    new ColumnDefinition(nameof(ProductCategoryModel.Id)) { RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
-                    }
-            };
-                    }
-                    @await Html.PartialAsync("_Table", ProductCategoryList)
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<t-accordion asp-id="product-category-@Model.Id" asp-title="Sản phẩm thuộc [@Model.Name]">
+    @await Html.PartialAsync("_CreateOrEdit.ProductCategoryMapping", Model)
+</t-accordion>
 
 <div>
     <a asp-action="Index">Back to List</a>

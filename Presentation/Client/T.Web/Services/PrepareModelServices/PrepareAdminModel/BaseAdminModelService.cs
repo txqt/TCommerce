@@ -11,10 +11,10 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
     }
     public class BaseAdminModelService : IBaseAdminModelService
     {
-        private readonly ICategoryService _categoryService;
+        private readonly ICategoryServiceCommon _categoryService;
         private readonly IManufacturerService _manufacturerService;
 
-        public BaseAdminModelService(ICategoryService categoryService, IManufacturerService manufacturerService)
+        public BaseAdminModelService(ICategoryServiceCommon categoryService, IManufacturerService manufacturerService)
         {
             _categoryService = categoryService;
             _manufacturerService = manufacturerService;

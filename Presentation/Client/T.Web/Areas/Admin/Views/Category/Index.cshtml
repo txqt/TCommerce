@@ -4,52 +4,6 @@
     ViewData["Title"] = "Danh sách thể loại";
 }
 
-@{
-    var categoryTable = new DataTableViewModel()
-            {
-                TableTitle = "Danh sách thể loại",
-                CreateButtonName = "Tạo mới",
-                CreateUrl = Url.Action("Create", "Category"),
-                EditUrl = Url.Action("Edit", "Category"),
-                DeleteUrl = Url.Action("DeleteCategory", "Category"),
-                SearchButtonId = "search-categories",
-                GetDataUrl = Url.Action("GetAll", "Category"),
-                DefaultSort = new DefaultSort(3, "desc"),
-                Columns = new List<ColumnDefinition>()
-                {
-                    new ColumnDefinition(nameof(CategoryModel.Id))
-                    {
-                        RenderType = RenderType.RenderCheckBox,
-                        IsMasterCheckBox = true,
-                        Orderable = false
-                    },
-                    new ColumnDefinition(nameof(CategoryModel.Name))
-                    {
-                        Title = DisplayNameExtensions.GetPropertyDisplayName<CategoryModel>(m=>m.Name)
-                    },
-                    new ColumnDefinition(nameof(CategoryModel.Published))
-                    {
-                        Title = DisplayNameExtensions.GetPropertyDisplayName<CategoryModel>(m=>m.Published),
-                        RenderType = RenderType.RenderBoolean
-                    },
-                    new ColumnDefinition(nameof(CategoryModel.DisplayOrder))
-                    {
-                        Title = DisplayNameExtensions.GetPropertyDisplayName<CategoryModel>(m=>m.DisplayOrder)
-                    },
-                    new ColumnDefinition(nameof(CategoryModel.Id))
-                    {
-                        RenderType = RenderType.RenderButtonEdit,
-                        Title = "Edit",
-                        Orderable = false
-                    },
-                    new ColumnDefinition(nameof(CategoryModel.Id))
-                    {
-                        RenderType = RenderType.RenderButtonRemove,
-                        Title = "Delete",
-                        Orderable = false
-                    },
-                }
-            };
-}
-
-@await Html.PartialAsync("_Table", categoryTable)
+<t-accordion>
+    @await Html.PartialAsync("_CategoryList")
+</t-accordion>

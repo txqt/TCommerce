@@ -1,0 +1,22 @@
+﻿@model ProductEditModel
+
+@{
+    var productAttributeMappingListModel = new DataTableViewModel
+            {
+                TableTitle = "Danh sách thuộc tính sản phẩm",
+                CreateUrl = Url.Action("ProductAttributeMappingCreate", "Product", new { productId = Model.Id }),
+                EditUrl = Url.Action("EditProductAttributeMapping"),
+                DeleteUrl = Url.Action("DeleteProductAttributeMapping"),
+                GetDataUrl = Url.Action("GetListProductAttributeMapping", "Product", new { productId = Model.Id }),
+                Columns = new List<ColumnDefinition>
+        {
+        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.ProductAttributeName), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.ProductAttributeName)  },
+        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.TextPrompt), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.TextPrompt) },
+        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.IsRequired), RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.IsRequired) },
+        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.DisplayOrder), Title = DisplayNameExtensions.GetPropertyDisplayName<ProductAttributeMappingModel>(p => p.DisplayOrder) },
+        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.Id), RenderType = RenderType.RenderButtonEdit, Title = "Edit" },
+        new ColumnDefinition { Data = nameof(ProductAttributeMappingModel.Id), RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
+        }
+            };
+}
+@await Html.PartialAsync("_Table", productAttributeMappingListModel)

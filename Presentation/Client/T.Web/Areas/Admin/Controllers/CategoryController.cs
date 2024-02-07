@@ -23,12 +23,12 @@ namespace T.Web.Areas.Admin.Controllers
     [CheckPermission(PermissionSystemName.ManageCategories)]
     public class CategoryController : BaseAdminController
     {
-        private readonly ICategoryService _categoryService;
+        private readonly ICategoryServiceCommon _categoryService;
         private readonly IMapper _mapper;
         private readonly ICategoryModelService _prepareModelService;
         private readonly IProductService _productService;
 
-        public CategoryController(ICategoryService categoryService, IMapper mapper, ICategoryModelService prepareModelService, IProductService productService)
+        public CategoryController(ICategoryServiceCommon categoryService, IMapper mapper, ICategoryModelService prepareModelService, IProductService productService)
         {
             _categoryService = categoryService;
             _mapper = mapper;
@@ -143,8 +143,7 @@ namespace T.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> GetProductCategoryMapping(int categoryId)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(categoryId) ??
-              throw new ArgumentException("Not found with the specified id");
+            ArgumentNullException.ThrowIfNull(await _categoryService.GetCategoryByIdAsync(categoryId));
 
             var productCategoryList = (await _categoryService.GetProductCategoriesByCategoryIdAsync(categoryId));
 
@@ -167,7 +166,7 @@ namespace T.Web.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteCategoryMapping(int id)
         {
 
-            var result = await _categoryService.DeleteCategoryMappingById(id);
+            var result = await _categoryService.DeleteProductCategoryMappingById(id);
             if (!result.Success)
             {
                 return Json(new { success = false, message = result.Message });
@@ -180,7 +179,7 @@ namespace T.Web.Areas.Admin.Controllers
             var category = await _categoryService.GetCategoryByIdAsync(categoryId) ??
                 throw new ArgumentException("Not found with the specified id");
 
-            var model = new AddProductToCategorySearchModel();
+            var model = new ProductCategorySearchModel();
 
             model = await _prepareModelService.PrepareAddProductToCategorySearchModel(model);
 
@@ -188,44 +187,23 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetProductList(AddProductToCategorySearchModel model)
+        public async Task<IActionResult> GetProductList(ProductCategorySearchModel model)
         {
-            var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
-            var start = int.Parse(Request.Form["start"].FirstOrDefault());
-            var length = int.Parse(Request.Form["length"].FirstOrDefault());
-            int orderColumnIndex = int.Parse(Request.Form["order[0][column]"]);
-            string orderDirection = Request.Form["order[0][dir]"];
-            string orderColumnName = Request.Form["columns[" + orderColumnIndex + "][data]"];
-
-            string orderBy = orderColumnName + " " + orderDirection;
-            var searchValue = Request.Form["search[value]"].FirstOrDefault();
-
             // Create ProductParameters from DataTables parameters
-            var productParameter = new ProductParameters
-            {
-                PageNumber = start / length + 1,
-                PageSize = length,
-                SearchText = searchValue,
-                OrderBy = orderBy,
-                CategoryId = model.SearchByCategoryId
-            };
+            var productParameters = ExtractQueryStringParameters<ProductParameters>();
 
+            productParameters.CategoryIds = new List<int> { model.SearchByCategoryId };
+            productParameters.ManufacturerIds = new List<int> { model.SearchByManufacturerId };
             // Call the service to get the paged data
-            var pagingResponse = await _productService.GetAll(productParameter);
+            var pagingResponse = await _productService.GetAll(productParameters);
 
-            var json = new DataTableResponse<Product>
-            {
-                Draw = draw,
-                RecordsTotal = pagingResponse.MetaData.TotalCount,
-                RecordsFiltered = pagingResponse.MetaData.TotalCount,
-                Data = pagingResponse.Items
-            };
+            var json = ToDatatableReponse<Product>(pagingResponse.MetaData.TotalCount, pagingResponse.MetaData.TotalCount, pagingResponse.Items);
 
             return this.JsonWithPascalCase(json);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProductToCategory(AddProductToCategoryModel model)
+        public async Task<IActionResult> AddProductToCategory(AddProductCategoryModel model)
         {
             if (!model.SelectedProductIds.Any())
             {
@@ -245,17 +223,13 @@ namespace T.Web.Areas.Admin.Controllers
 
             var result = await _categoryService.BulkCreateProductCategoriesAsync(productCategoriesToAdd);
 
-            if (!result.Success)
-            {
-                return View(new AddProductToCategorySearchModel());
-            }
-            else
+            if (result.Success)
             {
                 SetStatusMessage("Thêm thành công");
                 ViewBag.RefreshPage = true;
             }
 
-            return View(new AddProductToCategorySearchModel());
+            return View(AddProductToCategory(model.CategoryId));
         }
 
         [HttpPost]

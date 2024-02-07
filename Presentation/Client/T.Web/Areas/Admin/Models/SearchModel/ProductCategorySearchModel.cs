@@ -2,9 +2,9 @@
 
 namespace T.Web.Areas.Admin.Models.SearchModel
 {
-    public class AddProductToManufacturerSearchModel
+    public class ProductCategorySearchModel : QueryStringParameters
     {
-        public AddProductToManufacturerSearchModel()
+        public ProductCategorySearchModel()
         {
             AvailableCategories = new List<SelectListItem>();
             AvailableManufacturers = new List<SelectListItem>();
@@ -14,6 +14,6 @@ namespace T.Web.Areas.Admin.Models.SearchModel
         public int SearchByManufacturerId { get; set; }
 
         public List<SelectListItem> AvailableCategories { get; set; }
-        public List<SelectListItem> AvailableManufacturers { get; set; }
+        public List<SelectListItem> AvailableManufacturers{ get; set; }
     }
 }

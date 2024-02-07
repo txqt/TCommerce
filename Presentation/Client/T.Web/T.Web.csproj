@@ -14,12 +14,18 @@
 		<None Remove="Areas\Identity\**" />
 	</ItemGroup>
 	<ItemGroup>
+		<Content Remove="Areas\Admin\Views\Category\_CreateOrEdit.ProductCategoryMapping.cshtml" />
+		<Content Remove="Areas\Admin\Views\Product\_CreateOrEdit.RelatedProductList.cshtml" />
+		<Content Remove="Areas\Admin\Views\Product\_CreateOrEditProductAttributeMapping.ValueList.cshtml" />
 		<Content Remove="wwwroot\js\accessdenied.js" />
 	</ItemGroup>
 	<ItemGroup>
 		<_ContentIncludedByDefault Remove="wwwroot\js\accessdenied.js" />
 	</ItemGroup>
 	<ItemGroup>
+		<None Include="Areas\Admin\Views\Category\_CreateOrEdit.ProductCategoryMapping.cshtml" />
+		<None Include="Areas\Admin\Views\Product\_CreateOrEdit.RelatedProductList.cshtml" />
+		<None Include="Areas\Admin\Views\Product\_CreateOrEditProductAttributeMapping.ValueList.cshtml" />
 		<None Include="wwwroot\js\accessdenied.js" />
 	</ItemGroup>
 	<ItemGroup>

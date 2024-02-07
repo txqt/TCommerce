@@ -8,6 +8,7 @@ using System.Text.Json;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
+using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
@@ -33,17 +34,14 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly IMapper _mapper;
         private readonly IProductModelService _prepareModelService;
         private readonly IProductCategoryService _productCategoryService;
-        private readonly ICategoryService _categoryService;
+        private readonly ICategoryServiceCommon _categoryService;
         private readonly JsonSerializerOptions _options;
         public ProductController(IProductService productService, IMapper mapper, IProductAttributeCommon productAttributeService,
-          //IProductAttributeMappingService productAttributeMappingService, IProductAttributeValueService productAttributeValueService,
-          IProductModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryService categoryService, JsonSerializerOptions options)
+          IProductModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryServiceCommon categoryService, JsonSerializerOptions options)
         {
             _productService = productService;
             _mapper = mapper;
             _productAttributeService = productAttributeService;
-            //_productAttributeService = productAttributeMappingService;
-            //_productAttributeService = productAttributeValueService;
             _prepareModelService = prepareModelService;
             _productCategoryService = productCategoryService;
             _categoryService = categoryService;
@@ -60,8 +58,13 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetAll(ProductParameters productParameters)
+        public async Task<IActionResult> GetAll(ProductSearchModel searchModel)
         {
+            var productParameters = ExtractQueryStringParameters<ProductParameters>();
+
+            productParameters.CategoryIds = new List<int> { searchModel.CategoryId };
+            productParameters.ManufacturerIds = new List<int> { searchModel.ManufacturerId };
+
             var pagingResponse = await _productService.GetAll(productParameters);
 
             var model = ToDatatableReponse<Product>(pagingResponse.MetaData.TotalCount, pagingResponse.MetaData.TotalCount, pagingResponse.Items);
@@ -103,8 +106,25 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> EditProduct(int id)
         {
-            var result = await _productService.GetByIdAsync(id);
-            return View(_mapper.Map<ProductModel>(result));
+            var product = await _productService.GetByIdAsync(id);
+
+            ArgumentNullException.ThrowIfNull(product);
+
+            var model = await _prepareModelService.PrepareProductEditModelModelAsync(product, null);
+
+            if(model.AvailableCategories?.Count > 0)
+            {
+                foreach (var item in model.AvailableCategories)
+                {
+                    if(item.Value != "0")
+                    {
+                        if ((await _categoryService.GetProductCategoriesByCategoryIdAsync(int.Parse(item.Value))).FirstOrDefault(x=>x.ProductId == product.Id) is not null)
+                            item.Selected = true;
+                    }
+                }
+            }
+
+            return View(model);
         }
 
         [HttpPost]
@@ -123,6 +143,7 @@ namespace T.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
+            SetStatusMessage("Sửa thành công");
             return RedirectToAction(nameof(Index));
         }
 
@@ -149,15 +170,15 @@ namespace T.Web.Areas.Admin.Controllers
 
             var result = await _productService.BulkDeleteProductsAsync(selectedIds);
 
-            return Json(new { Result = true });
+            return Json(new { Result = result.Success });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllAttribute(int productId)
-        {
-            var result = await _productService.GetAllProductAttributeByProductIdAsync(productId);
-            return Json(result);
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllAttribute(int productId)
+        //{
+        //    var result = await _productService.GetAllProductAttributeByProductIdAsync(productId);
+        //    return Json(result);
+        //}
 
         [HttpGet]
         public virtual async Task<IActionResult> ProductAttributeMappingCreate(int productId)
@@ -431,7 +452,7 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetListProductMapping(int productId)
+        public async Task<IActionResult> GetListProductAttributeMapping(int productId)
         {
             var product = (await _productService.GetByIdAsync(productId)) ??
               throw new ArgumentException("No product found with the specified id");
@@ -471,7 +492,7 @@ namespace T.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UpdateProductImage(ProductPictureModel model)
+        public async Task<ActionResult> UpdateProductImage([FromBody] ProductPictureModel model)
         {
             var productPicture = new ProductPicture()
             {
@@ -713,10 +734,143 @@ namespace T.Web.Areas.Admin.Controllers
             });
         }
 
+        #region RelatedProduct
         [HttpPost]
-        public IActionResult Test(List<int> selectedIds)
+        public async Task<IActionResult> DeleteRelatedProductAsync(int relatedProductId)
         {
-            return StatusCode(404);
+            var result = await _productService.DeleteRelatedProductAsync(relatedProductId);
+
+            return ReturnJsonByServiceResult(result);
+        }
+        [HttpGet()]
+        public async Task<IActionResult> GetRelatedProductsByProductId1Async(int productId)
+        {
+            var result = await _productService.GetRelatedProductsByProductId1Async(productId, showHidden: true);
+
+            var model = new List<RelatedProductModel>();
+            foreach(var item in result)
+            {
+                model.Add(new RelatedProductModel()
+                {
+                    Id = item.Id,
+                    ProductId2 = item.Id,
+                    Product2Name = (await _productService.GetByIdAsync(item.ProductId2)).Name,
+                    DisplayOrder = item.DisplayOrder
+                });
+            }
+
+            var json =
+              new
+              {
+                  data = model
+              };
+            return this.JsonWithPascalCase(json);
+        }
+        [HttpGet()]
+        public async Task<IActionResult> GetRelatedProductByIdAsync(int relatedProductId)
+        {
+            return Ok(await _productService.GetRelatedProductByIdAsync(relatedProductId));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddRelatedProductPopup(int productId)
+        {
+            ArgumentNullException.ThrowIfNull(await _productService.GetByIdAsync(productId));
+
+            var model = new RelatedProductSearchModel();
+
+            model = await _prepareModelService.PrepareRelatedProductSearchModel(model);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RelatedProductList(RelatedProductSearchModel searchModel)
+        {
+            var productParameters = ExtractQueryStringParameters<ProductParameters>();
+
+            productParameters.CategoryIds = new List<int> { searchModel.SearchByCategoryId };
+            productParameters.ManufacturerIds = new List<int> { searchModel.SearchByManufacturerId };
+
+            var pagingResponse = await _productService.GetAll(productParameters);
+
+            var model = ToDatatableReponse<Product>(pagingResponse.MetaData.TotalCount, pagingResponse.MetaData.TotalCount, pagingResponse.Items);
+
+            return this.JsonWithPascalCase(model);
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> AddRelatedProductPopup(AddRelatedProductModel model)
+        {
+            var selectedProducts = new List<Product>();
+
+            foreach(var productId in model.SelectedProductIds)
+            {
+                var product = await _productService.GetByIdAsync(productId);
+                selectedProducts.Add(product);
+            }
+
+            if (selectedProducts.Any())
+            {
+                var existingRelatedProducts = await _productService.GetRelatedProductsByProductId1Async(model.ProductId, showHidden: true);
+                foreach (var product in selectedProducts)
+                {
+
+                    if (existingRelatedProducts.FirstOrDefault(rp => rp.ProductId1 == model.ProductId && rp.ProductId2 == product.Id) != null)
+                        continue;
+
+                    await _productService.CreateRelatedProductAsync(new RelatedProduct
+                    {
+                        ProductId1 = model.ProductId,
+                        ProductId2 = product.Id,
+                        DisplayOrder = 1
+                    });
+                }
+            }
+
+            ViewBag.RefreshPage = true;
+
+            return View(new RelatedProductSearchModel());
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateRelatedProductAsync([FromBody] RelatedProduct model)
+        {
+            var relatedProduct = await _productService.GetRelatedProductByIdAsync(model.Id) ??
+                throw new ArgumentException("Not found with the specified id");
+
+            ArgumentNullException.ThrowIfNull(relatedProduct);
+
+            relatedProduct.DisplayOrder = model.DisplayOrder;
+
+            var result = await _productService.UpdateRelatedProductAsync(relatedProduct);
+
+            return result.Success ? Json(new
+            {
+                success = true, message = result.Message
+            }) 
+                : 
+            Json(new
+            {
+                success = false, message = result.Message
+            });
+        }
+        #endregion
+
+        private JsonResult ReturnJsonByServiceResult<T>(ServiceResponse<T> response)
+        {
+            return response.Success ? Json(new
+            {
+                success = true,
+                message = response.Message
+            })
+                :
+            Json(new
+            {
+                success = false,
+                message = response.Message
+            });
         }
     }
 }

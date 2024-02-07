@@ -4,9 +4,11 @@
     Layout = "_EmptyLayout";
 }
 
-<form method="post" style="background-color: #fff; padding: 20px; border-radius: 10px">
-    <h3 class="text-info">Thêm giá trị thuộc tính</h3>
-    @(await Html.PartialAsync("_AddOrUpdateProductAttributeValue", Model))
-</form>
+<t-accordion>
+    <form method="post" style="background-color: #fff; padding: 20px; border-radius: 10px">
+        <h3 class="text-info">Thêm giá trị thuộc tính</h3>
+        @(await Html.PartialAsync("_CreateOrEditProductAttributeValue", Model))
+    </form>
+</t-accordion>
 <partial name="_ProductNavigation" />
 

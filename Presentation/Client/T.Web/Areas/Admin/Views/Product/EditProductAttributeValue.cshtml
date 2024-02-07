@@ -4,9 +4,11 @@
 }
 <div style="background-color: #fff; padding: 20px; border-radius: 10px">
     <h3 class="text-info">Sửa giá trị thuộc tính vào sản phẩm</h3>
-    <form method="post" >
-        @(await Html.PartialAsync("_AddOrUpdateProductAttributeValue", Model))
-    </form>
+    <t-accordion>
+        <form method="post">
+            @(await Html.PartialAsync("_CreateOrEditProductAttributeValue", Model))
+        </form>
+    </t-accordion>
     <hr />
 </div>
 <partial name="_ProductNavigation" />

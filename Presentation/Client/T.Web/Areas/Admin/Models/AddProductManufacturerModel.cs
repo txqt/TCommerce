@@ -2,11 +2,11 @@
 
 namespace T.Web.Areas.Admin.Models
 {
-    public partial record AddProductToCategoryModel
+    public partial record AddProductManufacturerModel
     {
         #region Ctor
 
-        public AddProductToCategoryModel()
+        public AddProductManufacturerModel()
         {
             SelectedProductIds = new List<int>();
         }
@@ -14,7 +14,7 @@ namespace T.Web.Areas.Admin.Models
 
         #region Properties
 
-        public int CategoryId { get; set; }
+        public int ManufacturerId { get; set; }
 
         public IList<int> SelectedProductIds { get; set; }
 

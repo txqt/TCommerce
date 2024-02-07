@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json;
 using T.Library.Model;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
@@ -150,6 +151,36 @@ namespace T.Web.Services.ProductService
         public async Task<ServiceSuccessResponse<bool>> BulkDeleteProductsAsync(IEnumerable<int> productIds)
         {
             return await DeleteWithDataAsync<ServiceSuccessResponse<bool>>($"api/products/delete-list", productIds);
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteRelatedProductAsync(int relatedProductId)
+        {
+            return await DeleteAsync<ServiceResponse<bool>>($"api/related-products/{relatedProductId}");
+        }
+
+        public async Task<List<RelatedProduct>> GetRelatedProductsByProductId1Async(int productId1, bool showHidden = false)
+        {
+            return await GetAsync<List<RelatedProduct>>($"api/products/{productId1}/related-products");
+        }
+
+        public async Task<RelatedProduct> GetRelatedProductByIdAsync(int relatedProductId)
+        {
+            return await GetAsync<RelatedProduct>($"api/related-products/{relatedProductId}");
+        }
+
+        public async Task<ServiceResponse<bool>> CreateRelatedProductAsync(RelatedProduct relatedProduct)
+        {
+            return await PostAsJsonAsync<ServiceResponse<bool>>($"api/related-products", relatedProduct);
+        }
+
+        public async Task<ServiceResponse<bool>> UpdateRelatedProductAsync(RelatedProduct relatedProduct)
+        {
+            return await PutAsJsonAsync<ServiceResponse<bool>>($"api/related-products", relatedProduct);
+        }
+
+        public RelatedProduct FindRelatedProduct(IList<RelatedProduct> source, int productId1, int productId2)
+        {
+            throw new NotImplementedException();
         }
     }
 }
