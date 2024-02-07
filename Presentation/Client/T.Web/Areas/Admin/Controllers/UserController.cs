@@ -6,10 +6,9 @@ using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
+using T.Web.Areas.Admin.Services.PrepareAdminModel;
 using T.Web.Attribute;
 using T.Web.Extensions;
-using T.Web.Services.PrepareModel;
-using T.Web.Services.PrepareModelServices;
 using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Web.Services.UserService;
 
@@ -22,9 +21,9 @@ namespace T.Web.Areas.Admin.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-        private readonly IUserModelService _prepareModelService;
+        private readonly IAdminUserModelService _prepareModelService;
 
-        public UserController(IUserService userService, IMapper mapper, IUserModelService prepareModelService)
+        public UserController(IUserService userService, IMapper mapper, IAdminUserModelService prepareModelService)
         {
             _userService = userService;
             _mapper = mapper;

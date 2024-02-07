@@ -552,6 +552,11 @@ namespace T.WebApi.Services.ProductServices
             return source.FirstOrDefault(rp => rp.ProductId1 == productId1 && rp.ProductId2 == productId2);
         }
 
+        public async Task<List<Product>> GetProductsByIdsAsync(List<int> ids)
+        {
+            return (await _productsRepository.GetByIdsAsync(ids)).ToList();
+        }
+
         #endregion
     }
 }

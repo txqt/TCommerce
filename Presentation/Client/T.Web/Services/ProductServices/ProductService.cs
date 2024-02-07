@@ -15,6 +15,7 @@ namespace T.Web.Services.ProductService
     public interface IProductService : IProductServiceCommon
     {
         Task<PagingResponse<Product>> GetAll(ProductParameters productParameters);
+        bool ProductIsAvailable(Product product, DateTime? dateTime = null);
 
     }
     public class ProductService : HttpClientHelper, IProductService
@@ -181,6 +182,31 @@ namespace T.Web.Services.ProductService
         public RelatedProduct FindRelatedProduct(IList<RelatedProduct> source, int productId1, int productId2)
         {
             throw new NotImplementedException();
+        }
+
+        public Task<List<Product>> GetProductsByIdsAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ProductIsAvailable(Product product, DateTime? dateTime = null)
+        {
+            ArgumentNullException.ThrowIfNull(product);
+
+            dateTime ??= DateTime.UtcNow;
+
+            if (product.AvailableStartDateTimeUtc.HasValue && product.AvailableStartDateTimeUtc.Value > dateTime)
+                return false;
+
+            if (product.AvailableEndDateTimeUtc.HasValue && product.AvailableEndDateTimeUtc.Value < dateTime)
+                return false;
+
+            return true;
+        }
+
+        public async Task<List<Product>> GetProductsByIdsAsync(List<int> ids)
+        {
+            return await GetWithDataAsync<List<Product>>($"api/products/get-by-ids", ids);
         }
     }
 }

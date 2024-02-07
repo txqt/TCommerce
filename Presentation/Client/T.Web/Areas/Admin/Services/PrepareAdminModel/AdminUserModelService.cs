@@ -5,18 +5,18 @@ using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Services.UserService;
 
-namespace T.Web.Services.PrepareModelServices
+namespace T.Web.Areas.Admin.Services.PrepareAdminModel
 {
-    public interface IUserModelService
+    public interface IAdminUserModelService
     {
         Task<UserViewModel> PrepareUserModelAsync(UserViewModel model, UserModel user);
     }
-    public class UserModelService : IUserModelService
+    public class AdminUserModelService : IAdminUserModelService
     {
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly ISecurityService _securityService;
-        public UserModelService(IMapper mapper, IUserService userService, ISecurityService securityService)
+        public AdminUserModelService(IMapper mapper, IUserService userService, ISecurityService securityService)
         {
             _mapper = mapper;
             _userService = userService;

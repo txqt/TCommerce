@@ -135,6 +135,7 @@
                     $('#stock-availability-value-@Model.Id').text(data.stockAvailability);
                 }
                 if (data.mainImage) {
+                    console.log(data.mainImage)
                     $('#product-main-image-@Model.Id').attr("src", data.mainImage);
                     $('#product-main-image-anchor-@Model.Id').attr("href", data.mainImage);
                 }

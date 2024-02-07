@@ -14,10 +14,12 @@ using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Areas.Admin.Models.SearchModel;
+using T.Web.Areas.Admin.Services.PrepareAdminModel;
+using T.Web.Areas.Admin.Services.PrepareModel;
 using T.Web.Attribute;
 using T.Web.Extensions;
 using T.Web.Services.CategoryService;
-using T.Web.Services.PrepareModel;
+
 using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Web.Services.ProductService;
 
@@ -32,12 +34,12 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly IProductService _productService;
         private readonly IProductAttributeCommon _productAttributeService;
         private readonly IMapper _mapper;
-        private readonly IProductModelService _prepareModelService;
+        private readonly IAdminProductModelService _prepareModelService;
         private readonly IProductCategoryService _productCategoryService;
         private readonly ICategoryServiceCommon _categoryService;
         private readonly JsonSerializerOptions _options;
         public ProductController(IProductService productService, IMapper mapper, IProductAttributeCommon productAttributeService,
-          IProductModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryServiceCommon categoryService, JsonSerializerOptions options)
+          IAdminProductModelService prepareModelService, IProductCategoryService productCategoryService, ICategoryServiceCommon categoryService, JsonSerializerOptions options)
         {
             _productService = productService;
             _mapper = mapper;

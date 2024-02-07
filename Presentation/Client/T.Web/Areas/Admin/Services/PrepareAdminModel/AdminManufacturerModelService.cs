@@ -1,16 +1,17 @@
 ﻿using T.Web.Areas.Admin.Models.SearchModel;
+using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 
-namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
+namespace T.Web.Areas.Admin.Services.PrepareAdminModel
 {
-    public interface IManufacturerModelService
+    public interface IAdminManufacturerModelService
     {
         Task<ProductManufacturerSearchModel> PrepareAddProductToManufacturerSearchModel(ProductManufacturerSearchModel model);
     }
-    public class ManufacturerModelService : IManufacturerModelService
+    public class AdminManufacturerModelService : IAdminManufacturerModelService
     {
         private readonly IBaseAdminModelService _baseAdminModelService;
 
-        public ManufacturerModelService(IBaseAdminModelService baseAdminModelService)
+        public AdminManufacturerModelService(IBaseAdminModelService baseAdminModelService)
         {
             _baseAdminModelService = baseAdminModelService;
         }

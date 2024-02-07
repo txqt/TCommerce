@@ -10,9 +10,9 @@ using T.Web.Areas.Admin.Models.SearchModel;
 using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Library.Model.ViewsModel;
 
-namespace T.Web.Services.PrepareModel
+namespace T.Web.Areas.Admin.Services.PrepareModel
 {
-    public interface IProductModelService
+    public interface IAdminProductModelService
     {
         Task<ProductAttributeMappingModel> PrepareProductAttributeMappingModelAsync(ProductAttributeMappingModel model,
             Product product, ProductAttributeMapping productAttributeMapping);
@@ -28,14 +28,14 @@ namespace T.Web.Services.PrepareModel
         Task<RelatedProductSearchModel> PrepareRelatedProductSearchModel(RelatedProductSearchModel model);
         Task<ProductEditModel> PrepareProductEditModelModelAsync(Product product, ProductEditModel model);
     }
-    public class ProductModelService : IProductModelService
+    public class AdminProductModelService : IAdminProductModelService
     {
         private readonly IProductAttributeCommon _productAttributeService;
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICategoryServiceCommon _categoryService;
         private readonly IBaseAdminModelService _baseAdminModelService;
-        public ProductModelService(IProductAttributeCommon productAttributeService,
+        public AdminProductModelService(IProductAttributeCommon productAttributeService,
             IMapper mapper, IProductService productService, ICategoryServiceCommon categoryService, IBaseAdminModelService baseAdminModelService)
         {
             _productAttributeService = productAttributeService;

@@ -6,9 +6,9 @@ using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Web.Areas.Admin.Models;
 using T.Web.Areas.Admin.Models.SearchModel;
+using T.Web.Areas.Admin.Services.PrepareAdminModel;
 using T.Web.Extensions;
 using T.Web.Services.ManufacturerServices;
-using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers
@@ -21,9 +21,9 @@ namespace T.Web.Areas.Admin.Controllers
         private readonly ICategoryServiceCommon _categoryService;
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
-        private readonly IManufacturerModelService _manufacturerModelService;
+        private readonly IAdminManufacturerModelService _manufacturerModelService;
 
-        public ManufacturerController(IManufacturerService manufacturerService, IProductService productService, IMapper mapper, ICategoryServiceCommon categoryService, IManufacturerModelService manufacturerModelService)
+        public ManufacturerController(IManufacturerService manufacturerService, IProductService productService, IMapper mapper, ICategoryServiceCommon categoryService, IAdminManufacturerModelService manufacturerModelService)
         {
             _manufacturerService = manufacturerService;
             _productService = productService;

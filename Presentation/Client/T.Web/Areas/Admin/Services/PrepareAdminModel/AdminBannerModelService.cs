@@ -5,18 +5,18 @@ using T.Library.Model.Interface;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 
-namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
+namespace T.Web.Areas.Admin.Services.PrepareAdminModel
 {
-    public interface IBannerModelService
+    public interface IAdminBannerModelService
     {
         Task<BannerViewModel> PrepareBannerModelAsync(BannerViewModel model, Banner banner);
     }
-    public class BannerModelService : IBannerModelService
+    public class AdminBannerModelService : IAdminBannerModelService
     {
         private readonly IBannerService _bannerService;
         private readonly IMapper _mapper;
 
-        public BannerModelService(IMapper mapper, IBannerService bannerService)
+        public AdminBannerModelService(IMapper mapper, IBannerService bannerService)
         {
             _mapper = mapper;
             _bannerService = bannerService;

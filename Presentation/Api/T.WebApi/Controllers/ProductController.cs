@@ -71,6 +71,13 @@ namespace T.WebApi.Controllers
             return await _productService.GetByIdAsync(productId);
         }
 
+        [HttpGet("get-by-ids")]
+        [AllowAnonymous]
+        public async Task<ActionResult<List<Product>>> GetProductsByIdsAsync(List<int> ids)
+        {
+            return await _productService.GetProductsByIdsAsync(ids);
+        }
+
         [HttpPost("")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> CreateProduct(ProductModel model)

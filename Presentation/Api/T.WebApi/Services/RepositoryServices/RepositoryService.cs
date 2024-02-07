@@ -60,14 +60,18 @@ namespace T.WebApi.Services.IRepositoryServices
             }
         }
 
-        public async Task<T> GetByIdAsync(int id, bool includeDeleted = true)
+        public async Task<T> GetByIdAsync(int id, string cacheKey = null, bool includeDeleted = true)
         {
             if (id <= 0)
             {
                 throw new ArgumentException("Giá trị của 'id' phải lớn hơn 0.", nameof(id));
             }
 
-            var cacheKey = CacheKeysDefault<T>.ByIdPrefix + id + includeDeleted.ToString();
+            if (cacheKey is null)
+            {
+                cacheKey = CacheKeysDefault<T>.ByIdPrefix + id + includeDeleted.ToString();
+            }
+
             Console.WriteLine(cacheKey);
             // Attempt to get data from cache
             var cachedData = _cacheService.GetData<T>(cacheKey);
@@ -91,6 +95,38 @@ namespace T.WebApi.Services.IRepositoryServices
                 return entity;
             }
         }
+
+        public async Task<IEnumerable<T>> GetByIdsAsync(IEnumerable<int> ids, string cacheKey = null, bool includeDeleted = true)
+        {
+            if (ids == null || !ids.Any())
+            {
+                throw new ArgumentException("Danh sách ID không được rỗng.", nameof(ids));
+            }
+
+            cacheKey ??= CacheKeysDefault<T>.ByIdsPrefix + string.Join("-", ids) + includeDeleted.ToString();
+
+            Console.WriteLine(cacheKey);
+
+            // Attempt to get data from cache
+            var cachedData = _cacheService.GetData<IEnumerable<T>>(cacheKey);
+
+            if (cachedData != null)
+            {
+                // Return data from cache
+                return cachedData;
+            }
+            else
+            {
+                var query = Query.ApplySoftDeleteFilter(includeDeleted).Where(entity => ids.Contains(entity.Id));
+                var data = await query.ToListAsync();
+
+                // Store data in cache with an expiration time (adjust as needed)
+                _cacheService.SetData(cacheKey, data, DateTimeOffset.UtcNow.AddMinutes(10));
+
+                return data;
+            }
+        }
+
 
 
         public async Task CreateAsync(T entity)

@@ -4,21 +4,22 @@ using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Web.Areas.Admin.Models;
 using T.Web.Areas.Admin.Models.SearchModel;
+using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 
-namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
+namespace T.Web.Areas.Admin.Services.PrepareAdminModel
 {
-    public interface ICategoryModelService
+    public interface IAdminCategoryModelService
     {
         Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
         Task<ProductCategorySearchModel> PrepareAddProductToCategorySearchModel(ProductCategorySearchModel model);
     }
-    public class CategoryModelService : ICategoryModelService
+    public class AdminCategoryModelService : IAdminCategoryModelService
     {
         private readonly IMapper _mapper;
         private readonly ICategoryServiceCommon _categoryService;
         private readonly IBaseAdminModelService _baseAdminModelService;
 
-        public CategoryModelService(IMapper mapper, ICategoryServiceCommon categoryService, IBaseAdminModelService baseAdminModelService)
+        public AdminCategoryModelService(IMapper mapper, ICategoryServiceCommon categoryService, IBaseAdminModelService baseAdminModelService)
         {
             _mapper = mapper;
             _categoryService = categoryService;

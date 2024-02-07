@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using T.Library.Model.Interface;
 using T.Library.Model.JwtToken;
+using T.Web.Areas.Admin.Services.PrepareAdminModel;
+using T.Web.Areas.Admin.Services.PrepareModel;
 using T.Web.Common;
 using T.Web.Helpers;
 using T.Web.Routing;
@@ -14,7 +16,6 @@ using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
 using T.Web.Services.ManufacturerServices;
 using T.Web.Services.PictureServices;
-using T.Web.Services.PrepareModel;
 using T.Web.Services.PrepareModelServices;
 using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Web.Services.ProductService;
@@ -52,9 +53,10 @@ internal class Program
         builder.Services.AddTransient<IProductAttributeCommon, ProductAttributeService>();
         builder.Services.AddTransient<ISecurityService, SecurityService>();
         builder.Services.AddTransient<IProductModelService, ProductModelService>();
-        builder.Services.AddTransient<ICategoryModelService, CategoryModelService>();
-        builder.Services.AddTransient<IBannerModelService, BannerModelService>();
-        builder.Services.AddTransient<IUserModelService, UserModelService>();
+        builder.Services.AddTransient<IAdminCategoryModelService, AdminCategoryModelService>();
+        builder.Services.AddTransient<IAdminProductModelService, AdminProductModelService>();
+        builder.Services.AddTransient<IAdminBannerModelService, AdminBannerModelService>();
+        builder.Services.AddTransient<IAdminUserModelService, AdminUserModelService>();
         builder.Services.AddTransient<ICategoryServiceCommon, CategoryService>();
         builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
         builder.Services.AddTransient<IUserService, UserService>();
@@ -67,7 +69,7 @@ internal class Program
         builder.Services.AddTransient<IShoppingCartModelService, ShoppingCartModelService>();
         builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
         builder.Services.AddTransient<IManufacturerService, ManufacturerService>();
-        builder.Services.AddTransient<IManufacturerModelService, ManufacturerModelService>();
+        builder.Services.AddTransient<IAdminManufacturerModelService, AdminManufacturerModelService>();
         builder.Services.AddTransient<IBaseAdminModelService, BaseAdminModelService>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {

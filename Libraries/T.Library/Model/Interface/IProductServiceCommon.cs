@@ -17,6 +17,7 @@ namespace T.Library.Model.Interface
         Task<List<Product>> GetRandomProduct();
         Task<string> GetFirstImagePathByProductId(int productId);
         Task<Product> GetByIdAsync(int id);
+        Task<List<Product>> GetProductsByIdsAsync(List<int> ids);
         Task<Product> GetByNameAsync(string name);
         Task<ServiceResponse<bool>> CreateProductAsync(ProductModel model);
         Task<ServiceResponse<bool>> EditProductAsync(ProductModel model);

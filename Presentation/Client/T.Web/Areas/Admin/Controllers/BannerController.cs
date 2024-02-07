@@ -4,8 +4,8 @@ using T.Library.Model.Banners;
 using T.Library.Model.Interface;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
+using T.Web.Areas.Admin.Services.PrepareAdminModel;
 using T.Web.Extensions;
-using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 
 namespace T.Web.Areas.Admin.Controllers
 {
@@ -14,9 +14,9 @@ namespace T.Web.Areas.Admin.Controllers
     public class BannerController : BaseAdminController
     {
         private readonly IBannerService _bannerService;
-        private readonly IBannerModelService _prepareModelService;
+        private readonly IAdminBannerModelService _prepareModelService;
         private readonly IMapper _mapper;
-        public BannerController(IBannerService bannerService, IBannerModelService prepareModelService, IMapper mapper)
+        public BannerController(IBannerService bannerService, IAdminBannerModelService prepareModelService, IMapper mapper)
         {
             _bannerService = bannerService;
             _prepareModelService = prepareModelService;

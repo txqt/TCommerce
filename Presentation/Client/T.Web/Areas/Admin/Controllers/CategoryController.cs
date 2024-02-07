@@ -8,11 +8,11 @@ using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Web.Areas.Admin.Models;
 using T.Web.Areas.Admin.Models.SearchModel;
+using T.Web.Areas.Admin.Services.PrepareAdminModel;
 using T.Web.Attribute;
 using T.Web.Extensions;
 using T.Web.Services.CategoryService;
-using T.Web.Services.PrepareModel;
-using T.Web.Services.PrepareModelServices.PrepareAdminModel;
+
 using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers
@@ -25,10 +25,10 @@ namespace T.Web.Areas.Admin.Controllers
     {
         private readonly ICategoryServiceCommon _categoryService;
         private readonly IMapper _mapper;
-        private readonly ICategoryModelService _prepareModelService;
+        private readonly IAdminCategoryModelService _prepareModelService;
         private readonly IProductService _productService;
 
-        public CategoryController(ICategoryServiceCommon categoryService, IMapper mapper, ICategoryModelService prepareModelService, IProductService productService)
+        public CategoryController(ICategoryServiceCommon categoryService, IMapper mapper, IAdminCategoryModelService prepareModelService, IProductService productService)
         {
             _categoryService = categoryService;
             _mapper = mapper;

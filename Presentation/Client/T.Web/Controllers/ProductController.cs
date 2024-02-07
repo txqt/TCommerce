@@ -225,12 +225,10 @@ namespace T.Web.Controllers
             var product = await _productService.GetByIdAsync(productId);
             var errors = new List<string>();
             var price = product.Price.ToString();
-            var picture = (await _pictureService.GetPictureByIdAsync(product.Id));
-            var mainImage = string.Empty;
-            if (picture != null)
-            {
-                mainImage = picture.UrlPath;
-            }
+            var productPicture = (await _productService.GetProductPicturesByProductIdAsync(product.Id)).FirstOrDefault();
+
+            var mainImage = productPicture != null ? (await _pictureService.GetPictureByIdAsync(productPicture.PictureId)).UrlPath : string.Empty;
+            
 
             var productAttributePrefix = "product_attribute_";
             foreach (var fromItem in form.Keys)
