@@ -38,7 +38,7 @@ namespace T.Web.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            return View(new CategoryModel());
+            return View(new CategoryModelAdmin());
         }
 
         [HttpGet]
@@ -46,7 +46,7 @@ namespace T.Web.Areas.Admin.Controllers
         {
             var categoryList = await _categoryService.GetAllCategoryAsync();
 
-            var listModel = _mapper.Map<List<CategoryModel>>(categoryList);
+            var listModel = _mapper.Map<List<CategoryModelAdmin>>(categoryList);
 
             foreach (var item in listModel)
             {
@@ -64,21 +64,20 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModel(), null);
+            var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModelAdmin(), null);
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CategoryModel model)
+        public async Task<IActionResult> Create(CategoryModelAdmin model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var category = _mapper.Map<Category>(model);
-            var result = await _categoryService.CreateCategoryAsync(category);
+            var result = await _categoryService.CreateCategoryAsync(model);
 
             if (!result.Success)
             {
@@ -95,13 +94,13 @@ namespace T.Web.Areas.Admin.Controllers
             var category = await _categoryService.GetCategoryByIdAsync(id) ??
                 throw new ArgumentException("No category found with the specified id");
 
-            var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModel(), category);
+            var model = await _prepareModelService.PrepareCategoryModelAsync(new CategoryModelAdmin(), category);
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(CategoryModel model)
+        public async Task<IActionResult> Edit(CategoryModelAdmin model)
         {
             if (!ModelState.IsValid)
             {
@@ -111,9 +110,7 @@ namespace T.Web.Areas.Admin.Controllers
             var category = await _categoryService.GetCategoryByIdAsync(model.Id) ??
                 throw new ArgumentException("No category found with the specified id");
 
-            _mapper.Map(model, category);
-
-            var result = await _categoryService.UpdateCategoryAsync(category);
+            var result = await _categoryService.UpdateCategoryAsync(model);
             if (!result.Success)
             {
                 SetStatusMessage($"{result.Message}");

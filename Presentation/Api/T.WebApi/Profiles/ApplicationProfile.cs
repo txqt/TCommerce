@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using T.Library.Model;
 using T.Library.Model.Banners;
+using T.Library.Model.Catalogs;
 using T.Library.Model.Orders;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
@@ -76,6 +77,9 @@ namespace T.WebApi.Profiles
                 .ForMember(dest => dest.ShoppingCartType, opt => opt.MapFrom(src => src.ShoppingCartType))
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ReverseMap();
+
+            CreateMap<CategoryModel, Category>()
                 .ReverseMap();
         }
     }

@@ -5,6 +5,8 @@ using T.Library.Model.Interface;
 using T.Library.Model;
 using T.Web.Helpers;
 using T.Library.Model.Catalogs;
+using T.Web.Areas.Admin.Models;
+using T.Library.Model.ViewsModel;
 
 namespace T.Web.Services.CategoryService
 {
@@ -31,12 +33,12 @@ namespace T.Web.Services.CategoryService
             throw new NotImplementedException();
         }
 
-        public async Task<ServiceResponse<bool>> CreateCategoryAsync(Category category)
+        public async Task<ServiceResponse<bool>> CreateCategoryAsync(CategoryModel category)
         {
             return await PostAsJsonAsync<ServiceResponse<bool>>(DEFAULT_ROUTE, category);
         }
 
-        public async Task<ServiceResponse<bool>> UpdateCategoryAsync(Category category)
+        public async Task<ServiceResponse<bool>> UpdateCategoryAsync(CategoryModel category)
         {
             return await PutAsJsonAsync<ServiceResponse<bool>>(DEFAULT_ROUTE, category);
         }

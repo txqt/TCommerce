@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
-using T.Library.Model.ViewsModel;
 using T.Web.Models;
 using T.Web.Models.Catalog;
 using T.Web.Services.ManufacturerServices;

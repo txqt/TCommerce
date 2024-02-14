@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using T.Library.Model.Common;
 
-namespace T.Web.Areas.Admin.Models
+namespace T.Library.Model.ViewsModel
 {
     public class CategoryModel : BaseEntity
     {
         public CategoryModel()
         {
-            AvailableCategories = new List<SelectListItem>();
+            
         }
 
         [Display(Name = "Tên thể loại")]
@@ -96,7 +95,5 @@ namespace T.Web.Areas.Admin.Models
         public string? PageSizeOptions { get; set; }
 
         public string? SeName { get; set; }
-
-        public List<SelectListItem> AvailableCategories { get; set; }
     }
 }

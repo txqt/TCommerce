@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using T.Library.Model;
 using T.Library.Model.Catalogs;
-using T.Library.Model.Interface;
-using T.Library.Model.Response;
-using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
+using T.Library.Model.ViewsModel;
 using T.WebApi.Attribute;
 using T.WebApi.Services.CategoryServices;
 
@@ -38,7 +34,7 @@ namespace T.WebApi.Controllers
 
         [HttpPost()]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> CreateCategoryAsync(Category category)
+        public async Task<ActionResult> CreateCategoryAsync(CategoryModel category)
         {
             var result = await _categoryService.CreateCategoryAsync(category);
             if(!result.Success)
@@ -49,7 +45,7 @@ namespace T.WebApi.Controllers
 
         [HttpPut()]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> UpdateCategoryAsync(Category category)
+        public async Task<ActionResult> UpdateCategoryAsync(CategoryModel category)
         {
             var result = await _categoryService.UpdateCategoryAsync(category);
             if (!result.Success)

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using T.Library.Model.Catalogs;
+﻿using T.Library.Model.Catalogs;
 using T.Library.Model.Response;
+using T.Library.Model.ViewsModel;
 
 namespace T.Library.Model.Interface
 {
@@ -13,8 +9,8 @@ namespace T.Library.Model.Interface
         Task<List<Category>> GetAllCategoryAsync();
         Task<Category> GetCategoryByIdAsync(int categoryId);
         Task<Category> GetCategoryByNameAsync(string categoryName);
-        Task<ServiceResponse<bool>> CreateCategoryAsync(Category category);
-        Task<ServiceResponse<bool>> UpdateCategoryAsync(Category category);
+        Task<ServiceResponse<bool>> CreateCategoryAsync(CategoryModel category);
+        Task<ServiceResponse<bool>> UpdateCategoryAsync(CategoryModel category);
         Task<ServiceResponse<bool>> DeleteCategoryByIdAsync(int id);
         Task<List<ProductCategory>> GetProductCategoriesByCategoryIdAsync(int categoryId);
         Task<List<ProductCategory>> GetProductCategoriesByProductIdAsync(int productId);

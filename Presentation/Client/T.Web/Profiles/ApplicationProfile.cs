@@ -191,6 +191,9 @@ namespace T.Web.Profiles
 
             CreateMap<T.Web.Models.Catalog.CategoryModel, Category>()
                 .ReverseMap();
+
+            CreateMap<CategoryModelAdmin, Category>()
+                .ReverseMap();
         }
     }
 }

@@ -99,7 +99,8 @@ namespace T.WebApi.ServicesSeederService
         {
             foreach (var item in CategoriesDataSeed.Instance.GetAll())
             {
-                await _categorySerivce.CreateCategoryAsync(item);
+                var model = _mapper.Map<CategoryModel>(item);
+                await _categorySerivce.CreateCategoryAsync(model);
             }
 
         }

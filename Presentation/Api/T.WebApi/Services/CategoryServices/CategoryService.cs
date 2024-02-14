@@ -1,14 +1,13 @@
 ﻿using T.Library.Model.Response;
 using Microsoft.EntityFrameworkCore;
-using T.WebApi.Database.ConfigurationDatabase;
 using AutoMapper;
 using T.WebApi.Extensions;
 using T.Library.Model;
 using T.Library.Model.Interface;
-using Microsoft.AspNetCore.Mvc;
 using T.WebApi.Services.IRepositoryServices;
 using T.Library.Model.Catalogs;
 using T.WebApi.Services.UrlRecordServices;
+using T.Library.Model.ViewsModel;
 
 namespace T.WebApi.Services.CategoryServices
 {
@@ -31,11 +30,14 @@ namespace T.WebApi.Services.CategoryServices
             _urlRecordService = urlRecordService;
         }
 
-        public async Task<ServiceResponse<bool>> CreateCategoryAsync(Category category)
+        public async Task<ServiceResponse<bool>> CreateCategoryAsync(CategoryModel model)
         {
             try
             {
+                var category = _mapper.Map<Category>(model);
+
                 category.CreatedOnUtc = DateTime.UtcNow;
+                
                 await _categoryRepository.CreateAsync(category);
 
                 var seName = await _urlRecordService.ValidateSlug(category, null, category.Name, true);
@@ -50,10 +52,11 @@ namespace T.WebApi.Services.CategoryServices
             }
         }
 
-        public async Task<ServiceResponse<bool>> UpdateCategoryAsync(Category category)
+        public async Task<ServiceResponse<bool>> UpdateCategoryAsync(CategoryModel model)
         {
             try
             {
+                var category = _mapper.Map<Category>(model);
                 category.UpdatedOnUtc = DateTime.UtcNow;
                 await _categoryRepository.UpdateAsync(category);
                 return new ServiceSuccessResponse<bool>();

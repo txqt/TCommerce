@@ -10,7 +10,7 @@ namespace T.Web.Areas.Admin.Services.PrepareAdminModel
 {
     public interface IAdminCategoryModelService
     {
-        Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category);
+        Task<CategoryModelAdmin> PrepareCategoryModelAsync(CategoryModelAdmin model, Category category);
         Task<ProductCategorySearchModel> PrepareAddProductToCategorySearchModel(ProductCategorySearchModel model);
     }
     public class AdminCategoryModelService : IAdminCategoryModelService
@@ -26,11 +26,11 @@ namespace T.Web.Areas.Admin.Services.PrepareAdminModel
             _baseAdminModelService = baseAdminModelService;
         }
 
-        public async Task<CategoryModel> PrepareCategoryModelAsync(CategoryModel model, Category category)
+        public async Task<CategoryModelAdmin> PrepareCategoryModelAsync(CategoryModelAdmin model, Category category)
         {
             if (category is not null)
             {
-                model ??= new CategoryModel()
+                model ??= new CategoryModelAdmin()
                 {
                     Id = category.Id
                 };
