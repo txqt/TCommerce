@@ -22,7 +22,7 @@ namespace T.Web.Component
             var productIds = (await _productService.GetRelatedProductsByProductId1Async(productId)).Select(x => x.ProductId2).ToList();
 
             //load products
-            var products = (await _productService.GetProductsByIdsAsync(productIds))
+            var products = (await _productService.GetProductsByIdsAsync(productIds))?
                 //availability dates
                 .Where(p => _productService.ProductIsAvailable(p)).ToList();
 

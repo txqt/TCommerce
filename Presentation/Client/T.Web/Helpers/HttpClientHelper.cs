@@ -8,6 +8,9 @@ using System.Text.Json;
 using System;
 using Newtonsoft.Json;
 using T.Library.Model.Response;
+using System.Web;
+using System.Net.Http;
+using System.Collections;
 
 namespace T.Web.Helpers
 {
@@ -38,20 +41,72 @@ namespace T.Web.Helpers
             return await HandleResponse<T>(response, jsonOptions);
         }
 
-        public async Task<T> GetWithDataAsync<T>(string url, object data, JsonSerializerOptions jsonOptions = null)
+        public async Task<T> GetAsyncWithQueryParams<T>(string url, object data, JsonSerializerOptions jsonOptions = null)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+            var queryString = ToQueryString(data);
 
-            var response = await _httpClient.SendAsync(new HttpRequestMessage
+            // Kiểm tra nếu đã có các query parameters trong requestUri
+            var fullRequestUri = url;
+            if (!string.IsNullOrEmpty(queryString))
             {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri(_httpClient.BaseAddress, url),
-                Content = content
-            });
+                fullRequestUri += (url.Contains("?") ? "&" : "?") + queryString;
+            }
+
+            // Thực hiện phương thức GET với query parameters đã được thêm vào
+            var response = await _httpClient.GetAsync(fullRequestUri);
 
             _lastResponse = response;
             return await HandleResponse<T>(response, jsonOptions);
         }
+
+        private static string ToQueryString(object queryParams)
+        {
+            if (queryParams == null)
+            {
+                return null;
+            }
+
+            var queryString = new StringBuilder();
+
+            // Kiểm tra xem queryParams có phải là một danh sách không
+            if (queryParams is IEnumerable enumerableParams && !(queryParams is string))
+            {
+                foreach (var item in enumerableParams)
+                {
+                    var properties = item.GetType().GetProperties();
+                    var encodedParams = Array.ConvertAll(properties, prop =>
+                    {
+                        var value = prop.GetValue(item);
+                        return $"{HttpUtility.UrlEncode(prop.Name)}={HttpUtility.UrlEncode(value.ToString())}";
+                    });
+
+                    queryString.Append(string.Join("&", encodedParams));
+                    queryString.Append("&");
+                }
+
+                // Kiểm tra nếu có ít nhất một phần tử trong danh sách
+                if (queryString.Length > 0)
+                {
+                    // Loại bỏ dấu & cuối cùng
+                    queryString.Length--;
+                }
+            }
+            else
+            {
+                // Xử lý trường hợp khác tương tự như trước đó
+                var properties = queryParams.GetType().GetProperties();
+                var encodedParams = Array.ConvertAll(properties, prop =>
+                {
+                    var value = prop.GetValue(queryParams);
+                    return $"{HttpUtility.UrlEncode(prop.Name)}={HttpUtility.UrlEncode(value.ToString())}";
+                });
+
+                queryString.Append(string.Join("&", encodedParams));
+            }
+
+            return queryString.ToString();
+        }
+
 
         public async Task<T> PostAsJsonAsync<T>(string url, object data, JsonSerializerOptions jsonOptions = null)
         {

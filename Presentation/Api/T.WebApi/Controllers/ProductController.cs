@@ -73,9 +73,9 @@ namespace T.WebApi.Controllers
 
         [HttpGet("get-by-ids")]
         [AllowAnonymous]
-        public async Task<ActionResult<List<Product>>> GetProductsByIdsAsync(List<int> ids)
+        public async Task<ActionResult> GetProductsByIdsAsync([FromQuery] List<int> ids)
         {
-            return await _productService.GetProductsByIdsAsync(ids);
+            return Ok(await _productService.GetProductsByIdsAsync(ids));
         }
 
         [HttpPost("")]
@@ -138,6 +138,14 @@ namespace T.WebApi.Controllers
             var result = await _productService.GetAllProductsDisplayedOnHomepageAsync();
             return Ok(result);
         }
+
+        [HttpGet("features/by-categoryId/{categoryId}")]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetCategoryFeaturedProductsAsync(int categoryId)
+        {
+            var result = await _productService.GetCategoryFeaturedProductsAsync(categoryId);
+            return Ok(result);
+        }
         #endregion
 
         #region ProductPicture
@@ -196,8 +204,6 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
         #endregion
-
-
 
         #region RelatedProduct
         [HttpDelete("/api/related-products/{relatedProductId}")]

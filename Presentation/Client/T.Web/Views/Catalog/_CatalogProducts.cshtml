@@ -1,0 +1,30 @@
+﻿@model CatalogProductsModel
+<div class="products mb-3">
+    <div class="row justify-content-center">
+        @if(Model.Products?.Count > 0)
+        {
+            foreach(var product in Model.Products)
+            {
+                <div class="col-6 col-md-4 col-lg-4">
+                    @await Html.PartialAsync("_ProductBox", product)
+                </div>
+            }
+        }
+    </div><!-- End .row -->
+</div><!-- End .products -->
+@Html.Script(@<text>
+        <script>
+            $(document).ready(function () {
+                var catalog = new CatalogProducts();
+                catalog.init({
+                    ajaxEnabled: true,
+                    ajaxSettings: {
+                        type: "GET",
+                        data: {}
+                    },
+                    baseUrl = '@Context.Request.Path',
+                    fetchUrl: '@ViewData["fetchUrl"]'
+                });
+        </script>
+    </text>
+)

@@ -220,7 +220,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("warnings")]
-        public async Task<IActionResult> GetWarningsShoppingCart(List<ShoppingCartItemModel> shoppingCartItemModels)
+        public async Task<IActionResult> GetWarningsShoppingCart([FromQuery] List<ShoppingCartItemModel> shoppingCartItemModels)
         {
             var user = await _userService.GetCurrentUser();
             var warnings = new List<string>();
@@ -236,7 +236,7 @@ namespace T.WebApi.Controllers
             return new JsonResult(warnings);
         }
         [HttpGet("warning")]
-        public async Task<IActionResult> GetWarningShoppingCart(ShoppingCartItemModel shoppingCartItemModel)
+        public async Task<IActionResult> GetWarningShoppingCart([FromQuery] ShoppingCartItemModel shoppingCartItemModel)
         {
             var user = await _userService.GetCurrentUser();
             var warnings = new List<string>();

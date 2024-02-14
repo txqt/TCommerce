@@ -53,6 +53,7 @@ internal class Program
         builder.Services.AddTransient<IProductAttributeCommon, ProductAttributeService>();
         builder.Services.AddTransient<ISecurityService, SecurityService>();
         builder.Services.AddTransient<IProductModelService, ProductModelService>();
+        builder.Services.AddTransient<ICatalogModelService, CatalogModelService>();
         builder.Services.AddTransient<IAdminCategoryModelService, AdminCategoryModelService>();
         builder.Services.AddTransient<IAdminProductModelService, AdminProductModelService>();
         builder.Services.AddTransient<IAdminBannerModelService, AdminBannerModelService>();

@@ -60,12 +60,12 @@ namespace T.Web.Services.ShoppingCartServices
 
         public async Task<List<string>> GetWarningsShoppingCart(List<ShoppingCartItemModel> shoppingCartItemModels)
         {
-            return await GetWithDataAsync<List<string>>($"{defaultApi}/warnings", shoppingCartItemModels);
+            return await GetAsyncWithQueryParams<List<string>>($"{defaultApi}/warnings", shoppingCartItemModels);
         }
 
         public async Task<List<string>> GetWarningShoppingCart(ShoppingCartItemModel shoppingCartItemModel)
         {
-            return await GetWithDataAsync<List<string>>($"{defaultApi}/warning", shoppingCartItemModel);
+            return await GetAsyncWithQueryParams<List<string>>($"{defaultApi}/warning", shoppingCartItemModel);
         }
     }
 }

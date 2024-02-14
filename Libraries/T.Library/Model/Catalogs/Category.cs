@@ -94,6 +94,12 @@ namespace T.Library.Model.Catalogs
         /// </summary>
         public bool ManuallyPriceRange { get; set; }
 
+        public bool AllowCustomersToSelectPageSize { get; set; } = true;
+
+        public int PageSize { get; set; } = 10;
+
+        public string? PageSizeOptions { get; set; }
+
         public List<ProductCategory>? ProductCategories { get; set; }
         public bool Deleted { get; set; }
     }

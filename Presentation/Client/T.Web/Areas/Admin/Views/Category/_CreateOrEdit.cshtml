@@ -47,5 +47,29 @@
     <span asp-validation-for="DisplayOrder" class="text-danger"></span>
 </div>
 <div class="form-group">
-    <input type="submit" value="Create" class="btn btn-primary" />
+    <label asp-for="PageSize" class="control-label"></label>
+    <input asp-for="PageSize" class="form-control" />
+    <span asp-validation-for="PageSize" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="PageSizeOptions" class="control-label"></label>
+    <input asp-for="PageSizeOptions" class="form-control" />
+    <span asp-validation-for="PageSizeOptions" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" asp-for="AllowCustomersToSelectPageSize" /> @Html.DisplayNameFor(model => model.AllowCustomersToSelectPageSize)
+        </label>
+    </div>
+</div>
+<div class="form-group">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model => model.Published)
+        </label>
+    </div>
+</div>
+<div class="form-group">
+    <input type="submit" value="Save" class="btn btn-primary" />
 </div>

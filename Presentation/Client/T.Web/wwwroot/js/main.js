@@ -1,4 +1,101 @@
 ﻿// Main Js File
+function UrlBuilder(baseUrl) {
+    this.baseUrl = baseUrl;
+    this.params = {};
+
+    this.addParameter = function (key, value) {
+        this.params[key] = value;
+    };
+
+    this.build = function () {
+        var url = this.baseUrl;
+        var isFirstParam = true;
+
+        if (url.indexOf('?') === -1) {
+            isFirstParam = true;
+        } else {
+            isFirstParam = false;
+        }
+
+        for (var key in this.params) {
+            if (this.params.hasOwnProperty(key)) {
+                if (isFirstParam) {
+                    url += '?' + key + '=' + this.params[key];
+                    isFirstParam = false;
+                } else {
+                    url += '&' + key + '=' + this.params[key];
+                }
+            }
+        }
+        return url;
+    };
+}
+
+function CatalogProducts() {
+    this.ajaxEnabled = false;
+    this.ajaxSettings = {};
+    this.baseUrl = "";
+    this.fetchUrl = "";
+    this.loadedCallback = null;
+    this.errorCallback = null;
+    this.beforeCallback = null;
+    this.urlBuilder = null;
+
+    // Phương thức init để cài đặt cấu hình ban đầu
+    this.init = function (settings) {
+        this.ajaxEnabled = settings.ajaxEnabled || false;
+        this.ajaxSettings = settings.ajaxSettings || {};
+        this.baseUrl = settings.baseUrl || this.extractDomain(window.location.href);
+        this.fetchUrl = settings.fetchUrl || "";
+
+        // Kiểm tra nếu baseUrl không kết thúc bằng dấu "/"
+        if (this.baseUrl.charAt(this.baseUrl.length - 1) !== "/") {
+            this.baseUrl += "/"; // Thêm dấu "/" vào cuối baseUrl
+        }
+
+        this.urlBuilder = new UrlBuilder(this.baseUrl + this.fetchUrl);
+    };
+
+
+    // Phương thức để trích xuất domain từ URL
+    this.extractDomain = function (url) {
+        var domainRegex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)/gi;
+        var matches = domainRegex.exec(url);
+        return matches && matches.length > 0 ? matches[1] : "";
+    };
+
+
+    this.getProducts = function () {
+        // Gọi callback trước khi gửi yêu cầu lấy dữ liệu
+        if (typeof this.beforeCallback === "function") {
+            this.beforeCallback();
+        }
+
+        var url = this.urlBuilder.build();
+
+        if (this.ajaxEnabled) {
+            console.log(url)
+        } else {
+            // Nếu không sử dụng AJAX, thì chuyển hướng trình duyệt đến URL mới
+            window.location.href = url;
+        }
+    };
+
+    this.on = function (event, callback) {
+        switch (event) {
+            case "loaded":
+                this.loadedCallback = callback;
+                break;
+            case "error":
+                this.errorCallback = callback;
+                break;
+            case "before":
+                this.beforeCallback = callback;
+                break;
+        }
+    };
+}
+
 function deleteshoppingcartitem(n, loadScript = false) {
     $.ajax({
         url: n,

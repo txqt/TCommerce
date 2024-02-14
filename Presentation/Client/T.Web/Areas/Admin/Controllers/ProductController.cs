@@ -804,13 +804,7 @@ namespace T.Web.Areas.Admin.Controllers
         [HttpPost()]
         public async Task<IActionResult> AddRelatedProductPopup(AddRelatedProductModel model)
         {
-            var selectedProducts = new List<Product>();
-
-            foreach(var productId in model.SelectedProductIds)
-            {
-                var product = await _productService.GetByIdAsync(productId);
-                selectedProducts.Add(product);
-            }
+            var selectedProducts = await _productService.GetProductsByIdsAsync(model.SelectedProductIds.ToList());
 
             if (selectedProducts.Any())
             {

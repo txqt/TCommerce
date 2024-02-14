@@ -161,6 +161,7 @@ namespace T.Web.Profiles
                 .ReverseMap();
             CreateMap<Category, CategoryModel>()
                 .ReverseMap();
+
             CreateMap<UserModel, UserViewModel>()
                 .ReverseMap();
             CreateMap<ProductCategoryModel, ProductCategory>()
@@ -186,6 +187,9 @@ namespace T.Web.Profiles
             //    .ReverseMap();
 
             CreateMap<BannerViewModel, Banner>()
+                .ReverseMap();
+
+            CreateMap<T.Web.Models.Catalog.CategoryModel, Category>()
                 .ReverseMap();
         }
     }

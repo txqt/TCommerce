@@ -123,10 +123,9 @@ namespace T.Web.Areas.Admin.Controllers
             else
             {
                 SetStatusMessage("Sửa thành công");
-                model = await _prepareModelService.PrepareCategoryModelAsync(model, category);
             }
 
-            return View(model);
+            return View(nameof(Index));
         }
 
         [HttpPost]

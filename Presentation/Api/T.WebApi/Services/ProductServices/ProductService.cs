@@ -1,20 +1,21 @@
 ﻿using AutoMapper;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using System.Data.SqlTypes;
-using T.Library.Helpers;
+using System.Text;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
+using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Extensions;
 using T.WebApi.Helpers;
 using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.IRepositoryServices;
 using T.WebApi.Services.UrlRecordServices;
+using T.WebApi.Services.UserServices;
 
 namespace T.WebApi.Services.ProductServices
 {
@@ -69,10 +70,12 @@ namespace T.WebApi.Services.ProductServices
         private readonly IUrlRecordService _urlRecordService;
 
         private readonly ICacheService _cacheService;
+
+        private readonly IUserService _userSerice;
         #endregion
 
         #region Ctor
-        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService, ICacheService cacheService, IRepository<ProductManufacturer> productManufacturerRepository, IRepository<RelatedProduct> relatedProductRepository)
+        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService, ICacheService cacheService, IRepository<ProductManufacturer> productManufacturerRepository, IRepository<RelatedProduct> relatedProductRepository, IUserService userSerice)
         {
             _configuration = configuration;
             _environment = environment;
@@ -87,6 +90,7 @@ namespace T.WebApi.Services.ProductServices
             _cacheService = cacheService;
             _productManufacturerRepository = productManufacturerRepository;
             _relatedProductRepository = relatedProductRepository;
+            _userSerice = userSerice;
         }
         #endregion
 
@@ -156,27 +160,8 @@ namespace T.WebApi.Services.ProductServices
                           (priceMax == null || p.Price <= priceMax)
                     select p;
 
-            var cacheKey = CacheKeysDefault<Product>.AllPrefix + query.Expression;
-
-            // Attempt to get data from cache
-            var cachedData = _cacheService.GetData<PagedList<Product>>(cacheKey);
-
-            if (cachedData != null)
-            {
-                // Return data from cache
-                return cachedData;
-            }
-            else
-            {
-
-                var result = await PagedList<Product>.ToPagedList
-                    (query, pageNumber, pageSize);
-
-                // Store data in cache with an expiration time (adjust as needed)
-                _cacheService.SetData(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(10));
-
-                return result;
-            }
+            return await PagedList<Product>.ToPagedList
+                (query, pageNumber, pageSize);
         }
 
         public async Task<Product> GetByIdAsync(int id)
@@ -446,7 +431,7 @@ namespace T.WebApi.Services.ProductServices
         {
             var products = await _productsRepository.GetAllAsync(query =>
             {
-                return from p in query
+                return from p in _productsRepository.Table
                        orderby p.DisplayOrder, p.Id
                        where p.Published &&
                              !p.Deleted &&
@@ -463,6 +448,37 @@ namespace T.WebApi.Services.ProductServices
             return new ServiceSuccessResponse<bool>();
         }
 
+
+        public async Task<List<Product>> GetCategoryFeaturedProductsAsync(int categoryId)
+        {
+            List<Product> featuredProducts = new List<Product>();
+
+            if (categoryId == 0)
+                return featuredProducts;
+
+            var userModel = await _userSerice.GetCurrentUser();
+            var user = _mapper.Map<User>(userModel);
+            var customerRoleIds = await _userSerice.GetRolesByUserAsync(user);
+            var cacheKey = "CategoryFeaturedProductsIdsKey_" + categoryId;
+
+            var featuredProductIds = (await _productsRepository.GetAllAsync(func: query =>
+            {
+                query = from p in _productsRepository.Table
+                        join pc in _productCategoryRepository.Table on p.Id equals pc.ProductId
+                        where p.Published && !p.Deleted &&
+                              (!p.AvailableStartDateTimeUtc.HasValue || p.AvailableStartDateTimeUtc.Value < DateTime.UtcNow) &&
+                              (!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value > DateTime.UtcNow) &&
+                              pc.IsFeaturedProduct && categoryId == pc.CategoryId
+                        select p;
+
+                return query;
+            }, cacheKey: cacheKey)).Select(x => x.Id);
+
+            if (!featuredProducts.Any() && featuredProductIds.Any())
+                featuredProducts = (await _productsRepository.GetByIdsAsync(featuredProductIds, null, false)).ToList();
+
+            return featuredProducts;
+        }
         #endregion
 
         #region Related products
@@ -556,6 +572,7 @@ namespace T.WebApi.Services.ProductServices
         {
             return (await _productsRepository.GetByIdsAsync(ids)).ToList();
         }
+
 
         #endregion
     }

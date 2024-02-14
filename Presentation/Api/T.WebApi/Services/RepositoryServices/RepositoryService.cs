@@ -100,7 +100,7 @@ namespace T.WebApi.Services.IRepositoryServices
         {
             if (ids == null || !ids.Any())
             {
-                throw new ArgumentException("Danh sách ID không được rỗng.", nameof(ids));
+                return new List<T>();
             }
 
             cacheKey ??= CacheKeysDefault<T>.ByIdsPrefix + string.Join("-", ids) + includeDeleted.ToString();

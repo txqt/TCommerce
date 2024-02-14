@@ -61,7 +61,7 @@ namespace T.Web.Areas.Admin.Models
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published
         /// </summary>
-        public bool Published { get; set; }
+        public bool Published { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the display order
@@ -88,6 +88,14 @@ namespace T.Web.Areas.Admin.Models
         /// Gets or sets a value indicating whether the price range should be entered manually
         /// </summary>
         public bool ManuallyPriceRange { get; set; }
+
+        public bool AllowCustomersToSelectPageSize { get; set; } = true;
+
+        public int PageSize { get; set; } = 10;
+
+        public string? PageSizeOptions { get; set; }
+
+        public string? SeName { get; set; }
 
         public List<SelectListItem> AvailableCategories { get; set; }
     }

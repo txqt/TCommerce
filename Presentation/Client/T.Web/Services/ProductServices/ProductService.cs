@@ -206,7 +206,12 @@ namespace T.Web.Services.ProductService
 
         public async Task<List<Product>> GetProductsByIdsAsync(List<int> ids)
         {
-            return await GetWithDataAsync<List<Product>>($"api/products/get-by-ids", ids);
+            return await GetAsyncWithQueryParams<List<Product>>($"api/products/get-by-ids", ids);
+        }
+
+        public async Task<List<Product>> GetCategoryFeaturedProductsAsync(int categoryId)
+        {
+            return await GetAsync<List<Product>>($"api/products/features/by-categoryId/{categoryId}");
         }
     }
 }

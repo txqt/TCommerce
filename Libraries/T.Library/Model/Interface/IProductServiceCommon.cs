@@ -24,7 +24,9 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> DeleteProductAsync(int productId);
         Task<ServiceSuccessResponse<bool>> BulkDeleteProductsAsync(IEnumerable<int> productIds);
         Task<List<Product>> GetAllProductsDisplayedOnHomepageAsync();
+        Task<List<Product>> GetCategoryFeaturedProductsAsync(int categoryId);
         #endregion
+
         #region ProductPictures
         Task<List<ProductPicture>> GetProductPicturesByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Routing;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
+using T.Library.Model.Seo;
 using T.Web.Services.UrlRecordService;
 
 namespace T.Web.Routing
@@ -19,7 +20,8 @@ namespace T.Web.Routing
             if (values.TryGetValue("slug", out var slugValue) && slugValue is string slug)
             {
                 // Lấy thông tin từ bảng UrlRecord
-                var urlRecord = await _urlRecordService.GetBySlugAsync(slug);
+                if (await _urlRecordService.GetBySlugAsync(slug.ToString()) is not UrlRecord urlRecord)
+                    return values;
 
                 if (urlRecord != null)
                 {
@@ -35,8 +37,8 @@ namespace T.Web.Routing
                             break;
 
                         case nameof(Category):
-                            controllerName = "Categories";
-                            actionName = "Details";
+                            controllerName = "Catalog";
+                            actionName = "Category";
                             break;
 
                         default:

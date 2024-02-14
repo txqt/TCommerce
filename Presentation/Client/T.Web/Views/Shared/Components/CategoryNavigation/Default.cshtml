@@ -1,0 +1,91 @@
+﻿@model CategoryNavigationModel
+@{
+    int currentLevel = 0;
+}
+
+@if (Model is not null)
+{
+    <div class="widget widget-collapsible">
+        <h3 class="widget-title">
+            <a data-toggle="collapse" href="#widget-category" role="button" aria-expanded="true" aria-controls="widget-category">
+                Category
+            </a>
+        </h3><!-- End .widget-title -->
+
+        <div class="collapse show" id="widget-category">
+            <div class="widget-body">
+                <div class="filter-items filter-items-count">
+                    @if (Model.Categories?.Count > 0)
+                    {
+                        @foreach (var item in Model.Categories)
+                        {
+                            <ul class="category-list">
+                                <li>
+                                    @{
+                                        var style = (Model.CurrentCategoryId == item.Id) ? "color: #4ab2f1;" : "";
+                                    }
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox">
+                                            <a href="/@item.SeName"><label style="@style" class="custom-control-label" for="category_@item.Id">@item.Name</label></a>
+                                        </div><!-- End .custom-checkbox -->
+                                        <span style="@style" class="item-count">@item.NumberOfProducts</span>
+                                    </div><!-- End .filter-item -->
+                                    @if (item.HaveSubCategories && item.Id == Model.CurrentCategoryId || IsAncestorSelected(item, Model.CurrentCategoryId))
+                                    {
+                                        await RenderSubCategories(item.SubCategories);
+                                    }
+                                </li>
+                            </ul>
+                        }
+                    }
+                </div>
+                <!-- End .filter-items -->
+            </div><!-- End .widget-body -->
+        </div><!-- End .collapse -->
+    </div>
+}
+@{
+    async Task RenderSubCategories(List<CategorySimpleModel> subCategories)
+    {
+        currentLevel++;
+        @foreach (var item in subCategories)
+        {
+            <ul class="category-list" style="padding-left: @(currentLevel * 20)px;">
+                <li>
+                    @{
+                        var style = (Model.CurrentCategoryId == item.Id) ? "color: #4ab2f1;" : "";
+                    }
+                    <div class="filter-item">
+                        <div class="custom-control custom-checkbox">
+                            <a href="/@item.SeName"><label style="@style" class="custom-control-label" for="category_@item.Id">@item.Name</label></a>
+                        </div><!-- End .custom-checkbox -->
+                        <span style="@style" class="item-count">@item.NumberOfProducts</span>
+                    </div><!-- End .filter-item -->
+                    @if (item.HaveSubCategories && item.Id == Model.CurrentCategoryId || IsAncestorSelected(item, Model.CurrentCategoryId))
+                    {
+                        await RenderSubCategories(item.SubCategories);
+                    }
+                </li>
+            </ul>
+        }
+        currentLevel--;
+    }
+
+    bool IsAncestorSelected(CategorySimpleModel category, int currentCategoryId)
+    {
+        if (category.SubCategories == null)
+        {
+            return false;
+        }
+
+        foreach (var subCategory in category.SubCategories)
+        {
+            if (subCategory.Id == currentCategoryId || IsAncestorSelected(subCategory, currentCategoryId))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
