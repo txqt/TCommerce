@@ -1,4 +1,5 @@
 ﻿@model CategoryModel
+
 <main class="main">
     <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
         <div class="container">
@@ -19,6 +20,29 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-9">
+                    @if (Model.SubCategories?.Count > 0)
+                    {
+                        <div class="cat-blocks-container">
+                            <div class="row">
+                                @foreach(var item in Model.SubCategories)
+                                {
+                                    <div class="col-6 col-md-4 col-lg-3">
+                                        <a href="/@item.SeName" class="cat-block">
+                                            <figure>
+                                                <span>
+                                                    <img src="@item.PictureModel.ImageUrl" alt="@item.PictureModel.AltAttribute">
+                                                </span>
+                                            </figure>
+                                            
+                                            <h3 class="cat-block-title">@item.Name</h3><!-- End .cat-block-title -->
+                                        </a>
+                                    </div>
+                                }
+                                <!-- End .col-6 col-md-4 col-lg-3 -->
+                            </div><!-- End .row -->
+                        </div>
+                    }
+                    <div class="mb-2"></div>
                     @await Html.PartialAsync("_CatalogToolBox", Model.CatalogProductsModel)
 
                     @{

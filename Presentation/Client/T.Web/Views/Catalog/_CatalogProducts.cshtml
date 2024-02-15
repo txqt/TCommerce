@@ -15,8 +15,7 @@
 @Html.Script(@<text>
         <script asp-location="Footer">
             $(document).ready(function () {
-                var catalog = new CatalogProducts();
-                catalog.init({
+                CatalogProducts.init({
                     ajaxEnabled: true,
                     ajaxSettings: {
                         type: "GET",
@@ -24,17 +23,7 @@
                     },
                     fetchUrl: '@(ViewData["fetchUrl"])'
                 });
-                $(document).ready(function () {
-                    catalog.on("before", function () {
-                        var orderBy = $("#products-orderby").val();
-                        catalog.urlBuilder.addParameter("orderBy", orderBy);
-                    });
-                    $("#products-orderby").change(function () {
-                        catalog.getProducts();
-                    });
-                });
             });
-
         </script>
     </text>
 )

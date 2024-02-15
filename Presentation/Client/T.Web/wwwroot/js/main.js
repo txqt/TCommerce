@@ -77,34 +77,32 @@ function UrlBuilder(baseUrl) {
     };
 }
 
-function CatalogProducts() {
-    this.ajaxEnabled = false;
-    this.ajaxSettings = {};
-    this.baseUrl = "";
-    this.fetchUrl = "";
-    this.loadedCallback = null;
-    this.errorCallback = null;
-    this.beforeCallback = null;
-    this.urlBuilder = null;
+var CatalogProducts = {
+    ajaxEnabled: false,
+    ajaxSettings: {},
+    baseUrl: "",
+    fetchUrl: "",
+    loadedCallback: null,
+    errorCallback: null,
+    beforeCallback: null,
+    urlBuilder: null,
 
-    // Phương thức init để cài đặt cấu hình ban đầu
-    this.init = function (settings) {
+    init: function (settings) {
         this.ajaxEnabled = settings.ajaxEnabled || false;
         this.ajaxSettings = settings.ajaxSettings || {};
         this.baseUrl = settings.baseUrl || !1;
         this.fetchUrl = settings.fetchUrl || !1;
 
         this.urlBuilder = new UrlBuilder(this.fetchUrl);
-    };
+    },
 
-
-    // Phương thức để trích xuất domain từ URL
-    this.extractDomain = function (url) {
+    extractDomain: function (url) {
         var domainRegex = /^(?:https?:\/\/)?(?:[^:/\n?]+)(?:\.([^:/\n?]+))/i;
         var matches = domainRegex.exec(url);
         return matches && matches.length > 0 ? matches[1] : "";
-    };
-    this.getProducts = function () {
+    },
+
+    getProducts: function () {
         // Gọi callback trước khi gửi yêu cầu lấy dữ liệu
         if (typeof this.beforeCallback === "function") {
             this.beforeCallback();
@@ -116,7 +114,7 @@ function CatalogProducts() {
             var newBuilder = new UrlBuilder(window.location.href);
             newBuilder.params = this.urlBuilder.params;
             var browserPath = newBuilder.build();
-            
+
             window.history.replaceState({
                 path: browserPath
             }, "", browserPath)
@@ -143,9 +141,9 @@ function CatalogProducts() {
             // Nếu không sử dụng AJAX, thì chuyển hướng trình duyệt đến URL mới
             window.location.href = url;
         }
-    };
+    },
 
-    this.on = function (event, callback) {
+    on: function (event, callback) {
         switch (event) {
             case "loaded":
                 this.loadedCallback = callback;
@@ -157,8 +155,9 @@ function CatalogProducts() {
                 this.beforeCallback = callback;
                 break;
         }
-    };
-}
+    }
+};
+
 
 function deleteshoppingcartitem(n, loadScript = false) {
     $.ajax({

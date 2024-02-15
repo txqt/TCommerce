@@ -18,11 +18,35 @@
             </div>
             @Html.Script(@<text>
                 <script asp-location="Footer">
-                    
+                    $(document).ready(function () {
+                        CatalogProducts.on("before", function () {
+                            var orderBy = $("#products-orderby").val();
+                            CatalogProducts.urlBuilder.addParameter("orderBy", orderBy);
+                        });
+                        $("#products-orderby").change(function () {
+                            CatalogProducts.getProducts();
+                        });
+                    });
                 </script>
             </text>)
             <!-- End .toolbox-sort -->
         }
+        @* @if (Model.AllowProductSorting)
+        {
+            <div class="toolbox-sort">
+                <label for="sortby">Sort by:</label>
+                <div class="select-custom">
+                    <select id="products-orderby" asp-items="Model.AvailableSortOptions" class="form-control">
+                    </select>
+                </div>
+            </div>
+            @Html.Script(@<text>
+                <script asp-location="Footer">
+
+                </script>
+            </text>)
+            <!-- End .toolbox-sort -->
+        } *@
         <div class="toolbox-layout">
             <a href="category-list.html" class="btn-layout">
                 <svg width="16" height="10">

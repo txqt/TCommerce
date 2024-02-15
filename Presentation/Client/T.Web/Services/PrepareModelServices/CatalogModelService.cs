@@ -59,33 +59,33 @@ namespace T.Web.Services.PrepareModelServices
             };
 
             //subcategories
-            //model.SubCategories = (await Task.WhenAll((await _categoryService.GetAllCategoryAsync()).Where(x => x.ParentCategoryId == category.Id)
-            //.Select(async curCategory =>
-            //{
-            //    var subCatModel = new CategoryModel.SubCategoryModel
-            //    {
-            //        Id = curCategory.Id,
-            //        Name = curCategory.Name,
-            //        SeName = await _urlRecordService.GetSeNameAsync(curCategory),
-            //        Description = curCategory.Description
-            //    };
+            model.SubCategories = (await Task.WhenAll((await _categoryService.GetAllCategoryAsync()).Where(x => x.ParentCategoryId == category.Id)
+            .Select(async curCategory =>
+            {
+                var subCatModel = new CategoryModel.SubCategoryModel
+                {
+                    Id = curCategory.Id,
+                    Name = curCategory.Name,
+                    SeName = await _urlRecordService.GetSeNameAsync(curCategory),
+                    Description = curCategory.Description
+                };
 
-            //    async Task<PictureModel> GetPicture()
-            //    {
-            //        var picture = await _pictureService.GetPictureByIdAsync(curCategory.PictureId);
+                async Task<Library.Model.ViewsModel.PictureModel> GetPicture()
+                {
+                    var picture = await _pictureService.GetPictureByIdAsync(curCategory.PictureId);
 
-            //        var pictureModel = new PictureModel
-            //        {
-            //            ImageUrl = picture.UrlPath
-            //        };
+                    var pictureModel = new Library.Model.ViewsModel.PictureModel();
 
-            //        return pictureModel;
-            //    }
+                    if (picture is not null && !string.IsNullOrEmpty(picture.UrlPath))
+                        pictureModel.ImageUrl = picture.UrlPath;
 
-            //    subCatModel.PictureModel = await GetPicture();
+                    return pictureModel;
+                }
 
-            //    return subCatModel;
-            //}))).ToList();
+                subCatModel.PictureModel = await GetPicture();
+
+                return subCatModel;
+            }))).ToList();
 
 
             //featured products
@@ -346,7 +346,7 @@ namespace T.Web.Services.PrepareModelServices
         public async Task<CategoryNavigationModel> PrepareCategoryNavigationModelAsync(int currentCategoryId)
         {
             var activeCategoryId = 0;
-            if(currentCategoryId > 0)
+            if (currentCategoryId > 0)
             {
                 activeCategoryId = currentCategoryId;
             }
