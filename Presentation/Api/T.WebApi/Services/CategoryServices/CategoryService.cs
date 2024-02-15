@@ -40,7 +40,7 @@ namespace T.WebApi.Services.CategoryServices
                 
                 await _categoryRepository.CreateAsync(category);
 
-                var seName = await _urlRecordService.ValidateSlug(category, null, category.Name, true);
+                var seName = await _urlRecordService.ValidateSlug(category, model.SeName, category.Name, true);
 
                 await _urlRecordService.SaveSlugAsync(category, seName);
 
@@ -59,6 +59,12 @@ namespace T.WebApi.Services.CategoryServices
                 var category = _mapper.Map<Category>(model);
                 category.UpdatedOnUtc = DateTime.UtcNow;
                 await _categoryRepository.UpdateAsync(category);
+                if (model.SeName != (await _urlRecordService.GetSeNameAsync(category)))
+                {
+                    model.SeName = await _urlRecordService.ValidateSlug(category, model.SeName, category.Name, true);
+
+                    await _urlRecordService.SaveSlugAsync(category, model.SeName);
+                }
                 return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)

@@ -30,7 +30,7 @@ namespace T.Web.Controllers
         {
             var category = await _categoryService.GetCategoryByIdAsync(categoryId);
 
-            if (category is not null || category.Deleted)
+            if (category is null || category.Deleted)
                 return InvokeHttp404();
 
             var model = await _prepareCategoryModel.PrepareCategoryProductsModelAsync(category, command);

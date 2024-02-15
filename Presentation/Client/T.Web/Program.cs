@@ -143,6 +143,11 @@ internal class Program
             pattern: $"page-not-found",
             defaults: new { controller = "Common", action = "PageNotFound" });
 
+        app.MapControllerRoute(name: "GetCategoryProducts",
+            pattern: $"category/products/",
+            defaults: new { controller = "Catalog", action = "GetCategoryProducts" });
+
+
         bool hasRunOnce = false;
 
         if (app.Environment.IsDevelopment() && !hasRunOnce)

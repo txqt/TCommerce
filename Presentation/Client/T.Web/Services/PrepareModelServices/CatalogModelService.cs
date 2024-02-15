@@ -173,6 +173,30 @@ namespace T.Web.Services.PrepareModelServices
 
             //model.ManufacturerFilter = await PrepareManufacturerFilterModel(command.ManufacturerIds, manufacturers);
 
+            var orderString = string.Empty;
+            switch (command.OrderBy)
+            {
+                case (int)ProductSortingEnum.Position:
+                    orderString = "DisplayOrder asc";
+                    break;
+                case (int)ProductSortingEnum.PriceDesc:
+                    orderString = "Price desc";
+                    break;
+                case (int)ProductSortingEnum.PriceAsc:
+                    orderString = "Price asc";
+                    break;
+                case (int)ProductSortingEnum.NameDesc:
+                    orderString = "Name desc";
+                    break;
+                case (int)ProductSortingEnum.CreatedOn:
+                    orderString = "CreatedOnUtc desc";
+                    break;
+                case (int)ProductSortingEnum.NameAsc:
+                default:
+                    orderString = "Name asc";
+                    break;
+            }
+
             //products
             var products = await _productService.GetAll(new ProductParameters()
             {
@@ -184,7 +208,7 @@ namespace T.Web.Services.PrepareModelServices
                 PriceMin = selectedPriceRange?.From,
                 PriceMax = selectedPriceRange?.To,
                 ManufacturerIds = command.ManufacturerIds,
-                //OrderBy = ((ProductSortingEnum)command.OrderBy).ToString()
+                OrderBy = orderString
             });
 
             await PrepareCatalogProductsAsync(model, products);

@@ -1,4 +1,49 @@
 ﻿// Main Js File
+var getLocation = function (href) {
+    var l = document.createElement("a");
+    l.href = href;
+    return l;
+};
+
+function addParameter(url, parameterName, parameterValue, atStart/*Add param before others*/) {
+    replaceDuplicates = true;
+    if (url.indexOf('#') > 0) {
+        var cl = url.indexOf('#');
+        urlhash = url.substring(url.indexOf('#'), url.length);
+    } else {
+        urlhash = '';
+        cl = url.length;
+    }
+    sourceUrl = url.substring(0, cl);
+
+    var urlParts = sourceUrl.split("?");
+    var newQueryString = "";
+
+    if (urlParts.length > 1) {
+        var parameters = urlParts[1].split("&");
+        for (var i = 0; (i < parameters.length); i++) {
+            var parameterParts = parameters[i].split("=");
+            if (!(replaceDuplicates && parameterParts[0] == parameterName)) {
+                if (newQueryString == "")
+                    newQueryString = "?";
+                else
+                    newQueryString += "&";
+                newQueryString += parameterParts[0] + "=" + (parameterParts[1] ? parameterParts[1] : '');
+            }
+        }
+    }
+    if (newQueryString == "")
+        newQueryString = "?";
+
+    if (atStart) {
+        newQueryString = '?' + parameterName + "=" + parameterValue + (newQueryString.length > 1 ? '&' + newQueryString.substring(1) : '');
+    } else {
+        if (newQueryString !== "" && newQueryString != '?')
+            newQueryString += "&";
+        newQueryString += parameterName + "=" + (parameterValue ? parameterValue : '');
+    }
+    return urlParts[0] + newQueryString + urlhash;
+};
 function UrlBuilder(baseUrl) {
     this.baseUrl = baseUrl;
     this.params = {};
@@ -19,11 +64,12 @@ function UrlBuilder(baseUrl) {
 
         for (var key in this.params) {
             if (this.params.hasOwnProperty(key)) {
+                var paramValue = this.params[key];
                 if (isFirstParam) {
-                    url += '?' + key + '=' + this.params[key];
+                    url = addParameter(url, key, paramValue, true); // Thêm tham số vào đầu URL
                     isFirstParam = false;
                 } else {
-                    url += '&' + key + '=' + this.params[key];
+                    url = addParameter(url, key, paramValue, false); // Thêm tham số vào cuối URL
                 }
             }
         }
@@ -45,26 +91,19 @@ function CatalogProducts() {
     this.init = function (settings) {
         this.ajaxEnabled = settings.ajaxEnabled || false;
         this.ajaxSettings = settings.ajaxSettings || {};
-        this.baseUrl = settings.baseUrl || this.extractDomain(window.location.href);
-        this.fetchUrl = settings.fetchUrl || "";
+        this.baseUrl = settings.baseUrl || !1;
+        this.fetchUrl = settings.fetchUrl || !1;
 
-        // Kiểm tra nếu baseUrl không kết thúc bằng dấu "/"
-        if (this.baseUrl.charAt(this.baseUrl.length - 1) !== "/") {
-            this.baseUrl += "/"; // Thêm dấu "/" vào cuối baseUrl
-        }
-
-        this.urlBuilder = new UrlBuilder(this.baseUrl + this.fetchUrl);
+        this.urlBuilder = new UrlBuilder(this.fetchUrl);
     };
 
 
     // Phương thức để trích xuất domain từ URL
     this.extractDomain = function (url) {
-        var domainRegex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)/gi;
+        var domainRegex = /^(?:https?:\/\/)?(?:[^:/\n?]+)(?:\.([^:/\n?]+))/i;
         var matches = domainRegex.exec(url);
         return matches && matches.length > 0 ? matches[1] : "";
     };
-
-
     this.getProducts = function () {
         // Gọi callback trước khi gửi yêu cầu lấy dữ liệu
         if (typeof this.beforeCallback === "function") {
@@ -74,7 +113,32 @@ function CatalogProducts() {
         var url = this.urlBuilder.build();
 
         if (this.ajaxEnabled) {
-            console.log(url)
+            var newBuilder = new UrlBuilder(window.location.href);
+            newBuilder.params = this.urlBuilder.params;
+            var browserPath = newBuilder.build();
+            
+            window.history.replaceState({
+                path: browserPath
+            }, "", browserPath)
+
+            $.ajax({
+                url: url,
+                type: this.ajaxSettings.type || "GET",
+                data: this.ajaxSettings.data || {},
+                success: function (data) {
+                    $(".products").html(data);
+                    SetPictureDefault();
+                    if (typeof this.loadedCallback === "function") {
+                        this.loadedCallback(data);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Gọi callback khi có lỗi xảy ra
+                    if (typeof this.errorCallback === "function") {
+                        this.errorCallback(xhr, status, error);
+                    }
+                }
+            });
         } else {
             // Nếu không sử dụng AJAX, thì chuyển hướng trình duyệt đến URL mới
             window.location.href = url;

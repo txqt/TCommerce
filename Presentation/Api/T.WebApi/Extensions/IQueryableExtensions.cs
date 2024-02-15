@@ -35,21 +35,6 @@ namespace T.WebApi.Extensions
         }
 
 
-
-        public static IQueryable<T> FindByIntId<T>(this IQueryable<T> entities, int id)
-        {
-            if (id < 0)
-                return entities;
-
-            var parameter = Expression.Parameter(typeof(T), "entity");
-            var property = Expression.Property(parameter, "Id");
-            var equals = Expression.Equal(property, Expression.Constant(id));
-            var lambda = Expression.Lambda<Func<T, bool>>(equals, parameter);
-
-            return entities.Where(lambda);
-        }
-
-
         //public static IQueryable<T> Sort<T>(this IQueryable<T> entities, string orderByQueryString)
         //{
         //    if (string.IsNullOrWhiteSpace(orderByQueryString))
@@ -88,30 +73,32 @@ namespace T.WebApi.Extensions
 
             var orderParams = orderByQueryString.Trim().Split(',');
             var query = entities.Expression;
+            var entityType = typeof(T);
 
             foreach (var param in orderParams)
             {
                 if (string.IsNullOrWhiteSpace(param))
                     continue;
 
-                var propertyArray = param.Trim().Split(new char[] { ' ', '_', '-' });
+                var propertyArray = param.Trim().Split(new char[] { ' ', '_', '-' }, StringSplitOptions.RemoveEmptyEntries);
                 var propertyName = propertyArray[0];
                 var descending = propertyArray.Length > 1 && propertyArray[1].ToLower() == "desc";
 
-                var propertyInfo = typeof(T).GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                var propertyInfo = entityType.GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                 if (propertyInfo == null)
                     continue; // Skip this iteration if the property does not exist
 
-                var parameter = Expression.Parameter(typeof(T), "entity");
-                var property = Expression.Property(parameter, propertyName);
+                var parameter = Expression.Parameter(entityType, "entity");
+                var property = Expression.Property(parameter, propertyInfo);
                 var selector = Expression.Lambda(property, parameter);
 
-                query = Expression.Call(typeof(Queryable), descending ? "OrderByDescending" : "OrderBy", new[] { typeof(T), property.Type },
+                query = Expression.Call(typeof(Queryable), descending ? "OrderByDescending" : "OrderBy", new[] { entityType, propertyInfo.PropertyType },
                     query, Expression.Quote(selector));
             }
 
             return entities.Provider.CreateQuery<T>(query);
         }
+
 
         public static IQueryable<T> ApplySoftDeleteFilter<T>(this IQueryable<T> query, bool includeDeleted)
         where T : class
