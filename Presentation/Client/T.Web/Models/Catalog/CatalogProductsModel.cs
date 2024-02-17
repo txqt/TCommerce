@@ -76,6 +76,7 @@ namespace T.Web.Models.Catalog
         /// </summary>
         public List<ProductBoxModel> Products { get; set; }
 
+        public MetaData PagingMetaData { get; set; }
         #endregion
 
         #region Ctor

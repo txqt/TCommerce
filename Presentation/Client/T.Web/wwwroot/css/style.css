@@ -12111,6 +12111,7 @@ button:focus {
     line-height: 1.5;
     margin-top: 0;
     margin-bottom: 2rem;
+    background-color: #f8f8f8;
 }
 
     .toolbox::after {

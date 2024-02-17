@@ -1,0 +1,56 @@
+﻿@model ProductBoxModel
+@if (Model is not null)
+{
+    <div class="product product-list">
+        <div class="row">
+            <div class="col-6 col-lg-3">
+                <figure class="product-media">
+                    <span class="product-label label-new">New</span>
+                    <a href="product.html">
+                        <img src="@Model.ProductImage.ImageUrl" alt="@Model.ProductImage.AltAttribute" class="product-image">
+                    </a>
+                </figure><!-- End .product-media -->
+            </div><!-- End .col-sm-6 col-lg-3 -->
+
+            <div class="col-6 col-lg-3 order-lg-last">
+                <div class="product-list-action">
+                    <div class="product-price">
+                        @(Model.ProductPrice.Price)
+                    </div><!-- End .product-price -->
+                    <a href="/@Model.ProductSeName" class="btn-product btn-cart"><span>add to cart</span></a>
+                </div><!-- End .product-list-action -->
+            </div><!-- End .col-sm-6 col-lg-3 -->
+
+            <div class="col-lg-6">
+                <div class="product-body product-action-inner">
+                    <a href="#" class="btn-product btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
+                    <div class="product-cat">
+                        @if(Model.Categories?.Count > 0)
+                        {
+                            foreach(var item in Model.Categories)
+                            {
+                                <a href="/@item.SeName">@item.CategoryName</a>
+                            }
+                        }
+                    </div><!-- End .product-cat -->
+                    <h3 class="product-title"><a href="/@Model.ProductSeName">@Model.ProductName</a></h3><!-- End .product-title -->
+
+                    <div class="product-content">
+                        <p>@Model.ShortDescription</p>
+                    </div><!-- End .product-content -->
+
+                    @if(Model.ProductImage is not null)
+                    {
+                        <div class="product-nav product-nav-thumbs">
+                            <a href="@Model.ProductImage.ImageUrl" class="active">
+                                <img src="@Model.ProductImage.ImageUrl" alt="product desc">
+                            </a>
+                        </div>
+
+                        <!-- End .product-nav -->
+                    }
+                </div><!-- End .product-body -->
+            </div><!-- End .col-lg-6 -->
+        </div><!-- End .row -->
+    </div>
+}

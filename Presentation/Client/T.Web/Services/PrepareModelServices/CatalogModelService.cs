@@ -114,6 +114,8 @@ namespace T.Web.Services.PrepareModelServices
 
             //sorting
             await PrepareSortingOptionsAsync(model, command);
+
+            await PrepareViewModesAsync(model, command);
             //page size
             await PreparePageSizeOptionsAsync(model, command, category.AllowCustomersToSelectPageSize,
                 category.PageSizeOptions, category.PageSize);
@@ -126,52 +128,7 @@ namespace T.Web.Services.PrepareModelServices
 
             //price range
             PriceRangeModel selectedPriceRange = null;
-            //if (_catalogSettings.EnablePriceRangeFiltering && category.PriceRangeFiltering)
-            //{
-            //    selectedPriceRange = await GetConvertedPriceRangeAsync(command);
-
-            //    PriceRangeModel availablePriceRange = null;
-            //    if (!category.ManuallyPriceRange)
-            //    {
-            //        async Task<decimal?> getProductPriceAsync(ProductSortingEnum orderBy)
-            //        {
-            //            var t = new ProductParameters()
-            //            {
-            //                CategoryIds = categoryIds,
-            //                ExcludeFeaturedProducts = false,
-            //                OrderBy = orderBy
-            //            };
-            //            var products = await _productService.GetAll(0, 1,
-            //                categoryIds: categoryIds,
-            //                visibleIndividuallyOnly: true,
-            //                excludeFeaturedProducts: !_catalogSettings.IgnoreFeaturedProducts && !_catalogSettings.IncludeFeaturedProductsInNormalLists,
-            //                orderBy: orderBy);
-
-            //            return products?.FirstOrDefault()?.Price ?? 0;
-            //        }
-
-            //        availablePriceRange = new PriceRangeModel
-            //        {
-            //            From = await getProductPriceAsync(ProductSortingEnum.PriceAsc),
-            //            To = await getProductPriceAsync(ProductSortingEnum.PriceDesc)
-            //        };
-            //    }
-            //    else
-            //    {
-            //        availablePriceRange = new PriceRangeModel
-            //        {
-            //            From = category.PriceFrom,
-            //            To = category.PriceTo
-            //        };
-            //    }
-
-            //    model.PriceRangeFilter = await PreparePriceRangeFilterAsync(selectedPriceRange, availablePriceRange);
-            //}
-
-            //filterable manufacturers
-            //var manufacturers = await _manufacturerService.GetManufacturersByCategoryIdAsync(category.Id);
-
-            //model.ManufacturerFilter = await PrepareManufacturerFilterModel(command.ManufacturerIds, manufacturers);
+            
 
             var orderString = string.Empty;
             switch (command.OrderBy)
@@ -214,6 +171,47 @@ namespace T.Web.Services.PrepareModelServices
             await PrepareCatalogProductsAsync(model, products);
 
             return model;
+        }
+
+        public virtual async Task PrepareViewModesAsync(CatalogProductsModel model, CatalogProductsCommand command)
+        {
+            model.AllowProductViewModeChanging = true;
+
+            var viewMode = !string.IsNullOrEmpty(command.ViewMode)
+                ? command.ViewMode
+                : "3-cols";
+            model.ViewMode = viewMode;
+            if (model.AllowProductViewModeChanging)
+            {
+                //list
+                model.AvailableViewModes.Add(new SelectListItem
+                {
+                    Text = "List",
+                    Value = "list",
+                    Selected = viewMode == "list"
+                });
+                //2-cols
+                model.AvailableViewModes.Add(new SelectListItem
+                {
+                    Text = "2 Cols",
+                    Value = "2-cols",
+                    Selected = viewMode == "2-cols"
+                });
+                //3-cols
+                model.AvailableViewModes.Add(new SelectListItem
+                {
+                    Text = "3 Cols",
+                    Value = "3-cols",
+                    Selected = viewMode == "3-cols"
+                });
+                //4-cols
+                model.AvailableViewModes.Add(new SelectListItem
+                {
+                    Text = "4 Cols",
+                    Value = "4-cols",
+                    Selected = viewMode == "4-cols"
+                });
+            }
         }
 
         public virtual Task PreparePageSizeOptionsAsync(CatalogProductsModel model, CatalogProductsCommand command,
@@ -317,6 +315,8 @@ namespace T.Web.Services.PrepareModelServices
                 {
                     return await _productModelFactory.PrepareProductBoxModel(curProduct, null);
                 }))).ToList();
+
+                model.PagingMetaData = products.MetaData;
             }
         }
 

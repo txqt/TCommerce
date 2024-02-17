@@ -1,9 +1,19 @@
 ﻿@model CatalogProductsModel
+<style>
+    .toolbox-right {
+        flex-wrap: nowrap;
+    }
+
+    .toolbox-sort {
+        margin-left: 20px;
+    }
+</style>
 <div class="toolbox">
     <div class="toolbox-left">
         <div class="toolbox-info">
-            Showing <span>9 of 56</span> Products
+            Showing <span>@Model.PagingMetaData.PageSize of @Model.PagingMetaData.TotalCount</span> Products
         </div><!-- End .toolbox-info -->
+
     </div><!-- End .toolbox-left -->
 
     <div class="toolbox-right">
@@ -31,24 +41,41 @@
             </text>)
             <!-- End .toolbox-sort -->
         }
-        @* @if (Model.AllowProductSorting)
+        @if (Model.AllowCustomersToSelectPageSize)
         {
             <div class="toolbox-sort">
-                <label for="sortby">Sort by:</label>
+                <label for="page-size">Page size:</label>
                 <div class="select-custom">
-                    <select id="products-orderby" asp-items="Model.AvailableSortOptions" class="form-control">
+                    <select id="products-page-size" asp-items="Model.PageSizeOptions" class="form-control">
                     </select>
                 </div>
             </div>
             @Html.Script(@<text>
                 <script asp-location="Footer">
-
+                    $(document).ready(function () {
+                        CatalogProducts.on("before", function () {
+                            var pageSize = $("#products-page-size").val();
+                            CatalogProducts.urlBuilder.addParameter("pagesize", pageSize);
+                        });
+                        $("#products-page-size").change(function () {
+                            CatalogProducts.getProducts();
+                        });
+                    });
                 </script>
             </text>)
             <!-- End .toolbox-sort -->
-        } *@
+        }
+
+    </div><!-- End .toolbox-right -->
+    @if (Model.AllowProductViewModeChanging)
+    {
+        var listMode = Model.AvailableViewModes[0];
+        var Cols_2 = Model.AvailableViewModes[1];
+        var Cols_3 = Model.AvailableViewModes[2];
+        var Cols_4 = Model.AvailableViewModes[3];
+
         <div class="toolbox-layout">
-            <a href="category-list.html" class="btn-layout">
+            <a href="#" class="btn-layout @(listMode.Selected ? "active" :"")" data-viewmode="@listMode.Value">
                 <svg width="16" height="10">
                     <rect x="0" y="0" width="4" height="4" />
                     <rect x="6" y="0" width="10" height="4" />
@@ -57,38 +84,63 @@
                 </svg>
             </a>
 
-            <a href="category-2cols.html" class="btn-layout">
-                <svg width="10" height="10">
-                    <rect x="0" y="0" width="4" height="4" />
-                    <rect x="6" y="0" width="4" height="4" />
-                    <rect x="0" y="6" width="4" height="4" />
-                    <rect x="6" y="6" width="4" height="4" />
-                </svg>
-            </a>
+            <a href="#" class="btn-layout @(Cols_2.Selected ? "active" :"")" data-viewmode="@Cols_2.Value">
+                    <svg width="10" height="10">
+                        <rect x="0" y="0" width="4" height="4" />
+                        <rect x="6" y="0" width="4" height="4" />
+                        <rect x="0" y="6" width="4" height="4" />
+                        <rect x="6" y="6" width="4" height="4" />
+                    </svg>
+                </a>
 
-            <a href="category.html" class="btn-layout active">
-                <svg width="16" height="10">
-                    <rect x="0" y="0" width="4" height="4" />
-                    <rect x="6" y="0" width="4" height="4" />
-                    <rect x="12" y="0" width="4" height="4" />
-                    <rect x="0" y="6" width="4" height="4" />
-                    <rect x="6" y="6" width="4" height="4" />
-                    <rect x="12" y="6" width="4" height="4" />
-                </svg>
-            </a>
+            <a href="#" class="btn-layout @(Cols_3.Selected ? "active" :"")" data-viewmode="@Cols_3.Value">
+                    <svg width="16" height="10">
+                        <rect x="0" y="0" width="4" height="4" />
+                        <rect x="6" y="0" width="4" height="4" />
+                        <rect x="12" y="0" width="4" height="4" />
+                        <rect x="0" y="6" width="4" height="4" />
+                        <rect x="6" y="6" width="4" height="4" />
+                        <rect x="12" y="6" width="4" height="4" />
+                    </svg>
+                </a>
 
-            <a href="category-4cols.html" class="btn-layout">
-                <svg width="22" height="10">
-                    <rect x="0" y="0" width="4" height="4" />
-                    <rect x="6" y="0" width="4" height="4" />
-                    <rect x="12" y="0" width="4" height="4" />
-                    <rect x="18" y="0" width="4" height="4" />
-                    <rect x="0" y="6" width="4" height="4" />
-                    <rect x="6" y="6" width="4" height="4" />
-                    <rect x="12" y="6" width="4" height="4" />
-                    <rect x="18" y="6" width="4" height="4" />
-                </svg>
-            </a>
-        </div><!-- End .toolbox-layout -->
-    </div><!-- End .toolbox-right -->
+            <a href="#" class="btn-layout @(Cols_4.Selected ? "active" :"")" data-viewmode="@Cols_4.Value">
+                    <svg width="22" height="10">
+                        <rect x="0" y="0" width="4" height="4" />
+                        <rect x="6" y="0" width="4" height="4" />
+                        <rect x="12" y="0" width="4" height="4" />
+                        <rect x="18" y="0" width="4" height="4" />
+                        <rect x="0" y="6" width="4" height="4" />
+                        <rect x="6" y="6" width="4" height="4" />
+                        <rect x="12" y="6" width="4" height="4" />
+                        <rect x="18" y="6" width="4" height="4" />
+                    </svg>
+                </a>
+        </div>
+        @Html.Script(@<text>
+            <script asp-location="Footer">
+                $(document).ready(function () {
+                    CatalogProducts.on('before', function () {
+                        var $viewModeEl = $('[data-viewmode].active');
+                        if ($viewModeEl.length > 0) {
+                            CatalogProducts.urlBuilder.addParameter("viewmode", $viewModeEl.data('viewmode'));
+                            console.log($viewModeEl.data('viewmode'));
+                        }
+                    });
+
+                    $('[data-viewmode]').on('click', function () {
+                        var $this = $(this);
+                        if (!$this.hasClass('active')) {
+                            // Xóa lớp 'active' khỏi tất cả các phần tử trước khi thêm vào phần tử được chọn
+                            $('[data-viewmode]').removeClass('active');
+                            $this.addClass('active');
+                            CatalogProducts.getProducts();
+                        }
+                        return false;
+                    });
+                });
+            </script>
+        </text>)
+        <!-- End .toolbox-layout -->
+    }
 </div><!-- End .toolbox -->

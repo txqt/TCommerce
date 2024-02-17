@@ -9,6 +9,7 @@ using T.Library.Model.Interface;
 using T.Web.Areas.Admin.Models.SearchModel;
 using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Library.Model.ViewsModel;
+using T.Web.Services.UrlRecordService;
 
 namespace T.Web.Areas.Admin.Services.PrepareModel
 {
@@ -35,14 +36,16 @@ namespace T.Web.Areas.Admin.Services.PrepareModel
         private readonly IProductService _productService;
         private readonly ICategoryServiceCommon _categoryService;
         private readonly IBaseAdminModelService _baseAdminModelService;
+        private readonly IUrlRecordService _urlRecordService;
         public AdminProductModelService(IProductAttributeCommon productAttributeService,
-            IMapper mapper, IProductService productService, ICategoryServiceCommon categoryService, IBaseAdminModelService baseAdminModelService)
+            IMapper mapper, IProductService productService, ICategoryServiceCommon categoryService, IBaseAdminModelService baseAdminModelService, IUrlRecordService urlRecordService)
         {
             _productAttributeService = productAttributeService;
             _mapper = mapper;
             _productService = productService;
             _categoryService = categoryService;
             _baseAdminModelService = baseAdminModelService;
+            _urlRecordService = urlRecordService;
         }
 
         public async Task<List<ProductAttributeMappingModel>> PrepareProductAttributeMappingListModelAsync(Product product)
@@ -224,6 +227,7 @@ namespace T.Web.Areas.Admin.Services.PrepareModel
                 };
 
                 _mapper.Map(product, model);
+                model.SeName = await _urlRecordService.GetSeNameAsync(product);
             }
 
 

@@ -5,7 +5,7 @@ var getLocation = function (href) {
     return l;
 };
 
-function addParameter(url, parameterName, parameterValue, atStart/*Add param before others*/) {
+function addParameterFunc(url, parameterName, parameterValue, atStart/*Add param before others*/) {
     replaceDuplicates = true;
     if (url.indexOf('#') > 0) {
         var cl = url.indexOf('#');
@@ -66,15 +66,24 @@ function UrlBuilder(baseUrl) {
             if (this.params.hasOwnProperty(key)) {
                 var paramValue = this.params[key];
                 if (isFirstParam) {
-                    url = addParameter(url, key, paramValue, true); // Thêm tham số vào đầu URL
+                    url = addParameterFunc(url, key, paramValue, true); // Thêm tham số vào đầu URL
                     isFirstParam = false;
                 } else {
-                    url = addParameter(url, key, paramValue, false); // Thêm tham số vào cuối URL
+                    url = addParameterFunc(url, key, paramValue, false); // Thêm tham số vào cuối URL
                 }
             }
         }
         return url;
     };
+}
+
+function addPagerHandlers() {
+    $('[data-page]').on('click', function (e) {
+        e.preventDefault();
+        console.log("$(this).data('page'): " + $(this).data('page'))
+        CatalogProducts.getProducts($(this).data('page'));
+        return false;
+    });
 }
 
 var CatalogProducts = {
@@ -102,13 +111,17 @@ var CatalogProducts = {
         return matches && matches.length > 0 ? matches[1] : "";
     },
 
-    getProducts: function () {
+    getProducts: function (n) {
         // Gọi callback trước khi gửi yêu cầu lấy dữ liệu
-        if (typeof this.beforeCallback === "function") {
-            this.beforeCallback();
+        if (this.beforeCallbacks) {
+            this.beforeCallbacks.forEach(function (callback) {
+                callback();
+            });
         }
-
-        var url = this.urlBuilder.build();
+        
+        var t = this.urlBuilder;
+        n && t.addParameter("pagenumber", n);
+        var url = t.build();
 
         if (this.ajaxEnabled) {
             var newBuilder = new UrlBuilder(window.location.href);
@@ -124,16 +137,17 @@ var CatalogProducts = {
                 type: this.ajaxSettings.type || "GET",
                 data: this.ajaxSettings.data || {},
                 success: function (data) {
-                    $(".products").html(data);
+                    $(".catalog_products").html(data);
                     SetPictureDefault();
-                    if (typeof this.loadedCallback === "function") {
-                        this.loadedCallback(data);
+                    if (typeof self.loadedCallback === "function") {
+                        self.loadedCallback(data);
                     }
+                    addPagerHandlers();
                 },
                 error: function (xhr, status, error) {
                     // Gọi callback khi có lỗi xảy ra
-                    if (typeof this.errorCallback === "function") {
-                        this.errorCallback(xhr, status, error);
+                    if (typeof self.errorCallback === "function") {
+                        self.errorCallback(xhr, status, error);
                     }
                 }
             });
@@ -152,7 +166,10 @@ var CatalogProducts = {
                 this.errorCallback = callback;
                 break;
             case "before":
-                this.beforeCallback = callback;
+                if (!this.beforeCallbacks) {
+                    this.beforeCallbacks = [];
+                }
+                this.beforeCallbacks.push(callback);
                 break;
         }
     }

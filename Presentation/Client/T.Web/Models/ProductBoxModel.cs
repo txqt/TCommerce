@@ -19,6 +19,7 @@ namespace T.Web.Models
         public bool DisableWishlistButton { get; set; }
         public List<CategoryOfProduct> Categories { get; set; }
         public ProductPriceModel ProductPrice { get; set; }
+        public string ShortDescription { get; set; }
         public class CategoryOfProduct
         {
             public string CategoryName { get; set; }

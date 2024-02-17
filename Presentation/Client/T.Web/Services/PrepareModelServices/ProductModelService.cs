@@ -53,6 +53,7 @@ namespace T.Web.Services.PrepareModelServices
                     PriceValue = product.Price,
                     OldPriceValue = product.OldPrice
                 };
+                model.ShortDescription = product.ShortDescription;
             }
 
             return model;
