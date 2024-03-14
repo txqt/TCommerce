@@ -17,7 +17,7 @@
                 {
                     foreach (var attributeValue in attribute.Values)
                     {
-                        attributeChangeScriptsBuilder.AppendFormat("$('#{0}_{1}').on('click', function(){{$(this).parent('label').parent('span').addClass('active').siblings().removeClass('active'); {2}();}});\n", controlId, attributeValue.Id, onAttributeChangeFuncName);
+                        attributeChangeScriptsBuilder.AppendFormat("$('#{0}_{1}').on('click', function(){{$(this).parent('span').addClass('active').siblings().removeClass('active'); {2}();}});\n", controlId, attributeValue.Id, onAttributeChangeFuncName);
                     }
                 }
                 break;
@@ -59,7 +59,7 @@
                         @foreach (var attributeValue in attributeItem.Values)
                         {
                             var attributeName = attributeValue.Name;
-                            <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected"/>
+                            <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
                             <label for="@(controlId)_@(attributeValue.Id)">@attributeName</label>
                         }
                     }
@@ -68,12 +68,16 @@
                     <div class="product-nav product-nav-dots">
                         @foreach (var attributeValue in attributeItem.Values)
                         {
-                            <span class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)color-squares-@Model.Id">
-                                <label style="background: @attributeValue.ColorSquaresRgb;" for="@(controlId)_@(attributeValue.Id)" class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)">
-                                    <input hidden id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
+                            var backgroundColor = !string.IsNullOrEmpty(attributeValue.ColorSquaresRgb) ? $"background: {attributeValue.ColorSquaresRgb}; " : null;
+
+                            <span class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)color-squares-@Model.Id" style="@backgroundColor" data-bs-toggle="tooltip" data-bs-title="@attributeValue.Name" data-bs-tooltip="bs-tooltip-lg">
+
+                                <label style="width: inherit; height: inherit;" for="@(controlId)_@(attributeValue.Id)" class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)">
                                     <span class="sr-only" title="@attributeValue.Name">@attributeValue.Name</span>
                                 </label>
+                                <input hidden id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
                             </span>
+                            <div class="ml-2"></div>
                         }
                     </div>
                     break;
@@ -96,58 +100,60 @@
     }
 }
 
-<script>
-    $(document).ready(function () {
-    @(onAttributeChangeFuncName)();
-    @Html.Raw(attributeChangeScriptsBuilder.ToString())
-                                    });
-    function @(onAttributeChangeFuncName)() {
-        $.ajax({
-            cache: false,
-            url: "@Html.Raw(Url.ActionLink("ProductDetailsAttributeChange", "Product", new { productId = Model.Id }))",
-            data: $('#product-details-form').serialize(),
-            type: "POST",
-            success: function (data, textStatus, jqXHR) {
-                if (data.price) {
-                    $('.product-price-@Model.Id').text(data.price);
-                }
-                if (data.basepricepangv) {
-                    $('#base-price-pangv-@Model.Id').text(data.basepricepangv);
-                } else {
-                    $('#base-price-pangv-@Model.Id').hide();
-                }
-                if (data.sku) {
-                    $('#sku-@Model.Id').text(data.sku).parent(".sku").show();
-                } else {
-                    $('#sku-@Model.Id').parent(".sku").hide();
-                }
-                if (data.mpn) {
-                    $('#mpn-@Model.Id').text(data.mpn).parent(".manufacturer-part-number").show();
-                } else {
-                    $('#mpn-@Model.Id').parent(".manufacturer-part-number").hide();
-                }
-                if (data.gtin) {
-                    $('#gtin-@Model.Id').text(data.gtin).parent(".gtin").show();
-                } else {
-                    $('#gtin-@Model.Id').parent(".gtin").hide();
-                }
-                if (data.stockAvailability) {
-                    $('#stock-availability-value-@Model.Id').text(data.stockAvailability);
-                }
-                if (data.mainImage) {
-                    console.log(data.mainImage)
-                    $('#product-main-image-@Model.Id').attr("src", data.mainImage);
-                    $('#product-main-image-anchor-@Model.Id').attr("href", data.mainImage);
-                }
-                @* else {
-                    $('#product-main-image-@Model.Id').hide();
-                    $('#product-main-image-anchor-@Model.Id').hide();
-                } *@
-                if (data.message) {
-                    alert(data.message);
-                }
-                $(document).trigger({ type: "product_attributes_changed", changedData: data });
+@Html.Script(@<text>
+        <script>
+            $(document).ready(function () {
+                @(onAttributeChangeFuncName)();
+                @Html.Raw(attributeChangeScriptsBuilder.ToString())
+                                                                                                                                    });
+            function @(onAttributeChangeFuncName)() {
+                $.ajax({
+                    cache: false,
+                    url: "@Html.Raw(Url.ActionLink("ProductDetailsAttributeChange", "Product", new { productId = Model.Id }))",
+                    data: $('#product-details-form').serialize(),
+                    type: "POST",
+                    success: function (data, textStatus, jqXHR) {
+                        if (data.price) {
+                            $('.product-price-@Model.Id').text(data.price);
+                        }
+                        if (data.basepricepangv) {
+                            $('#base-price-pangv-@Model.Id').text(data.basepricepangv);
+                        } else {
+                            $('#base-price-pangv-@Model.Id').hide();
+                        }
+                        if (data.sku) {
+                            $('#sku-@Model.Id').text(data.sku).parent(".sku").show();
+                        } else {
+                            $('#sku-@Model.Id').parent(".sku").hide();
+                        }
+                        if (data.mpn) {
+                            $('#mpn-@Model.Id').text(data.mpn).parent(".manufacturer-part-number").show();
+                        } else {
+                            $('#mpn-@Model.Id').parent(".manufacturer-part-number").hide();
+                        }
+                        if (data.gtin) {
+                            $('#gtin-@Model.Id').text(data.gtin).parent(".gtin").show();
+                        } else {
+                            $('#gtin-@Model.Id').parent(".gtin").hide();
+                        }
+                        if (data.stockAvailability) {
+                            $('#stock-availability-value-@Model.Id').text(data.stockAvailability);
+                        }
+                        if (data.mainImage) {
+                            console.log(data.mainImage)
+                            $('#product-main-image-@Model.Id').attr("src", data.mainImage);
+                            $('#product-main-image-anchor-@Model.Id').attr("href", data.mainImage);
+                        }
+                        @* else {
+                        $('#product-main-image-@Model.Id').hide();
+                        $('#product-main-image-anchor-@Model.Id').hide();
+                        } *@
+                        if (data.message) {
+                            alert(data.message);
+                        }
+                        $(document).trigger({ type: "product_attributes_changed", changedData: data });
+                    }
+                });
             }
-        });
-    }
-</script>
+        </script>
+    </text>)

@@ -35,7 +35,7 @@ namespace T.WebApi.Services.ProductServices
                 ArgumentNullException.ThrowIfNull((await _productAttributeService.GetProductAttributeMappingByIdAsync(attribute.ProductAttributeMappingId)));
             }
 
-            attributesJson = JsonConvert.SerializeObject(attributeDtos); ;
+            attributesJson = JsonConvert.SerializeObject(attributeDtos);
 
             return attributesJson;
         }

@@ -9,6 +9,7 @@ using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.Web.Helpers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace T.Web.Services.ProductService
 {
@@ -79,11 +80,16 @@ namespace T.Web.Services.ProductService
                 // Kiểm tra kiểu dữ liệu của giá trị
                 if (value != null)
                 {
-                    if (value is List<int>)
+                    if (value.GetType().IsArray || value is IEnumerable<object>)
                     {
-                        // Xử lý trường hợp List<int>
-                        List<int> listValue = (List<int>)value;
-                        queryStringParam.Add(propertyName, string.Join(",", listValue));
+                        // Xử lý trường hợp mảng hoặc danh sách
+                        var enumerable = (IEnumerable<object>)value;
+                        var stringValues = new List<string>();
+                        foreach (var item in enumerable)
+                        {
+                            stringValues.Add(item.ToString());
+                        }
+                        queryStringParam.Add(propertyName, string.Join(",", stringValues));
                     }
                     else
                     {
@@ -92,7 +98,6 @@ namespace T.Web.Services.ProductService
                     }
                 }
             }
-
 
             var response = await GetAsync<List<Product>>(QueryHelpers.AddQueryString($"api/products", queryStringParam), _options);
 

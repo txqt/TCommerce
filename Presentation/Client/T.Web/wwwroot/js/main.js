@@ -1,4 +1,7 @@
 ﻿// Main Js File
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
 var getLocation = function (href) {
     var l = document.createElement("a");
     l.href = href;

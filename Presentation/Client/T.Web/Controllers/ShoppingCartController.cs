@@ -58,7 +58,7 @@ namespace T.Web.Controllers
 
             var model = new ShoppingCartItemModel();
             model.ProductId = product.Id;
-            model.ProductModel = _mapper.Map<ProductModel>(product);
+            //model.ProductModel = _mapper.Map<ProductModel>(product);
             model.UserId = customer.Id;
             model.Attributes = new List<ShoppingCartItemModel.SelectedAttribute>();
             model.ShoppingCartType = (ShoppingCartType)shoppingCartTypeId;
@@ -178,7 +178,7 @@ namespace T.Web.Controllers
                 result = await _shoppingCartService.UpdateAsync(model);
             }
 
-            if (result.Success)
+            if (result is ServiceResponse<bool> &&  result.Success)
             {
                 return await RefreshCartView("Success");
             }

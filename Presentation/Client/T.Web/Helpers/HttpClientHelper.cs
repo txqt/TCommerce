@@ -43,17 +43,22 @@ namespace T.Web.Helpers
 
         public async Task<T> GetAsyncWithQueryParams<T>(string url, object data, JsonSerializerOptions jsonOptions = null)
         {
-            var queryString = ToQueryString(data);
+            //var queryString = ToQueryString(data);
 
-            // Kiểm tra nếu đã có các query parameters trong requestUri
-            var fullRequestUri = url;
-            if (!string.IsNullOrEmpty(queryString))
-            {
-                fullRequestUri += (url.Contains("?") ? "&" : "?") + queryString;
-            }
+            //// Kiểm tra nếu đã có các query parameters trong requestUri
+            //var fullRequestUri = url;
+            //if (!string.IsNullOrEmpty(queryString))
+            //{
+            //    fullRequestUri += (url.Contains("?") ? "&" : "?") + queryString;
+            //}
+
+            // Serialize danh sách sản phẩm thành chuỗi JSON
+            var json = JsonConvert.SerializeObject(data);
+
+            var fullUrl = url + $"?{Uri.EscapeDataString(json)}";
 
             // Thực hiện phương thức GET với query parameters đã được thêm vào
-            var response = await _httpClient.GetAsync(fullRequestUri);
+            var response = await _httpClient.GetAsync(fullUrl);
 
             _lastResponse = response;
             return await HandleResponse<T>(response, jsonOptions);

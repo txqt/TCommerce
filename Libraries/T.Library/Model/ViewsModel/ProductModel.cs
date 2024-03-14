@@ -137,6 +137,7 @@ namespace T.Library.Model.ViewsModel
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
 
-        public List<int> CategoryIds { get; set; } = null;
+        [Display(Name = "Danh sách thể loại")]
+        public List<int>? CategoryIds { get; set; }
     }
 }
