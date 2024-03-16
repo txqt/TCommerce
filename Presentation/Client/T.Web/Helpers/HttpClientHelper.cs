@@ -11,6 +11,8 @@ using T.Library.Model.Response;
 using System.Web;
 using System.Net.Http;
 using System.Collections;
+using System.Reflection;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace T.Web.Helpers
 {
@@ -40,78 +42,6 @@ namespace T.Web.Helpers
             _lastResponse = response;
             return await HandleResponse<T>(response, jsonOptions);
         }
-
-        public async Task<T> GetAsyncWithQueryParams<T>(string url, object data, JsonSerializerOptions jsonOptions = null)
-        {
-            //var queryString = ToQueryString(data);
-
-            //// Kiểm tra nếu đã có các query parameters trong requestUri
-            //var fullRequestUri = url;
-            //if (!string.IsNullOrEmpty(queryString))
-            //{
-            //    fullRequestUri += (url.Contains("?") ? "&" : "?") + queryString;
-            //}
-
-            // Serialize danh sách sản phẩm thành chuỗi JSON
-            var json = JsonConvert.SerializeObject(data);
-
-            var fullUrl = url + $"?{Uri.EscapeDataString(json)}";
-
-            // Thực hiện phương thức GET với query parameters đã được thêm vào
-            var response = await _httpClient.GetAsync(fullUrl);
-
-            _lastResponse = response;
-            return await HandleResponse<T>(response, jsonOptions);
-        }
-
-        private static string ToQueryString(object queryParams)
-        {
-            if (queryParams == null)
-            {
-                return null;
-            }
-
-            var queryString = new StringBuilder();
-
-            // Kiểm tra xem queryParams có phải là một danh sách không
-            if (queryParams is IEnumerable enumerableParams && !(queryParams is string))
-            {
-                foreach (var item in enumerableParams)
-                {
-                    var properties = item.GetType().GetProperties();
-                    var encodedParams = Array.ConvertAll(properties, prop =>
-                    {
-                        var value = prop.GetValue(item);
-                        return $"{HttpUtility.UrlEncode(prop.Name)}={HttpUtility.UrlEncode(value.ToString())}";
-                    });
-
-                    queryString.Append(string.Join("&", encodedParams));
-                    queryString.Append("&");
-                }
-
-                // Kiểm tra nếu có ít nhất một phần tử trong danh sách
-                if (queryString.Length > 0)
-                {
-                    // Loại bỏ dấu & cuối cùng
-                    queryString.Length--;
-                }
-            }
-            else
-            {
-                // Xử lý trường hợp khác tương tự như trước đó
-                var properties = queryParams.GetType().GetProperties();
-                var encodedParams = Array.ConvertAll(properties, prop =>
-                {
-                    var value = prop.GetValue(queryParams);
-                    return $"{HttpUtility.UrlEncode(prop.Name)}={HttpUtility.UrlEncode(value.ToString())}";
-                });
-
-                queryString.Append(string.Join("&", encodedParams));
-            }
-
-            return queryString.ToString();
-        }
-
 
         public async Task<T> PostAsJsonAsync<T>(string url, object data, JsonSerializerOptions jsonOptions = null)
         {
@@ -224,7 +154,7 @@ namespace T.Web.Helpers
         {
             var content = new MultipartFormDataContent();
 
-            if(data != null)
+            if (data != null)
             {
                 foreach (var prop in data.GetType().GetProperties())
                 {
@@ -264,7 +194,7 @@ namespace T.Web.Helpers
                     return await response.Content.ReadFromJsonAsync<T>(jsonOptions);
                 }
             }
-            else if(response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
                 return await response.Content.ReadFromJsonAsync<T>(jsonOptions);
             }

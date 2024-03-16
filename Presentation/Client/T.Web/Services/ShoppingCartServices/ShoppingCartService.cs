@@ -1,8 +1,10 @@
-﻿using T.Library.Model;
+﻿using Newtonsoft.Json;
+using T.Library.Model;
 using T.Library.Model.Interface;
 using T.Library.Model.Orders;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
+using T.Web.Extensions;
 using T.Web.Helpers;
 
 namespace T.Web.Services.ShoppingCartServices
@@ -60,12 +62,34 @@ namespace T.Web.Services.ShoppingCartServices
 
         public async Task<List<string>> GetWarningsShoppingCart(List<ShoppingCartItemModel> shoppingCartItemModels)
         {
-            return await GetAsyncWithQueryParams<List<string>>($"{defaultApi}/warnings", shoppingCartItemModels);
+            var queryStrings = shoppingCartItemModels.Select(item => item.ToQueryParameters(i => new
+            {
+                Attributes = JsonConvert.SerializeObject(i.Attributes),
+                i.Quantity,
+                i.CreatedOnUtc,
+                i.UpdatedOnUtc,
+                i.ShoppingCartType,
+                i.ProductId,
+                i.UserId
+            })).ToList();
+
+            return await GetAsync<List<string>>($"{defaultApi}/warnings?shoppingCartItemModels={string.Join("&shoppingCartItemModels=", queryStrings.ToArray())}");
         }
 
         public async Task<List<string>> GetWarningShoppingCart(ShoppingCartItemModel shoppingCartItemModel)
         {
-            return await GetAsyncWithQueryParams<List<string>>($"{defaultApi}/warning", shoppingCartItemModel);
+            string queryString = shoppingCartItemModel.ToQueryParameters(item => new
+            {
+                item.Attributes,
+                item.Quantity,
+                item.CreatedOnUtc,
+                item.UpdatedOnUtc,
+                item.ShoppingCartType,
+                item.ProductId,
+                item.UserId
+            });
+
+            return await GetAsync<List<string>>($"{defaultApi}/warning"+queryString);
         }
     }
 }

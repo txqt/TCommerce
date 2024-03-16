@@ -8,6 +8,7 @@ using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
+using T.Web.Extensions;
 using T.Web.Helpers;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -66,40 +67,24 @@ namespace T.Web.Services.ProductService
 
         public async Task<PagingResponse<Product>> GetAll(ProductParameters productParameters)
         {
-
-            var queryStringParam = new Dictionary<string, string>();
-
-            Type modelType = productParameters.GetType();
-            PropertyInfo[] properties = modelType.GetProperties();
-
-            foreach (PropertyInfo property in properties)
+            string queryParams = productParameters.ToQueryParameters(p => new
             {
-                string propertyName = property.Name;
-                object value = property.GetValue(productParameters);
+                ids = p.ids != null ? string.Join(",", p.ids) : null,
+                CategoryIds = string.Join(",", p.CategoryIds),
+                ManufacturerIds = string.Join(",", p.ManufacturerIds),
+                p.ExcludeFeaturedProducts,
+                p.PriceMax,
+                p.PriceMin,
+                p.ProductTagId,
+                p.SearchDescriptions,
+                p.SearchManufacturerPartNumber,
+                p.SearchSku,
+                p.SearchProductTags,
+                p.ShowHidden,
+                p.OrderBy
+            });
 
-                // Kiểm tra kiểu dữ liệu của giá trị
-                if (value != null)
-                {
-                    if (value.GetType().IsArray || value is IEnumerable<object>)
-                    {
-                        // Xử lý trường hợp mảng hoặc danh sách
-                        var enumerable = (IEnumerable<object>)value;
-                        var stringValues = new List<string>();
-                        foreach (var item in enumerable)
-                        {
-                            stringValues.Add(item.ToString());
-                        }
-                        queryStringParam.Add(propertyName, string.Join(",", stringValues));
-                    }
-                    else
-                    {
-                        // Xử lý các trường hợp khác
-                        queryStringParam.Add(propertyName, value.ToString());
-                    }
-                }
-            }
-
-            var response = await GetAsync<List<Product>>(QueryHelpers.AddQueryString($"api/products", queryStringParam), _options);
+            var response = await GetAsync<List<Product>>("api/products?" + queryParams);
 
             var metaData = JsonSerializer
                 .Deserialize<MetaData>(LastResponse.Headers.GetValues("X-Pagination").First(), new JsonSerializerOptions());
@@ -211,7 +196,11 @@ namespace T.Web.Services.ProductService
 
         public async Task<List<Product>> GetProductsByIdsAsync(List<int> ids)
         {
-            return await GetAsyncWithQueryParams<List<Product>>($"api/products/get-by-ids", ids);
+            var queryString = ids.ToQueryParameters(p => new
+            {
+                ids = p != null ? string.Join(",", p) : null
+            });
+            return await GetAsync<List<Product>>($"api/products/get-by-ids?{queryString}");
         }
 
         public async Task<List<Product>> GetCategoryFeaturedProductsAsync(int categoryId)
