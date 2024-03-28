@@ -1,0 +1,77 @@
+﻿@model List<Address>
+@{
+    Layout = "_InfoLayout";
+}
+@if (Model?.Count > 0)
+{
+    <div class="address-list">
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            var address = Model[i];
+            <div class="section address-item">
+                <div class="title">
+                    <strong>@address.FirstName @address.LastName</strong>
+                </div>
+                <ul class="info">
+                    <li class="name">
+                        @address.FirstName @address.LastName
+                    </li>
+                    <li class="email">
+                        <label>Email:</label>
+                        @address.Email
+                    </li>
+                    <li class="phone">
+                        <label>PhoneNumber</label>
+                        @address.PhoneNumber
+                    </li>
+                    <li class="fax">
+                        <label>FaxNumber</label>
+                        @address.FaxNumber
+                    </li>
+                    @if (!string.IsNullOrEmpty(address.Company))
+                    {
+                        <li class="company">@address.Company</li>
+                    }
+                </ul>
+                <div class="buttons">
+                    <button type="button" class="button-2 edit-address-button" onclick="location.href = '@(Url.RouteUrl("CustomerAddressEdit", new {addressId = address.Id}))'">Edit</button>
+
+                    <button type="button" class="button-2 delete-address-button" onclick="deletecustomeraddress(@(address.Id))">Delete</button>
+                </div>
+            </div>
+        }
+    </div>
+    <script asp-location="Footer">
+        function deletecustomeraddress(addressId) {
+            if (confirm('Are you sure')) {
+                var postData = {
+                    addressId: addressId
+                };
+                addAntiForgeryToken(postData);
+
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "@Url.RouteUrl("CustomerAddressDelete")",
+                    data: postData,
+                    dataType: "json",
+                    success: function (data, textStatus, jqXHR) {
+                        location.href = data.redirect;
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert('Failed to delete');
+                    }
+                });
+            }
+        }
+    </script>
+}
+else
+{
+    <div class="no-data">
+        No Address
+    </div>
+}
+<div class="add-button">
+    <button type="button" class="btn btn-info" onclick="location.href='@Url.RouteUrl("CreateAddress")'">Add New</button>
+</div>

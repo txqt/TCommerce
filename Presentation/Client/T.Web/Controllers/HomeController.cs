@@ -18,6 +18,9 @@ namespace T.Web.Controllers
             _productService = productService;
         }
 
+        [Route("")]
+        [Route("home")]
+        [Route("home/index")]
         public IActionResult Index()
         {
             return View();

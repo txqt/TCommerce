@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Routing;
 using System.Net.Http;
 using System.Text.Json;
@@ -8,6 +9,7 @@ using T.Library.Model.JwtToken;
 using T.Web.Areas.Admin.Services.PrepareAdminModel;
 using T.Web.Areas.Admin.Services.PrepareModel;
 using T.Web.Common;
+using T.Web.Extensions;
 using T.Web.Helpers;
 using T.Web.Routing;
 using T.Web.Services;
@@ -31,6 +33,12 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddControllersWithViews(options =>
+        {
+            options.Conventions.Add(new RouteTokenTransformerConvention(
+                                         new SlugifyParameterTransformer()));
+        });
+
         // Add services to the container.
         builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddJsonOptions(options =>
         {
@@ -38,7 +46,7 @@ internal class Program
             options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         }); ;
-        builder.Services.AddTransient<JwtHandler>();
+        builder.Services.AddSingleton<JwtHandler>();
         builder.Services.AddHttpClient("", sp =>
         {
             sp.BaseAddress = new Uri(builder.Configuration.GetSection("Url:ApiUrl").Value);
@@ -46,32 +54,33 @@ internal class Program
             .AddHttpMessageHandler<JwtHandler>()
             .AddHttpMessageHandler<UnauthorizedResponseHandler>();
 
-        builder.Services.AddTransient<IDatabaseControl, DatabaseControl>();
+        builder.Services.AddSingleton<IDatabaseControl, DatabaseControl>();
         builder.Services.AddAutoMapper(typeof(Program).Assembly);
-        builder.Services.AddTransient<IUserRegistrationService, UserRegistrationService>();
-        builder.Services.AddTransient<IProductService, ProductService>();
-        builder.Services.AddTransient<IProductAttributeCommon, ProductAttributeService>();
-        builder.Services.AddTransient<ISecurityService, SecurityService>();
-        builder.Services.AddTransient<IProductModelService, ProductModelService>();
-        builder.Services.AddTransient<ICatalogModelService, CatalogModelService>();
-        builder.Services.AddTransient<IAdminCategoryModelService, AdminCategoryModelService>();
-        builder.Services.AddTransient<IAdminProductModelService, AdminProductModelService>();
-        builder.Services.AddTransient<IAdminBannerModelService, AdminBannerModelService>();
-        builder.Services.AddTransient<IAdminUserModelService, AdminUserModelService>();
-        builder.Services.AddTransient<ICategoryServiceCommon, CategoryService>();
-        builder.Services.AddTransient<IProductCategoryService, ProductCategoryService>();
-        builder.Services.AddTransient<IUserService, UserService>();
-        builder.Services.AddTransient<IBannerService, BannerService>();
-        builder.Services.AddTransient<IUrlRecordService, UrlRecordService>();
-        builder.Services.AddTransient<IPictureService, PictureService>();
+        builder.Services.AddSingleton<IUserRegistrationService, UserRegistrationService>();
+        builder.Services.AddSingleton<IProductService, ProductService>();
+        builder.Services.AddSingleton<IProductAttributeCommon, ProductAttributeService>();
+        builder.Services.AddSingleton<ISecurityService, SecurityService>();
+        builder.Services.AddSingleton<IProductModelService, ProductModelService>();
+        builder.Services.AddSingleton<ICatalogModelService, CatalogModelService>();
+        builder.Services.AddSingleton<IAdminCategoryModelService, AdminCategoryModelService>();
+        builder.Services.AddSingleton<IAdminProductModelService, AdminProductModelService>();
+        builder.Services.AddSingleton<IAdminBannerModelService, AdminBannerModelService>();
+        builder.Services.AddSingleton<IAdminUserModelService, AdminUserModelService>();
+        builder.Services.AddSingleton<ICategoryServiceCommon, CategoryService>();
+        builder.Services.AddSingleton<IProductCategoryService, ProductCategoryService>();
+        builder.Services.AddSingleton<IUserService, UserService>();
+        builder.Services.AddSingleton<IBannerService, BannerService>();
+        builder.Services.AddSingleton<IUrlRecordService, UrlRecordService>();
+        builder.Services.AddSingleton<IPictureService, PictureService>();
         builder.Services.AddSingleton<HttpClientHelper>();
-        builder.Services.AddTransient<UnauthorizedResponseHandler>();
-        builder.Services.AddTransient<SlugRouteTransformer>();
-        builder.Services.AddTransient<IShoppingCartModelService, ShoppingCartModelService>();
-        builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
-        builder.Services.AddTransient<IManufacturerService, ManufacturerService>();
-        builder.Services.AddTransient<IAdminManufacturerModelService, AdminManufacturerModelService>();
-        builder.Services.AddTransient<IBaseAdminModelService, BaseAdminModelService>();
+        builder.Services.AddSingleton<UnauthorizedResponseHandler>();
+        builder.Services.AddSingleton<SlugRouteTransformer>();
+        builder.Services.AddSingleton<IShoppingCartModelService, ShoppingCartModelService>();
+        builder.Services.AddSingleton<IShoppingCartService, ShoppingCartService>();
+        builder.Services.AddSingleton<IManufacturerService, ManufacturerService>();
+        builder.Services.AddSingleton<IAdminManufacturerModelService, AdminManufacturerModelService>();
+        builder.Services.AddSingleton<IBaseAdminModelService, BaseAdminModelService>();
+        builder.Services.AddSingleton<IAccountModelService, AccountModelService>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {
             PropertyNamingPolicy = null,
@@ -125,28 +134,15 @@ internal class Program
 
         //app.ConfigureCustomExceptionMiddleware();
 
-        app.MapDynamicControllerRoute<SlugRouteTransformer>("{slug}");
-
         app.MapControllerRoute(
-            name: "MyArea",
-            pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                    name: "MyArea",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
 
-        app.MapControllerRoute(name: "cart",
-                pattern: "cart",
-                defaults: new { controller = "ShoppingCart", action = "Cart" });
-
-        app.MapControllerRoute(name: "PageNotFound",
-            pattern: $"page-not-found",
-            defaults: new { controller = "Common", action = "PageNotFound" });
-
-        app.MapControllerRoute(name: "GetCategoryProducts",
-            pattern: $"category/products/",
-            defaults: new { controller = "Catalog", action = "GetCategoryProducts" });
-
+        app.RegisterRoutes();
 
         bool hasRunOnce = false;
 

@@ -15,6 +15,11 @@ using T.WebApi.Services.DataSeederService;
 using AutoMapper;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Services.CategoryServices;
+using T.WebApi.Database;
+using Newtonsoft.Json;
+using T.WebApi.Services.CountryServices;
+using T.WebApi.Services.StateServices;
+using T.WebApi.Services.CityServices;
 
 namespace T.WebApi.ServicesSeederService
 {
@@ -28,6 +33,9 @@ namespace T.WebApi.ServicesSeederService
         private readonly ISecurityService _securityService;
         private readonly IManufacturerServicesCommon _manufacturerServicesCommon;
         private readonly IMapper _mapper;
+        private readonly ICountryService _countryService;
+        private readonly IStateService _stateService;
+        private readonly ICityService _cityService;
 
         public DataSeeder(RoleManager<Role> roleManager,
             UserManager<User> userManager,
@@ -37,7 +45,10 @@ namespace T.WebApi.ServicesSeederService
             IProductAttributeService productAttributeService,
             ISecurityService permissionRecordService,
             IManufacturerServicesCommon manufacturerServicesCommon,
-            IMapper mapper)
+            IMapper mapper,
+            ICountryService countryService,
+            IStateService stateService,
+            ICityService cityService)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -47,7 +58,9 @@ namespace T.WebApi.ServicesSeederService
             _securityService = permissionRecordService;
             this._manufacturerServicesCommon = manufacturerServicesCommon;
             _mapper = mapper;
-            //_permissionRecordUserRoleMappingService = permissionRecordUserRoleMappingService;
+            _countryService = countryService;
+            _stateService = stateService;
+            _cityService = cityService;
         }
 
         public async Task Initialize(string AdminEmail, string AdminPassword, bool sampleData = false)
@@ -92,6 +105,25 @@ namespace T.WebApi.ServicesSeederService
                 else
                 {
                     throw new Exception("Something went wrong");
+                }
+
+                var countriesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "countries.json"));
+                var statesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "states.json"));
+                var citiesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "cities.json"));
+
+                try
+                {
+                    var countryObjects = JsonConvert.DeserializeObject<List<Country>>(countriesJson);
+                    var stateObjects = JsonConvert.DeserializeObject<List<State>>(statesJson);
+                    var cityObjects = JsonConvert.DeserializeObject<List<City>>(citiesJson);
+
+                    await _countryService.BulkCreateCountryAsync(countryObjects);
+                    await _stateService.BulkCreateStateAsync(stateObjects);
+                    await _cityService.BulkCreateCityAsync(cityObjects);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
                 }
             }
         }

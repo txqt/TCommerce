@@ -10,12 +10,15 @@ using System.Security.Claims;
 using System.Text;
 using T.Library.Model;
 using T.Library.Model.Account;
+using T.Library.Model.Common;
+using T.Library.Model.ViewsModel;
+using T.Web.Models;
 using T.Web.Services.UserRegistrationServices;
 using T.Web.Services.UserService;
 
 namespace T.Web.Controllers
 {
-    [Route("account/[action]")]
+    //[Route("account/[action]")]
     public class AccountController : BaseController
     {
         private readonly IUserRegistrationService _accountService;
@@ -223,6 +226,74 @@ namespace T.Web.Controllers
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Info()
+        {
+            var user = await _userService.GetCurrentUser();
+            var model = new AccountInfoModel()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                DateOfBirth = user.Dob,
+                Email = user.Email
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Info(AccountInfoModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                RedirectToAction(nameof(Info));
+            }
+
+            var result = await _userService.UpdateUserAccountInfo(model);
+
+            SetStatusMessage(result.Success ? "Success" : "Failed");
+
+            return RedirectToAction(nameof(Info));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Addresses()
+        {
+            return View(await _userService.GetOwnAddressesAsync());
+        }
+
+        [HttpGet]
+        public IActionResult CreateAddress()
+        {
+            return View(new Address());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAddress(Address address)
+        {
+            if (!ModelState.IsValid)
+            {
+                RedirectToAction(nameof(Info));
+            }
+
+            var result = await _userService.CreateUserAddressAsync(address);
+
+            SetStatusMessage(result.Success ? "Success" : "Failed");
+
+            return RedirectToAction(nameof(CreateAddress));
+        }
+
+        [HttpGet]
+        public IActionResult UpdateAddress()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult UpdateAddress(Address address)
         {
             return View();
         }

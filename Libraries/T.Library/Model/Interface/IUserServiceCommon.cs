@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using T.Library.Model.Account;
+using T.Library.Model.Common;
 using T.Library.Model.RefreshToken;
 using T.Library.Model.Response;
 using T.Library.Model.Security;
@@ -22,5 +23,9 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> DeleteUserByUserIdAsync(Guid id);
         Task<ServiceResponse<bool>> BanUser(string userId);
         Task<bool> Logout(Guid userId);
+        Task<ServiceResponse<bool>> UpdateUserAccountInfo(AccountInfoModel model);
+        Task<ServiceResponse<bool>> CreateUserAddressAsync(Address address);
+        Task<ServiceResponse<bool>> DeleteUserAddressAsync(int id);
+        Task<List<Address>> GetOwnAddressesAsync();
     }
 }

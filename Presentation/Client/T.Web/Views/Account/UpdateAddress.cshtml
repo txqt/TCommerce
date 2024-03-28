@@ -1,0 +1,14 @@
+﻿@model Address
+@{
+    Layout = "_InfoLayout";
+}
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateAddress">
+            @Html.PartialAsync("_CreateOrUpdateAddress", Model)
+            <div class="form-group">
+                <input type="submit" value="Update" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

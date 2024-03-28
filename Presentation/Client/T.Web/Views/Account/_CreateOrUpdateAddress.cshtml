@@ -1,0 +1,90 @@
+﻿@model T.Library.Model.Common.Address
+
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+@if(Model.Id > 0)
+{
+    <div class="form-group">
+        <label asp-for="Id" class="control-label"></label>
+        <input asp-for="Id" class="form-control" />
+        <span asp-validation-for="Id" class="text-danger"></span>
+    </div>
+}
+<div class="form-group">
+    <label asp-for="FirstName" class="control-label"></label>
+    <input asp-for="FirstName" class="form-control" />
+    <span asp-validation-for="FirstName" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="LastName" class="control-label"></label>
+    <input asp-for="LastName" class="form-control" />
+    <span asp-validation-for="LastName" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Email" class="control-label"></label>
+    <input asp-for="Email" class="form-control" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Company" class="control-label"></label>
+    <input asp-for="Company" class="form-control" />
+    <span asp-validation-for="Company" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="CountryId" class="control-label"></label>
+    <input asp-for="CountryId" class="form-control" />
+    <span asp-validation-for="CountryId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="StateId" class="control-label"></label>
+    <input asp-for="StateId" class="form-control" />
+    <span asp-validation-for="StateId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="County" class="control-label"></label>
+    <input asp-for="County" class="form-control" />
+    <span asp-validation-for="County" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="City" class="control-label"></label>
+    <input asp-for="City" class="form-control" />
+    <span asp-validation-for="City" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Address1" class="control-label"></label>
+    <input asp-for="Address1" class="form-control" />
+    <span asp-validation-for="Address1" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Address2" class="control-label"></label>
+    <input asp-for="Address2" class="form-control" />
+    <span asp-validation-for="Address2" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="ZipPostalCode" class="control-label"></label>
+    <input asp-for="ZipPostalCode" class="form-control" />
+    <span asp-validation-for="ZipPostalCode" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="PhoneNumber" class="control-label"></label>
+    <input asp-for="PhoneNumber" class="form-control" />
+    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="FaxNumber" class="control-label"></label>
+    <input asp-for="FaxNumber" class="form-control" />
+    <span asp-validation-for="FaxNumber" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="CustomAttributes" class="control-label"></label>
+    <input asp-for="CustomAttributes" class="form-control" />
+    <span asp-validation-for="CustomAttributes" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="CreatedOnUtc" class="control-label"></label>
+    <input asp-for="CreatedOnUtc" class="form-control" />
+    <span asp-validation-for="CreatedOnUtc" class="text-danger"></span>
+</div>
+
+
+

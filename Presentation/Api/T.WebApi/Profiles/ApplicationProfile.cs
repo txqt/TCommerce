@@ -81,6 +81,20 @@ namespace T.WebApi.Profiles
 
             CreateMap<CategoryModel, Category>()
                 .ReverseMap();
+
+            CreateMap<AccountInfoModel, User>()
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.DateOfBirth))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ReverseMap();
+
+            CreateMap<AccountInfoModel, UserModel>()
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.DateOfBirth))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ReverseMap();
         }
     }
 }

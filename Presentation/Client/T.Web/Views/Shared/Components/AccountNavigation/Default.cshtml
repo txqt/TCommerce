@@ -1,0 +1,40 @@
+﻿@model AccountNavigationModel
+
+@if (Model is not null)
+{
+    <div class="widget widget-collapsible">
+        <h3 class="widget-title">
+            <a data-toggle="collapse" href="#widget-category" role="button" aria-expanded="true" aria-controls="widget-category">
+                Cài đặt
+            </a>
+        </h3><!-- End .widget-title -->
+
+        <div class="collapse show" id="widget-category">
+            <div class="widget-body">
+                <div class="filter-items filter-items-count">
+                    @if (Model.AccountNavigationItems?.Count > 0)
+                    {
+                        @foreach (var item in Model.AccountNavigationItems)
+                        {
+                            <ul class="category-list">
+                                <li>
+                                    @{
+                                        var style = (Model.SelectedTab == item.Tab) ? "color: #39f;" : "";
+                                    }
+                                    <div class="filter-item">
+                                        <div class="custom-control custom-checkbox">
+                                            <a href="@Url.RouteName(item.RouteName)">
+                                                <label style="@style" class="custom-control-label" for="category_@item.Id">@item.Title</label>
+                                            </a>
+                                        </div><!-- End .custom-checkbox -->
+                                    </div><!-- End .filter-item -->
+                                </li>
+                            </ul>
+                        }
+                    }
+                </div>
+                <!-- End .filter-items -->
+            </div><!-- End .widget-body -->
+        </div><!-- End .collapse -->
+    </div>
+}

@@ -70,8 +70,8 @@ namespace T.Web.Services.ProductService
             string queryParams = productParameters.ToQueryParameters(p => new
             {
                 ids = p.ids != null ? string.Join(",", p.ids) : null,
-                CategoryIds = string.Join(",", p.CategoryIds),
-                ManufacturerIds = string.Join(",", p.ManufacturerIds),
+                CategoryIds = p.CategoryIds != null ? string.Join(",", p.CategoryIds) : null,
+                ManufacturerIds = p.ManufacturerIds != null ? string.Join(",", p.ManufacturerIds) : null,
                 p.ExcludeFeaturedProducts,
                 p.PriceMax,
                 p.PriceMin,

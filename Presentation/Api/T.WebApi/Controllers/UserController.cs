@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using T.Library.Model;
 using T.Library.Model.Account;
+using T.Library.Model.Common;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
@@ -173,6 +174,51 @@ namespace T.WebApi.Controllers
             }
 
             return BadRequest(result);
+        }
+
+        [HttpPut("me/account/info")]
+        [CheckPermission]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> UpdateUserAccountInfo(AccountInfoModel model)
+        {
+            var result = await _userService.UpdateUserAccountInfo(model);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpGet("me/account/addresses")]
+        [CheckPermission]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> GetOwnAddressesAsync()
+        {
+            var result = await _userService.GetOwnAddressesAsync();
+            return Ok(result);
+        }
+
+        [HttpPost("me/account/address")]
+        [CheckPermission]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> CreateUserAddressAsync(Address address)
+        {
+            var result = await _userService.CreateUserAddressAsync(address);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpDelete("account/address/{id}")]
+        [CheckPermission]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> DeleteUserAddressAsync(int id)
+        {
+            var result = await _userService.DeleteUserAddressAsync(id);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
         }
     }
 }
