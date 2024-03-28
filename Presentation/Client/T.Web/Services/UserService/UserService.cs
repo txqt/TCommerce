@@ -12,6 +12,7 @@ using T.Library.Model.RefreshToken;
 using T.Library.Model.Account;
 using Microsoft.AspNetCore.Mvc;
 using T.Web.Helpers;
+using T.Library.Model.Common;
 
 namespace T.Web.Services.UserService
 {
@@ -74,6 +75,26 @@ namespace T.Web.Services.UserService
         public async Task<ServiceResponse<bool>> Register(RegisterRequest registerRequest)
         {
             return await PostAsJsonAsync<ServiceResponse<bool>>("api/user/account/register", registerRequest);
+        }
+
+        public async Task<ServiceResponse<bool>> UpdateUserAccountInfo(AccountInfoModel model)
+        {
+            return await PutAsJsonAsync<ServiceResponse<bool>>($"api/user/me/account/info", model);
+        }
+
+        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(Address address)
+        {
+            return await PostAsJsonAsync<ServiceResponse<bool>>($"api/user/me/account/address", address);
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteUserAddressAsync(int id)
+        {
+            return await DeleteAsync<ServiceResponse<bool>>($"api/user/account/address/{id}");
+        }
+
+        public async Task<List<Address>> GetOwnAddressesAsync()
+        {
+            return await GetAsync<List<Address>>($"api/user/me/account/addresses");
         }
     }
 }

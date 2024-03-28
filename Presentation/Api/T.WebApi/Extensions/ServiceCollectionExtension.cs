@@ -32,6 +32,10 @@ using T.Library.Model.JwtToken;
 using T.WebApi.Helpers;
 using T.WebApi.Services.ManufacturerServices;
 using T.WebApi.Services.CacheServices;
+using T.WebApi.Services.AddressServices;
+using T.WebApi.Services.CountryServices;
+using T.WebApi.Services.StateServices;
+using T.WebApi.Services.CityServices;
 
 namespace T.WebApi.Extensions
 {
@@ -129,6 +133,7 @@ namespace T.WebApi.Extensions
         // Thêm các dịch vụ cần thiết
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
+            services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>));
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IEmailSender, SendMailService>();
             services.AddScoped<IProductService, ProductService>();
@@ -146,11 +151,14 @@ namespace T.WebApi.Extensions
             services.AddScoped<IUrlRecordService, UrlRecordService>();
             services.AddScoped<ValidationFilterAttribute>();
             services.AddScoped<DatabaseContextFactory>();
-            services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>));
             services.AddScoped<IUserRegistrationService, UserRegistrationService>();
             services.AddScoped<IProductAttributeConverter, ProductAttributeConverter>();
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
             services.AddScoped<ICacheService, CacheService>();
+            services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<ICountryService, CountryService>();
+            services.AddScoped<IStateService, StateService>();
+            services.AddScoped<ICityService, CityService>();
             return services;
         }
 
@@ -187,7 +195,7 @@ namespace T.WebApi.Extensions
                 options.Lockout.AllowedForNewUsers = true;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
                 options.Lockout.MaxFailedAccessAttempts = 3;
-                options.User.RequireUniqueEmail = true;
+                //options.User.RequireUniqueEmail = true;
                 options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
             });
 

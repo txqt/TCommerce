@@ -18,6 +18,9 @@ using T.Library.Model.RefreshToken;
 using T.Library.Model.Account;
 using T.WebApi.Services.TokenServices;
 using T.WebApi.Helpers;
+using T.Library.Model.Common;
+using T.WebApi.Services.IRepositoryServices;
+using T.WebApi.Services.AddressServices;
 
 namespace T.WebApi.Services.UserServices
 {
@@ -36,7 +39,10 @@ namespace T.WebApi.Services.UserServices
         private readonly IOptions<UrlOptions> _urlOptions;
         private readonly ITokenService _tokenService;
         private readonly SignInManager<User> _signInManager;
-        public UserService(IMapper mapper, DatabaseContext context, UserManager<User> userManager, RoleManager<Role> roleManager, IHttpContextAccessor httpContextAccessor, IEmailSender emailService, IOptions<UrlOptions> urlOptions, ITokenService tokenService, SignInManager<User> signInManager)
+        private readonly IRepository<UserAddressMapping> _userAddressMappingRepository;
+        private readonly IRepository<Address> _addressMappingRepository;
+        private readonly IAddressService _addressService;
+        public UserService(IMapper mapper, DatabaseContext context, UserManager<User> userManager, RoleManager<Role> roleManager, IHttpContextAccessor httpContextAccessor, IEmailSender emailService, IOptions<UrlOptions> urlOptions, ITokenService tokenService, SignInManager<User> signInManager, IRepository<UserAddressMapping> userAddressMappingRepository, IAddressService addressService, IRepository<Address> addressMappingRepository)
         {
             _mapper = mapper;
             _context = context;
@@ -47,6 +53,9 @@ namespace T.WebApi.Services.UserServices
             _urlOptions = urlOptions;
             _tokenService = tokenService;
             _signInManager = signInManager;
+            _userAddressMappingRepository = userAddressMappingRepository;
+            _addressService = addressService;
+            _addressMappingRepository = addressMappingRepository;
         }
 
         public async Task<ServiceResponse<bool>> CreateUserAsync(UserModel model)
@@ -404,5 +413,70 @@ namespace T.WebApi.Services.UserServices
             var decodedToken = WebEncoders.Base64UrlDecode(encodeToken);
             return Encoding.UTF8.GetString(decodedToken);
         }
+
+        public async Task<ServiceResponse<bool>> UpdateUserAccountInfo(AccountInfoModel model)
+        {
+            var userModel = await GetCurrentUser();
+
+            _mapper.Map(model, userModel);
+
+            return await UpdateUserAsync(userModel);
+        }
+
+        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(Address address)
+        {
+            var user = await GetCurrentUser();
+
+            ArgumentNullException.ThrowIfNull(user);
+
+            ArgumentNullException.ThrowIfNull(address);
+
+            if (await _userAddressMappingRepository.Table
+                    .FirstOrDefaultAsync(m => m.AddressId == address.Id && m.UserId == user.Id)
+                is null)
+            {
+                var mapping = new UserAddressMapping
+                {
+                    AddressId = address.Id,
+                    UserId = user.Id
+                };
+
+                await _userAddressMappingRepository.CreateAsync(mapping);
+                return new ServiceSuccessResponse<bool>();
+            }
+
+            return new ServiceErrorResponse<bool>();
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteUserAddressAsync(int id)
+        {
+            var user = await GetCurrentUser();
+
+            ArgumentNullException.ThrowIfNull(user);
+
+            var address = await _addressService.GetAddressByIdAsync(id);
+
+            if (await _userAddressMappingRepository.Table
+                    .FirstOrDefaultAsync(m => m.AddressId == address.Id && m.UserId == user.Id)
+                is UserAddressMapping mapping)
+            {
+                await _userAddressMappingRepository.DeleteAsync(mapping.Id);
+                return new ServiceSuccessResponse<bool> { Message = "Success" };
+            }
+            return new ServiceErrorResponse<bool>() { Message = "No address found" };
+        }
+
+        public async Task<List<Address>> GetOwnAddressesAsync()
+        {
+            var userId = (await GetCurrentUser()).Id;
+
+            var query = from address in _addressMappingRepository.Table
+                        join cam in _userAddressMappingRepository.Table on address.Id equals cam.AddressId
+                        where cam.UserId == userId
+                        select address;
+
+            return await query.ToListAsync();
+        }
     }
 }
+

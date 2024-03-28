@@ -1,43 +1,45 @@
 ﻿@model CatalogProductsModel
-<div class="catalog_products">
-    <div class="products mb-3">
-        @if (Model.Products?.Count > 0)
-        {
-            <div class="row justify-content-center">
-                @foreach (var product in Model.Products)
-                {
-                    if(Model.ViewMode == "list")
+@if(Model.Products?.Count > 0)
+{
+    <div class="catalog_products">
+        <div class="products mb-3">
+            @if (Model.Products?.Count > 0)
+            {
+                <div class="row justify-content-center">
+                    @foreach (var product in Model.Products)
                     {
-                        @await Html.PartialAsync("_ProductBoxList", product)
-                    }
-                    else
-                    {
-                        var viewModeClass = "col-6 col-md-4 col-lg-4";
-                        switch (Model.ViewMode)
+                        if (Model.ViewMode == "list")
                         {
-                            case "2-cols":
-                                viewModeClass = "col-6";
-                                break;
-                            case "4-cols":
-                                viewModeClass = "col-6 col-md-4 col-lg-4 col-xl-3";
-                                break;
-                            case "3-cols":
-                            default:
-                                break;
+                            @await Html.PartialAsync("_ProductBoxList", product)
                         }
-                        <div class="@viewModeClass">
-                            @await Html.PartialAsync("_ProductBox", product)
-                        </div>
+                        else
+                        {
+                            var viewModeClass = "col-6 col-md-4 col-lg-4";
+                            switch (Model.ViewMode)
+                            {
+                                case "2-cols":
+                                    viewModeClass = "col-6";
+                                    break;
+                                case "4-cols":
+                                    viewModeClass = "col-6 col-md-4 col-lg-4 col-xl-3";
+                                    break;
+                                case "3-cols":
+                                default:
+                                    break;
+                            }
+                            <div class="@viewModeClass">
+                                @await Html.PartialAsync("_ProductBox", product)
+                            </div>
+                        }
                     }
-                }
-            </div>
+                </div>
 
-            <!-- End .row -->
-        }
-    </div><!-- End .products -->
-    @await Html.PartialAsync("_PagingPartial", Model.PagingMetaData)
-</div>
-@Html.Script(@<text>
+                <!-- End .row -->
+            }
+        </div><!-- End .products -->
+        @await Html.PartialAsync("_PagingPartial", Model.PagingMetaData)
+    </div>
+    @Html.Script(@<text>
         <script asp-location="Footer">
             $(document).ready(function () {
                 CatalogProducts.init({
@@ -57,3 +59,8 @@
         </script>
     </text>
 )
+}
+else
+{
+    <p class="text-center">No products</p>
+}

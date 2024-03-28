@@ -1,0 +1,34 @@
+﻿@{
+    Layout = "_Layout";
+}
+<div class="page-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="mb-2"></div>
+                @RenderBody()
+            </div><!-- End .col-lg-9 -->
+            <aside class="col-lg-3 order-lg-first">
+                <div class="sidebar sidebar-shop">
+                    <div class="widget widget-clean">
+                    </div><!-- End .widget widget-clean -->
+                    @{
+                        var selectedTabId = 0;
+                        if (Url.ActionContext.RouteData.Values["controller"].ToString().Equals("account", StringComparison.InvariantCultureIgnoreCase) &&
+                        Url.ActionContext.RouteData.Values["action"].ToString().Equals("info", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            selectedTabId = (int)AccountNavigationEnum.Info;
+                        }
+
+                        if (Url.ActionContext.RouteData.Values["controller"].ToString().Equals("account", StringComparison.InvariantCultureIgnoreCase) &&
+                        Url.ActionContext.RouteData.Values["action"].ToString().Equals("addresses", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            selectedTabId = (int)AccountNavigationEnum.Addresses;
+                        }
+                    }
+                    @await Component.InvokeAsync("AccountNavigation", new { selectedTabId = selectedTabId})
+                </div><!-- End .sidebar sidebar-shop -->
+            </aside><!-- End .col-lg-3 -->
+        </div><!-- End .row -->
+    </div><!-- End .container -->
+</div>
