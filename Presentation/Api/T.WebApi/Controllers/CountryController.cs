@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace T.WebApi.Controllers
 {
-    [Route("api/country")]
+    [Route("api/countries")]
     [ApiController]
     public class CountryController : ControllerBase
     {

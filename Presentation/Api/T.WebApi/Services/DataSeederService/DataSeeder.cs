@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using T.WebApi.Services.CountryServices;
 using T.WebApi.Services.StateServices;
 using T.WebApi.Services.CityServices;
+using T.WebApi.Helpers;
 
 namespace T.WebApi.ServicesSeederService
 {
@@ -36,6 +37,7 @@ namespace T.WebApi.ServicesSeederService
         private readonly ICountryService _countryService;
         private readonly IStateService _stateService;
         private readonly ICityService _cityService;
+        private readonly DatabaseContext _context;
 
         public DataSeeder(RoleManager<Role> roleManager,
             UserManager<User> userManager,
@@ -48,7 +50,8 @@ namespace T.WebApi.ServicesSeederService
             IMapper mapper,
             ICountryService countryService,
             IStateService stateService,
-            ICityService cityService)
+            ICityService cityService,
+            DatabaseContext context)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -61,6 +64,7 @@ namespace T.WebApi.ServicesSeederService
             _countryService = countryService;
             _stateService = stateService;
             _cityService = cityService;
+            _context = context;
         }
 
         public async Task Initialize(string AdminEmail, string AdminPassword, bool sampleData = false)
@@ -117,9 +121,21 @@ namespace T.WebApi.ServicesSeederService
                     var stateObjects = JsonConvert.DeserializeObject<List<State>>(statesJson);
                     var cityObjects = JsonConvert.DeserializeObject<List<City>>(citiesJson);
 
+                    using var transaction = _context.Database.BeginTransaction();
+
+                    await _context.EnableIdentityInsert<Country>();
                     await _countryService.BulkCreateCountryAsync(countryObjects);
+                    await _context.DisableIdentityInsert<Country>();
+
+                    await _context.EnableIdentityInsert<State>();
                     await _stateService.BulkCreateStateAsync(stateObjects);
+                    await _context.DisableIdentityInsert<State>();
+
+                    await _context.EnableIdentityInsert<City>();
                     await _cityService.BulkCreateCityAsync(cityObjects);
+                    await _context.DisableIdentityInsert<City>();
+
+                    transaction.Commit();
                 }
                 catch(Exception e)
                 {
