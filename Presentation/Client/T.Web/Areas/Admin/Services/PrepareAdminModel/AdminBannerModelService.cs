@@ -9,7 +9,7 @@ namespace T.Web.Areas.Admin.Services.PrepareAdminModel
 {
     public interface IAdminBannerModelService
     {
-        Task<BannerViewModel> PrepareBannerModelAsync(BannerViewModel model, Banner banner);
+        BannerViewModel PrepareBannerModel(BannerViewModel model, Banner banner);
     }
     public class AdminBannerModelService : IAdminBannerModelService
     {
@@ -22,7 +22,7 @@ namespace T.Web.Areas.Admin.Services.PrepareAdminModel
             _bannerService = bannerService;
         }
 
-        public async Task<BannerViewModel> PrepareBannerModelAsync(BannerViewModel model, Banner banner)
+        public BannerViewModel PrepareBannerModel(BannerViewModel model, Banner banner)
         {
             if (banner is not null)
             {

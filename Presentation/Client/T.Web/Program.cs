@@ -46,7 +46,7 @@ internal class Program
             options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         }); ;
-        builder.Services.AddSingleton<JwtHandler>();
+        builder.Services.AddScoped<JwtHandler>();
         builder.Services.AddHttpClient("", sp =>
         {
             sp.BaseAddress = new Uri(builder.Configuration.GetSection("Url:ApiUrl").Value);
@@ -54,33 +54,33 @@ internal class Program
             .AddHttpMessageHandler<JwtHandler>()
             .AddHttpMessageHandler<UnauthorizedResponseHandler>();
 
-        builder.Services.AddSingleton<IDatabaseControl, DatabaseControl>();
+        builder.Services.AddScoped<IDatabaseControl, DatabaseControl>();
         builder.Services.AddAutoMapper(typeof(Program).Assembly);
-        builder.Services.AddSingleton<IUserRegistrationService, UserRegistrationService>();
-        builder.Services.AddSingleton<IProductService, ProductService>();
-        builder.Services.AddSingleton<IProductAttributeCommon, ProductAttributeService>();
-        builder.Services.AddSingleton<ISecurityService, SecurityService>();
-        builder.Services.AddSingleton<IProductModelService, ProductModelService>();
-        builder.Services.AddSingleton<ICatalogModelService, CatalogModelService>();
-        builder.Services.AddSingleton<IAdminCategoryModelService, AdminCategoryModelService>();
-        builder.Services.AddSingleton<IAdminProductModelService, AdminProductModelService>();
-        builder.Services.AddSingleton<IAdminBannerModelService, AdminBannerModelService>();
-        builder.Services.AddSingleton<IAdminUserModelService, AdminUserModelService>();
-        builder.Services.AddSingleton<ICategoryServiceCommon, CategoryService>();
-        builder.Services.AddSingleton<IProductCategoryService, ProductCategoryService>();
-        builder.Services.AddSingleton<IUserService, UserService>();
-        builder.Services.AddSingleton<IBannerService, BannerService>();
-        builder.Services.AddSingleton<IUrlRecordService, UrlRecordService>();
-        builder.Services.AddSingleton<IPictureService, PictureService>();
-        builder.Services.AddSingleton<HttpClientHelper>();
-        builder.Services.AddSingleton<UnauthorizedResponseHandler>();
-        builder.Services.AddSingleton<SlugRouteTransformer>();
-        builder.Services.AddSingleton<IShoppingCartModelService, ShoppingCartModelService>();
-        builder.Services.AddSingleton<IShoppingCartService, ShoppingCartService>();
-        builder.Services.AddSingleton<IManufacturerService, ManufacturerService>();
-        builder.Services.AddSingleton<IAdminManufacturerModelService, AdminManufacturerModelService>();
-        builder.Services.AddSingleton<IBaseAdminModelService, BaseAdminModelService>();
-        builder.Services.AddSingleton<IAccountModelService, AccountModelService>();
+        builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+        builder.Services.AddScoped<IProductService, ProductService>();
+        builder.Services.AddScoped<IProductAttributeCommon, ProductAttributeService>();
+        builder.Services.AddScoped<ISecurityService, SecurityService>();
+        builder.Services.AddScoped<IProductModelService, ProductModelService>();
+        builder.Services.AddScoped<ICatalogModelService, CatalogModelService>();
+        builder.Services.AddScoped<IAdminCategoryModelService, AdminCategoryModelService>();
+        builder.Services.AddScoped<IAdminProductModelService, AdminProductModelService>();
+        builder.Services.AddScoped<IAdminBannerModelService, AdminBannerModelService>();
+        builder.Services.AddScoped<IAdminUserModelService, AdminUserModelService>();
+        builder.Services.AddScoped<ICategoryServiceCommon, CategoryService>();
+        builder.Services.AddScoped<IProductCategoryService, ProductCategoryService>();
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IBannerService, BannerService>();
+        builder.Services.AddScoped<IUrlRecordService, UrlRecordService>();
+        builder.Services.AddScoped<IPictureService, PictureService>();
+        builder.Services.AddScoped<HttpClientHelper>();
+        builder.Services.AddScoped<UnauthorizedResponseHandler>();
+        builder.Services.AddScoped<SlugRouteTransformer>();
+        builder.Services.AddScoped<IShoppingCartModelService, ShoppingCartModelService>();
+        builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+        builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
+        builder.Services.AddScoped<IAdminManufacturerModelService, AdminManufacturerModelService>();
+        builder.Services.AddScoped<IBaseAdminModelService, BaseAdminModelService>();
+        builder.Services.AddScoped<IAccountModelService, AccountModelService>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {
             PropertyNamingPolicy = null,

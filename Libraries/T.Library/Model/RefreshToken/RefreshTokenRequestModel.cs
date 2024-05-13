@@ -8,7 +8,7 @@ namespace T.Library.Model.RefreshToken
 {
     public class RefreshTokenRequestModel
     {
-        public string RefreshToken { get; set; }
-        public string ReturnUrl { get; set; }
+        public string? RefreshToken { get; set; }
+        public string? ReturnUrl { get; set; }
     }
 }

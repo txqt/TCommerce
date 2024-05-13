@@ -58,10 +58,10 @@ namespace T.WebApi.Database
         public DbSet<UrlRecord> UrlRecords { get; set; }
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
         public DbSet<RelatedProduct> RelatedProducts { get; set; }
-        public DbSet<Address> Address { get; set; }
+        public DbSet<DeliveryAddress> Address { get; set; }
         public DbSet<UserAddressMapping> UserAddressMappings { get; set; }
-        public DbSet<Country> Countries { get; set; }
-        public DbSet<City> Cities  { get; set; }
-        public DbSet<State> States { get; set; }
+        //public DbSet<Country> Countries { get; set; }
+        //public DbSet<City> Cities  { get; set; }
+        //public DbSet<State> States { get; set; }
     }
 }

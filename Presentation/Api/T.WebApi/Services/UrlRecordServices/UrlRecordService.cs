@@ -30,7 +30,7 @@ namespace T.WebApi.Services.UrlRecordServices
             return (await _urlRecordRepository.GetAllAsync()).ToList();
         }
 
-        public async Task<UrlRecord> GetByIdAsync(int id)
+        public async Task<UrlRecord?> GetByIdAsync(int id)
         {
             return await _urlRecordRepository.GetByIdAsync(id);
         }
@@ -60,7 +60,9 @@ namespace T.WebApi.Services.UrlRecordServices
                         orderby ur.IsActive descending, ur.Id
                         select ur;
 
-            return await query.FirstOrDefaultAsync();
+            var result = await query.FirstOrDefaultAsync();
+
+            return result!;
         }
 
         public async Task<string> GetActiveSlugAsync(int entityId, string entityName)
@@ -72,7 +74,7 @@ namespace T.WebApi.Services.UrlRecordServices
                         orderby ur.Id descending
                         select ur.Slug;
 
-            return await query.FirstOrDefaultAsync();
+            return await query.FirstOrDefaultAsync() ?? string.Empty;
         }
 
         public virtual async Task<string> GetSeNameAsync<T>(T entity) where T : BaseEntity
@@ -99,13 +101,13 @@ namespace T.WebApi.Services.UrlRecordServices
             var allUrlRecords = await query.ToListAsync();
             var activeUrlRecord = allUrlRecords.FirstOrDefault(x => x.IsActive);
 
-            UrlRecord nonActiveRecordWithSpecifiedSlug = null;
+            UrlRecord? nonActiveRecordWithSpecifiedSlug = null;
 
             if (activeUrlRecord == null && !string.IsNullOrWhiteSpace(slug))
             {
                 // find in non-active records with the specified slug
                 var innerNonActiveRecordWithSpecifiedSlug = allUrlRecords
-                    .FirstOrDefault(x => x.Slug.Equals(slug, StringComparison.InvariantCultureIgnoreCase) && !x.IsActive);
+                    .FirstOrDefault(x => x.Slug is not null && x.Slug.Equals(slug, StringComparison.InvariantCultureIgnoreCase) && !x.IsActive);
 
                 if (innerNonActiveRecordWithSpecifiedSlug != null)
                 {
@@ -138,12 +140,12 @@ namespace T.WebApi.Services.UrlRecordServices
                 return;
 
             // it should not be the same slug as in active URL record
-            if (activeUrlRecord.Slug.Equals(slug, StringComparison.InvariantCultureIgnoreCase))
+            if (activeUrlRecord.Slug is not null && activeUrlRecord.Slug.Equals(slug, StringComparison.InvariantCultureIgnoreCase))
                 return;
 
             // find in non-active records with the specified slug
             nonActiveRecordWithSpecifiedSlug = allUrlRecords
-                .FirstOrDefault(x => x.Slug.Equals(slug, StringComparison.InvariantCultureIgnoreCase) && !x.IsActive);
+                .FirstOrDefault(x =>x.Slug is not null && x.Slug.Equals(slug, StringComparison.InvariantCultureIgnoreCase) && !x.IsActive);
 
             if (nonActiveRecordWithSpecifiedSlug != null)
             {

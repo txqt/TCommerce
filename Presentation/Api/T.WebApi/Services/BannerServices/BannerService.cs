@@ -33,34 +33,48 @@ namespace T.WebApi.Services.BannerServices
             var result = await _bannerRepository.Table.Include(x => x.Picture).ToListAsync();
             foreach (var item in result)
             {
-                var temp = item.Picture.UrlPath;
-                item.Picture.UrlPath = APIUrl + temp;
+                if(item.Picture is not null)
+                {
+                    var temp = item.Picture.UrlPath;
+                    item.Picture.UrlPath = APIUrl + temp;
+                }
             }
             return result;
         }
-        public async Task<Banner> GetBannerByIdAsync(int id)
+        public async Task<Banner?> GetBannerByIdAsync(int id)
         {
             return await _bannerRepository.GetByIdAsync(id);
         }
 
         public async Task<ServiceResponse<bool>> CreateBannerAsync(BannerViewModel model)
         {
-            var pictureResult = await _pictureService.SavePictureWithEncryptFileName(model.ImageFile);
-            if (!pictureResult.Success)
+            var pictureId = 0;
+
+            if(model.ImageFile is not null)
             {
-                return ErrorResponse(pictureResult.Message);
+                var pictureResult = await _pictureService.SavePictureWithEncryptFileName(model.ImageFile);
+
+                pictureId = pictureResult.Data;
+
+                if (!pictureResult.Success)
+                {
+                    return ErrorResponse(pictureResult.Message);
+                }
             }
 
             try
             {
                 var banner = _mapper.Map<Banner>(model);
-                banner.PictureId = pictureResult.Data;
+
+                banner.PictureId = pictureId;
+
                 await _bannerRepository.CreateAsync(banner);
+
                 return SuccessResponse();
             }
             catch (Exception ex)
             {
-                await _pictureService.DeletePictureByIdAsync(pictureResult.Data);
+                await _pictureService.DeletePictureByIdAsync(pictureId);
                 return ErrorResponse(ex.Message);
             }
         }
@@ -112,14 +126,20 @@ namespace T.WebApi.Services.BannerServices
             try
             {
                 var banner = await _bannerRepository.GetByIdAsync(id);
-                await _bannerRepository.DeleteAsync(id);
-                var pictureId = banner.PictureId;
-                if (banner.PictureId > 0)
+
+                if (banner is not null)
                 {
-                    var deletePictureResult = await _pictureService.DeletePictureByIdAsync(pictureId);
-                    if (!deletePictureResult.Success)
+                    await _bannerRepository.DeleteAsync(id);
+
+                    var pictureId = banner.PictureId;
+
+                    if (banner.PictureId > 0)
                     {
-                        return ErrorResponse("Cannot delete picture");
+                        var deletePictureResult = await _pictureService.DeletePictureByIdAsync(pictureId);
+                        if (!deletePictureResult.Success)
+                        {
+                            return ErrorResponse("Cannot delete picture");
+                        }
                     }
                 }
 

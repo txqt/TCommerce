@@ -4,11 +4,11 @@ namespace T.Web.Services.PrepareModelServices
 {
     public interface IAccountModelService
     {
-        Task<AccountNavigationModel> PrepareCustomerNavigationModelAsync(int selectedTabId = 0);
+        AccountNavigationModel PrepareCustomerNavigationModel(int selectedTabId = 0);
     }
     public class AccountModelService : IAccountModelService
     {
-        public async Task<AccountNavigationModel> PrepareCustomerNavigationModelAsync(int selectedTabId = 0)
+        public AccountNavigationModel PrepareCustomerNavigationModel(int selectedTabId = 0)
         {
             var model = new AccountNavigationModel();
 

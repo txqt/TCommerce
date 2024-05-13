@@ -9,7 +9,7 @@ namespace T.WebApi.Services.ProductServices
     public interface IProductAttributeConverter
     {
         Task<string> ConvertToJsonAsync(List<ShoppingCartItemModel.SelectedAttribute> attributeDtos, int productId);
-        Task<List<ShoppingCartItemModel.SelectedAttribute>> ConvertToObject(string attributesJson);
+        List<ShoppingCartItemModel.SelectedAttribute> ConvertToObject(string attributesJson);
 
     }
     public class ProductAttributeConverter : IProductAttributeConverter
@@ -40,9 +40,9 @@ namespace T.WebApi.Services.ProductServices
             return attributesJson;
         }
 
-        public async Task<List<SelectedAttribute>> ConvertToObject(string attributesJson)
+        public List<SelectedAttribute> ConvertToObject(string attributesJson)
         {
-            return JsonConvert.DeserializeObject<List<SelectedAttribute>>(attributesJson);
+            return JsonConvert.DeserializeObject<List<SelectedAttribute>>(attributesJson)!;
         }
     }
 }

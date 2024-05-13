@@ -28,7 +28,7 @@ namespace T.WebApi.Services.TokenServices
     public interface ITokenService : ITokenServiceCommon
     {
         Task<string> GenerateAccessToken(User user);
-        Task<string> GenerateRefreshToken();
+        string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalToken(string? token);
     }
     public class TokenService : ITokenService
@@ -74,6 +74,8 @@ namespace T.WebApi.Services.TokenServices
                 // Người dùng không tồn tại
                 return new ServiceErrorResponse<AuthResponseDto>() { Data = null, Message = "User is not found"};
             }
+
+            ArgumentException.ThrowIfNullOrEmpty(user.UserName);
 
             var result = await _signInManager.PasswordSignInAsync(user.UserName, login.Password, login.RememberMe, lockoutOnFailure: true);
 
@@ -129,13 +131,15 @@ namespace T.WebApi.Services.TokenServices
 
         public async Task<List<Claim>> GetClaims(User user)
         {
+            ArgumentNullException.ThrowIfNull(user);
+
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.GivenName,user.FirstName+" "+ user.LastName),
-                new Claim(ClaimTypes.Email,user.Email )
+                new Claim(ClaimTypes.Name, user.UserName ?? "undefined"),
+                new Claim(ClaimTypes.GivenName,user.FirstName +" "+ user.LastName),
+                new Claim(ClaimTypes.Email,user.Email ?? "undefined")
             };
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
@@ -145,7 +149,7 @@ namespace T.WebApi.Services.TokenServices
         public async Task<string> GenerateAccessToken(User user)
         {
             var claims = await GetClaims(user);
-            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.AccessTokenKey);
+            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.AccessTokenKey ?? "");
             var tokenOptions = new JwtSecurityToken(
                 issuer: _jwtOptions.Value.Issuer,
                 audience: _jwtOptions.Value.Audience,
@@ -155,9 +159,9 @@ namespace T.WebApi.Services.TokenServices
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
 
-        public async Task<string> GenerateRefreshToken()
+        public string GenerateRefreshToken()
         {
-            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.RefreshTokenKey);
+            var signingCredentials = GetSigningCredentials(_jwtOptions.Value.RefreshTokenKey ?? "");
             var tokenOptions = new JwtSecurityToken(
                 issuer: _jwtOptions.Value.Issuer,
                 audience: _jwtOptions.Value.Audience,
@@ -176,7 +180,7 @@ namespace T.WebApi.Services.TokenServices
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = _jwtOptions.Value.Issuer,
                 ValidAudience = _jwtOptions.Value.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.AccessTokenKey)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.AccessTokenKey ?? "")),
                 ClockSkew = TimeSpan.Zero
             };
 
@@ -263,7 +267,7 @@ namespace T.WebApi.Services.TokenServices
             var accessToken = await GenerateAccessToken(user);
 
             //Create refresh token
-            var refreshToken = await GenerateRefreshToken();
+            var refreshToken = GenerateRefreshToken();
 
             //Save refresh token
             user.RefreshToken = refreshToken;

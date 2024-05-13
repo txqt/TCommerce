@@ -38,13 +38,13 @@ namespace T.WebApi.Services.UserRegistrations
             _signInManager = signInManager;
         }
 
-        public async Task<ServiceResponse<string>> ConfirmEmail(string userId, string token)
+        public async Task<ServiceResponse<bool>> ConfirmEmail(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
             {
-                return new ServiceErrorResponse<string>($"Unable to load user with ID '{userId}'.");
+                return new ServiceErrorResponse<bool>($"Unable to load user with ID '{userId}'.");
             }
 
             string normalToken = DecodeToken(token);
@@ -52,9 +52,9 @@ namespace T.WebApi.Services.UserRegistrations
             var result = await _userManager.ConfirmEmailAsync(user, normalToken);
 
             if (result.Succeeded)
-                return new ServiceSuccessResponse<string>(_urlOptions.Value.ClientUrl);
+                return new ServiceSuccessResponse<bool>();
 
-            return new ServiceErrorResponse<string>("Email did not confirm");
+            return new ServiceErrorResponse<bool>("Email did not confirm");
         }
         public async Task<ServiceResponse<string>> SendResetPasswordEmail(string email)
         {
@@ -66,6 +66,11 @@ namespace T.WebApi.Services.UserRegistrations
             var validToken = EncodeToken(confirmEmailToken);
 
             string url = $"{_urlOptions.Value.ClientUrl}/account/reset-password?email={email}&token={validToken}";
+
+            if(user.Email is null)
+            {
+                return new ServiceErrorResponse<string>("Must have email");
+            }
 
             EmailDto emailDto = new EmailDto
             {

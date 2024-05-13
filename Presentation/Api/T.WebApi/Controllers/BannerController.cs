@@ -23,7 +23,7 @@ namespace T.WebApi.Controllers
             return Ok(await _bannerService.GetAllBannerAsync());
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Banner>> GetBannerByIdAsync(int id)
+        public async Task<ActionResult<Banner?>> GetBannerByIdAsync(int id)
         {
             return await _bannerService.GetBannerByIdAsync(id);
         }

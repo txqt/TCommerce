@@ -62,6 +62,6 @@ namespace T.Library.Model.Orders
             set => ShoppingCartTypeId = (int)value;
         }
 
-        public string AttributeJson { get; set; }
+        public string? AttributeJson { get; set; }
     }
 }

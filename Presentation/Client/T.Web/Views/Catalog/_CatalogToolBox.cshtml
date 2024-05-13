@@ -16,7 +16,7 @@
                 @if(Model.PagingMetaData is not null)
                 {
                     <text>
-                        Showing <span>@Model.PagingMetaData.PageSize of @Model.PagingMetaData.TotalCount</span> Products
+                        Showing <span>@Model.Products?.Count of @Model.PagingMetaData.TotalCount</span> Products
                     </text>
                 }
             </div><!-- End .toolbox-info -->

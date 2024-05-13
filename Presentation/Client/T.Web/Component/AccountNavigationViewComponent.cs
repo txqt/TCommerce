@@ -12,9 +12,9 @@ namespace T.Web.Component
             _accountModelService = accountModelService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int selectedTabId = 0)
+        public IViewComponentResult Invoke(int selectedTabId = 0)
         {
-            var model = await _accountModelService.PrepareCustomerNavigationModelAsync(selectedTabId);
+            var model = _accountModelService.PrepareCustomerNavigationModel(selectedTabId);
             return View(model);
         }
     }

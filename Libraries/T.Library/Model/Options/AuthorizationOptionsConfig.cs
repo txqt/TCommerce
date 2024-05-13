@@ -22,11 +22,11 @@ namespace T.Library.Model.JwtToken
             Audience = audience;
         }
 
-        public string AccessTokenKey { get; set; }
-        public string RefreshTokenKey { get; set; }
+        public string? AccessTokenKey { get; set; }
+        public string? RefreshTokenKey { get; set; }
         public int AccessTokenExpirationInSenconds { get; set; }
         public int RefreshTokenExpirationInSenconds { get; set; }
-        public string Issuer { get; set; }
-        public string Audience { get; set; }
+        public string? Issuer { get; set; }
+        public string? Audience { get; set; }
     }
 }

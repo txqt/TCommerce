@@ -19,7 +19,8 @@ namespace T.WebApi.Middleware.JwtHandlings
             {
                 string token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var principal = tokenService.GetPrincipalToken(token);
-                var username = principal.Identity.Name; // this depends on the claims you added to the token
+                var username = principal.Identity?.Name; // this depends on the claims you added to the token
+                ArgumentException.ThrowIfNullOrEmpty(username);
                 var user = await userManager.FindByNameAsync(username);
 
                 if (user != null && user.Deleted)

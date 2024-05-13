@@ -20,7 +20,7 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
             _manufacturerService = manufacturerService;
         }
 
-        protected async Task PrepareDefaultItemAsync(List<SelectListItem> items, bool withSpecialDefaultItem, string defaultItemText = null, string defaultItemValue = "0")
+        protected void PrepareDefaultItem(List<SelectListItem> items, bool withSpecialDefaultItem, string defaultItemText = null, string defaultItemValue = "0")
         {
             ArgumentNullException.ThrowIfNull(items);
 
@@ -47,7 +47,7 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
             }
 
             //insert special item for the default value
-            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, defaultItemText);
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
         }
 
         public async Task PrepareSelectListManufactureAsync(List<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
@@ -62,7 +62,7 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
             }
 
             //insert special item for the default value
-            await PrepareDefaultItemAsync(items, withSpecialDefaultItem, defaultItemText);
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
         }
         protected virtual async Task<List<SelectListItem>> GetManufacturerListAsync()
         {

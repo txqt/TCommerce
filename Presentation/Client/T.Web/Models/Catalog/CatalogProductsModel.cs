@@ -64,7 +64,7 @@ namespace T.Web.Models.Catalog
         /// <summary>
         /// Gets or sets a order by
         /// </summary>
-        public int? OrderBy { get; set; }
+        public new int? OrderBy { get; set; }
 
         /// <summary>
         /// Gets or sets a product sorting

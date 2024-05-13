@@ -39,7 +39,7 @@ namespace T.WebApi.Services.PictureServices
             _environment = environment;
             _pictureRepository = pictureRepository;
             _configuration = configuration;
-            APIUrl = _configuration.GetSection("Url:APIUrl").Value;
+            APIUrl = _configuration.GetSection("Url:APIUrl").Value!;
         }
 
         public async Task<ServiceResponse<int>> SavePictureWithEncryptFileName(IFormFile file)
@@ -47,7 +47,7 @@ namespace T.WebApi.Services.PictureServices
             try
             {
                 var imageFile = file;
-                if (imageFile.Length > 0)
+                if (imageFile != null && imageFile.Length > 0)
                 {
                     var uniqueFileName = Path.GetRandomFileName();
                     var fileExtension = Path.GetExtension(imageFile.FileName);
@@ -65,14 +65,15 @@ namespace T.WebApi.Services.PictureServices
                     };
                     await _pictureRepository.CreateAsync(picture);
 
-                    var pictureId = (await _pictureRepository.Table.FirstOrDefaultAsync(x => x.UrlPath.Contains(newFileName))).Id;
+                    var savedPicture = await _pictureRepository.Table.FirstOrDefaultAsync(x => !string.IsNullOrEmpty(x.UrlPath) && x.UrlPath.Contains(newFileName));
+                    if (savedPicture != null)
+                    {
+                        var pictureId = savedPicture.Id;
+                        return new ServiceSuccessResponse<int>() { Data = pictureId };
+                    }
+                }
 
-                    return new ServiceSuccessResponse<int>() { Data = pictureId };
-                }
-                else
-                {
-                    return new ServiceErrorResponse<int>();
-                }
+                return new ServiceErrorResponse<int>();
 
             }
             catch
@@ -81,14 +82,15 @@ namespace T.WebApi.Services.PictureServices
             }
         }
 
-        public async Task<ServiceResponse<int>> SavePictureWithoutEncryptFileName(IFormFile file)
+        public async Task<ServiceResponse<int>> SavePictureWithoutEncryptFileName(IFormFile imageFile)
         {
             try
             {
-                var imageFile = file;
-                if (imageFile.Length > 0)
+                var pictureId = 0; // Giả sử một giá trị mặc định
+                if (imageFile != null && imageFile.Length > 0)
                 {
-                    var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/images/", imageFile.FileName);
+                    var fileName = imageFile.FileName;
+                    var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/images/", fileName);
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
                         await imageFile.CopyToAsync(fileStream);
@@ -96,12 +98,15 @@ namespace T.WebApi.Services.PictureServices
 
                     var picture = new Picture
                     {
-                        UrlPath = "/images/" + imageFile.FileName
+                        UrlPath = "/images/" + fileName
                     };
                     await _pictureRepository.CreateAsync(picture);
 
-                    var pictureId = (await _pictureRepository.Table.FirstOrDefaultAsync(x => x.UrlPath.Contains(imageFile.FileName))).Id;
-
+                    var savedPicture = await _pictureRepository.Table.FirstOrDefaultAsync(x => !string.IsNullOrEmpty(x.UrlPath) && x.UrlPath.Contains(fileName));
+                    if (savedPicture != null)
+                    {
+                        pictureId = savedPicture.Id;
+                    }
                     return new ServiceSuccessResponse<int>() { Data = pictureId };
                 }
                 else
@@ -115,10 +120,10 @@ namespace T.WebApi.Services.PictureServices
             }
         }
 
-        public async Task<Picture> GetPictureByIdAsync(int pictureId)
+        public async Task<Picture?> GetPictureByIdAsync(int pictureId)
         {
             var picture = await _pictureRepository.GetByIdAsync(pictureId);
-            if (picture is not null && !picture.UrlPath.Contains(APIUrl))
+            if (picture is not null && picture.UrlPath is not null && !picture.UrlPath.Contains(APIUrl))
             {
                 picture.UrlPath = APIUrl + picture.UrlPath;
             }

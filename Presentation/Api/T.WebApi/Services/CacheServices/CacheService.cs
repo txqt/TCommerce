@@ -39,7 +39,7 @@ namespace T.WebApi.Services.CacheServices
                 T item = (T)_memoryCache.Get(key);
                 return item;
             }
-            catch (Exception e)
+            catch 
             {
                 throw;
             }
@@ -54,7 +54,7 @@ namespace T.WebApi.Services.CacheServices
                     _memoryCache.Set(key, value, expirationTime);
                 }
             }
-            catch (Exception e)
+            catch 
             {
                 throw;
             }
@@ -69,7 +69,7 @@ namespace T.WebApi.Services.CacheServices
                     return _memoryCache.Remove(key);
                 }
             }
-            catch (Exception e)
+            catch 
             {
                 throw;
             }

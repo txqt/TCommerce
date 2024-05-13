@@ -154,21 +154,21 @@ namespace T.WebApi.Services.SecurityServices
         {
             var permissionRecord = await _permissionRepository.Table.FirstOrDefaultAsync(x => x.Id == permissionRecordId);
 
-            return permissionRecord;
+            return permissionRecord!;
         }
 
         public async Task<PermissionRecord> GetPermissionRecordBySystemNameAsync(string permissionRecordSystemName)
         {
             var permissionRecord = await _permissionRepository.Table.FirstOrDefaultAsync(x => x.SystemName == permissionRecordSystemName);
 
-            return permissionRecord;
+            return permissionRecord!;
         }
 
         public async Task<List<PermissionRecord>> GetPermissionRecordsByCustomerRoleIdAsync(Guid roleId)
         {
             var permissionRecords = await _permissionMappingRepository.Table.Where(x => x.RoleId == roleId).Select(x=>x.PermissionRecord).ToListAsync();
 
-            return permissionRecords;
+            return permissionRecords!;
         }
 
         public async Task<ServiceResponse<bool>> UpdatePermissionRecord(PermissionRecord permissionRecord)
@@ -187,18 +187,18 @@ namespace T.WebApi.Services.SecurityServices
         public async Task<PermissionRecordUserRoleMapping> GetPermissionMappingAsync(string roleId, int permissionId)
         {
             var permissionMapping = await _permissionMappingRepository.Table.Where(x => x.RoleId.ToString() == roleId && x.PermissionRecordId == permissionId).FirstOrDefaultAsync();
-            return permissionMapping;
+            return permissionMapping!;
         }
 
-        public async Task<List<Role>> GetRoles()
+        public async Task<List<Role>?> GetRoles()
         {
-            return await _roleManager.Roles.Include(r => r.PermissionRecordUserRoleMappings).ThenInclude(p => p.PermissionRecord).ToListAsync();
+            return await _roleManager.Roles.ToListAsync();
         }
 
         public async Task<Role> GetRoleByRoleId(string roleId)
         {
             var role = await _roleManager.Roles.Include(r => r.PermissionRecordUserRoleMappings).FirstOrDefaultAsync(r => r.Id.ToString() == roleId);
-            return role;
+            return role!;
         }
 
         public async Task<ServiceResponse<bool>> CreatePermissionMappingAsync(PermissionRecordUserRoleMapping permissionMapping)

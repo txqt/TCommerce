@@ -8,6 +8,6 @@
         public bool can_connect { get; set; }
         public List<string>? list_applied_migration { get; set; }
         public List<string>? list_migration_pending { get; set; }
-        public List<string?> list_tables { get; set; }
+        public List<string?>? list_tables { get; set; }
     }
 }

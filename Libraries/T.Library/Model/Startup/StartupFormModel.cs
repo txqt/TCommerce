@@ -9,24 +9,25 @@ namespace T.Library.Model.Startup
 {
     public class StartupFormModel
     {
-        public StartupFormModel()
-        {
-        }
 
         [Required]
-        public string AdminEmail { get; set; }
+        public string AdminEmail { get; set; } = string.Empty;
+
         [Required]
-        public string AdminPassword { get; set; }
+        public string AdminPassword { get; set; } = string.Empty;
+
         [Required,Compare("AdminPassword", ErrorMessage = "Mật khẩu phải khớp")]
-        public string ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; } = string.Empty;
         public bool CreateSampleData { get; set; }
-        public string DbType { get; set; }
+        public string DbType { get; set; } = string.Empty;
         public bool CreateDatabaseIfNotExist { get; set; } = true;
-        public string ServerName { get; set; }
-        public string DbName { get; set; }
+        public string ServerName { get; set; } = string.Empty;
+        public string DbName { get; set; } = string.Empty;
         public bool UseWindowsAuth { get; set; } = true;
+
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string SqlUsername { get; set; } = string.Empty;
+
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string SqlPassword { get; set; } = string.Empty;
 

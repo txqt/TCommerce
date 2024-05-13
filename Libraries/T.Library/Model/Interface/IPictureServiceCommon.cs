@@ -10,6 +10,6 @@ namespace T.Library.Model.Interface
 {
     public interface IPictureServiceCommon
     {
-        Task<Picture> GetPictureByIdAsync(int pictureId);
+        Task<Picture?> GetPictureByIdAsync(int pictureId);
     }
 }

@@ -10,7 +10,7 @@ namespace T.Library.Model.Interface
 {
     public interface IUserRegistrationServiceCommon
     {
-        Task<ServiceResponse<string>> ConfirmEmail(string userId, string token);
+        //Task<ServiceResponse<bool>> ConfirmEmail(string userId, string token);
         Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest model);
         Task<ServiceResponse<string>> ChangePassword(ChangePasswordRequest model);
         Task<ServiceResponse<string>> SendResetPasswordEmail(string email);

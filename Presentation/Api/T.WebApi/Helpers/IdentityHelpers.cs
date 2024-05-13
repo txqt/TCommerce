@@ -12,9 +12,23 @@ namespace T.WebApi.Helpers
         {
             var entityType = context.Model.FindEntityType(typeof(T));
             var value = enable ? "ON" : "OFF";
-            return context.Database.ExecuteSqlRawAsync(
-                $"SET IDENTITY_INSERT {entityType.GetSchema()}.{entityType.GetTableName()} {value}");
+
+            string tableName = entityType?.GetTableName()!;
+            string schemaName = entityType?.GetSchema()!;
+
+            if (tableName != null && schemaName != null)
+            {
+                string sql = $"SET IDENTITY_INSERT [{schemaName}].[{tableName}] {value}";
+                return context.Database.ExecuteSqlRawAsync(sql);
+            }
+            else
+            {
+                // Handle the case where entityType or its properties are null
+                // or entityType doesn't map to a table
+                throw new InvalidOperationException("Entity type is not valid.");
+            }
         }
+
 
         public static void SaveChangesWithIdentityInsert<T>(this DatabaseContext context)
         {

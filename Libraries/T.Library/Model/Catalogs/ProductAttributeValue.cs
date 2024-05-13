@@ -68,7 +68,7 @@ namespace T.Library.Model
         /// </summary>
         public int PictureId { get; set; }
 
-        public ProductAttributeMapping ProductAttributeMappings { get; set; }
+        public ProductAttributeMapping? ProductAttributeMappings { get; set; }
 
     }
 }

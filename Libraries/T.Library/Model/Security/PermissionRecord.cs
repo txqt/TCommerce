@@ -10,17 +10,17 @@ namespace T.Library.Model.Security
         /// <summary>
         /// Gets or sets the permission name
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the permission system name
         /// </summary>
-        public string SystemName { get; set; }
+        public string SystemName { get; set; } = null!;
         
         /// <summary>
         /// Gets or sets the permission category
         /// </summary>
-        public string Category { get; set; }
+        public string? Category { get; set; }
         
         public List<PermissionRecordUserRoleMapping>? PermissionRecordUserRoleMappings { get; set; }
     }

@@ -23,7 +23,7 @@ namespace T.Library.Model
         /// </summary>
         public int DisplayOrder { get; set; }
 
-        public Picture Picture { get; set; }
-        public Product Product { get; set; }
+        public Picture? Picture { get; set; }
+        public Product? Product { get; set; }
     }
 }

@@ -131,7 +131,7 @@ namespace T.Web.Controllers
 
         [HttpGet]
         [Route("/account/forgot-password")]
-        public async Task<IActionResult> ForgotPassword()
+        public IActionResult ForgotPassword()
         {
             return View();
         }
@@ -157,7 +157,7 @@ namespace T.Web.Controllers
 
         [HttpGet]
         [Route("/account/reset-password")]
-        public async Task<IActionResult> ResetPassword()
+        public IActionResult ResetPassword()
         {
             return View();
         }
@@ -268,11 +268,11 @@ namespace T.Web.Controllers
         [HttpGet]
         public IActionResult CreateAddress()
         {
-            return View(new Address());
+            return View(new DeliveryAddress());
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAddress(Address address)
+        public async Task<IActionResult> CreateAddress(DeliveryAddress address)
         {
             if (!ModelState.IsValid)
             {
@@ -293,7 +293,7 @@ namespace T.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateAddress(Address address)
+        public IActionResult UpdateAddress(DeliveryAddress address)
         {
             return View();
         }

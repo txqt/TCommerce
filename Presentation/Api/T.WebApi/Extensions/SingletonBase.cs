@@ -2,7 +2,7 @@
 {
     public class SingletonBase<T> where T : class, new()
     {
-        private static T _instance;
+        private static T? _instance;
 
         public static T Instance
         {

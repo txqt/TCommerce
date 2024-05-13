@@ -30,17 +30,17 @@ namespace T.Library.Model
         /// <summary>
         /// Gets or sets the title
         /// </summary>
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         /// <summary>
         /// Gets or sets the review text
         /// </summary>
-        public string ReviewText { get; set; }
+        public string? ReviewText { get; set; }
 
         /// <summary>
         /// Gets or sets the reply text
         /// </summary>
-        public string ReplyText { get; set; }
+        public string? ReplyText { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the customer is already notified of the reply to review
@@ -67,8 +67,8 @@ namespace T.Library.Model
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
 
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
-        public List<ProductReviewHelpfulness> HelpfulHelpfulness { get; set; }
+        public List<ProductReviewHelpfulness>? HelpfulHelpfulness { get; set; }
     }
 }

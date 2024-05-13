@@ -11,15 +11,15 @@ namespace T.Library.Model.Interface
     {
         #region ProductAttribute
         Task<List<ProductAttribute>> GetAllProductAttributeAsync();
-        Task<ProductAttribute> GetProductAttributeByIdAsync(int id);
-        Task<ProductAttribute> GetProductAttributeByName(string name);
+        Task<ProductAttribute?> GetProductAttributeByIdAsync(int id);
+        Task<ProductAttribute?> GetProductAttributeByName(string name);
         Task<ServiceResponse<bool>> CreateProductAttributeAsync(ProductAttribute productAttribute);
         Task<ServiceResponse<bool>> UpdateProductAttributeAsync(ProductAttribute productAttribute);
         Task<ServiceResponse<bool>> DeleteProductAttributeByIdAsync(int id);
         #endregion
 
         #region ProductAttributeMapping
-        Task<ProductAttributeMapping> GetProductAttributeMappingByIdAsync(int productAttributeMappingId);
+        Task<ProductAttributeMapping?> GetProductAttributeMappingByIdAsync(int productAttributeMappingId);
         Task<List<ProductAttributeMapping>> GetProductAttributesMappingByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> CreateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping);
         Task<ServiceResponse<bool>> UpdateProductAttributeMappingAsync(ProductAttributeMapping productAttributeMapping);
@@ -28,7 +28,7 @@ namespace T.Library.Model.Interface
         #endregion
 
         #region ProductAttributeValue
-        Task<ProductAttributeValue> GetProductAttributeValuesByIdAsync(int productAttributeValueId);
+        Task<ProductAttributeValue?> GetProductAttributeValuesByIdAsync(int productAttributeValueId);
         Task<ServiceResponse<bool>> CreateProductAttributeValueAsync(ProductAttributeValue productAttributeValue);
         Task<ServiceResponse<bool>> UpdateProductAttributeValueAsync(ProductAttributeValue productAttributeValue);
         Task<ServiceResponse<bool>> DeleteProductAttributeValueAsync(int productAttributeValueId);

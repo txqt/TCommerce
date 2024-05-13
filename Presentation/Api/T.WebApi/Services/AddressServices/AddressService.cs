@@ -6,18 +6,18 @@ namespace T.WebApi.Services.AddressServices
 {
     public interface IAddressService : IAddressServiceCommon
     {
-        Task<Address> GetAddressByIdAsync(int id);
+        Task<DeliveryAddress?> GetAddressByIdAsync(int id);
     }
     public class AddressService : IAddressService
     {
-        private readonly IRepository<Address> _addressRepository;
+        private readonly IRepository<DeliveryAddress> _addressRepository;
 
-        public AddressService(IRepository<Address> addressRepository)
+        public AddressService(IRepository<DeliveryAddress> addressRepository)
         {
             _addressRepository = addressRepository;
         }
 
-        public async Task<Address> GetAddressByIdAsync(int id)
+        public async Task<DeliveryAddress?> GetAddressByIdAsync(int id)
         {
             return await _addressRepository.GetByIdAsync(id);
         }

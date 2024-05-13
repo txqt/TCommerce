@@ -20,7 +20,7 @@
 </div>
 <div class="form-group">
     <label for="@Html.DisplayNameFor(model => model.AttributeControlType)">AttributeControlType</label>
-    <select class="form-select" id="@Html.DisplayNameFor(model => model.AttributeControlType)" asp-items="@(await ((AttributeControlType)Model.AttributeControlTypeId).ToSelectListAsync())" asp-for="AttributeControlTypeId">
+    <select class="form-select" id="@Html.DisplayNameFor(model => model.AttributeControlType)" asp-items="@(((AttributeControlType)Model.AttributeControlTypeId).ToSelectList())" asp-for="AttributeControlTypeId">
     </select>
 </div>
 <button type="submit" class="btn btn-primary mt-2">Save</button>

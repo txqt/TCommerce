@@ -9,10 +9,10 @@ namespace T.Library.Model.ViewsModel
 {
     public partial class PictureModel : BaseEntity
     {
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
-        public string TitleAttribute { get; set; }
+        public string? TitleAttribute { get; set; }
 
-        public string AltAttribute { get; set; }
+        public string? AltAttribute { get; set; }
     }
 }

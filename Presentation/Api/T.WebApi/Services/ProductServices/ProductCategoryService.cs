@@ -44,7 +44,7 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ProductCategory> GetProductCategoryById(int productCategoryId)
+        public async Task<ProductCategory?> GetProductCategoryById(int productCategoryId)
         {
             var productCategory = await _productCategoryRepository.Table
                 .FirstOrDefaultAsync(x => x.Id == productCategoryId);

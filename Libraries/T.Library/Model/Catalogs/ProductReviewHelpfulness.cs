@@ -22,6 +22,6 @@ namespace T.Library.Model
         /// </summary>
         public int CustomerId { get; set; }
 
-        public ProductReview ProductReview { get; set; }
+        public ProductReview? ProductReview { get; set; }
     }
 }
