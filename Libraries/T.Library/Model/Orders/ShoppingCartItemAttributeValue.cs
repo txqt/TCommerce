@@ -16,7 +16,7 @@ namespace T.Library.Model.Orders
         /// </summary>
         public int ProductAttributeId { get; set; }
         public int ProductAttributeValueId { get; set; }
-        public ShoppingCartItem ShoppingCartItem { get; set; }
+        public ShoppingCartItem? ShoppingCartItem { get; set; }
 
     }
 }

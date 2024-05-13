@@ -21,6 +21,7 @@ using T.WebApi.Helpers;
 using T.Library.Model.Common;
 using T.WebApi.Services.IRepositoryServices;
 using T.WebApi.Services.AddressServices;
+using System.Text.RegularExpressions;
 
 namespace T.WebApi.Services.UserServices
 {
@@ -40,9 +41,9 @@ namespace T.WebApi.Services.UserServices
         private readonly ITokenService _tokenService;
         private readonly SignInManager<User> _signInManager;
         private readonly IRepository<UserAddressMapping> _userAddressMappingRepository;
-        private readonly IRepository<Address> _addressMappingRepository;
+        private readonly IRepository<DeliveryAddress> _addressMappingRepository;
         private readonly IAddressService _addressService;
-        public UserService(IMapper mapper, DatabaseContext context, UserManager<User> userManager, RoleManager<Role> roleManager, IHttpContextAccessor httpContextAccessor, IEmailSender emailService, IOptions<UrlOptions> urlOptions, ITokenService tokenService, SignInManager<User> signInManager, IRepository<UserAddressMapping> userAddressMappingRepository, IAddressService addressService, IRepository<Address> addressMappingRepository)
+        public UserService(IMapper mapper, DatabaseContext context, UserManager<User> userManager, RoleManager<Role> roleManager, IHttpContextAccessor httpContextAccessor, IEmailSender emailService, IOptions<UrlOptions> urlOptions, ITokenService tokenService, SignInManager<User> signInManager, IRepository<UserAddressMapping> userAddressMappingRepository, IAddressService addressService, IRepository<DeliveryAddress> addressMappingRepository)
         {
             _mapper = mapper;
             _context = context;
@@ -60,16 +61,19 @@ namespace T.WebApi.Services.UserServices
 
         public async Task<ServiceResponse<bool>> CreateUserAsync(UserModel model)
         {
-            if (!ValidateEmail(model.Email))
-                return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
+            if (model.Email is not null)
+            {
+                if (!ValidateEmail(model.Email))
+                    return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
-            if (await UserExistsByEmail(model.Email))
-                return new ServiceErrorResponse<bool>("Email đã tồn tại");
-
-            if (await UserExistsByPhoneNumber(model.PhoneNumber))
+                if (await UserExistsByEmail(model.Email))
+                    return new ServiceErrorResponse<bool>("Email đã tồn tại");
+            }
+            
+            if (model.PhoneNumber is not null && await UserExistsByPhoneNumber(model.PhoneNumber))
                 return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
-            if (IsEmailUsername(model.UserName))
+            if (IsValidUsername(model.UserName))
                 return new ServiceErrorResponse<bool>("Username không thể là 1 email");
 
             var user = _mapper.Map<User>(model);
@@ -127,9 +131,11 @@ namespace T.WebApi.Services.UserServices
             return await _context.Users.AnyAsync(x => x.PhoneNumber == phoneNumber);
         }
 
-        private bool IsEmailUsername(string userName)
+        private bool IsValidUsername(string userName)
         {
-            return userName is not null && AppUtilities.IsValidEmail(userName);
+            Regex regex = new Regex("^[a-zA-Z0-9]*$");
+
+            return userName is not null && regex.IsMatch(userName) && AppUtilities.IsValidEmail(userName);
         }
 
         private async Task<bool> AssignDefaultRole(User user)
@@ -147,16 +153,19 @@ namespace T.WebApi.Services.UserServices
             var user = await _userManager.FindByIdAsync(model.Id.ToString()) ??
                 throw new ArgumentNullException($"Cannot find user by id");
 
-            if (!ValidateEmail(model.Email))
-                return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
+            if (model.Email is not null)
+            {
+                if (!ValidateEmail(model.Email))
+                    return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
 
-            if (user.Email != model.Email && await UserExistsByEmail(model.Email))
-                return new ServiceErrorResponse<bool>("Email đã tồn tại");
-
-            if (user.PhoneNumber != model.PhoneNumber && await UserExistsByPhoneNumber(model.PhoneNumber))
+                if (user.Email != model.Email && await UserExistsByEmail(model.Email))
+                    return new ServiceErrorResponse<bool>("Email đã tồn tại");
+            }
+            
+            if (model.PhoneNumber is not null && user.PhoneNumber != model.PhoneNumber && await UserExistsByPhoneNumber(model.PhoneNumber))
                 return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
-            if (user.UserName != model.UserName && IsEmailUsername(model.UserName))
+            if (user.UserName != model.UserName && IsValidUsername(model.UserName))
                 return new ServiceErrorResponse<bool>("Username không thể là 1 email");
 
             if (model.RoleNames != null && model.RoleNames.Any())
@@ -245,15 +254,12 @@ namespace T.WebApi.Services.UserServices
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
-            // Kiểm tra xem User.Identity.Name có null hay không
-            if (httpContext == null || httpContext.User?.Identity?.Name == null)
+            if (httpContext == null)
             {
-                return null;
+                throw new InvalidOperationException("HttpContext is null");
             }
 
-            string username = httpContext.User.Identity.Name;
-
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.GetUserAsync(httpContext.User);
 
             var userModel = _mapper.Map<UserModel>(user);
 
@@ -295,29 +301,30 @@ namespace T.WebApi.Services.UserServices
             return true;
         }
 
-        public async Task<ServiceResponse<string>> ConfirmEmail(string userId, string token)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
+        //public async Task<ServiceResponse<string>> ConfirmEmail(string userId, string token)
+        //{
+        //    var user = await _userManager.FindByIdAsync(userId);
 
-            if (user == null)
-            {
-                return new ServiceErrorResponse<string>($"Unable to load user with ID '{userId}'.");
-            }
+        //    if (user == null)
+        //    {
+        //        return new ServiceErrorResponse<string>($"Unable to load user with ID '{userId}'.");
+        //    }
 
-            string normalToken = DecodeToken(token);
+        //    string normalToken = DecodeToken(token);
 
-            var result = await _userManager.ConfirmEmailAsync(user, normalToken);
+        //    var result = await _userManager.ConfirmEmailAsync(user, normalToken);
 
-            if (result.Succeeded)
-                return new ServiceSuccessResponse<string>(_urlOptions.Value.ClientUrl);
+        //    if (result.Succeeded)
+        //        return new ServiceSuccessResponse<string>(_urlOptions.Value.ClientUrl);
 
-            return new ServiceErrorResponse<string>("Email did not confirm");
-        }
+        //    return new ServiceErrorResponse<string>("Email did not confirm");
+        //}
 
         public async Task<ServiceResponse<string>> SendChangePasswordEmail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+
+            if (user is null)
                 return new ServiceErrorResponse<string>("Tài khoản không tồn tại");
 
             var confirmEmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -325,22 +332,17 @@ namespace T.WebApi.Services.UserServices
 
             string url = $"{_urlOptions.Value.ClientUrl}/account/reset-password?email={email}&token={validToken}";
 
-            EmailDto emailDto = new EmailDto
+            if (user.Email is not null)
             {
-                Subject = "Đặt lại mật khẩu",
-                Body = $"<h1>Làm theo hướng dẫn để đặt lại mật khẩu của bạn</h1>" +
-                $"<p>Tên đăng nhập của bạn là: </p><h3>{user.UserName}</h3>" +
-                $"<p>Để đặt lại mật khẩu <a href='{url}'>Bấm vào đây</a></p>",
-                To = user.Email
-            };
-
-            try
-            {
+                EmailDto emailDto = new EmailDto
+                {
+                    Subject = "Đặt lại mật khẩu",
+                    Body = $"<h1>Làm theo hướng dẫn để đặt lại mật khẩu của bạn</h1>" +
+            $"<p>Tên đăng nhập của bạn là: </p><h3>{user.UserName}</h3>" +
+            $"<p>Để đặt lại mật khẩu <a href='{url}'>Bấm vào đây</a></p>",
+                    To = user.Email
+                };
                 await _emailService.SendEmailAsync(emailDto);
-            }
-            catch
-            {
-                return new ServiceErrorResponse<string>("Không thể gửi mail đặt lại mật khẩu, vui lòng thử lại hoặc liên hệ bộ phận kỹ thuật");
             }
 
             return new ServiceSuccessResponse<string>("Reset password URL has been sent to the email successfully!");
@@ -423,7 +425,7 @@ namespace T.WebApi.Services.UserServices
             return await UpdateUserAsync(userModel);
         }
 
-        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(Address address)
+        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(DeliveryAddress address)
         {
             var user = await GetCurrentUser();
 
@@ -456,17 +458,21 @@ namespace T.WebApi.Services.UserServices
 
             var address = await _addressService.GetAddressByIdAsync(id);
 
-            if (await _userAddressMappingRepository.Table
+            if(address is not null)
+            {
+                if (await _userAddressMappingRepository.Table
                     .FirstOrDefaultAsync(m => m.AddressId == address.Id && m.UserId == user.Id)
                 is UserAddressMapping mapping)
-            {
-                await _userAddressMappingRepository.DeleteAsync(mapping.Id);
-                return new ServiceSuccessResponse<bool> { Message = "Success" };
+                {
+                    await _userAddressMappingRepository.DeleteAsync(mapping.Id);
+                    return new ServiceSuccessResponse<bool> { Message = "Success" };
+                }
             }
+
             return new ServiceErrorResponse<bool>() { Message = "No address found" };
         }
 
-        public async Task<List<Address>> GetOwnAddressesAsync()
+        public async Task<List<DeliveryAddress>> GetOwnAddressesAsync()
         {
             var userId = (await GetCurrentUser()).Id;
 

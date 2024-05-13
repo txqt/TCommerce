@@ -5,7 +5,7 @@ namespace T.WebApi.Services.DataSeederService
 {
     public class UserRoleMappingModel
     {
-        public List<Role> Roles { get; set; }
-        public List<User> Users { get; set; }
+        public required List<Role> Roles { get; set; }
+        public required List<User> Users { get; set; }
     }
 }

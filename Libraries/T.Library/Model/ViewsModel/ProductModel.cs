@@ -11,11 +11,11 @@ namespace T.Library.Model.ViewsModel
     {
         public int Id { get; set; }
         [Required, Display(Name = "Tên sản phẩm")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
         [Required, Display(Name = "Mổ tả ngắn")]
-        public string ShortDescription { get; set; }
+        public string? ShortDescription { get; set; }
         [Required, Display(Name = "Mô tả đầy đủ")]
-        public string FullDescription { get; set; }
+        public string? FullDescription { get; set; }
         [Required, Display(Name = "Số lượng")]
         public int StockQuantity { get; set; }
         [Required, Display(Name = "Giá")]

@@ -29,13 +29,9 @@ using T.WebApi.Services.UserRegistrations;
 using T.WebApi.Services.UrlRecordServices;
 using T.WebApi.Services.ShoppingCartServices;
 using T.Library.Model.JwtToken;
-using T.WebApi.Helpers;
 using T.WebApi.Services.ManufacturerServices;
 using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.AddressServices;
-using T.WebApi.Services.CountryServices;
-using T.WebApi.Services.StateServices;
-using T.WebApi.Services.CityServices;
 
 namespace T.WebApi.Extensions
 {
@@ -107,7 +103,7 @@ namespace T.WebApi.Extensions
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Authorization:Issuer"],
                     ValidAudience = configuration["Authorization:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authorization:AccessTokenKey"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authorization:AccessTokenKey"]!)),
                     ClockSkew = TimeSpan.Zero,
                 };
 
@@ -156,9 +152,6 @@ namespace T.WebApi.Extensions
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IAddressService, AddressService>();
-            services.AddScoped<ICountryService, CountryService>();
-            services.AddScoped<IStateService, StateService>();
-            services.AddScoped<ICityService, CityService>();
             return services;
         }
 

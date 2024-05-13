@@ -34,7 +34,7 @@ namespace T.WebApi.Services.ProductServices
 
             list_product_attribute = await _productAttributeRepository.Table
                 .SearchByString(productAttributeParameters.SearchText)
-                .Sort(productAttributeParameters.OrderBy)
+                .Sort(productAttributeParameters.OrderBy ?? string.Empty)
                 .ToListAsync();
 
             return PagedList<ProductAttribute>
@@ -46,12 +46,12 @@ namespace T.WebApi.Services.ProductServices
             return (await _productAttributeRepository.GetAllAsync()).ToList();
         }
 
-        public async Task<ProductAttribute> GetProductAttributeByIdAsync(int id)
+        public async Task<ProductAttribute?> GetProductAttributeByIdAsync(int id)
         {
             return await _productAttributeRepository.GetByIdAsync(id);
         }
 
-        public async Task<ProductAttribute> GetProductAttributeByName(string name)
+        public async Task<ProductAttribute?> GetProductAttributeByName(string name)
         {
             return await _productAttributeRepository.Table
                     .FirstOrDefaultAsync(x => x.Name == name);
@@ -97,7 +97,7 @@ namespace T.WebApi.Services.ProductServices
             }
         }
 
-        public async Task<ProductAttributeMapping> GetProductAttributeMappingByIdAsync(int id)
+        public async Task<ProductAttributeMapping?> GetProductAttributeMappingByIdAsync(int id)
         {
             return await _productAttributeMappingRepository.GetByIdAsync(id);
         }
@@ -165,7 +165,7 @@ namespace T.WebApi.Services.ProductServices
                                         .ToListAsync();
         }
 
-        public async Task<ProductAttributeValue> GetProductAttributeValuesByIdAsync(int id)
+        public async Task<ProductAttributeValue?> GetProductAttributeValuesByIdAsync(int id)
         {
             return await _productAttributeValueRepository.GetByIdAsync(id);
         }

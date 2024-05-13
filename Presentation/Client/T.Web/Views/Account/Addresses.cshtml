@@ -1,4 +1,4 @@
-﻿@model List<Address>
+﻿@model List<DeliveryAddress>
 @{
     Layout = "_InfoLayout";
 }
@@ -15,18 +15,6 @@
                 <ul class="info">
                     <li class="name">
                         @address.FirstName @address.LastName
-                    </li>
-                    <li class="email">
-                        <label>Email:</label>
-                        @address.Email
-                    </li>
-                    <li class="phone">
-                        <label>PhoneNumber</label>
-                        @address.PhoneNumber
-                    </li>
-                    <li class="fax">
-                        <label>FaxNumber</label>
-                        @address.FaxNumber
                     </li>
                     @if (!string.IsNullOrEmpty(address.Company))
                     {

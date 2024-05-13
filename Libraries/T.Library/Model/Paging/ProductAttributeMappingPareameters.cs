@@ -8,7 +8,6 @@ namespace T.Library.Model.Paging
 {
     public class ProductAttributeMappingPareameters : QueryStringParameters
     {
-        public string OrderBy { get; set; } = "name";
         public int ProductId { get; set; }
         public string? searchText { get; set; }
     }

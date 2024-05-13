@@ -36,7 +36,7 @@ namespace T.WebApi.Attribute
 
             if (_roles == null || _roles.Length == 0)
             {
-                if (!user.Identity.IsAuthenticated)
+                if (user.Identity is not null && !user.Identity.IsAuthenticated)
                 {
                     context.Result = new UnauthorizedResult();
                     return;
@@ -45,7 +45,7 @@ namespace T.WebApi.Attribute
             }
 
             // Kiểm tra xem user đã đăng nhập hay chưa
-            if (!user.Identity.IsAuthenticated)
+            if (user.Identity is not null && !user.Identity.IsAuthenticated)
             {
                 context.Result = new UnauthorizedResult();
                 return;

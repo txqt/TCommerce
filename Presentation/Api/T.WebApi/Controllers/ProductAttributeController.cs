@@ -36,13 +36,18 @@ namespace T.WebApi.Controllers
         public async Task<IActionResult> GetAllPagedAsync([FromQuery]ProductAttributeParameters productAttributeParameters)
         {
             var products = await _productAttributeSvc.GetAllPagedAsync(productAttributeParameters);
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(products.MetaData));
+
+            if (products.MetaData != null)
+            {
+                Response.Headers["X-Pagination"] = JsonConvert.SerializeObject(products.MetaData);
+            }
+
             return Ok(products);
         }
 
 		[AllowAnonymous]
 		[HttpGet("{id}")]
-        public async Task<ActionResult<ProductAttribute>> Get(int id)
+        public async Task<ActionResult<ProductAttribute?>> Get(int id)
         {
             return await _productAttributeSvc.GetProductAttributeByIdAsync(id);
         }

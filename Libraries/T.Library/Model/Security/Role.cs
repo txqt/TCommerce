@@ -10,7 +10,7 @@ namespace T.Library.Model.Security
 {
     public class Role : IdentityRole<Guid>
     {
-        public List<PermissionRecordUserRoleMapping> PermissionRecordUserRoleMappings { get; set; }
+        public List<PermissionRecordUserRoleMapping>? PermissionRecordUserRoleMappings { get; set; }
         public Role(string name) : base(name) { Name = name; }
     }
 }

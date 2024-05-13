@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Reflection;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
-using T.Library.Model.Common;
 using T.Library.Model.Interface;
-using T.Library.Model.Response;
 using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.Users;
@@ -16,11 +12,6 @@ using AutoMapper;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Services.CategoryServices;
 using T.WebApi.Database;
-using Newtonsoft.Json;
-using T.WebApi.Services.CountryServices;
-using T.WebApi.Services.StateServices;
-using T.WebApi.Services.CityServices;
-using T.WebApi.Helpers;
 
 namespace T.WebApi.ServicesSeederService
 {
@@ -34,9 +25,6 @@ namespace T.WebApi.ServicesSeederService
         private readonly ISecurityService _securityService;
         private readonly IManufacturerServicesCommon _manufacturerServicesCommon;
         private readonly IMapper _mapper;
-        private readonly ICountryService _countryService;
-        private readonly IStateService _stateService;
-        private readonly ICityService _cityService;
         private readonly DatabaseContext _context;
 
         public DataSeeder(RoleManager<Role> roleManager,
@@ -48,9 +36,6 @@ namespace T.WebApi.ServicesSeederService
             ISecurityService permissionRecordService,
             IManufacturerServicesCommon manufacturerServicesCommon,
             IMapper mapper,
-            ICountryService countryService,
-            IStateService stateService,
-            ICityService cityService,
             DatabaseContext context)
         {
             _roleManager = roleManager;
@@ -61,9 +46,6 @@ namespace T.WebApi.ServicesSeederService
             _securityService = permissionRecordService;
             this._manufacturerServicesCommon = manufacturerServicesCommon;
             _mapper = mapper;
-            _countryService = countryService;
-            _stateService = stateService;
-            _cityService = cityService;
             _context = context;
         }
 
@@ -111,36 +93,38 @@ namespace T.WebApi.ServicesSeederService
                     throw new Exception("Something went wrong");
                 }
 
-                var countriesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "countries.json"));
-                var statesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "states.json"));
-                var citiesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "cities.json"));
+                //var countriesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "countries.json"));
+                //var statesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "states.json"));
+                //var citiesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "cities.json"));
 
-                try
-                {
-                    var countryObjects = JsonConvert.DeserializeObject<List<Country>>(countriesJson);
-                    var stateObjects = JsonConvert.DeserializeObject<List<State>>(statesJson);
-                    var cityObjects = JsonConvert.DeserializeObject<List<City>>(citiesJson);
+                //try
+                //{
+                //    var countryObjects = JsonConvert.DeserializeObject<List<Country>>(countriesJson);
+                //    var stateObjects = JsonConvert.DeserializeObject<List<State>>(statesJson);
+                //    var cityObjects = JsonConvert.DeserializeObject<List<City>>(citiesJson);
 
-                    using var transaction = _context.Database.BeginTransaction();
+                //    using var transaction = _context.Database.BeginTransaction();
 
-                    await _context.EnableIdentityInsert<Country>();
-                    await _countryService.BulkCreateCountryAsync(countryObjects);
-                    await _context.DisableIdentityInsert<Country>();
+                //    await _context.EnableIdentityInsert<Country>();
+                //    await _countryService.BulkCreateCountryAsync(countryObjects);
+                //    await _context.DisableIdentityInsert<Country>();
 
-                    await _context.EnableIdentityInsert<State>();
-                    await _stateService.BulkCreateStateAsync(stateObjects);
-                    await _context.DisableIdentityInsert<State>();
+                //    await _context.EnableIdentityInsert<State>();
+                //    await _stateService.BulkCreateStateAsync(stateObjects);
+                //    await _context.DisableIdentityInsert<State>();
 
-                    await _context.EnableIdentityInsert<City>();
-                    await _cityService.BulkCreateCityAsync(cityObjects);
-                    await _context.DisableIdentityInsert<City>();
+                //    await _context.EnableIdentityInsert<City>();
+                //    await _cityService.BulkCreateCityAsync(cityObjects);
+                //    await _context.DisableIdentityInsert<City>();
 
-                    transaction.Commit();
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                //    transaction.Commit();
+                //}
+                //catch(Exception e)
+                //{
+                //    Console.WriteLine(e.Message);
+                //}
+
+
             }
         }
         private async Task SeedCategoriesAsync()
@@ -169,17 +153,17 @@ namespace T.WebApi.ServicesSeederService
             foreach (var item in listProductSeed.GetAll())
             {
 
-                foreach (var product in item.Products)
+                foreach (var product in item.Products!)
                 {
                     var model = _mapper.Map<ProductModel>(product);
 
                     await _productService.CreateProductAsync(model);
 
-                    var productId = (await _productService.GetByNameAsync(product.Name)).Id;
+                    var productId = (await _productService.GetByNameAsync(product.Name))!.Id;
 
-                    foreach (var category in item.Categories)
+                    foreach (var category in item.Categories!)
                     {
-                        var categoryId = (await _categorySerivce.GetCategoryByNameAsync(category.Name.ToString())).Id;
+                        var categoryId = (await _categorySerivce.GetCategoryByNameAsync(category.Name!.ToString()))!.Id;
 
                         var productCategoryMapping = new ProductCategory()
                         {
@@ -189,9 +173,9 @@ namespace T.WebApi.ServicesSeederService
                         await _categorySerivce.CreateProductCategoryAsync(productCategoryMapping);
                     }
 
-                    foreach (var pa in item.ProductAttributes)
+                    foreach (var pa in item.ProductAttributes!)
                     {
-                        var productAttributeId = (await _productAttributeService.GetProductAttributeByName(pa.Name.ToString())).Id;
+                        var productAttributeId = (await _productAttributeService.GetProductAttributeByName(pa.Name!.ToString()))!.Id;
 
                         var productAttributeMapping = new ProductAttributeMapping()
                         {
@@ -200,9 +184,9 @@ namespace T.WebApi.ServicesSeederService
                         };
                         await _productAttributeService.CreateProductAttributeMappingAsync(productAttributeMapping);
 
-                        var productAttributeMappingId = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId)).Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault().Id;
+                        var productAttributeMappingId = (await _productAttributeService.GetProductAttributesMappingByProductIdAsync(productId)).Where(x => x.ProductAttributeId == productAttributeId).FirstOrDefault()!.Id;
 
-                        foreach (var pav in item.ProductAttributeValues)
+                        foreach (var pav in item.ProductAttributeValues!)
                         {
                             var productAttributeValue = new ProductAttributeValue()
                             {
@@ -213,9 +197,9 @@ namespace T.WebApi.ServicesSeederService
                         }
                     }
 
-                    foreach(var pm in item.Manufacturers)
+                    foreach(var pm in item.Manufacturers!)
                     {
-                        var manfacturerId = (await _manufacturerServicesCommon.GetManufacturerByNameAsync(pm.Name)).Id;
+                        var manfacturerId = (await _manufacturerServicesCommon.GetManufacturerByNameAsync(pm.Name!))!.Id;
 
                         var productManufacturer = new ProductManufacturer()
                         {
@@ -251,7 +235,7 @@ namespace T.WebApi.ServicesSeederService
                 if (field.FieldType == typeof(PermissionRecord))
                 {
                     // Lấy giá trị của trường và thêm vào danh sách
-                    PermissionRecord permission = (PermissionRecord)field.GetValue(null);
+                    PermissionRecord permission = (PermissionRecord)field.GetValue(null)!;
                     permission_list.Add(permission);
                 }
             }
@@ -304,14 +288,14 @@ namespace T.WebApi.ServicesSeederService
 
             foreach (var item in list)
             {
-                foreach (var role in item.Roles)
+                foreach (var role in item.Roles!)
                 {
-                    foreach (var permission in item.PermissionRecords)
+                    foreach (var permission in item.PermissionRecords!)
                     {
                         var rolePermissionMapping = new PermissionRecordUserRoleMapping()
                         {
                             PermissionRecordId = (await _securityService.GetPermissionRecordBySystemNameAsync(permission.SystemName)).Id,
-                            RoleId = await GetRoleId(_roleManager, role.Name)
+                            RoleId = await GetRoleId(_roleManager, role.Name!)
                         };
                         await _securityService.CreatePermissionMappingAsync(rolePermissionMapping);
                     }
@@ -328,7 +312,7 @@ namespace T.WebApi.ServicesSeederService
                 var rolenames = typeof(RoleName).GetFields();
                 foreach (var item in rolenames)
                 {
-                    string name = item.GetRawConstantValue().ToString();
+                    string name = item.GetRawConstantValue()!.ToString()!;
                     var ffound = await _roleManager.FindByNameAsync(name);
                     if (ffound == null)
                     {
@@ -372,7 +356,7 @@ namespace T.WebApi.ServicesSeederService
                         {
                             try
                             {
-                                await _userManager.AddToRoleAsync(user, role.Name);
+                                await _userManager.AddToRoleAsync(user, role.Name!);
                             }
                             catch (Exception ex)
                             {

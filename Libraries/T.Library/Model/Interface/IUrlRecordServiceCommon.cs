@@ -13,7 +13,7 @@ namespace T.Library.Model.Interface
     public interface IUrlRecordServiceCommon
     {
         Task<List<UrlRecord>> GetAllAsync();
-        Task<UrlRecord> GetByIdAsync(int id);
+        Task<UrlRecord?> GetByIdAsync(int id);
         Task<ServiceResponse<bool>> CreateUrlRecordAsync(UrlRecord model);
         Task<ServiceResponse<bool>> UpdateUrlRecordAsync(UrlRecord model);
         Task<ServiceResponse<bool>> DeleteUrlRecordByIdAsync(int id);

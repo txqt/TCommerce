@@ -24,13 +24,13 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Manufacturer>> Get(int id)
+        public async Task<ActionResult<Manufacturer?>> Get(int id)
         {
             return await _manufacturerService.GetManufacturerByIdAsync(id);
         }
         
         [HttpGet("/manufacturerName/{manufacturerName}")]
-        public async Task<ActionResult<Manufacturer>> GetManufacturerByNameAsync(string manufacturerName)
+        public async Task<ActionResult<Manufacturer?>> GetManufacturerByNameAsync(string manufacturerName)
         {
             return await _manufacturerService.GetManufacturerByNameAsync(manufacturerName);
         }

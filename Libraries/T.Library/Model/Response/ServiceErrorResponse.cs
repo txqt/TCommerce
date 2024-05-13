@@ -8,7 +8,7 @@ namespace T.Library.Model.Response
 {
     public class ServiceErrorResponse<T> : ServiceResponse<T>
     {
-        public string[] ValidationErrors { get; set; }
+        public string[]? ValidationErrors { get; set; }
         public ServiceErrorResponse()
         {
 

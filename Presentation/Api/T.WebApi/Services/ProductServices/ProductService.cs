@@ -23,20 +23,20 @@ namespace T.WebApi.Services.ProductServices
     {
         Task<PagedList<Product>> SearchProduct(int pageNumber = 0,
         int pageSize = int.MaxValue,
-        IList<int> categoryIds = null,
-        IList<int> manufacturerIds = null,
+        IList<int>? categoryIds = null,
+        IList<int>? manufacturerIds = null,
         bool excludeFeaturedProducts = false,
         decimal? priceMin = null,
         decimal? priceMax = null,
         int productTagId = 0,
-        string keywords = null,
+        string? keywords = null,
         bool searchDescriptions = false,
         bool searchManufacturerPartNumber = true,
         bool searchSku = true,
         bool searchProductTags = false,
-        string orderBy = null,
+        string? orderBy = null,
         bool showHidden = false,
-        List<int> ids = null);
+        List<int>? ids = null);
     }
     /// <summary>
     /// Product service
@@ -97,20 +97,20 @@ namespace T.WebApi.Services.ProductServices
         #region Methods
         public async Task<PagedList<Product>> SearchProduct(int pageNumber = 0,
         int pageSize = int.MaxValue,
-        IList<int> categoryIds = null,
-        IList<int> manufacturerIds = null,
+        IList<int>? categoryIds = null,
+        IList<int>? manufacturerIds = null,
         bool excludeFeaturedProducts = false,
         decimal? priceMin = null,
         decimal? priceMax = null,
         int productTagId = 0,
-        string keywords = null,
+        string? keywords = null,
         bool searchDescriptions = false,
         bool searchManufacturerPartNumber = true,
         bool searchSku = true,
         bool searchProductTags = false,
-        string orderBy = null,
+        string? orderBy = null,
         bool showHidden = false,
-        List<int> ids = null)
+        List<int>? ids = null)
         {
             var query = _productsRepository.Query;
 
@@ -145,8 +145,8 @@ namespace T.WebApi.Services.ProductServices
                             select p;
             }
 
-            query = query.SearchByString(keywords)
-               .Sort(orderBy)
+            query = query.SearchByString(keywords ?? string.Empty)
+               .Sort(orderBy ?? string.Empty)
                .Include(x => x.ProductPictures)
                .Where(x => x.Deleted == false);
 
@@ -164,7 +164,7 @@ namespace T.WebApi.Services.ProductServices
                 (query, pageNumber, pageSize);
         }
 
-        public async Task<Product> GetByIdAsync(int id)
+        public async Task<Product?> GetByIdAsync(int id)
         {
             return await _productsRepository.GetByIdAsync(id);
         }
@@ -179,7 +179,7 @@ namespace T.WebApi.Services.ProductServices
 
                 await _productsRepository.CreateAsync(product);
 
-                model.SeName = await _urlRecordService.ValidateSlug(product, model.SeName, product.Name, true);
+                model.SeName = await _urlRecordService.ValidateSlug(product, model.SeName ?? "", product.Name, true);
 
                 await _urlRecordService.SaveSlugAsync(product, model.SeName);
 
@@ -206,7 +206,7 @@ namespace T.WebApi.Services.ProductServices
 
                 await _productsRepository.UpdateAsync(product);
 
-                if (model.SeName != (await _urlRecordService.GetSeNameAsync(product)))
+                if (model.SeName is not null && model.SeName != (await _urlRecordService.GetSeNameAsync(product)))
                 {
                     model.SeName = await _urlRecordService.ValidateSlug(product, model.SeName, product.Name, true);
 
@@ -235,15 +235,21 @@ namespace T.WebApi.Services.ProductServices
         //            .ToListAsync();
         //}
 
-        public async Task<List<ProductPicture>> GetProductPicturesByProductIdAsync(int productId)
+        public async Task<List<ProductPicture>?> GetProductPicturesByProductIdAsync(int productId)
         {
             var productPicture = await _productPictureMappingRepository.Table.Where(x => x.ProductId == productId)
                 .Include(x => x.Picture)
                 .ToListAsync();
 
-            foreach (var pp in productPicture)
+            if (productPicture is not null)
             {
-                pp.Picture.UrlPath = APIUrl + pp.Picture.UrlPath;
+                foreach (var pp in productPicture)
+                {
+                    if (pp.Picture is not null)
+                    {
+                        pp.Picture.UrlPath = APIUrl + pp.Picture.UrlPath;
+                    }
+                }
             }
 
             return productPicture;
@@ -313,8 +319,6 @@ namespace T.WebApi.Services.ProductServices
                 var picture = await _pictureRepository.GetByIdAsync(productPicture.PictureId);
 
                 ArgumentNullException.ThrowIfNull(picture);
-
-                if (picture.UrlPath is null) ;
 
                 ArgumentNullException.ThrowIfNull(picture.UrlPath);
 
@@ -408,13 +412,13 @@ namespace T.WebApi.Services.ProductServices
             }
             else
             {
-                fileName = productPicture.Picture.UrlPath;
+                fileName = productPicture.Picture?.UrlPath;
             }
 
             return APIUrl + fileName;
         }
 
-        public async Task<Product> GetByNameAsync(string name)
+        public async Task<Product?> GetByNameAsync(string name)
         {
             return await _productsRepository.Table
                         .Where(x => x.Name != null && x.Name.ToLower() == name.ToLower())
@@ -529,7 +533,7 @@ namespace T.WebApi.Services.ProductServices
         /// A task that represents the asynchronous operation
         /// The task result contains the related product
         /// </returns>
-        public virtual async Task<RelatedProduct> GetRelatedProductByIdAsync(int relatedProductId)
+        public virtual async Task<RelatedProduct?> GetRelatedProductByIdAsync(int relatedProductId)
         {
             return await _relatedProductRepository.GetByIdAsync(relatedProductId);
         }
@@ -563,7 +567,7 @@ namespace T.WebApi.Services.ProductServices
         /// <param name="productId1">The first product identifier</param>
         /// <param name="productId2">The second product identifier</param>
         /// <returns>Related product</returns>
-        public virtual RelatedProduct FindRelatedProduct(IList<RelatedProduct> source, int productId1, int productId2)
+        public virtual RelatedProduct? FindRelatedProduct(IList<RelatedProduct> source, int productId1, int productId2)
         {
             return source.FirstOrDefault(rp => rp.ProductId1 == productId1 && rp.ProductId2 == productId2);
         }

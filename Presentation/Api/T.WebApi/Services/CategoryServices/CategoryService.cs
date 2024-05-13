@@ -37,10 +37,10 @@ namespace T.WebApi.Services.CategoryServices
                 var category = _mapper.Map<Category>(model);
 
                 category.CreatedOnUtc = DateTime.UtcNow;
-                
+
                 await _categoryRepository.CreateAsync(category);
 
-                var seName = await _urlRecordService.ValidateSlug(category, model.SeName, category.Name, true);
+                var seName = await _urlRecordService.ValidateSlug(category, model.SeName ?? "", category.Name, true);
 
                 await _urlRecordService.SaveSlugAsync(category, seName);
 
@@ -57,14 +57,18 @@ namespace T.WebApi.Services.CategoryServices
             try
             {
                 var category = _mapper.Map<Category>(model);
+
                 category.UpdatedOnUtc = DateTime.UtcNow;
+
                 await _categoryRepository.UpdateAsync(category);
-                if (model.SeName != (await _urlRecordService.GetSeNameAsync(category)))
+
+                if (model.SeName is not null && model.SeName != (await _urlRecordService.GetSeNameAsync(category)))
                 {
                     model.SeName = await _urlRecordService.ValidateSlug(category, model.SeName, category.Name, true);
 
                     await _urlRecordService.SaveSlugAsync(category, model.SeName);
                 }
+
                 return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)
@@ -82,11 +86,11 @@ namespace T.WebApi.Services.CategoryServices
             }
             catch (Exception ex)
             {
-                return new ServiceErrorResponse<bool>() { Message = ex.Message};
+                return new ServiceErrorResponse<bool>() { Message = ex.Message };
             }
         }
 
-        public async Task<Category> GetCategoryByIdAsync(int categoryId)
+        public async Task<Category?> GetCategoryByIdAsync(int categoryId)
         {
             return await _categoryRepository.Table.Where(x => x.Deleted == false)
                 .FirstOrDefaultAsync(x => x.Id == categoryId);
@@ -102,7 +106,7 @@ namespace T.WebApi.Services.CategoryServices
             })).ToList();
         }
 
-        public async Task<Category> GetCategoryByNameAsync(string categoryName)
+        public async Task<Category?> GetCategoryByNameAsync(string categoryName)
         {
             return await _categoryRepository.Table.Where(x => x.Deleted == false)
                 .FirstOrDefaultAsync(x => x.Name == categoryName);
@@ -110,7 +114,7 @@ namespace T.WebApi.Services.CategoryServices
 
         public async Task<List<ProductCategory>> GetProductCategoriesByCategoryIdAsync(int categoryId)
         {
-            var productCategories = await _productCategoryRepository.Table.Where(x => x.CategoryId == categoryId).OrderByDescending(x=>x.DisplayOrder).ToListAsync();
+            var productCategories = await _productCategoryRepository.Table.Where(x => x.CategoryId == categoryId).OrderByDescending(x => x.DisplayOrder).ToListAsync();
 
             return productCategories;
         }
@@ -168,7 +172,7 @@ namespace T.WebApi.Services.CategoryServices
             }
         }
 
-        public async Task<ProductCategory> GetProductCategoryByIdAsync(int productCategoryId)
+        public async Task<ProductCategory?> GetProductCategoryByIdAsync(int productCategoryId)
         {
             return await _productCategoryRepository.Table
                 .FirstOrDefaultAsync(x => x.Id == productCategoryId);

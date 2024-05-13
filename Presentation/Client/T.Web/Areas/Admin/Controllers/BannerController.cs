@@ -85,7 +85,7 @@ namespace T.Web.Areas.Admin.Controllers
             var banner = await _bannerService.GetBannerByIdAsync(id) ??
                 throw new ArgumentException("Not found with the specified id");
 
-            var model = await _prepareModelService.PrepareBannerModelAsync(new BannerViewModel(), banner);
+            var model = _prepareModelService.PrepareBannerModel(new BannerViewModel(), banner);
 
             return View(model);
         }
@@ -109,7 +109,7 @@ namespace T.Web.Areas.Admin.Controllers
             if (!result.Success)
             {
                 SetStatusMessage($"{result.Message}");
-                model = await _prepareModelService.PrepareBannerModelAsync(model, banner);
+                model = _prepareModelService.PrepareBannerModel(model, banner);
                 return View(model);
             }
 

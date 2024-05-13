@@ -16,6 +16,6 @@ namespace T.Library.Model.ViewsModel
         public string ButtonLabel { get; set; } = string.Empty;
         public string ButtonLink { get; set; } = string.Empty;
         public decimal Price { get; set; }
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
     }
 }

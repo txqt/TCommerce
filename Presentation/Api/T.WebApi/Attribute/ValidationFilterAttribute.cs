@@ -8,16 +8,19 @@ namespace T.WebApi.Attribute
         public void OnActionExecuting(ActionExecutingContext context)
         {
             if (!context.ModelState.IsValid)
-            {
+            { 
                 foreach (var key in context.ModelState.Keys)
                 {
-                    var errors = context.ModelState[key].Errors;
-                    foreach (var error in errors)
+                    if (context.ModelState.TryGetValue(key, out var stateEntry) && stateEntry != null)
                     {
-                        // Thực hiện xử lý với lỗi cụ thể ở đây
-                        var errorMessage = error.ErrorMessage;
-                        var exception = error.Exception;
-                        // Đối với trường key, errorMessage chứa thông điệp lỗi và exception chứa thông tin về lỗi (nếu có)
+                        var errors = stateEntry.Errors;
+                        foreach (var error in errors)
+                        {
+                            // Thực hiện xử lý với lỗi cụ thể ở đây
+                            var errorMessage = error.ErrorMessage;
+                            var exception = error.Exception;
+                            // Đối với trường key, errorMessage chứa thông điệp lỗi và exception chứa thông tin về lỗi (nếu có)
+                        }
                     }
                 }
                 context.Result = new UnprocessableEntityObjectResult(context.ModelState);

@@ -113,9 +113,9 @@ namespace T.Web.Services.PrepareModelServices
             };
 
             //sorting
-            await PrepareSortingOptionsAsync(model, command);
+            PrepareSortingOptions(model, command);
 
-            await PrepareViewModesAsync(model, command);
+            PrepareViewModes(model, command);
             //page size
             await PreparePageSizeOptionsAsync(model, command, category.AllowCustomersToSelectPageSize,
                 category.PageSizeOptions, category.PageSize);
@@ -173,7 +173,7 @@ namespace T.Web.Services.PrepareModelServices
             return model;
         }
 
-        public virtual async Task PrepareViewModesAsync(CatalogProductsModel model, CatalogProductsCommand command)
+        public virtual void PrepareViewModes(CatalogProductsModel model, CatalogProductsCommand command)
         {
             model.AllowProductViewModeChanging = true;
 
@@ -220,7 +220,7 @@ namespace T.Web.Services.PrepareModelServices
             if (command.PageNumber <= 0)
                 command.PageNumber = 1;
 
-            model.AllowCustomersToSelectPageSize = false;
+            model.AllowCustomersToSelectPageSize = true;
             if (allowCustomersToSelectPageSize && pageSizeOptions != null)
             {
                 var pageSizes = pageSizeOptions.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
@@ -279,7 +279,7 @@ namespace T.Web.Services.PrepareModelServices
         }
 
 
-        protected virtual async Task<ManufacturerFilterModel> PrepareManufacturerFilterModel(IList<int> selectedManufacturers, IList<Manufacturer> availableManufacturers)
+        protected virtual ManufacturerFilterModel PrepareManufacturerFilterModel(IList<int> selectedManufacturers, IList<Manufacturer> availableManufacturers)
         {
             var model = new ManufacturerFilterModel();
 
@@ -320,7 +320,7 @@ namespace T.Web.Services.PrepareModelServices
             }
         }
 
-        public virtual async Task PrepareSortingOptionsAsync(CatalogProductsModel model, CatalogProductsCommand command)
+        public virtual void PrepareSortingOptions(CatalogProductsModel model, CatalogProductsCommand command)
         {
             var activeSortingOptionsIds = Enum.GetValues(typeof(ProductSortingEnum)).Cast<int>().ToList().Select(id => new { Id = id });
 

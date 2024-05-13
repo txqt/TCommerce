@@ -45,9 +45,9 @@ namespace T.WebApi.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> GetCurrentShoppingCart()
         {
-            var customer = await _userService.GetCurrentUser();
+            var user = await _userService.GetCurrentUser();
 
-            if (customer is null)
+            if (user is null)
             {
                 return NotFound();
             }
@@ -55,7 +55,9 @@ namespace T.WebApi.Controllers
             var shoppingCartType = ShoppingCartType.ShoppingCart;
 
             // load current shopping cart and return it as result of request
-            var shoppingCartsObject = await LoadCurrentShoppingCartItems(shoppingCartType, customer);
+            var shoppingCart = await _shoppingCartService.GetShoppingCartAsync(user, shoppingCartType);
+
+            var shoppingCartsObject = _mapper.Map<List<ShoppingCartItemModel>>(shoppingCart); ;
 
             return Ok(shoppingCartsObject);
         }
@@ -76,7 +78,13 @@ namespace T.WebApi.Controllers
             }
             var user = await _userService.GetCurrentUser();
 
-            var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+            string attributesJson = "";
+
+            if (shoppingCartItemModel.Attributes != null)
+            {
+                attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+            }
+
             shoppingCartItem.AttributeJson = attributesJson;
 
             var warnings = new List<string>();
@@ -97,7 +105,7 @@ namespace T.WebApi.Controllers
         {
             var user = await _userService.GetCurrentUser();
             var cart = await _shoppingCartService.GetById(id);
-            if (cart.UserId != user.Id)
+            if (cart is null || cart.UserId != user.Id)
             {
                 return NotFound();
             }
@@ -117,7 +125,7 @@ namespace T.WebApi.Controllers
             foreach (var id in ids)
             {
                 var cart = await _shoppingCartService.GetById(id);
-                if (cart.UserId != user.Id)
+                if (cart is null || cart.UserId != user.Id)
                 {
                     return NotFound();
                 }
@@ -130,27 +138,6 @@ namespace T.WebApi.Controllers
             }
             return BadRequest(result);
         }
-
-        private async Task<List<ShoppingCartItemModel>> LoadCurrentShoppingCartItems(ShoppingCartType shoppingCartType, UserModel user)
-        {
-            var updatedShoppingCart = await _shoppingCartService.GetShoppingCartAsync(user, shoppingCartType);
-
-            var model = _mapper.Map<List<ShoppingCartItemModel>>(updatedShoppingCart);
-
-            if (updatedShoppingCart.Count > 0)
-            {
-                foreach (var newShoppingCart in updatedShoppingCart)
-                {
-                    var product = await _productService.GetByIdAsync(newShoppingCart.ProductId);
-                    var currentCartModel = model.Where(x => x.Id == newShoppingCart.Id).FirstOrDefault();
-                    //currentCartModel.ProductModel = _mapper.Map<ProductModel>(product);
-                    currentCartModel.Attributes = await _productAttributeConverter.ConvertToObject(newShoppingCart.AttributeJson);
-                }
-            }
-
-            return model ??= null;
-        }
-
 
         [HttpPut("batch")]
         [CheckPermission]
@@ -170,7 +157,12 @@ namespace T.WebApi.Controllers
                         return NotFound();
                     }
 
-                    var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+                    string attributesJson = "";
+
+                    if (shoppingCartItemModel.Attributes != null)
+                    {
+                        attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+                    }
 
                     var warnings = new List<string>();
                     warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity));
@@ -195,7 +187,7 @@ namespace T.WebApi.Controllers
         [CheckPermission]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> UpdateShoppingCartItem(
-            ShoppingCartItemModel shoppingCartItemModel)
+    ShoppingCartItemModel shoppingCartItemModel)
         {
             var product = await _productService.GetByIdAsync(shoppingCartItemModel.ProductId);
 
@@ -206,7 +198,12 @@ namespace T.WebApi.Controllers
 
             var user = await _userService.GetCurrentUser();
 
-            var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+            string attributesJson = "";
+
+            if (shoppingCartItemModel.Attributes != null)
+            {
+                attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+            }
 
             var warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity);
             if (warnings.Any())
@@ -219,6 +216,7 @@ namespace T.WebApi.Controllers
             return Ok(new ServiceSuccessResponse<bool>());
         }
 
+
         [HttpGet("warnings")]
         public async Task<IActionResult> GetWarningsShoppingCart([FromQuery] List<ShoppingCartItemModel> shoppingCartItemModels)
         {
@@ -229,8 +227,17 @@ namespace T.WebApi.Controllers
                 foreach (var item in shoppingCartItemModels)
                 {
                     var product = await _productService.GetByIdAsync(item.ProductId);
-                    var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(item.Attributes, product.Id);
-                    warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, item.ShoppingCartType, product, attributesJson, item.Quantity));
+
+                    var attributesJson = "";
+
+                    if (product is not null)
+                    {
+                        if (item.Attributes is not null)
+                        {
+                            attributesJson = await _productAttributeConverter.ConvertToJsonAsync(item.Attributes, product.Id);
+                        }
+                        warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, item.ShoppingCartType, product, attributesJson, item.Quantity));
+                    }
                 }
             }
             return new JsonResult(warnings);
@@ -243,8 +250,17 @@ namespace T.WebApi.Controllers
             if(shoppingCartItemModel is not null)
             {
                 var product = await _productService.GetByIdAsync(shoppingCartItemModel.ProductId);
-                var attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
-                warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity));
+
+                var attributesJson = "";
+
+                if(product is not null)
+                {
+                    if (shoppingCartItemModel.Attributes is not null)
+                    {
+                        attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
+                    }
+                    warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity));
+                }
             }
             return new JsonResult(warnings);
         }

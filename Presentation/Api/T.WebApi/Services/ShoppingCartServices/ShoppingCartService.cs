@@ -21,9 +21,9 @@ namespace T.WebApi.Services.ShoppingCartServices
         Task<List<ShoppingCartItem>> GetShoppingCartAsync(UserModel user, ShoppingCartType? shoppingCartType = null, int? productId = null, DateTime? createdFromUtc = null, DateTime? createdToUtc = null);
         bool IsUserShoppingCartEmpty(UserModel user);
         Task<List<string>> GetShoppingCartItemWarningsAsync(UserModel user, ShoppingCartType shoppingCartType, Product product, string attributesJson, int quantity = 1, bool getStandardWarnings = true, bool getAttributesWarnings = true);
-        Task AddToCartAsync(UserModel user, ShoppingCartType cartType, Product product, string attributeJson = null,
+        Task AddToCartAsync(UserModel user, ShoppingCartType cartType, Product product, string? attributeJson = null,
             int quantity = 1);
-        Task UpdateCartItemAsync(UserModel user, int cartId, ShoppingCartType cartType, Product product, string attributeJson = null, int quantity = 1);
+        Task UpdateCartItemAsync(UserModel user, int cartId, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1);
     }
     public class ShoppingCartService : IShoppingCartService
     {
@@ -47,7 +47,7 @@ namespace T.WebApi.Services.ShoppingCartServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<ShoppingCartItem> GetById(int id)
+        public async Task<ShoppingCartItem?> GetById(int id)
         {
             return await _shoppingCartItemRepository.GetByIdAsync(id);
         }
@@ -80,14 +80,14 @@ namespace T.WebApi.Services.ShoppingCartServices
             return !_shoppingCartItemRepository.Table.Any(sci => sci.UserId == user.Id);
         }
 
-        public async Task<ShoppingCartItem> FindShoppingCartItemInTheCartAsync(List<ShoppingCartItem> shoppingCart,
+        public async Task<ShoppingCartItem?> FindShoppingCartItemInTheCartAsync(List<ShoppingCartItem> shoppingCart,
         ShoppingCartType shoppingCartType,
-        string attributesJson = "")
+        string? attributesJson = "")
         {
             ArgumentNullException.ThrowIfNull(shoppingCart);
 
             return await shoppingCart.Where(sci => sci.ShoppingCartType == shoppingCartType)
-                .FirstOrDefaultAsync(x => x.AttributeJson.Equals(attributesJson));
+                .FirstOrDefaultAsync(x => x.AttributeJson is not null && x.AttributeJson.Equals(attributesJson));
         }
 
         public async Task<ServiceResponse<bool>> UpdateAsync(ShoppingCartItem shoppingCartItem)
@@ -106,7 +106,7 @@ namespace T.WebApi.Services.ShoppingCartServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task AddToCartAsync(UserModel user, ShoppingCartType cartType, Product product, string attributeJson = null, int quantity = 1)
+        public async Task AddToCartAsync(UserModel user, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
         {
             ArgumentNullException.ThrowIfNull(user);
             ArgumentNullException.ThrowIfNull(product);
@@ -118,7 +118,7 @@ namespace T.WebApi.Services.ShoppingCartServices
             if (shoppingCartItem is not null)
             {
                 shoppingCartItem.Quantity += quantity;
-                shoppingCartItem.AttributeJson = attributeJson;
+                shoppingCartItem.AttributeJson = attributeJson!;
                 await UpdateAsync(shoppingCartItem);
             }
             else
@@ -126,7 +126,7 @@ namespace T.WebApi.Services.ShoppingCartServices
                 shoppingCartItem = new ShoppingCartItem();
                 shoppingCartItem.ShoppingCartType = cartType;
                 shoppingCartItem.Quantity = quantity;
-                shoppingCartItem.AttributeJson = attributeJson;
+                shoppingCartItem.AttributeJson = attributeJson!;
                 shoppingCartItem.UserId = user.Id;
                 shoppingCartItem.ProductId = product.Id;
                 shoppingCartItem.CreatedOnUtc = DateTime.UtcNow;
@@ -152,16 +152,14 @@ namespace T.WebApi.Services.ShoppingCartServices
             }
         }
 
-        public async Task UpdateCartItemAsync(UserModel user, int cartId, ShoppingCartType cartType, Product product, string attributeJson = null, int quantity = 1)
+        public async Task UpdateCartItemAsync(UserModel user, int cartId, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
         {
             ArgumentNullException.ThrowIfNull(user);
-
-
 
             var carts = await GetShoppingCartAsync(user, cartType, product.Id);
             var otherCartWithSameParameters = await FindShoppingCartItemInTheCartAsync(carts,
             cartType, attributeJson);
-            var currentCart = await GetById(cartId);
+            var currentCart = (await GetById(cartId))!;
 
             //check if that other cart is current cart
             if (otherCartWithSameParameters is not null && otherCartWithSameParameters.Id == currentCart.Id)
@@ -172,7 +170,7 @@ namespace T.WebApi.Services.ShoppingCartServices
             if (otherCartWithSameParameters is not null && otherCartWithSameParameters.UserId == user.Id)
             {
                 otherCartWithSameParameters.Quantity += quantity;
-                otherCartWithSameParameters.AttributeJson = attributeJson;
+                otherCartWithSameParameters.AttributeJson = attributeJson!;
                 if (currentCart is not null && currentCart.Id != otherCartWithSameParameters.Id)
                 {
                     await DeleteAsync(currentCart.Id);
@@ -182,7 +180,7 @@ namespace T.WebApi.Services.ShoppingCartServices
             {
                 currentCart.ShoppingCartType = cartType;
                 currentCart.Quantity = quantity;
-                currentCart.AttributeJson = attributeJson;
+                currentCart.AttributeJson = attributeJson!;
                 await UpdateAsync(currentCart);
             }
 
@@ -203,7 +201,7 @@ namespace T.WebApi.Services.ShoppingCartServices
 
             if (getStandardWarnings)
             {
-                warnings.AddRange(await GetStandardWarningsAsync(user, shoppingCartType, product, attributesJson, quantity));
+                warnings.AddRange(GetStandardWarningsAsync(user, shoppingCartType, product, attributesJson, quantity));
             }
 
             if (getAttributesWarnings)
@@ -214,7 +212,7 @@ namespace T.WebApi.Services.ShoppingCartServices
             return warnings;
         }
 
-        protected virtual async Task<List<string>> GetStandardWarningsAsync(UserModel user, ShoppingCartType shoppingCartType, Product product,
+        protected virtual List<string> GetStandardWarningsAsync(UserModel user, ShoppingCartType shoppingCartType, Product product,
         string attributesJson, int quantity)
         {
             List<string> warnings = new List<string>();
@@ -288,7 +286,7 @@ namespace T.WebApi.Services.ShoppingCartServices
             var warnings = new List<string>();
 
             //convert json string of user selected attributes
-            var selectedAttributes = await _productAttributeConverter.ConvertToObject(attributesJson);
+            var selectedAttributes = _productAttributeConverter.ConvertToObject(attributesJson);
 
             //all attributes this product has
             var attributeMappings = await _productAttribute.GetProductAttributesMappingByProductIdAsync(product.Id);
@@ -306,10 +304,15 @@ namespace T.WebApi.Services.ShoppingCartServices
             {
                 if (attributeMapping.IsRequired)
                 {
-                    var attributeName = (await _productAttribute.GetProductAttributeByIdAsync(attributeMapping.ProductAttributeId)).Name;
-                    warnings.Add($"Sản phẩm [{product.Name}] phải chọn [{attributeName}]");
+                    var productAttribute = await _productAttribute.GetProductAttributeByIdAsync(attributeMapping.ProductAttributeId);
+                    if (productAttribute != null)
+                    {
+                        var attributeName = productAttribute.Name;
+                        warnings.Add($"Sản phẩm [{product.Name}] phải chọn [{attributeName}]");
+                    }
                 }
             }
+
 
             return warnings;
         }

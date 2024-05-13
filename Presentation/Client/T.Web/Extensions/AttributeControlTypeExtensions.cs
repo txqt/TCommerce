@@ -5,7 +5,7 @@ namespace T.Web.Extensions
 {
     public static class AttributeControlTypeExtensions
     {
-        public static async Task<SelectList> ToSelectListAsync(this AttributeControlType selectedValue)
+        public static SelectList ToSelectList(this AttributeControlType selectedValue)
         {
             var values = Enum.GetValues(typeof(AttributeControlType)).Cast<AttributeControlType>();
 

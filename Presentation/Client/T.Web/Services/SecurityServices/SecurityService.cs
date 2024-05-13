@@ -36,7 +36,7 @@ namespace T.Web.Services.SecurityServices
             return await PostAsJsonAsync<ServiceResponse<bool>>($"api/security/permission-mapping", permissionRecordUserRoleMapping);
         }
 
-        public async Task<ServiceResponse<bool>> DeletePermissionRecordByIdAsync(int permissionMapping)
+        public Task<ServiceResponse<bool>> DeletePermissionRecordByIdAsync(int permissionMapping)
         {
             throw new NotImplementedException();
         }

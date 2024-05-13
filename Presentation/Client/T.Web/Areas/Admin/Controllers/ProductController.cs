@@ -79,6 +79,7 @@ namespace T.Web.Areas.Admin.Controllers
         {
             ProductModel model = new ProductModel()
             {
+                Name = "",
                 MarkAsNew = false,
                 ShowOnHomepage = true,
                 Published = true

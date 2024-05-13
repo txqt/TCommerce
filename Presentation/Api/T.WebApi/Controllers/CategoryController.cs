@@ -27,7 +27,7 @@ namespace T.WebApi.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<Category>> Get(int id)
+        public async Task<ActionResult<Category?>> Get(int id)
         {
             return await _categoryService.GetCategoryByIdAsync(id);
         }

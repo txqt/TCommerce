@@ -208,19 +208,6 @@ namespace T.Web.Controllers
                 errors = deleteResult.Message.Split(",").ToArray()
             });
         }
-        static int GetNumberFromPrefix(string input, string prefix)
-        {
-            if (input.StartsWith(prefix))
-            {
-                string numberString = input.Substring(prefix.Length);
-
-                if (int.TryParse(numberString, out int number))
-                {
-                    return number;
-                }
-            }
-            return -1; // Trả về -1 nếu không thể chuyển đổi thành số
-        }
 
         public virtual async Task<IActionResult> Cart()
         {

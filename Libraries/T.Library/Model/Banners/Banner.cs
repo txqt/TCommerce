@@ -16,6 +16,6 @@ namespace T.Library.Model.Banners
         public string ButtonLink { get; set; } = string.Empty;
         public decimal Price { get;set; }
         public int PictureId { get; set; }
-        public Picture Picture { get; set; }
+        public Picture? Picture { get; set; }
     }
 }

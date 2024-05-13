@@ -10,7 +10,7 @@ namespace T.Library.Model.Interface
     public interface IProductCategoryService
     {
         //Task<List<ProductCategory>> GetAllProductCategoryAsync();
-        Task<ProductCategory> GetProductCategoryById(int productCategoryId);
+        Task<ProductCategory?> GetProductCategoryById(int productCategoryId);
         Task<List<ProductCategory>> GetProductCategoriesByProductId(int productId);
         Task<ServiceResponse<bool>> CreateProductCategoryAsync(ProductCategory productCategory);
         Task<ServiceResponse<bool>> UpdateProductCategoryAsync(ProductCategory productCategory);

@@ -59,14 +59,17 @@ namespace T.WebApi.Controllers
                 productParameters.ShowHidden,
                 productParameters.ids);
 
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(products.MetaData));
+            if (products.MetaData != null)
+            {
+                Response.Headers["X-Pagination"] = JsonConvert.SerializeObject(products.MetaData);
+            }
 
             return Ok(products);
         }
 
         [HttpGet("{productId}")]
         [AllowAnonymous]
-        public async Task<ActionResult<Product>> Get(int productId)
+        public async Task<ActionResult<Product?>> Get(int productId)
         {
             return await _productService.GetByIdAsync(productId);
         }
@@ -151,7 +154,7 @@ namespace T.WebApi.Controllers
         #region ProductPicture
         [HttpGet("{productId}/pictures")]
         [AllowAnonymous]
-        public async Task<ActionResult<List<ProductPicture>>> GetProductPicturesByProductIdAsync(int productId)
+        public async Task<ActionResult<List<ProductPicture>?>> GetProductPicturesByProductIdAsync(int productId)
         {
             return await _productService.GetProductPicturesByProductIdAsync(productId);
         }
@@ -242,6 +245,11 @@ namespace T.WebApi.Controllers
         #region Common
         protected virtual async Task SaveCategoryMappingsAsync(ProductModel model)
         {
+            if(model.CategoryIds is null)
+            {
+                return;
+            }
+
             // retrieve the current list of categories for the product
             var existingProductCategories = await _categoryService.GetProductCategoriesByProductIdAsync(model.Id);
 

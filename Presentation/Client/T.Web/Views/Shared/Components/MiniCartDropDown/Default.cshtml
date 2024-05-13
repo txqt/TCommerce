@@ -1,8 +1,10 @@
 ﻿@model MiniShoppingCartModel
 <div class="dropdown cart-dropdown" id="miniCartContainer">
     <a href="/cart" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
-        <i class="icon-shopping-cart"></i>
-        <span class="cart-count">@Model.TotalProducts</span>
+        <div class="icon">
+            <i class="icon-shopping-cart"></i>
+            <span class="cart-count">@Model.TotalProducts</span>
+        </div>
     </a>
 
     @if (Model is not null)

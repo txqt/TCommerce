@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -110,23 +111,23 @@ namespace T.WebApi.Controllers
             return Ok(response);
         }
 
-        [HttpGet("account/confirm-email")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
-        {
-            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
-                return NotFound();
+        //[HttpGet("account/confirm-email")]
+        //[ServiceFilter(typeof(ValidationFilterAttribute))]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        //{
+        //    if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+        //        return NotFound();
 
-            var result = await _userRegistrationService.ConfirmEmail(userId, token);
+        //    var result = await _userRegistrationService.ConfirmEmail(userId, token);
 
-            if (result.Success)
-            {
-                return Redirect($"{result.Data}/account/RegisterConfirmed");
-            }
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
 
-            return BadRequest(result);
-        }
+        //    return Ok(result);
+        //}
 
         [HttpPost("account/forgot-password")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
@@ -200,7 +201,7 @@ namespace T.WebApi.Controllers
         [HttpPost("me/account/address")]
         [CheckPermission]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> CreateUserAddressAsync(Address address)
+        public async Task<ActionResult> CreateUserAddressAsync(DeliveryAddress address)
         {
             var result = await _userService.CreateUserAddressAsync(address);
             if (!result.Success)

@@ -30,7 +30,7 @@ namespace T.WebApi.Services.IRepositoryServices
         }
 
 
-        public async Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>> func = null, string cacheKey = null, bool includeDeleted = true)
+        public async Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>>? func = null, string? cacheKey = null, bool includeDeleted = true)
         {
             if(cacheKey is null)
             {
@@ -60,7 +60,7 @@ namespace T.WebApi.Services.IRepositoryServices
             }
         }
 
-        public async Task<T> GetByIdAsync(int id, string cacheKey = null, bool includeDeleted = true)
+        public async Task<T?> GetByIdAsync(int id, string? cacheKey = null, bool includeDeleted = true)
         {
             if (id <= 0)
             {
@@ -96,7 +96,7 @@ namespace T.WebApi.Services.IRepositoryServices
             }
         }
 
-        public async Task<IEnumerable<T>> GetByIdsAsync(IEnumerable<int> ids, string cacheKey = null, bool includeDeleted = true)
+        public async Task<IEnumerable<T>> GetByIdsAsync(IEnumerable<int> ids, string? cacheKey = null, bool includeDeleted = true)
         {
             if (ids == null || !ids.Any())
             {

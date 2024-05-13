@@ -3314,11 +3314,11 @@ p {
 
 .header-3 {
     color: #fff;
-    background-color: #333333;
+    background-color: #fff;
 }
 
     .header-3 .header-top {
-        background-color: #333;
+        background-color: #fff;
     }
 
         .header-3 .header-top .container::after,
@@ -3359,7 +3359,7 @@ p {
     .header-3 .mobile-menu-toggler,
     .header-3 .search-toggle:not(:hover):not(:focus),
     .header-3 .wishlist-link:not(:hover):not(:focus) {
-        color: #fff;
+        color: #333;
     }
 
     .header-3 .wishlist .wishlist-count,

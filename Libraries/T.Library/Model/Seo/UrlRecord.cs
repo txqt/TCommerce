@@ -17,12 +17,12 @@ namespace T.Library.Model.Seo
         /// <summary>
         /// Gets or sets the entity name
         /// </summary>
-        public string EntityName { get; set; }
+        public string? EntityName { get; set; }
 
         /// <summary>
         /// Gets or sets the slug
         /// </summary>
-        public string Slug { get; set; }
+        public string? Slug { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the record is active

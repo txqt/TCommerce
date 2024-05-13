@@ -224,6 +224,7 @@ namespace T.Web.Areas.Admin.Services.PrepareModel
                 model ??= new ProductEditModel()
                 {
                     Id = product.Id,
+                    Name = string.Empty
                 };
 
                 _mapper.Map(product, model);

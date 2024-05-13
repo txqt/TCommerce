@@ -23,7 +23,7 @@ namespace T.Library.Model.Interface
         Task<bool> AuthorizeAsync(string permissionSystemName, User user);
         Task<bool> AuthorizeAsync(string permissionSystemName, Guid roleId);
         Task<PermissionRecordUserRoleMapping> GetPermissionMappingAsync(string roleId, int permissionId);
-        Task<List<Role>> GetRoles();
+        Task<List<Role>?> GetRoles();
         Task<Role> GetRoleByRoleId(string roleId);
         Task<ServiceResponse<bool>> CreatePermissionMappingAsync(PermissionRecordUserRoleMapping permissionMapping);
         Task<ServiceResponse<bool>> DeletePermissionMappingByIdAsync(int mappingId);

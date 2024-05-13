@@ -8,7 +8,7 @@ namespace T.Library.Model.Options
 {
     public class UrlOptions
     {
-        public string? APIUrl { get; set; }
-        public string? ClientUrl { get; set; }
+        public string APIUrl { get; set; } = null!;
+        public string ClientUrl { get; set; } = null!;
     }
 }

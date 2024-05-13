@@ -18,7 +18,7 @@ public static class AppSettingsExtensions
         {
             if (tempObj[keys[i]] == null)
             {
-                return null;
+                return string.Empty;
             }
             tempObj = tempObj[keys[i]];
         }
