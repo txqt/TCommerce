@@ -540,6 +540,54 @@ namespace T.WebApi.Services.UserServices
 
             return addressInfoList;
         }
+
+        public async Task<ServiceResponse<bool>> UpdateUserAddressAsync(DeliveryAddress deliveryAddress)
+        {
+            var user = await GetCurrentUser();
+
+            ArgumentNullException.ThrowIfNull(user);
+
+            ArgumentNullException.ThrowIfNull(deliveryAddress);
+
+            var province = await _addressService.GetProvinceByIdAsync(deliveryAddress.ProvinceId);
+
+            var district = await _addressService.GetDistricteByIdAsync(deliveryAddress.DistrictId);
+
+            var commune = await _addressService.GetCommuneByIdAsync(deliveryAddress.CommuneId);
+
+            ArgumentNullException.ThrowIfNull(province);
+
+            ArgumentNullException.ThrowIfNull(district);
+
+            ArgumentNullException.ThrowIfNull(commune);
+
+            if (deliveryAddress.IsDefault)
+            {
+                var currentDefaultAddresses = await GetOwnAddressesAsync();
+
+                if (currentDefaultAddresses is not null)
+                {
+                    foreach (var item in currentDefaultAddresses)
+                    {
+                        if(item.Id != deliveryAddress.Id)
+                        {
+                            var address = await _addressService.GetAddressByIdAsync(item.Id);
+
+                            if (address is not null)
+                            {
+                                address.IsDefault = false;
+
+                                await _addressService.UpdateAddressAsync(address);
+                            }
+                        }
+                    }
+                }
+            }
+
+            await _addressService.UpdateAddressAsync(deliveryAddress);
+
+            return new ServiceSuccessResponse<bool>();
+        }
     }
 }
 

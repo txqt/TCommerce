@@ -242,7 +242,7 @@ $(document).ready(function () {
     'use strict';
 
     owlCarousels();
-    quantityInputs();
+    //quantityInputs();
     SetPictureDefault();
     $(document).on('click', '#deleteCartItemButton', function () {
         var url = $(this).data('url');

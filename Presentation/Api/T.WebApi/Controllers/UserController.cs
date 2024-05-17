@@ -210,6 +210,18 @@ namespace T.WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPut("me/account/address")]
+        [CheckPermission]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> UpdateUserAddressAsync(DeliveryAddress address)
+        {
+            var result = await _userService.UpdateUserAddressAsync(address);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
         [HttpDelete("account/address/{id}")]
         [CheckPermission]
         [ServiceFilter(typeof(ValidationFilterAttribute))]

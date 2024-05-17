@@ -14,6 +14,7 @@ using T.Library.Model.Account;
 using T.Library.Model.Common;
 using T.Library.Model.ViewsModel;
 using T.Web.Models;
+using T.Web.Services.AddressServices;
 using T.Web.Services.PrepareModelServices;
 using T.Web.Services.UserRegistrationServices;
 using T.Web.Services.UserService;
@@ -28,14 +29,16 @@ namespace T.Web.Controllers
         private readonly IOptions<Library.Model.JwtToken.AuthorizationOptionsConfig> _jwtOptions;
         private readonly IAccountModelService _accountModelService;
         private readonly IMapper _mapper;
+        private readonly IAddressService _addressService;
 
-        public AccountController(IUserRegistrationService accountService, IOptions<Library.Model.JwtToken.AuthorizationOptionsConfig> jwtOptions, IUserService userService, IAccountModelService accountModelService, IMapper mapper)
+        public AccountController(IUserRegistrationService accountService, IOptions<Library.Model.JwtToken.AuthorizationOptionsConfig> jwtOptions, IUserService userService, IAccountModelService accountModelService, IMapper mapper, IAddressService addressService)
         {
             _accountService = accountService;
             _jwtOptions = jwtOptions;
             _userService = userService;
             _accountModelService = accountModelService;
             _mapper = mapper;
+            _addressService = addressService;
         }
 
         [HttpGet]
@@ -299,15 +302,36 @@ namespace T.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult UpdateAddress()
+        public async Task<IActionResult> UpdateAddress(int id)
         {
-            return View();
+            var currentAddress = await _addressService.GetAddressByIdAsync(id);
+
+            var model = await _accountModelService.PrepareDeliveryAddressModel(currentAddress, null);
+
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult UpdateAddress(DeliveryAddress address)
+        public async Task<IActionResult> UpdateAddress(DeliveryAddressModel model)
         {
-            return View();
+            if (!ModelState.IsValid)
+            {
+                var currentAddress = await _addressService.GetAddressByIdAsync(model.Id);
+
+                model = await _accountModelService.PrepareDeliveryAddressModel(currentAddress, model);
+
+                return View(model);
+            }
+
+            var address = _mapper.Map<DeliveryAddress>(model);
+
+            address.CreatedOnUtc = DateTime.Now;
+
+            var result = await _userService.UpdateUserAddressAsync(address);
+
+            SetStatusMessage(result.Success ? "Success" : "Failed");
+
+            return RedirectToAction(nameof(Addresses));
         }
     }
 }

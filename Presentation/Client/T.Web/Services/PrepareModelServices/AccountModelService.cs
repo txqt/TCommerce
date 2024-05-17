@@ -71,7 +71,7 @@ namespace T.Web.Services.PrepareModelServices
 
             await _baseModelService.PrepareSelectListDistrictAsync(model.AvaiableDistricts, address is not null ? address.ProvinceId : 0, true, "Chọn Quận/Huyện");
 
-            await _baseModelService.PrepareSelectListDistrictAsync(model.AvaiableCommunes, address is not null ? address.DistrictId : 0, true, "Chọn Phường/Xã");
+            await _baseModelService.PrepareSelectListCommuneAsync(model.AvaiableCommunes, address is not null ? address.DistrictId : 0, true, "Chọn Phường/Xã");
 
             return model;
         }
