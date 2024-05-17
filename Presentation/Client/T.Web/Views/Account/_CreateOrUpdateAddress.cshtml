@@ -1,8 +1,8 @@
-﻿@model T.Library.Model.Common.DeliveryAddress
+﻿@model DeliveryAddressModel
 
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-@if(Model.Id > 0)
+<div asp-validation-summary="All" class="text-danger"></div>
+@if (Model.Id > 0)
 {
     <div class="form-group">
         <label asp-for="Id" class="control-label"></label>
@@ -31,10 +31,101 @@
     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
 </div>
 <div class="form-group">
-    <label asp-for="CreatedOnUtc" class="control-label"></label>
-    <input asp-for="CreatedOnUtc" class="form-control" />
-    <span asp-validation-for="CreatedOnUtc" class="text-danger"></span>
+    <label class="control-label">Tỉnh/Thành phố:</label>
+    <select required class="form-select form-select-lg mb-3" asp-items="Model.AvaiableProvinces" asp-for="ProvinceId">
+    </select>
+</div>
+<div class="form-group">
+    <label class="control-label">Quận huyện:</label>
+    <select required class="form-select form-select-lg mb-3" asp-items="Model.AvaiableDistricts" asp-for="DistrictId">
+    </select>
+</div>
+<div class="form-group">
+    <label class="control-label">Phường xã:</label>
+    <select required class="form-select form-select-lg mb-3" asp-items="Model.AvaiableCommunes" asp-for="CommuneId">
+    </select>
+</div>
+<div class="form-group">
+    <label asp-for="AddressDetails"></label>
+    <input asp-for="AddressDetails" class="form-control" />
+    <span asp-validation-for="AddressDetails" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="DeliveryAddressType"></label>
+    <div>
+        @{
+            var isFirst = true;
+        }
+        @foreach (var deliveryType in Enum.GetValues(typeof(DeliveryAddressType)))
+        {
+            <label class="radio-inline">
+                @if (isFirst)
+                {
+                    <input type="radio" asp-for="DeliveryAddressType" value="@((int)deliveryType)" checked />
+                }
+                else
+                {
+                    <input type="radio" asp-for="DeliveryAddressType" value="@((int)deliveryType)" />
+                }
+                @deliveryType
+            </label>
+            isFirst = false;
+        }
+    </div>
+    <span asp-validation-for="DeliveryAddressType" class="text-danger"></span>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" asp-for="IsDefault" checked>
+    <label class="form-check-label" asp-for="IsDefault">
+        Đặt làm mặc định
+    </label>
 </div>
 
+@Html.Script(@<text>
+        <script>
+            $(document).ready(function () {
+                $("#ProvinceId").change(function () {
+                    var provinceId = $(this).val();
+                    $.ajax({
+                        url: "/Address/GetDistricts",
+                        type: "GET",
+                        data: { provinceId: provinceId },
+                        success: function (data) {
+                            $("#DistrictId").empty();
+                            $.each(data, function (index, district) {
+                                $("#DistrictId").append($('<option>', {
+                                    value: district.value,
+                                    text: district.text
+                                }));
+                            });
+                        },
+                        error: function () {
+                            alert("Có lỗi xảy ra khi tải huyện.");
+                        }
+                    });
+                });
 
+                $("#DistrictId").change(function () {
+                    var districtId = $(this).val();
+                    $.ajax({
+                        url: "/Address/GetCommunes",
+                        type: "GET",
+                        data: { districtId: districtId },
+                        success: function (data) {
+                            $("#CommuneId").empty();
+                            $.each(data, function (index, commune) {
+                                $("#CommuneId").append($('<option>', {
+                                    value: commune.value,
+                                    text: commune.text
+                                }));
+                            });
+                        },
+                        error: function () {
+                            alert("Có lỗi xảy ra khi tải xã.");
+                        }
+                    });
+                });
+            });
 
+        </script>
+    </text>)

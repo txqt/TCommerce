@@ -12,6 +12,10 @@ using AutoMapper;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Services.CategoryServices;
 using T.WebApi.Database;
+using T.Library.Model.Common;
+using Newtonsoft.Json;
+using T.WebApi.Helpers;
+using T.WebApi.Services.AddressServices;
 
 namespace T.WebApi.ServicesSeederService
 {
@@ -26,6 +30,7 @@ namespace T.WebApi.ServicesSeederService
         private readonly IManufacturerServicesCommon _manufacturerServicesCommon;
         private readonly IMapper _mapper;
         private readonly DatabaseContext _context;
+        private readonly IAddressService _addressService;
 
         public DataSeeder(RoleManager<Role> roleManager,
             UserManager<User> userManager,
@@ -36,7 +41,8 @@ namespace T.WebApi.ServicesSeederService
             ISecurityService permissionRecordService,
             IManufacturerServicesCommon manufacturerServicesCommon,
             IMapper mapper,
-            DatabaseContext context)
+            DatabaseContext context,
+            IAddressService addressService)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -44,9 +50,10 @@ namespace T.WebApi.ServicesSeederService
             _categorySerivce = categorySerivce;
             _productAttributeService = productAttributeService;
             _securityService = permissionRecordService;
-            this._manufacturerServicesCommon = manufacturerServicesCommon;
+            _manufacturerServicesCommon = manufacturerServicesCommon;
             _mapper = mapper;
             _context = context;
+            _addressService = addressService;
         }
 
         public async Task Initialize(string AdminEmail, string AdminPassword, bool sampleData = false)
@@ -93,36 +100,73 @@ namespace T.WebApi.ServicesSeederService
                     throw new Exception("Something went wrong");
                 }
 
-                //var countriesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "countries.json"));
-                //var statesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "states.json"));
-                //var citiesJson = System.IO.File.ReadAllText(Path.Combine("jsondata", "cities.json"));
 
-                //try
-                //{
-                //    var countryObjects = JsonConvert.DeserializeObject<List<Country>>(countriesJson);
-                //    var stateObjects = JsonConvert.DeserializeObject<List<State>>(statesJson);
-                //    var cityObjects = JsonConvert.DeserializeObject<List<City>>(citiesJson);
 
-                //    using var transaction = _context.Database.BeginTransaction();
+                try
+                {
+                    // Đường dẫn của tệp JSON
+                    string jsonFilePath = Path.Combine("jsondata", "test.json");
 
-                //    await _context.EnableIdentityInsert<Country>();
-                //    await _countryService.BulkCreateCountryAsync(countryObjects);
-                //    await _context.DisableIdentityInsert<Country>();
+                    // Đọc nội dung của tệp JSON
+                    string jsonContent = File.ReadAllText(jsonFilePath);
 
-                //    await _context.EnableIdentityInsert<State>();
-                //    await _stateService.BulkCreateStateAsync(stateObjects);
-                //    await _context.DisableIdentityInsert<State>();
+                    dynamic jsonData = JsonConvert.DeserializeObject(jsonContent)!;
 
-                //    await _context.EnableIdentityInsert<City>();
-                //    await _cityService.BulkCreateCityAsync(cityObjects);
-                //    await _context.DisableIdentityInsert<City>();
+                    var provinceList = new List<VietNamProvince>();
+                    foreach(var p in jsonData.province)
+                    {
+                        var province = new VietNamProvince()
+                        {
+                            Id = p.idProvince,
+                            Name = p.name
+                        };
+                        provinceList.Add(province);
+                    }
 
-                //    transaction.Commit();
-                //}
-                //catch(Exception e)
-                //{
-                //    Console.WriteLine(e.Message);
-                //}
+                    var districtList = new List<VietNamDistrict>();
+                    foreach(var d in jsonData.district)
+                    {
+                        var district = new VietNamDistrict()
+                        {
+                            Id = d.idDistrict,
+                            IdProvince = d.idProvince,
+                            Name = d.name,
+                        };
+                        districtList.Add(district);
+                    }
+
+                    var communeList = new List<VietNamCommune>();
+                    foreach(var c in jsonData.commune)
+                    {
+                        var commune = new VietNamCommune()
+                        {
+                            Id = Convert.ToInt32(c.idCommune),
+                            IdDistrict = Convert.ToInt32(c.idDistrict),
+                            Name = c.name,
+                        };
+                        communeList.Add(commune);
+                    }
+                    Console.WriteLine();
+                    using var transaction = _context.Database.BeginTransaction();
+
+                    await _context.EnableIdentityInsert<VietNamProvince>();
+                    await _addressService.BulkCreateProvince(provinceList);
+                    await _context.DisableIdentityInsert<VietNamProvince>();
+
+                    await _context.EnableIdentityInsert<VietNamDistrict>();
+                    await _addressService.BulkCreateDistrict(districtList);
+                    await _context.DisableIdentityInsert<VietNamDistrict>();
+
+                    await _context.EnableIdentityInsert<VietNamCommune>();
+                    await _addressService.BulkCreateCommune(communeList);
+                    await _context.DisableIdentityInsert<VietNamCommune>();
+
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
 
 
             }

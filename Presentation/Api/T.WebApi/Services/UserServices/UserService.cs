@@ -69,7 +69,7 @@ namespace T.WebApi.Services.UserServices
                 if (await UserExistsByEmail(model.Email))
                     return new ServiceErrorResponse<bool>("Email đã tồn tại");
             }
-            
+
             if (model.PhoneNumber is not null && await UserExistsByPhoneNumber(model.PhoneNumber))
                 return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
@@ -161,7 +161,7 @@ namespace T.WebApi.Services.UserServices
                 if (user.Email != model.Email && await UserExistsByEmail(model.Email))
                     return new ServiceErrorResponse<bool>("Email đã tồn tại");
             }
-            
+
             if (model.PhoneNumber is not null && user.PhoneNumber != model.PhoneNumber && await UserExistsByPhoneNumber(model.PhoneNumber))
                 return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
 
@@ -425,21 +425,55 @@ namespace T.WebApi.Services.UserServices
             return await UpdateUserAsync(userModel);
         }
 
-        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(DeliveryAddress address)
+        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(DeliveryAddress deliveryAddress)
         {
             var user = await GetCurrentUser();
 
             ArgumentNullException.ThrowIfNull(user);
 
-            ArgumentNullException.ThrowIfNull(address);
+            ArgumentNullException.ThrowIfNull(deliveryAddress);
+
+            var province = await _addressService.GetProvinceByIdAsync(deliveryAddress.ProvinceId);
+
+            var district = await _addressService.GetDistricteByIdAsync(deliveryAddress.DistrictId);
+
+            var commune = await _addressService.GetCommuneByIdAsync(deliveryAddress.CommuneId);
+
+            ArgumentNullException.ThrowIfNull(province);
+
+            ArgumentNullException.ThrowIfNull(district);
+
+            ArgumentNullException.ThrowIfNull(commune);
+
+            if (deliveryAddress.IsDefault)
+            {
+                var currentDefaultAddresses = await GetOwnAddressesAsync();
+
+                if(currentDefaultAddresses is not null)
+                {
+                    foreach (var item in currentDefaultAddresses)
+                    {
+                        var address = await _addressService.GetAddressByIdAsync(item.Id);
+
+                        if(address is not null)
+                        {
+                            address.IsDefault = false;
+
+                            await _addressService.UpdateAddressAsync(address);
+                        }
+                    }
+                }
+            }
+
+            await _addressService.CreateAddressAsync(deliveryAddress);
 
             if (await _userAddressMappingRepository.Table
-                    .FirstOrDefaultAsync(m => m.AddressId == address.Id && m.UserId == user.Id)
+                    .FirstOrDefaultAsync(m => m.AddressId == deliveryAddress.Id && m.UserId == user.Id)
                 is null)
             {
                 var mapping = new UserAddressMapping
                 {
-                    AddressId = address.Id,
+                    AddressId = deliveryAddress.Id,
                     UserId = user.Id
                 };
 
@@ -458,7 +492,7 @@ namespace T.WebApi.Services.UserServices
 
             var address = await _addressService.GetAddressByIdAsync(id);
 
-            if(address is not null)
+            if (address is not null)
             {
                 if (await _userAddressMappingRepository.Table
                     .FirstOrDefaultAsync(m => m.AddressId == address.Id && m.UserId == user.Id)
@@ -472,7 +506,7 @@ namespace T.WebApi.Services.UserServices
             return new ServiceErrorResponse<bool>() { Message = "No address found" };
         }
 
-        public async Task<List<DeliveryAddress>> GetOwnAddressesAsync()
+        public async Task<List<DeliveryAddressInfoModel>> GetOwnAddressesAsync()
         {
             var userId = (await GetCurrentUser()).Id;
 
@@ -481,7 +515,30 @@ namespace T.WebApi.Services.UserServices
                         where cam.UserId == userId
                         select address;
 
-            return await query.ToListAsync();
+            var addressList = await query.ToListAsync();
+
+            var addressInfoList = new List<DeliveryAddressInfoModel>();
+
+            if(addressList is not null)
+            {
+                foreach (var item in addressList)
+                {
+                    var commune = (await _addressService.GetCommuneByIdAsync(item.CommuneId))?.Name;
+                    var district = (await _addressService.GetDistricteByIdAsync(item.DistrictId))?.Name;
+                    var province = (await _addressService.GetProvinceByIdAsync(item.ProvinceId))?.Name;
+
+                    addressInfoList.Add(new DeliveryAddressInfoModel()
+                    {
+                        Id = item.Id,
+                        FullName = item.LastName + " " + item.FirstName,
+                        AddressFull = $"{commune}, {district}, {province}",
+                        PhoneNumber = item.PhoneNumber,
+                        IsDefault = item.IsDefault
+                    }); ;
+                }
+            }
+
+            return addressInfoList;
         }
     }
 }

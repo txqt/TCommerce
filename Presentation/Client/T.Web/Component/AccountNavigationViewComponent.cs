@@ -14,7 +14,7 @@ namespace T.Web.Component
 
         public IViewComponentResult Invoke(int selectedTabId = 0)
         {
-            var model = _accountModelService.PrepareCustomerNavigationModel(selectedTabId);
+            var model = _accountModelService.PrepareAccountNavigationModel(selectedTabId);
             return View(model);
         }
     }

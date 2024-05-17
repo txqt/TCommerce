@@ -8,26 +8,28 @@ namespace T.WebApi.Helpers
         public static Task EnableIdentityInsert<T>(this DatabaseContext context) => SetIdentityInsert<T>(context, enable: true);
         public static Task DisableIdentityInsert<T>(this DatabaseContext context) => SetIdentityInsert<T>(context, enable: false);
 
-        private static Task SetIdentityInsert<T>(DatabaseContext context, bool enable)
+        private static async Task SetIdentityInsert<T>(DatabaseContext context, bool enable)
         {
             var entityType = context.Model.FindEntityType(typeof(T));
+            if (entityType == null)
+            {
+                throw new InvalidOperationException($"Entity type {typeof(T).Name} is not valid.");
+            }
+
+            var schemaName = entityType.GetSchema();
+            var tableName = entityType.GetTableName();
+
+            if (string.IsNullOrEmpty(tableName))
+            {
+                throw new InvalidOperationException($"Table name for entity type {typeof(T).Name} is not valid.");
+            }
+
             var value = enable ? "ON" : "OFF";
+            var sql = $"SET IDENTITY_INSERT [{schemaName ?? "dbo"}].[{tableName}] {value}";
 
-            string tableName = entityType?.GetTableName()!;
-            string schemaName = entityType?.GetSchema()!;
-
-            if (tableName != null && schemaName != null)
-            {
-                string sql = $"SET IDENTITY_INSERT [{schemaName}].[{tableName}] {value}";
-                return context.Database.ExecuteSqlRawAsync(sql);
-            }
-            else
-            {
-                // Handle the case where entityType or its properties are null
-                // or entityType doesn't map to a table
-                throw new InvalidOperationException("Entity type is not valid.");
-            }
+            await context.Database.ExecuteSqlRawAsync(sql);
         }
+
 
 
         public static void SaveChangesWithIdentityInsert<T>(this DatabaseContext context)
