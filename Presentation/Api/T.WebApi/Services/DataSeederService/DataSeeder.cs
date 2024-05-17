@@ -105,7 +105,7 @@ namespace T.WebApi.ServicesSeederService
                 try
                 {
                     // Đường dẫn của tệp JSON
-                    string jsonFilePath = Path.Combine("jsondata", "test.json");
+                    string jsonFilePath = Path.Combine("jsondata", "addressData.json");
 
                     // Đọc nội dung của tệp JSON
                     string jsonContent = File.ReadAllText(jsonFilePath);
