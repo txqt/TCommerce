@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using T.Library.Model.Account;
 using T.Library.Model.Common;
 using T.Library.Model.ViewsModel;
 using T.Web.Models;
+using T.Web.Services.PrepareModelServices;
 using T.Web.Services.UserRegistrationServices;
 using T.Web.Services.UserService;
 
@@ -24,12 +26,16 @@ namespace T.Web.Controllers
         private readonly IUserRegistrationService _accountService;
         private readonly IUserService _userService;
         private readonly IOptions<Library.Model.JwtToken.AuthorizationOptionsConfig> _jwtOptions;
+        private readonly IAccountModelService _accountModelService;
+        private readonly IMapper _mapper;
 
-        public AccountController(IUserRegistrationService accountService, IOptions<Library.Model.JwtToken.AuthorizationOptionsConfig> jwtOptions, IUserService userService)
+        public AccountController(IUserRegistrationService accountService, IOptions<Library.Model.JwtToken.AuthorizationOptionsConfig> jwtOptions, IUserService userService, IAccountModelService accountModelService, IMapper mapper)
         {
             _accountService = accountService;
             _jwtOptions = jwtOptions;
             _userService = userService;
+            _accountModelService = accountModelService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -266,24 +272,30 @@ namespace T.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateAddress()
+        public async Task<IActionResult> CreateAddress()
         {
-            return View(new DeliveryAddress());
+            var model = await _accountModelService.PrepareDeliveryAddressModel(null, new DeliveryAddressModel());
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAddress(DeliveryAddress address)
+        public async Task<IActionResult> CreateAddress(DeliveryAddressModel model)
         {
             if (!ModelState.IsValid)
             {
-                RedirectToAction(nameof(Info));
+                model = await _accountModelService.PrepareDeliveryAddressModel(null, model);
+                return View(model);
             }
+
+            var address = _mapper.Map<DeliveryAddress>(model);
+
+            address.CreatedOnUtc = DateTime.Now;
 
             var result = await _userService.CreateUserAddressAsync(address);
 
             SetStatusMessage(result.Success ? "Success" : "Failed");
 
-            return RedirectToAction(nameof(CreateAddress));
+            return RedirectToAction(nameof(Addresses));
         }
 
         [HttpGet]

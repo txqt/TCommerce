@@ -2,8 +2,10 @@
 using T.Library.Model;
 using T.Library.Model.Banners;
 using T.Library.Model.Catalogs;
+using T.Library.Model.Common;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
+using T.Web.Models;
 
 namespace T.Web.Profiles
 {
@@ -193,6 +195,9 @@ namespace T.Web.Profiles
                 .ReverseMap();
 
             CreateMap<CategoryModelAdmin, Category>()
+                .ReverseMap();
+
+            CreateMap<DeliveryAddressModel, DeliveryAddress>()
                 .ReverseMap();
         }
     }

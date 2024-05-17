@@ -26,6 +26,6 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> UpdateUserAccountInfo(AccountInfoModel model);
         Task<ServiceResponse<bool>> CreateUserAddressAsync(DeliveryAddress address);
         Task<ServiceResponse<bool>> DeleteUserAddressAsync(int id);
-        Task<List<DeliveryAddress>> GetOwnAddressesAsync();
+        Task<List<DeliveryAddressInfoModel>> GetOwnAddressesAsync();
     }
 }

@@ -24,7 +24,7 @@ namespace T.Web.Models
 
     public enum AccountNavigationEnum
     {
-        Info = 0,
-        Addresses = 1,
+        Info = 1,
+        Addresses = 2,
     }
 }

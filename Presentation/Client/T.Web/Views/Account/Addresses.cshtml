@@ -1,6 +1,11 @@
-﻿@model List<DeliveryAddress>
+﻿@using T.Library.Model.ViewsModel
+@model List<DeliveryAddressInfoModel>
 @{
     Layout = "_InfoLayout";
+}
+@section account_navigation
+{
+    @await Component.InvokeAsync("AccountNavigation", new { selectedTabId = (int)AccountNavigationEnum.Addresses })
 }
 @if (Model?.Count > 0)
 {
@@ -8,23 +13,11 @@
         @for (var i = 0; i < Model.Count; i++)
         {
             var address = Model[i];
-            <div class="section address-item">
-                <div class="title">
-                    <strong>@address.FirstName @address.LastName</strong>
-                </div>
-                <ul class="info">
-                    <li class="name">
-                        @address.FirstName @address.LastName
-                    </li>
-                    @if (!string.IsNullOrEmpty(address.Company))
-                    {
-                        <li class="company">@address.Company</li>
-                    }
-                </ul>
-                <div class="buttons">
-                    <button type="button" class="button-2 edit-address-button" onclick="location.href = '@(Url.RouteUrl("CustomerAddressEdit", new {addressId = address.Id}))'">Edit</button>
-
-                    <button type="button" class="button-2 delete-address-button" onclick="deletecustomeraddress(@(address.Id))">Delete</button>
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">@(address.FullName + " " + (address.IsDefault ? "Địa chỉ mặc định" : ""))</h6>
+                    <p class="card-text">Địa chỉ: <strong>@(address.AddressFull)</strong></p>
+                    <p class="card-text">Điện thoại: <strong>@(address.PhoneNumber)</strong></p>
                 </div>
             </div>
         }

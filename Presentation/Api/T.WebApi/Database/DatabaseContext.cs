@@ -60,8 +60,8 @@ namespace T.WebApi.Database
         public DbSet<RelatedProduct> RelatedProducts { get; set; }
         public DbSet<DeliveryAddress> Address { get; set; }
         public DbSet<UserAddressMapping> UserAddressMappings { get; set; }
-        //public DbSet<Country> Countries { get; set; }
-        //public DbSet<City> Cities  { get; set; }
-        //public DbSet<State> States { get; set; }
+        public DbSet<VietNamProvince> VietNamProvinces { get; set; }
+        public DbSet<VietNamDistrict> VietNamDistricts { get; set; }
+        public DbSet<VietNamCommune> VietNamCommunes { get; set; }
     }
 }

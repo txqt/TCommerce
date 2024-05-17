@@ -13,6 +13,7 @@ using T.Web.Extensions;
 using T.Web.Helpers;
 using T.Web.Routing;
 using T.Web.Services;
+using T.Web.Services.AddressServices;
 using T.Web.Services.BannerServices;
 using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
@@ -40,12 +41,12 @@ internal class Program
         });
 
         // Add services to the container.
-        builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddJsonOptions(options =>
+        builder.Services.AddControllersWithViews().AddDataAnnotationsLocalization().AddRazorRuntimeCompilation().AddJsonOptions(options =>
         {
             //options.JsonSerializerOptions.PropertyNamingPolicy = null;
             options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        }); ;
+        });
         builder.Services.AddScoped<JwtHandler>();
         builder.Services.AddHttpClient("", sp =>
         {
@@ -81,6 +82,8 @@ internal class Program
         builder.Services.AddScoped<IAdminManufacturerModelService, AdminManufacturerModelService>();
         builder.Services.AddScoped<IBaseAdminModelService, BaseAdminModelService>();
         builder.Services.AddScoped<IAccountModelService, AccountModelService>();
+        builder.Services.AddScoped<IAddressService, AddressService>();
+        builder.Services.AddScoped<IBaseModelService, BaseModelService>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {
             PropertyNamingPolicy = null,

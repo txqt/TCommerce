@@ -1,14 +1,27 @@
-﻿using T.Web.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using T.Library.Model.Common;
+using T.Web.Models;
+using T.Web.Services.AddressServices;
 
 namespace T.Web.Services.PrepareModelServices
 {
     public interface IAccountModelService
     {
-        AccountNavigationModel PrepareCustomerNavigationModel(int selectedTabId = 0);
+        AccountNavigationModel PrepareAccountNavigationModel(int selectedTabId = 0);
+        Task<DeliveryAddressModel> PrepareDeliveryAddressModel(DeliveryAddress address, DeliveryAddressModel model);
     }
     public class AccountModelService : IAccountModelService
     {
-        public AccountNavigationModel PrepareCustomerNavigationModel(int selectedTabId = 0)
+        private readonly IAddressService _addressService;
+        private readonly IBaseModelService _baseModelService;
+
+        public AccountModelService(IAddressService addressService, IBaseModelService baseModelService)
+        {
+            _addressService = addressService;
+            _baseModelService = baseModelService;
+        }
+
+        public AccountNavigationModel PrepareAccountNavigationModel(int selectedTabId = 0)
         {
             var model = new AccountNavigationModel();
 
@@ -29,6 +42,36 @@ namespace T.Web.Services.PrepareModelServices
             });
 
             model.SelectedTab = selectedTabId;
+
+            return model;
+        }
+
+        public async Task<DeliveryAddressModel> PrepareDeliveryAddressModel(DeliveryAddress address, DeliveryAddressModel model)
+        {
+            if (address is not null)
+            {
+                model ??= new DeliveryAddressModel()
+                {
+                    Id = address.Id
+                };
+
+                model.FirstName = address.FirstName;
+                model.LastName = address.LastName;
+                model.PhoneNumber = address.PhoneNumber;
+                model.AddressDetails = address.AddressDetails;
+                model.DeliveryAddressType = address.DeliveryAddressType;
+                model.ProvinceId = address.ProvinceId;
+                model.DistrictId = address.DistrictId;
+                model.CommuneId = address.CommuneId;
+                model.DeliveryAddressTypeId = model.DeliveryAddressTypeId;
+                model.DeliveryAddressType = model.DeliveryAddressType;
+            }
+
+            await _baseModelService.PrepareSelectListProvinceAsync(model.AvaiableProvinces, true, "Chọn Tỉnh/Thành phố");
+
+            await _baseModelService.PrepareSelectListDistrictAsync(model.AvaiableDistricts, address is not null ? address.ProvinceId : 0, true, "Chọn Quận/Huyện");
+
+            await _baseModelService.PrepareSelectListDistrictAsync(model.AvaiableCommunes, address is not null ? address.DistrictId : 0, true, "Chọn Phường/Xã");
 
             return model;
         }

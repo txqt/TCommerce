@@ -92,9 +92,9 @@ namespace T.Web.Services.UserService
             return await DeleteAsync<ServiceResponse<bool>>($"api/user/account/address/{id}");
         }
 
-        public async Task<List<DeliveryAddress>> GetOwnAddressesAsync()
+        public async Task<List<DeliveryAddressInfoModel>> GetOwnAddressesAsync()
         {
-            return await GetAsync<List<DeliveryAddress>>($"api/user/me/account/addresses");
+            return await GetAsync<List<DeliveryAddressInfoModel>>($"api/user/me/account/addresses");
         }
     }
 }
