@@ -7,7 +7,6 @@ namespace T.WebApi.Services.AddressServices
 {
     public interface IAddressService : IAddressServiceCommon
     {
-        Task<DeliveryAddress?> GetAddressByIdAsync(int id);
         Task CreateAddressAsync(DeliveryAddress deliveryAddress);
         Task UpdateAddressAsync(DeliveryAddress deliveryAddress);
         Task BulkCreateProvince(IEnumerable<VietNamProvince> provinceList);

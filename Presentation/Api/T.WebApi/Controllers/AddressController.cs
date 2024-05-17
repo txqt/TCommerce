@@ -34,5 +34,11 @@ namespace T.WebApi.Controllers
         {
             return await _addressService.GetCommunesByDistrictId(districtId);
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DeliveryAddress?>> GetAddressByIdAsync(int id)
+        {
+            return await _addressService.GetAddressByIdAsync(id);
+        }
     }
 }

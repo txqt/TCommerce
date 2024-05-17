@@ -87,6 +87,11 @@ namespace T.Web.Services.UserService
             return await PostAsJsonAsync<ServiceResponse<bool>>($"api/user/me/account/address", address);
         }
 
+        public async Task<ServiceResponse<bool>> UpdateUserAddressAsync(DeliveryAddress address)
+        {
+            return await PutAsJsonAsync<ServiceResponse<bool>>($"api/user/me/account/address", address);
+        }
+
         public async Task<ServiceResponse<bool>> DeleteUserAddressAsync(int id)
         {
             return await DeleteAsync<ServiceResponse<bool>>($"api/user/account/address/{id}");

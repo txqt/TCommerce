@@ -28,5 +28,10 @@ namespace T.Web.Services.AddressServices
         {
             return await GetAsync<List<VietNamCommune>>($"api/address/province/commune/{districtId}");
         }
+
+        public async Task<DeliveryAddress> GetAddressByIdAsync(int id)
+        {
+            return await GetAsync<DeliveryAddress>($"api/address/{id}");
+        }
     }
 }

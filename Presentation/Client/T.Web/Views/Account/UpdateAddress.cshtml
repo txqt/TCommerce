@@ -1,11 +1,15 @@
-﻿@model DeliveryAddress
+﻿@model DeliveryAddressModel
 @{
     Layout = "_InfoLayout";
+}
+@section account_navigation
+{
+    @await Component.InvokeAsync("AccountNavigation", new { selectedTabId = (int)AccountNavigationEnum.Addresses })
 }
 <div class="row">
     <div class="col-md-4">
         <form asp-action="UpdateAddress">
-            @Html.PartialAsync("_CreateOrUpdateAddress", Model)
+            @await Html.PartialAsync("_CreateOrUpdateAddress", Model)
             <div class="form-group">
                 <input type="submit" value="Update" class="btn btn-primary" />
             </div>
