@@ -36,9 +36,11 @@ namespace T.Web.Models
             public int Quantity { get; set; }
 
             public string Price { get; set; }
+
             public decimal PriceValue { get; set; }
 
-            //public decimal UnitPriceValue { get; set; }
+            public int OrderMinimumQuantity { get; set; }
+            public int OrderMaximumQuantity { get; set; }
 
             public string AttributeInfo { get; set; }
 

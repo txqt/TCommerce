@@ -501,6 +501,7 @@ namespace T.WebApi.Services.UserServices
                     await _userAddressMappingRepository.DeleteAsync(mapping.Id);
                     return new ServiceSuccessResponse<bool> { Message = "Success" };
                 }
+                await _addressService.DeleteAddressAsync(address.Id);
             }
 
             return new ServiceErrorResponse<bool>() { Message = "No address found" };

@@ -333,5 +333,16 @@ namespace T.Web.Controllers
 
             return RedirectToAction(nameof(Addresses));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAddressAsync(int id)
+        {
+
+            var result = await _userService.DeleteUserAddressAsync(id);
+
+            SetStatusMessage(result.Success ? "Success" : "Failed");
+
+            return RedirectToAction(nameof(Addresses));
+        }
     }
 }

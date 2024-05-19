@@ -67,22 +67,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<PagingResponse<Product>> GetAll(ProductParameters productParameters)
         {
-            string queryParams = productParameters.ToQueryParameters(p => new
-            {
-                ids = p.ids != null ? string.Join(",", p.ids) : null,
-                CategoryIds = p.CategoryIds != null ? string.Join(",", p.CategoryIds) : null,
-                ManufacturerIds = p.ManufacturerIds != null ? string.Join(",", p.ManufacturerIds) : null,
-                p.ExcludeFeaturedProducts,
-                p.PriceMax,
-                p.PriceMin,
-                p.ProductTagId,
-                p.SearchDescriptions,
-                p.SearchManufacturerPartNumber,
-                p.SearchSku,
-                p.SearchProductTags,
-                p.ShowHidden,
-                p.OrderBy
-            });
+            string queryParams = CommonExtensions.ToQueryString(productParameters);
 
             var response = await GetAsync<List<Product>>("api/products?" + queryParams);
 
@@ -196,10 +181,7 @@ namespace T.Web.Services.ProductService
 
         public async Task<List<Product>> GetProductsByIdsAsync(List<int> ids)
         {
-            var queryString = ids.ToQueryParameters(p => new
-            {
-                ids = p != null ? string.Join(",", p) : null
-            });
+            var queryString = CommonExtensions.ToQueryString(ids);
             return await GetAsync<List<Product>>($"api/products/get-by-ids?{queryString}");
         }
 

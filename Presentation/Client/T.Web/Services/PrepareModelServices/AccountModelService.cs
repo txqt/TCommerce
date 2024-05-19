@@ -63,8 +63,9 @@ namespace T.Web.Services.PrepareModelServices
                 model.ProvinceId = address.ProvinceId;
                 model.DistrictId = address.DistrictId;
                 model.CommuneId = address.CommuneId;
-                model.DeliveryAddressTypeId = model.DeliveryAddressTypeId;
-                model.DeliveryAddressType = model.DeliveryAddressType;
+                model.DeliveryAddressTypeId = address.DeliveryAddressTypeId;
+                model.DeliveryAddressType = address.DeliveryAddressType;
+                model.IsDefault = address.IsDefault;
             }
 
             await _baseModelService.PrepareSelectListProvinceAsync(model.AvaiableProvinces, true, "Chọn Tỉnh/Thành phố");
