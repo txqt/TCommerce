@@ -244,6 +244,11 @@ namespace T.WebApi.Services.ShoppingCartServices
                 warnings.Add($"Sản phẩm [{product.Name}] này không được thêm vào wishlist nữa");
             }
 
+            if (quantity > product.StockQuantity)
+            {
+                warnings.Add(string.Format($"{product.Name} chỉ còn {product.StockQuantity}"));
+            }
+
             if (quantity < product.OrderMinimumQuantity)
             {
                 warnings.Add(string.Format($"Số lượng {product.Name} phải chọn ít nhất là {product.OrderMinimumQuantity}"));

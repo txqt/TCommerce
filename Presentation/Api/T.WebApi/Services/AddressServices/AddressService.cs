@@ -15,6 +15,7 @@ namespace T.WebApi.Services.AddressServices
         Task<VietNamProvince?> GetProvinceByIdAsync(int provinceId);
         Task<VietNamDistrict?> GetDistricteByIdAsync(int districtId);
         Task<VietNamCommune?> GetCommuneByIdAsync(int communeId);
+        Task DeleteAddressAsync(int id);
     }
     public class AddressService : IAddressService
     {
@@ -105,6 +106,11 @@ namespace T.WebApi.Services.AddressServices
         public async Task UpdateAddressAsync(DeliveryAddress deliveryAddress)
         {
             await _addressRepository.UpdateAsync(deliveryAddress);
+        }
+
+        public async Task DeleteAddressAsync(int id)
+        {
+            await _addressRepository.DeleteAsync(id);
         }
     }
 }

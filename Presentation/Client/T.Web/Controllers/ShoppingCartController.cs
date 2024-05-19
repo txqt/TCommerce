@@ -192,6 +192,7 @@ namespace T.Web.Controllers
                 errors = resultMessage
             });
         }
+
         [HttpPost]
         public virtual async Task<IActionResult> DeleteShoppingCartItem(int id)
         {
@@ -208,7 +209,6 @@ namespace T.Web.Controllers
                 errors = deleteResult.Message.Split(",").ToArray()
             });
         }
-
         public virtual async Task<IActionResult> Cart()
         {
             var model = await _sciModelService.PrepareShoppingCartModelAsync();
@@ -249,7 +249,6 @@ namespace T.Web.Controllers
             await _shoppingCartService.UpdateBatchAsync(model);
             return RedirectToAction(nameof(Cart));
         }
-
         private async Task<JsonResult> RefreshCartView(string message)
         {
             var updateMiniCartSectionHtml = await RenderViewComponentAsync(typeof(MiniCartDropDownViewComponent));

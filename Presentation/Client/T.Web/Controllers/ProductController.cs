@@ -142,7 +142,7 @@ namespace T.Web.Controllers
             var addToCartModel = new ProductDetailsModel.AddToCartModel()
             {
                 ProductId = product.Id,
-                DisableBuyButton = product.DisableBuyButton,
+                DisableBuyButton = product.DisableBuyButton || product.StockQuantity <= 0,
                 DisableWishlistButton = product.DisableWishlistButton,
                 AvailableForPreOrder = product.AvailableForPreOrder,
                 PreOrderAvailabilityStartDateTimeUtc = product.PreOrderAvailabilityStartDateTimeUtc,

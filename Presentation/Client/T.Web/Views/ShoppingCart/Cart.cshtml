@@ -2,6 +2,13 @@
 @{
     ViewData["Title"] = "Giỏ hàng";
 }
+<style>
+    .unselectable {
+        background-color: grey;
+        pointer-events: none;
+        cursor: not-allowed;
+    }
+</style>
 <div class="page-content" id="cartContainer">
     @if (Model is not null && Model.Items.Count > 0)
     {
@@ -27,7 +34,7 @@
                                     {
                                         foreach (var item in Model.Items)
                                         {
-                                            <tr style="@(item.Warnings?.Count > 0 ? "border: 0.2rem solid #FF0000;" : "")">
+                                            <tr style="@(item.Warnings?.Count > 0 ? "border: 0.2rem solid #FF0000;" : "")" class="item@(item.Warnings.Any() ? " unselectable" : "")">
                                                 <td class="product-col">
                                                     <div class="product">
                                                         @if (item.Picture is not null)
@@ -42,7 +49,7 @@
                                                         <h3 class="product-title">
                                                             <a href="/@item.ProductSeName">@item.ProductName</a>
                                                         </h3><!-- End .product-title -->
-                                                        
+
                                                         <br />
 
                                                     </div><!-- End .product -->
@@ -65,12 +72,12 @@
                                                 <td class="price-col">@item.Price</td>
                                                 <td class="quantity-col">
                                                     <div class="cart-product-quantity">
-                                                        <input type="number" class="form-control" name="@($"item_quantity_{item.Id}")" value="@item.Quantity" min="1" max="10" step="1" data-decimals="0" required="" style="display: none;">
+                                                        <input type="number" class="form-control" name="@($"item_quantity_{item.Id}")" value="@item.Quantity" min="@(item.OrderMinimumQuantity > 0 ? item.OrderMinimumQuantity : 1)" max="@(item.OrderMaximumQuantity > 0 ? item.OrderMaximumQuantity : 10)" step="1" data-decimals="0" required="" style="display: none;">
                                                     </div>
                                                     <!-- End .cart-product-quantity -->
                                                 </td>
                                                 <td class="total-col">@((item.PriceValue * item.Quantity).ToString("N0"))</td>
-                                                <td class="remove-col"><button type="button" onclick="deleteshoppingcartitem('@Url.Action("DeleteShoppingCartItem", "ShoppingCart", new{id = item.Id})', true)" class="btn-remove"><i class="icon-close"></i></button></td>
+                                                <td class="remove-col"><button type="button" style="pointer-events: auto;" onclick="deleteshoppingcartitem('@Url.Action("DeleteShoppingCartItem", "ShoppingCart", new{id = item.Id})', true)" class="btn-remove"><i class="icon-close"></i></button></td>
                                             </tr>
                                         }
                                     }
@@ -78,7 +85,7 @@
                             </table><!-- End .table table-wishlist -->
 
                             <div class="cart-bottom">
-                                <button type="submit" href="#" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></button>
+                                <button type="submit" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></button>
                             </div><!-- End .cart-bottom -->
                         </div><!-- End .col-lg-9 -->
 
@@ -171,3 +178,10 @@
         <p class="text-center">Cart is empty !</p>
     }
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            quantityInputs();
+        });
+    </script>
+} 

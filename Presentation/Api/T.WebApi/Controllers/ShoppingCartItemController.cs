@@ -57,12 +57,26 @@ namespace T.WebApi.Controllers
             // load current shopping cart and return it as result of request
             var shoppingCart = await _shoppingCartService.GetShoppingCartAsync(user, shoppingCartType);
 
-            var shoppingCartsObject = _mapper.Map<List<ShoppingCartItemModel>>(shoppingCart); ;
+            var shoppingCartsObject = _mapper.Map<List<ShoppingCartItemModel>>(shoppingCart);
+
+            if (shoppingCart.Count > 0)
+            {
+                foreach (var item in shoppingCart)
+                {
+                    var product = await _productService.GetByIdAsync(item.ProductId);
+
+                    var currentCartModel = shoppingCartsObject.FirstOrDefault(x => x.Id == item.Id);
+                    if (currentCartModel != null && item.AttributeJson is not null)
+                    {
+                        currentCartModel.Attributes = _productAttributeConverter.ConvertToObject(item.AttributeJson);
+                    }
+                }
+            }
 
             return Ok(shoppingCartsObject);
         }
 
-        [HttpPost("")]
+        [HttpPost]
         [CheckPermission]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateShoppingCartItem(
@@ -217,7 +231,8 @@ namespace T.WebApi.Controllers
         }
 
 
-        [HttpGet("warnings")]
+        [HttpGet]
+        [Route("warnings")]
         public async Task<IActionResult> GetWarningsShoppingCart([FromQuery] List<ShoppingCartItemModel> shoppingCartItemModels)
         {
             var user = await _userService.GetCurrentUser();
@@ -242,18 +257,19 @@ namespace T.WebApi.Controllers
             }
             return new JsonResult(warnings);
         }
-        [HttpGet("warning")]
+        [HttpGet]
+        [Route("warning")]
         public async Task<IActionResult> GetWarningShoppingCart([FromQuery] ShoppingCartItemModel shoppingCartItemModel)
         {
             var user = await _userService.GetCurrentUser();
             var warnings = new List<string>();
-            if(shoppingCartItemModel is not null)
+            if (shoppingCartItemModel is not null)
             {
                 var product = await _productService.GetByIdAsync(shoppingCartItemModel.ProductId);
 
                 var attributesJson = "";
 
-                if(product is not null)
+                if (product is not null)
                 {
                     if (shoppingCartItemModel.Attributes is not null)
                     {

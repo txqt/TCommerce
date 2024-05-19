@@ -155,6 +155,8 @@ namespace T.Web.Services.PrepareModelServices
                             Quantity = sci.Quantity,
                             Price = product.Price.ToString("N0"),
                             PriceValue = product.Price,
+                            OrderMinimumQuantity = product.OrderMinimumQuantity,
+                            OrderMaximumQuantity = product.OrderMaximumQuantity
                         };
 
                         var productPictures = await _productService.GetProductPicturesByProductIdAsync(product.Id);
