@@ -8,6 +8,7 @@ using System.Text;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
+using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Component;
@@ -33,8 +34,9 @@ namespace T.Web.Controllers
         private readonly IShoppingCartModelService _sciModelService;
         private readonly ICategoryServiceCommon _categoryService;
         private readonly IUrlRecordService _urlRecordService;
+        private readonly ISecurityService _securityService;
 
-        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService, IShoppingCartService shoppingCartService, IMapper mapper, IUserService userService, IShoppingCartModelService sciModelService, ICategoryServiceCommon categoryService, IUrlRecordService urlRecordService)
+        public ProductController(IProductService productService, IProductAttributeCommon productAttributeService, IPictureService pictureService, IShoppingCartService shoppingCartService, IMapper mapper, IUserService userService, IShoppingCartModelService sciModelService, ICategoryServiceCommon categoryService, IUrlRecordService urlRecordService, ISecurityService securityService)
         {
             _productService = productService;
             _productAttributeService = productAttributeService;
@@ -45,6 +47,7 @@ namespace T.Web.Controllers
             _sciModelService = sciModelService;
             _categoryService = categoryService;
             _urlRecordService = urlRecordService;
+            _securityService = securityService;
         }
 
         public IActionResult Index()
@@ -53,6 +56,8 @@ namespace T.Web.Controllers
         }
         public async Task<IActionResult> Details(int id, int updatecartitemid = 0)
         {
+            ViewBag.IsAdmin = await _securityService.AuthorizeAsync(PermissionSystemName.AccessAdminPanel);
+            ViewBag.IsManageProduct = await _securityService.AuthorizeAsync(PermissionSystemName.ManageProducts);
             var product = await _productService.GetByIdAsync(id);
             if (product is null || product.Deleted)
             {

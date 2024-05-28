@@ -33,6 +33,10 @@ namespace T.Library.Model.Users
 
         public bool HasShoppingCartItems { get; set; }
 
+        public int? BillingAddressId { get; set; }
+
+        public int? ShippingAddressId { get; set; }
+
         public bool Deleted { get; set; }
     }
 }

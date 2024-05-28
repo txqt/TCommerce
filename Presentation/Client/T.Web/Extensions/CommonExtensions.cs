@@ -14,34 +14,51 @@ namespace T.Web.Extensions
             }
 
             var queryString = new List<string>();
-            var properties = obj.GetType().GetProperties();
 
-            foreach (var property in properties)
+            if (obj is IEnumerable enumerable && !(obj is string))
             {
-                var value = property.GetValue(obj, null);
-                if (value == null)
+                int index = 0;
+                foreach (var item in enumerable)
                 {
-                    continue;
-                }
-
-                var propertyName = string.IsNullOrEmpty(prefix) ? property.Name : $"{prefix}.{property.Name}";
-
-                if (value is string || value.GetType().IsValueType)
-                {
-                    queryString.Add($"{propertyName}={System.Net.WebUtility.UrlEncode(value.ToString())}");
-                }
-                else if (value is IEnumerable enumerable)
-                {
-                    int index = 0;
-                    foreach (var item in enumerable)
+                    if (item != null)
                     {
-                        queryString.Add(ToQueryString(item, $"{propertyName}[{index}]"));
+                        queryString.Add(ToQueryString(item, $"{prefix}[{index}]"));
                         index++;
                     }
                 }
-                else
+                // Handle empty collections
+                if (index == 0)
                 {
-                    queryString.Add(ToQueryString(value, propertyName));
+                    queryString.Add($"{prefix}=");
+                }
+            }
+            else
+            {
+                var properties = obj.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    // Skip indexed properties
+                    if (property.GetIndexParameters().Length > 0)
+                    {
+                        continue;
+                    }
+
+                    var value = property.GetValue(obj, null);
+                    if (value == null)
+                    {
+                        continue;
+                    }
+
+                    var propertyName = string.IsNullOrEmpty(prefix) ? property.Name : $"{prefix}.{property.Name}";
+
+                    if (value is string || value.GetType().IsValueType)
+                    {
+                        queryString.Add($"{propertyName}={System.Net.WebUtility.UrlEncode(value.ToString())}");
+                    }
+                    else
+                    {
+                        queryString.Add(ToQueryString(value, propertyName));
+                    }
                 }
             }
 

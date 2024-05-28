@@ -445,23 +445,30 @@ namespace T.WebApi.Services.UserServices
 
             ArgumentNullException.ThrowIfNull(commune);
 
+            var currentDefaultAddresses = await GetOwnAddressesAsync();
+
             if (deliveryAddress.IsDefault)
             {
-                var currentDefaultAddresses = await GetOwnAddressesAsync();
-
-                if(currentDefaultAddresses is not null)
+                if (currentDefaultAddresses is not null)
                 {
                     foreach (var item in currentDefaultAddresses)
                     {
                         var address = await _addressService.GetAddressByIdAsync(item.Id);
 
-                        if(address is not null)
+                        if (address is not null)
                         {
                             address.IsDefault = false;
 
                             await _addressService.UpdateAddressAsync(address);
                         }
                     }
+                }
+            }
+            else
+            {
+                if (currentDefaultAddresses is null)
+                {
+                    deliveryAddress.IsDefault = true;
                 }
             }
 
@@ -520,7 +527,7 @@ namespace T.WebApi.Services.UserServices
 
             var addressInfoList = new List<DeliveryAddressInfoModel>();
 
-            if(addressList is not null)
+            if (addressList is not null)
             {
                 foreach (var item in addressList)
                 {
@@ -570,7 +577,7 @@ namespace T.WebApi.Services.UserServices
                 {
                     foreach (var item in currentDefaultAddresses)
                     {
-                        if(item.Id != deliveryAddress.Id)
+                        if (item.Id != deliveryAddress.Id)
                         {
                             var address = await _addressService.GetAddressByIdAsync(item.Id);
 

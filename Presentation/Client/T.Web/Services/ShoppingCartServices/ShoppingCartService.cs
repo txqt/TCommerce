@@ -17,8 +17,6 @@ namespace T.Web.Services.ShoppingCartServices
         Task<ServiceResponse<bool>> CreateAsync(ShoppingCartItemModel shoppingCartItem);
         Task<ServiceResponse<bool>> UpdateBatchAsync(List<ShoppingCartItemModel> shoppingCartItems);
         Task<ServiceResponse<bool>> UpdateAsync(ShoppingCartItemModel shoppingCartItem);
-        Task<List<string>> GetWarningsShoppingCart(List<ShoppingCartItemModel> shoppingCartItemModels);
-        Task<List<string>> GetWarningShoppingCart(ShoppingCartItemModel shoppingCartItemModel);
     }
     public class ShoppingCartService : HttpClientHelper, IShoppingCartService
     {
@@ -60,20 +58,6 @@ namespace T.Web.Services.ShoppingCartServices
         public async Task<ServiceResponse<bool>> DeleteBatchAsync(List<int> ids)
         {
             return await DeleteWithDataAsync<ServiceResponse<bool>>($"{defaultApi}/delete-list", ids);
-        }
-
-        public async Task<List<string>> GetWarningsShoppingCart(List<ShoppingCartItemModel> shoppingCartItemModels)
-        {
-            var queryString = CommonExtensions.ToQueryString(new { shoppingCartItemModels });
-
-            return await GetAsync<List<string>>($"{defaultApi}/warnings?{queryString}");
-        }
-
-        public async Task<List<string>> GetWarningShoppingCart(ShoppingCartItemModel shoppingCartItemModel)
-        {
-            var queryString = CommonExtensions.ToQueryString(shoppingCartItemModel);
-
-            return await GetAsync<List<string>>($"{defaultApi}/warning?{queryString}");
         }
     }
 }

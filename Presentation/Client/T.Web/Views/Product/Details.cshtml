@@ -34,8 +34,13 @@
 
                         <div class="col-md-6">
                             <div class="product-details">
-                                <h1 class="product-title">@Model.Title</h1><!-- End .product-title -->
-
+                                <h1 class="product-title">
+                                    @Model.Title
+                                    @if(ViewBag.IsAdmin && ViewBag.IsManageProduct)
+                                    {
+                                        <a class="text-info" href="@Url.Action("EditProduct", "Product", new{area = "admin", id = Model.Id})"> (Sửa)</a>
+                                    }
+                                </h1><!-- End .product-title -->
                                 <div class="ratings-container">
                                     <div class="ratings">
                                         <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
@@ -110,13 +115,13 @@
                             <h3>Product Information</h3>
                             @if (!string.IsNullOrEmpty(Model.Description))
                             {
-                                    @Html.Raw(Model.Description)
+                                @Html.Raw(Model.Description)
                             }
                         </div><!-- End .product-desc-content -->
                     </div>
                 </div><!-- End .tab-content -->
             </div><!-- End .product-details-tab -->
-            @await Component.InvokeAsync("RelatedProducts", new {productId = Model.Id})
+            @await Component.InvokeAsync("RelatedProducts", new { productId = Model.Id })
         </div><!-- End .container -->
     </div><!-- End .page-content -->
 </main><!-- End .main -->

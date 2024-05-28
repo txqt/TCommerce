@@ -126,6 +126,7 @@ namespace T.Web.Services.PrepareModelServices
                 DisplayShoppingCartButton = true,
             };
             model.Warnings = new List<string>();
+            var warnings = new List<string>();
             //performance optimization (use "HasShoppingCartItems" property)
             if (user is not null && user.HasShoppingCartItems)
             {
@@ -204,11 +205,12 @@ namespace T.Web.Services.PrepareModelServices
                         }
 
                         cartItemModel.AttributeInfo = result.ToString();
-                        cartItemModel.Warnings = await _shoppingCartService.GetWarningShoppingCart(sci);
+                        cartItemModel.Warnings = sci.Warnings;
+                        warnings.AddRange(sci.Warnings);
                         model.SubTotal = model.SubTotalValue.ToString("N0");
                         model.Items.Add(cartItemModel);
                     }
-                    model.Warnings = await _shoppingCartService.GetWarningsShoppingCart(carts);
+                    model.Warnings = warnings;
                 }
             }
 
