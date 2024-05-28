@@ -7,6 +7,7 @@ using System.Net;
 using T.Library.Model;
 using T.Library.Model.Interface;
 using T.Library.Model.Orders;
+using T.Library.Model.Paging;
 using T.Library.Model.Response;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
@@ -65,10 +66,20 @@ namespace T.WebApi.Controllers
                 {
                     var product = await _productService.GetByIdAsync(item.ProductId);
 
-                    var currentCartModel = shoppingCartsObject.FirstOrDefault(x => x.Id == item.Id);
-                    if (currentCartModel != null && item.AttributeJson is not null)
+                    if (product is not null)
                     {
-                        currentCartModel.Attributes = _productAttributeConverter.ConvertToObject(item.AttributeJson);
+                        var currentCartModel = shoppingCartsObject.FirstOrDefault(x => x.Id == item.Id);
+
+                        if (currentCartModel != null)
+                        {
+                            if (item.AttributeJson is not null)
+                                currentCartModel.Attributes = _productAttributeConverter.ConvertToObject(item.AttributeJson);
+
+                            currentCartModel.Warnings =
+                            [
+                                .. await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, item.ShoppingCartType, product, item.AttributeJson ?? "", item.Quantity),
+                            ];
+                        }
                     }
                 }
             }
@@ -230,55 +241,5 @@ namespace T.WebApi.Controllers
             return Ok(new ServiceSuccessResponse<bool>());
         }
 
-
-        [HttpGet]
-        [Route("warnings")]
-        public async Task<IActionResult> GetWarningsShoppingCart([FromQuery] List<ShoppingCartItemModel> shoppingCartItemModels)
-        {
-            var user = await _userService.GetCurrentUser();
-            var warnings = new List<string>();
-            if (shoppingCartItemModels is not null)
-            {
-                foreach (var item in shoppingCartItemModels)
-                {
-                    var product = await _productService.GetByIdAsync(item.ProductId);
-
-                    var attributesJson = "";
-
-                    if (product is not null)
-                    {
-                        if (item.Attributes is not null)
-                        {
-                            attributesJson = await _productAttributeConverter.ConvertToJsonAsync(item.Attributes, product.Id);
-                        }
-                        warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, item.ShoppingCartType, product, attributesJson, item.Quantity));
-                    }
-                }
-            }
-            return new JsonResult(warnings);
-        }
-        [HttpGet]
-        [Route("warning")]
-        public async Task<IActionResult> GetWarningShoppingCart([FromQuery] ShoppingCartItemModel shoppingCartItemModel)
-        {
-            var user = await _userService.GetCurrentUser();
-            var warnings = new List<string>();
-            if (shoppingCartItemModel is not null)
-            {
-                var product = await _productService.GetByIdAsync(shoppingCartItemModel.ProductId);
-
-                var attributesJson = "";
-
-                if (product is not null)
-                {
-                    if (shoppingCartItemModel.Attributes is not null)
-                    {
-                        attributesJson = await _productAttributeConverter.ConvertToJsonAsync(shoppingCartItemModel.Attributes, product.Id);
-                    }
-                    warnings.AddRange(await _shoppingCartService.GetShoppingCartItemWarningsAsync(user, shoppingCartItemModel.ShoppingCartType, product, attributesJson, shoppingCartItemModel.Quantity));
-                }
-            }
-            return new JsonResult(warnings);
-        }
     }
 }

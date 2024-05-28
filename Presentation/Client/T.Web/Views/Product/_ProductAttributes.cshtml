@@ -1,5 +1,29 @@
 ﻿@model ProductDetailsModel
 
+<style>
+    /* Ẩn ô radio với class 'hidden-radio' */
+    .hidden-radio {
+        display: none;
+    }
+
+    /* Kiểu cho div với class 'custom-radio' */
+    .custom-radio {
+        padding: 10px 20px;
+        border: 2px solid #ccc;
+        cursor: pointer;
+        display: inline-block;
+        border-radius: 5px;
+        margin: 5px; /* Thêm margin để tạo khoảng cách */
+    }
+
+    /* Kiểu cho div khi radio tương ứng được chọn */
+    .hidden-radio:checked + .custom-radio {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+</style>
+
 @{
     var onAttributeChangeFuncName = $"on_attribute_change_{Model.Id}";
     var attributeChangeScriptsBuilder = new StringBuilder();
@@ -59,8 +83,8 @@
                         @foreach (var attributeValue in attributeItem.Values)
                         {
                             var attributeName = attributeValue.Name;
-                            <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
-                            <label for="@(controlId)_@(attributeValue.Id)">@attributeName</label>
+                            <input id="@(controlId)_@(attributeValue.Id)" class="hidden-radio" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
+                            <label class="custom-radio" for="@(controlId)_@(attributeValue.Id)">@attributeName</label>
                         }
                     }
                     break;
@@ -85,11 +109,11 @@
                     <div class="product-nav product-nav-thumbs">
                         @foreach (var attributeValue in attributeItem.Values)
                         {
-                            <span class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)image-squares-@Model.Id">
+                            <span class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)image-squares-@Model.Id" title="@attributeValue.Name">
                                 <label for="@(controlId)_@(attributeValue.Id)" class="@(attributeValue.IsPreSelected ? @Html.Raw("active ") : null)">
                                     <img src="@(attributeValue.ImageSquaresPictureModel.ImageUrl)" alt="product desc">
-                                    <input hidden id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
                                 </label>
+                                <input hidden id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
                             </span>
                         }
                     </div>

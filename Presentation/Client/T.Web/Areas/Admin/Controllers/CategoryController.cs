@@ -225,7 +225,9 @@ namespace T.Web.Areas.Admin.Controllers
                 ViewBag.RefreshPage = true;
             }
 
-            return View(AddProductToCategory(model.CategoryId));
+            var _ = await _prepareModelService.PrepareAddProductToCategorySearchModel(new ProductCategorySearchModel());
+
+            return View(_);
         }
 
         [HttpPost]

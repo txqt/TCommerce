@@ -1,0 +1,472 @@
+﻿@model CheckoutPaymentModel
+
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <ol class="mb-0 px-4 mt-3">
+                <li class="checkout-item">
+                    <div class="feed-item-list">
+                        <div>
+                            <h5 class="font-size-16 mb-1">Shipping Info</h5>
+                            <p class="text-muted text-truncate mb-4">Chọn địa chỉ ship</p>
+                            <div class="mb-3">
+                                <div class="row d-flex justify-content-between">
+
+                                    @if (Model.ShippingAddress is not null)
+                                    {
+                                        <div class="col-lg-8 col-sm-8">
+                                            @if (Model.ShippingAddress.DefaultShippingAddress is not null)
+                                            {
+                                                var defaultAddress = @Model.ShippingAddress.DefaultShippingAddress;
+
+                                                <span class="fs-14 mb-2 d-block"><strong>@defaultAddress.FullName</strong></span>
+                                                <span class="text-muted fw-normal text-wrap mb-1 d-block">Địa chỉ: <strong>@defaultAddress.AddressFull</strong></span>
+                                                <span class="text-muted fw-normal d-block">Điện thoại: <strong>@defaultAddress.PhoneNumber</strong></span>
+                                            }
+                                        </div>
+                                        <div class="col-lg-4 col-sm-4">
+                                            @if (Model.ShippingAddress.ExistingAddresses is not null && Model.ShippingAddress.ExistingAddresses.Count > 0)
+                                            {
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#selectAddressModal">
+                                                    Thay đổi
+                                                </button>
+                                                <div class="modal fade" id="selectAddressModal" tabindex="-1" aria-labelledby="selectAddressLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <form method="post" action="/Checkout/SelectAddress" id="selectAddressForm">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="selectAddressLabel">Chọn địa chỉ</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body row mx-2 my-2">
+                                                                    @foreach (var item in Model.ShippingAddress.ExistingAddresses)
+                                                                    {
+                                                                        <div class="col-lg-4 col-sm-6">
+                                                                            <div data-bs-toggle="collapse">
+                                                                                <label class="card-radio-label mb-0">
+                                                                                    <input type="radio" name="id" class="card-radio-input" value="@item.Id">
+                                                                                    <div class="card-radio text-truncate p-3">
+                                                                                        <span class="fs-14 mb-2 d-block">@item.FullName</span>
+                                                                                        <span class="text-muted fw-normal text-wrap mb-1 d-block">Địa chỉ: @item.AddressFull</span>
+                                                                                        <span class="text-muted fw-normal d-block">Điện thoại: @item.PhoneNumber</span>
+                                                                                    </div>
+                                                                                </label>
+                                                                                <div class="edit-btn bg-light  rounded">
+                                                                                    <a href="#" data-bs-toggle="tooltip" data-placement="top" title="" data-bs-original-title="Edit">
+                                                                                        <i class="bx bx-pencil font-size-16"></i>
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+
+                                                                </div>
+                                                                
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAddressModal">
+                                                                        Địa chỉ mới
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-success">Save changes</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div class="modal fade" id="newAddressModal" tabindex="-1" aria-labelledby="newAddressLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <form method="post" action="/Checkout/NewDefaultAddress">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="newAddressLabel">Địa chỉ mới</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body mx-2 my-2">
+                                                                    @await Html.PartialAsync("~/Views/Account/_CreateOrUpdateAddress.cshtml", Model.ShippingAddress.NewShippingAddress)
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <ol class="mb-0 px-4 mt-3">
+                <li class="checkout-item">
+                    <div class="feed-item-list">
+                        <div>
+                            <h5 class="font-size-16 mb-1">Payment Info</h5>
+                            <p class="text-muted text-truncate mb-4">Duis arcu tortor, suscipit eget</p>
+                        </div>
+                        <div>
+                            <h5 class="font-size-14 mb-3">Payment method :</h5>
+                            <div class="row">
+                                <div class="col-lg-3 col-sm-6">
+                                    <div data-bs-toggle="collapse">
+                                        <label class="card-radio-label">
+                                            <input type="radio" name="pay-method" id="pay-methodoption1" class="card-radio-input">
+                                            <span class="card-radio py-3 text-center text-truncate">
+                                                <i class="bx bx-credit-card d-block h2 mb-3"></i> Credit / Debit Card
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6">
+                                    <div>
+                                        <label class="card-radio-label">
+                                            <input type="radio" name="pay-method" id="pay-methodoption2" class="card-radio-input">
+                                            <span class="card-radio py-3 text-center text-truncate">
+                                                <i class="bx bxl-paypal d-block h2 mb-3"></i> Paypal
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6">
+                                    <div>
+                                        <label class="card-radio-label">
+                                            <input type="radio" name="pay-method" id="pay-methodoption3" class="card-radio-input" checked="">
+                                            <span class="card-radio py-3 text-center text-truncate">
+                                                <i class="bx bx-money d-block h2 mb-3"></i>
+                                                <span>Cash on Delivery</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <div>
+        <h3>Cart Items</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.Cart.Items)
+                {
+                    <tr>
+                        <td>@product.ProductName</td>
+                        <td>@product.Price</td>
+                        <td>@product.Quantity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <h4>Total: @Model.Cart.SubTotalValue</h4>
+    </div>
+</div>
+
+@* <div>
+    <h3>Payment Method</h3>
+    <form method="post" action="/Checkout/PlaceOrder">
+        <div>
+            <input type="radio" name="PaymentMethod" value="CreditCard" @(Model.PaymentMethod == "CreditCard" ? "checked" : "") />
+            <label>Credit Card</label>
+        </div>
+        <div>
+            <input type="radio" name="PaymentMethod" value="PayPal" @(Model.PaymentMethod == "PayPal" ? "checked" : "") />
+            <label>PayPal</label>
+        </div>
+
+        <h4>Total: @Model.Cart.TotalAmount</h4>
+        <button type="submit">Place Order</button>
+    </form>
+</div> *@
+
+@Html.Script(@<text>
+        <script>
+            function toggleAddressSelection() {
+                var addressSelection = document.getElementById('addressSelection');
+                if (addressSelection.style.display === 'none' || addressSelection.style.display === '') {
+                    addressSelection.style.display = 'block';
+                } else {
+                    addressSelection.style.display = 'none';
+                }
+            }
+            $(document).ready(function () {
+                $('#selectAddressForm').submit(function (event) {
+                    event.preventDefault();
+
+                    var form = $(this);
+                    var url = form.attr('action');
+                    var formData = form.serialize();
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: formData,
+                        success: function (response) {
+                            if (response.success) {
+                                // Refresh the page
+                                location.reload();
+                            } else {
+                                alert('An error occurred. Please try again.');
+                            }
+                        },
+                        error: function () {
+                            alert('An error occurred while making the request.');
+                        }
+                    });
+                });
+            });
+        </script>
+    </text>)
+
+<style>
+
+    .card {
+        margin-bottom: 24px;
+        -webkit-box-shadow: 0 2px 3px #e4e8f0;
+        box-shadow: 0 2px 3px #e4e8f0;
+    }
+
+    .card {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid #eff0f2;
+        border-radius: 1rem;
+    }
+
+    .activity-checkout {
+        list-style: none
+    }
+
+        .activity-checkout .checkout-icon {
+            position: absolute;
+            top: -4px;
+            left: -24px
+        }
+
+        .activity-checkout .checkout-item {
+            position: relative;
+            padding-bottom: 24px;
+            padding-left: 35px;
+            border-left: 2px solid #f5f6f8
+        }
+
+            .activity-checkout .checkout-item:first-child {
+                border-color: #3b76e1
+            }
+
+                .activity-checkout .checkout-item:first-child:after {
+                    background-color: #3b76e1
+                }
+
+            .activity-checkout .checkout-item:last-child {
+                border-color: transparent
+            }
+
+            .activity-checkout .checkout-item.crypto-activity {
+                margin-left: 50px
+            }
+
+            .activity-checkout .checkout-item .crypto-date {
+                position: absolute;
+                top: 3px;
+                left: -65px
+            }
+
+
+
+    .avatar-xs {
+        height: 1rem;
+        width: 1rem
+    }
+
+    .avatar-sm {
+        height: 2rem;
+        width: 2rem
+    }
+
+    .avatar {
+        height: 3rem;
+        width: 3rem
+    }
+
+    .avatar-md {
+        height: 4rem;
+        width: 4rem
+    }
+
+    .avatar-lg {
+        height: 5rem;
+        width: 5rem
+    }
+
+    .avatar-xl {
+        height: 6rem;
+        width: 6rem
+    }
+
+    .avatar-title {
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        background-color: #3b76e1;
+        color: #fff;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        font-weight: 500;
+        height: 100%;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        width: 100%
+    }
+
+    .avatar-group {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        padding-left: 8px
+    }
+
+        .avatar-group .avatar-group-item {
+            margin-left: -8px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            -webkit-transition: all .2s;
+            transition: all .2s
+        }
+
+            .avatar-group .avatar-group-item:hover {
+                position: relative;
+                -webkit-transform: translateY(-2px);
+                transform: translateY(-2px)
+            }
+
+    .card-radio {
+        background-color: #fff;
+        border: 2px solid #eff0f2;
+        border-radius: .75rem;
+        padding: .5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block
+    }
+
+        .card-radio:hover {
+            cursor: pointer
+        }
+
+    .card-radio-label {
+        display: block
+    }
+
+    .edit-btn {
+        width: 35px;
+        height: 35px;
+        line-height: 40px;
+        text-align: center;
+        position: absolute;
+        right: 25px;
+        margin-top: -50px
+    }
+
+    .card-radio-input {
+        display: none
+    }
+
+        .card-radio-input:checked + .card-radio {
+            border-color: #3b76e1 !important
+        }
+
+
+    .font-size-16 {
+        font-size: 16px !important;
+    }
+
+    .text-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    a {
+        text-decoration: none !important;
+    }
+
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.47rem 0.75rem;
+        font-size: .875rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #545965;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #e2e5e8;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.75rem;
+        -webkit-transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+        transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+    }
+
+    .edit-btn {
+        width: 35px;
+        height: 35px;
+        line-height: 40px;
+        text-align: center;
+        position: absolute;
+        right: 25px;
+        margin-top: -50px;
+    }
+
+    .ribbon {
+        position: absolute;
+        right: -26px;
+        top: 20px;
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 1px 22px;
+        font-size: 13px;
+        font-weight: 500
+    }
+
+</style>
