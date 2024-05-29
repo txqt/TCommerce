@@ -47,7 +47,7 @@ namespace T.Web.Controllers
             }
 
             model.Cart = await _shoppingCartModelService.PrepareShoppingCartModelAsync();
-            model.ShippingAddress.NewShippingAddress = await _accountModelService.PrepareDeliveryAddressModel(null, new DeliveryAddressModel());
+            model.ShippingAddress.NewShippingAddress = await _accountModelService.PrepareAddressModel(null, new AddressModel());
 
             return View(model);
         }
@@ -76,15 +76,15 @@ namespace T.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> NewDefaultAddress(DeliveryAddressModel model)
+        public async Task<IActionResult> NewDefaultAddress(AddressModel model)
         {
             if (!ModelState.IsValid)
             {
-                model = await _accountModelService.PrepareDeliveryAddressModel(null, model);
+                model = await _accountModelService.PrepareAddressModel(null, model);
                 return View(model);
             }
 
-            var address = _mapper.Map<DeliveryAddress>(model);
+            var address = _mapper.Map<Address>(model);
 
             address.CreatedOnUtc = DateTime.Now;
             address.IsDefault = true;

@@ -216,6 +216,7 @@ namespace T.WebApi.Controllers
 
             return result.Success ? Ok(result) : BadRequest(result);
         }
+        [AllowAnonymous]
         [HttpGet("{productId}/related-products")]
         public async Task<IActionResult> GetRelatedProductsByProductId1Async(int productId, [FromQuery] bool showHidden = false)
         {

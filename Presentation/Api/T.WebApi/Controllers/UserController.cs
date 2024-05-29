@@ -201,7 +201,7 @@ namespace T.WebApi.Controllers
         [HttpPost("me/account/address")]
         [CheckPermission]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> CreateUserAddressAsync(DeliveryAddress address)
+        public async Task<ActionResult> CreateUserAddressAsync(Address address)
         {
             var result = await _userService.CreateUserAddressAsync(address);
             if (!result.Success)
@@ -213,7 +213,7 @@ namespace T.WebApi.Controllers
         [HttpPut("me/account/address")]
         [CheckPermission]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<ActionResult> UpdateUserAddressAsync(DeliveryAddress address)
+        public async Task<ActionResult> UpdateUserAddressAsync(Address address)
         {
             var result = await _userService.UpdateUserAddressAsync(address);
             if (!result.Success)

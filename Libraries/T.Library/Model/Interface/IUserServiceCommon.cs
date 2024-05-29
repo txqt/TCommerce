@@ -24,9 +24,9 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> BanUser(string userId);
         Task<bool> Logout(Guid userId);
         Task<ServiceResponse<bool>> UpdateUserAccountInfo(AccountInfoModel model);
-        Task<ServiceResponse<bool>> CreateUserAddressAsync(DeliveryAddress deliveryAddress);
-        Task<ServiceResponse<bool>> UpdateUserAddressAsync(DeliveryAddress deliveryAddress);
+        Task<ServiceResponse<bool>> CreateUserAddressAsync(Address deliveryAddress);
+        Task<ServiceResponse<bool>> UpdateUserAddressAsync(Address deliveryAddress);
         Task<ServiceResponse<bool>> DeleteUserAddressAsync(int id);
-        Task<List<DeliveryAddressInfoModel>> GetOwnAddressesAsync();
+        Task<List<AddressInfoModel>> GetOwnAddressesAsync();
     }
 }

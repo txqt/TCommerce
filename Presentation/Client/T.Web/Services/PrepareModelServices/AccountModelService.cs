@@ -8,7 +8,7 @@ namespace T.Web.Services.PrepareModelServices
     public interface IAccountModelService
     {
         AccountNavigationModel PrepareAccountNavigationModel(int selectedTabId = 0);
-        Task<DeliveryAddressModel> PrepareDeliveryAddressModel(DeliveryAddress address, DeliveryAddressModel model);
+        Task<AddressModel> PrepareAddressModel(Address address, AddressModel model);
     }
     public class AccountModelService : IAccountModelService
     {
@@ -46,11 +46,11 @@ namespace T.Web.Services.PrepareModelServices
             return model;
         }
 
-        public async Task<DeliveryAddressModel> PrepareDeliveryAddressModel(DeliveryAddress address, DeliveryAddressModel model)
+        public async Task<AddressModel> PrepareAddressModel(Address address, AddressModel model)
         {
             if (address is not null)
             {
-                model ??= new DeliveryAddressModel()
+                model ??= new AddressModel()
                 {
                     Id = address.Id
                 };
@@ -59,12 +59,12 @@ namespace T.Web.Services.PrepareModelServices
                 model.LastName = address.LastName;
                 model.PhoneNumber = address.PhoneNumber;
                 model.AddressDetails = address.AddressDetails;
-                model.DeliveryAddressType = address.DeliveryAddressType;
+                model.AddressType = address.AddressType;
                 model.ProvinceId = address.ProvinceId;
                 model.DistrictId = address.DistrictId;
                 model.CommuneId = address.CommuneId;
-                model.DeliveryAddressTypeId = address.DeliveryAddressTypeId;
-                model.DeliveryAddressType = address.DeliveryAddressType;
+                model.AddressTypeId = address.AddressTypeId;
+                model.AddressType = address.AddressType;
                 model.IsDefault = address.IsDefault;
             }
 

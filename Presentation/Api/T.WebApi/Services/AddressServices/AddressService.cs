@@ -7,8 +7,8 @@ namespace T.WebApi.Services.AddressServices
 {
     public interface IAddressService : IAddressServiceCommon
     {
-        Task CreateAddressAsync(DeliveryAddress deliveryAddress);
-        Task UpdateAddressAsync(DeliveryAddress deliveryAddress);
+        Task CreateAddressAsync(Address deliveryAddress);
+        Task UpdateAddressAsync(Address deliveryAddress);
         Task BulkCreateProvince(IEnumerable<VietNamProvince> provinceList);
         Task BulkCreateDistrict(IEnumerable<VietNamDistrict> districtList);
         Task BulkCreateCommune(IEnumerable<VietNamCommune> communeList);
@@ -19,12 +19,12 @@ namespace T.WebApi.Services.AddressServices
     }
     public class AddressService : IAddressService
     {
-        private readonly IRepository<DeliveryAddress> _addressRepository;
+        private readonly IRepository<Address> _addressRepository;
         private readonly IRepository<VietNamProvince> _vietNamProvinceRepository;
         private readonly IRepository<VietNamDistrict> _vietNamDistrictRepository;
         private readonly IRepository<VietNamCommune> _vietNamCommuneRepository;
 
-        public AddressService(IRepository<DeliveryAddress> addressRepository, IRepository<VietNamProvince> vietNamProvinceRepository, IRepository<VietNamDistrict> vietNamDistrictRepository, IRepository<VietNamCommune> vietNamCommuneRepository)
+        public AddressService(IRepository<Address> addressRepository, IRepository<VietNamProvince> vietNamProvinceRepository, IRepository<VietNamDistrict> vietNamDistrictRepository, IRepository<VietNamCommune> vietNamCommuneRepository)
         {
             _addressRepository = addressRepository;
             _vietNamProvinceRepository = vietNamProvinceRepository;
@@ -32,7 +32,7 @@ namespace T.WebApi.Services.AddressServices
             _vietNamCommuneRepository = vietNamCommuneRepository;
         }
 
-        public async Task<DeliveryAddress?> GetAddressByIdAsync(int id)
+        public async Task<Address?> GetAddressByIdAsync(int id)
         {
             return await _addressRepository.GetByIdAsync(id);
         }
@@ -83,7 +83,7 @@ namespace T.WebApi.Services.AddressServices
             return result.OrderBy(x => x.Name).ToList();
         }
 
-        public async Task CreateAddressAsync(DeliveryAddress deliveryAddress)
+        public async Task CreateAddressAsync(Address deliveryAddress)
         {
             await _addressRepository.CreateAsync(deliveryAddress);
         }
@@ -103,7 +103,7 @@ namespace T.WebApi.Services.AddressServices
             return await _vietNamCommuneRepository.GetByIdAsync(communeId);
         }
 
-        public async Task UpdateAddressAsync(DeliveryAddress deliveryAddress)
+        public async Task UpdateAddressAsync(Address deliveryAddress)
         {
             await _addressRepository.UpdateAsync(deliveryAddress);
         }

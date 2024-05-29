@@ -4,7 +4,7 @@ using T.Library.Model.Common;
 
 namespace T.Web.Models
 {
-    public class DeliveryAddressModel : BaseEntity
+    public class AddressModel : BaseEntity
     {
         [Required, Display(Name = "Tên")]
         public string FirstName { get; set; } = null!;
@@ -30,13 +30,13 @@ namespace T.Web.Models
         [Required, Display(Name = "Số điện thoại")]
         public string PhoneNumber { get; set; } = null!;
 
-        public int DeliveryAddressTypeId { get; set; }
+        public int AddressTypeId { get; set; }
 
         [Required, Display(Name = "Loại địa chỉ")]
-        public DeliveryAddressType DeliveryAddressType
+        public AddressType AddressType
         {
-            get => (DeliveryAddressType)DeliveryAddressTypeId;
-            set => DeliveryAddressTypeId = (int)value;
+            get => (AddressType)AddressTypeId;
+            set => AddressTypeId = (int)value;
         }
 
         [Required]
@@ -48,7 +48,7 @@ namespace T.Web.Models
         [Required]
         public List<SelectListItem> AvaiableCommunes { get; set; }
 
-        public DeliveryAddressModel()
+        public AddressModel()
         {
             AvaiableProvinces = new List<SelectListItem>();
             AvaiableDistricts = new List<SelectListItem>();

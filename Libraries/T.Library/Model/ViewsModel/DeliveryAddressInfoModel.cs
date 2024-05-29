@@ -7,7 +7,7 @@ using T.Library.Model.Common;
 
 namespace T.Library.Model.ViewsModel
 {
-    public class DeliveryAddressInfoModel : BaseEntity
+    public class AddressInfoModel : BaseEntity
     {
         public string? FullName { get; set; }
         public string? AddressFull { get; set; }

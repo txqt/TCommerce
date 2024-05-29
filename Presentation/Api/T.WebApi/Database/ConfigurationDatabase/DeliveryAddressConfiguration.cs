@@ -5,9 +5,9 @@ using T.Library.Model.Banners;
 
 namespace T.WebApi.Database.ConfigurationDatabase
 {
-    public partial class DeliveryAddressConfiguration : IEntityTypeConfiguration<DeliveryAddress>
+    public partial class AddressConfiguration : IEntityTypeConfiguration<Address>
     {
-        public void Configure(EntityTypeBuilder<DeliveryAddress> builder)
+        public void Configure(EntityTypeBuilder<Address> builder)
         {
             builder.HasKey(x => x.Id);
         }

@@ -82,12 +82,12 @@ namespace T.Web.Services.UserService
             return await PutAsJsonAsync<ServiceResponse<bool>>($"api/user/me/account/info", model);
         }
 
-        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(DeliveryAddress address)
+        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(Address address)
         {
             return await PostAsJsonAsync<ServiceResponse<bool>>($"api/user/me/account/address", address);
         }
 
-        public async Task<ServiceResponse<bool>> UpdateUserAddressAsync(DeliveryAddress address)
+        public async Task<ServiceResponse<bool>> UpdateUserAddressAsync(Address address)
         {
             return await PutAsJsonAsync<ServiceResponse<bool>>($"api/user/me/account/address", address);
         }
@@ -97,9 +97,9 @@ namespace T.Web.Services.UserService
             return await DeleteAsync<ServiceResponse<bool>>($"api/user/account/address/{id}");
         }
 
-        public async Task<List<DeliveryAddressInfoModel>> GetOwnAddressesAsync()
+        public async Task<List<AddressInfoModel>> GetOwnAddressesAsync()
         {
-            return await GetAsync<List<DeliveryAddressInfoModel>>($"api/user/me/account/addresses");
+            return await GetAsync<List<AddressInfoModel>>($"api/user/me/account/addresses");
         }
     }
 }

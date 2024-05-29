@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace T.Library.Model.Common
 {
-    public enum DeliveryAddressType
+    public enum AddressType
     {
         Home = 1,
         Company = 2

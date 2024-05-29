@@ -277,20 +277,20 @@ namespace T.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateAddress()
         {
-            var model = await _accountModelService.PrepareDeliveryAddressModel(null, new DeliveryAddressModel());
+            var model = await _accountModelService.PrepareAddressModel(null, new AddressModel());
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAddress(DeliveryAddressModel model)
+        public async Task<IActionResult> CreateAddress(AddressModel model)
         {
             if (!ModelState.IsValid)
             {
-                model = await _accountModelService.PrepareDeliveryAddressModel(null, model);
+                model = await _accountModelService.PrepareAddressModel(null, model);
                 return View(model);
             }
 
-            var address = _mapper.Map<DeliveryAddress>(model);
+            var address = _mapper.Map<Address>(model);
 
             address.CreatedOnUtc = DateTime.Now;
 
@@ -306,24 +306,24 @@ namespace T.Web.Controllers
         {
             var currentAddress = await _addressService.GetAddressByIdAsync(id);
 
-            var model = await _accountModelService.PrepareDeliveryAddressModel(currentAddress, null);
+            var model = await _accountModelService.PrepareAddressModel(currentAddress, null);
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateAddress(DeliveryAddressModel model)
+        public async Task<IActionResult> UpdateAddress(AddressModel model)
         {
             if (!ModelState.IsValid)
             {
                 var currentAddress = await _addressService.GetAddressByIdAsync(model.Id);
 
-                model = await _accountModelService.PrepareDeliveryAddressModel(currentAddress, model);
+                model = await _accountModelService.PrepareAddressModel(currentAddress, model);
 
                 return View(model);
             }
 
-            var address = _mapper.Map<DeliveryAddress>(model);
+            var address = _mapper.Map<Address>(model);
 
             address.CreatedOnUtc = DateTime.Now;
 

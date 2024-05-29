@@ -6,13 +6,13 @@ namespace T.Web.Models
     {
         public CheckoutShippingAddressModel()
         {
-            ExistingAddresses = new List<DeliveryAddressInfoModel>();
-            DefaultShippingAddress = new DeliveryAddressInfoModel();
-            NewShippingAddress = new DeliveryAddressModel();
+            ExistingAddresses = new List<AddressInfoModel>();
+            DefaultShippingAddress = new AddressInfoModel();
+            NewShippingAddress = new AddressModel();
         }
 
-        public List<DeliveryAddressInfoModel> ExistingAddresses { get; set; }
-        public DeliveryAddressInfoModel DefaultShippingAddress { get; set; }
-        public DeliveryAddressModel NewShippingAddress { get; set; }
+        public List<AddressInfoModel> ExistingAddresses { get; set; }
+        public AddressInfoModel DefaultShippingAddress { get; set; }
+        public AddressModel NewShippingAddress { get; set; }
     }
 }
