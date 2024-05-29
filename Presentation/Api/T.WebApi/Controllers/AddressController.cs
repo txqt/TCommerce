@@ -36,7 +36,7 @@ namespace T.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<DeliveryAddress?>> GetAddressByIdAsync(int id)
+        public async Task<ActionResult<Address?>> GetAddressByIdAsync(int id)
         {
             return await _addressService.GetAddressByIdAsync(id);
         }

@@ -197,7 +197,7 @@ namespace T.Web.Profiles
             CreateMap<CategoryModelAdmin, Category>()
                 .ReverseMap();
 
-            CreateMap<DeliveryAddressModel, DeliveryAddress>()
+            CreateMap<AddressModel, Address>()
                 .ReverseMap();
         }
     }

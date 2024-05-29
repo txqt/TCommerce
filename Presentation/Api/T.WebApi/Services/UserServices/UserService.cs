@@ -41,9 +41,9 @@ namespace T.WebApi.Services.UserServices
         private readonly ITokenService _tokenService;
         private readonly SignInManager<User> _signInManager;
         private readonly IRepository<UserAddressMapping> _userAddressMappingRepository;
-        private readonly IRepository<DeliveryAddress> _addressMappingRepository;
+        private readonly IRepository<Address> _addressMappingRepository;
         private readonly IAddressService _addressService;
-        public UserService(IMapper mapper, DatabaseContext context, UserManager<User> userManager, RoleManager<Role> roleManager, IHttpContextAccessor httpContextAccessor, IEmailSender emailService, IOptions<UrlOptions> urlOptions, ITokenService tokenService, SignInManager<User> signInManager, IRepository<UserAddressMapping> userAddressMappingRepository, IAddressService addressService, IRepository<DeliveryAddress> addressMappingRepository)
+        public UserService(IMapper mapper, DatabaseContext context, UserManager<User> userManager, RoleManager<Role> roleManager, IHttpContextAccessor httpContextAccessor, IEmailSender emailService, IOptions<UrlOptions> urlOptions, ITokenService tokenService, SignInManager<User> signInManager, IRepository<UserAddressMapping> userAddressMappingRepository, IAddressService addressService, IRepository<Address> addressMappingRepository)
         {
             _mapper = mapper;
             _context = context;
@@ -425,7 +425,7 @@ namespace T.WebApi.Services.UserServices
             return await UpdateUserAsync(userModel);
         }
 
-        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(DeliveryAddress deliveryAddress)
+        public async Task<ServiceResponse<bool>> CreateUserAddressAsync(Address deliveryAddress)
         {
             var user = await GetCurrentUser();
 
@@ -514,7 +514,7 @@ namespace T.WebApi.Services.UserServices
             return new ServiceErrorResponse<bool>() { Message = "No address found" };
         }
 
-        public async Task<List<DeliveryAddressInfoModel>> GetOwnAddressesAsync()
+        public async Task<List<AddressInfoModel>> GetOwnAddressesAsync()
         {
             var userId = (await GetCurrentUser()).Id;
 
@@ -525,7 +525,7 @@ namespace T.WebApi.Services.UserServices
 
             var addressList = await query.ToListAsync();
 
-            var addressInfoList = new List<DeliveryAddressInfoModel>();
+            var addressInfoList = new List<AddressInfoModel>();
 
             if (addressList is not null)
             {
@@ -535,7 +535,7 @@ namespace T.WebApi.Services.UserServices
                     var district = (await _addressService.GetDistricteByIdAsync(item.DistrictId))?.Name;
                     var province = (await _addressService.GetProvinceByIdAsync(item.ProvinceId))?.Name;
 
-                    addressInfoList.Add(new DeliveryAddressInfoModel()
+                    addressInfoList.Add(new AddressInfoModel()
                     {
                         Id = item.Id,
                         FullName = item.LastName + " " + item.FirstName,
@@ -549,7 +549,7 @@ namespace T.WebApi.Services.UserServices
             return addressInfoList;
         }
 
-        public async Task<ServiceResponse<bool>> UpdateUserAddressAsync(DeliveryAddress deliveryAddress)
+        public async Task<ServiceResponse<bool>> UpdateUserAddressAsync(Address deliveryAddress)
         {
             var user = await GetCurrentUser();
 

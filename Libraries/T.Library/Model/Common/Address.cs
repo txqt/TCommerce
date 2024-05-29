@@ -8,7 +8,7 @@ using T.Library.Model.Users;
 
 namespace T.Library.Model.Common
 {
-    public partial class DeliveryAddress : BaseEntity
+    public partial class Address : BaseEntity
     {
         public string FirstName { get; set; } = null!;
 
@@ -26,14 +26,14 @@ namespace T.Library.Model.Common
 
         public string PhoneNumber { get; set; } = null!;
 
-        public int DeliveryAddressTypeId { get; set; }
+        public int AddressTypeId { get; set; }
 
         public DateTime CreatedOnUtc { get; set; }
 
-        public DeliveryAddressType DeliveryAddressType
+        public AddressType AddressType
         {
-            get => (DeliveryAddressType)DeliveryAddressTypeId;
-            set => DeliveryAddressTypeId = (int)value;
+            get => (AddressType)AddressTypeId;
+            set => AddressTypeId = (int)value;
         }
         public bool IsDefault { get; set; }
     }
