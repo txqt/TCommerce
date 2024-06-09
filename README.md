@@ -5,7 +5,7 @@
 
 
 ## Tổng quan
-- Dự án này là một ứng dụng thương mại điện tử nhỏ của một sinh viên mới ra trường (tôi) được xây dựng để nâng cao kỹ năng lập trình.
+- Dự án này là một ứng dụng thương mại điện tử nhỏ được xây dựng để nâng cao kỹ năng lập trình.
 - Hầu hết mọi ý tưởng dự án của tôi đều dựa vào [nopCommerce](https://github.com/nopSolutions/nopCommerce) để làm.
 ## Yêu Cầu
 
