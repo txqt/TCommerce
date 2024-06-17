@@ -37,6 +37,18 @@ namespace T.Web.Extensions
                 endpoints.MapControllerRoute(name: "CreateAddress",
                     pattern: $"account/address/create",
                     defaults: new { controller = "Account", action = "CreateAddress" });
+
+                endpoints.MapControllerRoute(name: "SignInOrSignUp",
+                    pattern: $"sign-in-sign-up",
+                    defaults: new { controller = "Account", action = "SignInOrSignUp" });
+
+                endpoints.MapControllerRoute(name: "Logout",
+                    pattern: $"logout",
+                    defaults: new { controller = "Account", action = "Logout" });
+
+                endpoints.MapControllerRoute(name: "HomeAdmin",
+                    pattern: $"admin",
+                    defaults: new { areas = "admin", controller = "home", action = "index"  });
             });
 
             return app;

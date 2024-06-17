@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace T.Library.Model.Common
 
         public DateTime CreatedOnUtc { get; set; }
 
+        [NotMapped]
         public AddressType AddressType
         {
             get => (AddressType)AddressTypeId;

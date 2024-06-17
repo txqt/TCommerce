@@ -1,13 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
+using T.Library.Model.Discounts;
 using T.Library.Model.Interface;
 using T.Library.Model.Orders;
 using T.Library.Model.Response;
 using T.Library.Model.Users;
 using T.Library.Model.ViewsModel;
 using T.WebApi.Extensions;
+using T.WebApi.Services.CategoryServices;
+using T.WebApi.Services.DiscountServices;
 using T.WebApi.Services.IRepositoryServices;
+using T.WebApi.Services.ManufacturerServices;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.UserServices;
 using static T.Library.Model.ViewsModel.ShoppingCartItemModel;
@@ -18,7 +22,6 @@ namespace T.WebApi.Services.ShoppingCartServices
     {
         Task<ServiceResponse<bool>> CreateAsync(ShoppingCartItem shoppingCartItem);
         Task<ServiceResponse<bool>> UpdateAsync(ShoppingCartItem shoppingCartItem);
-        Task<List<ShoppingCartItem>> GetShoppingCartAsync(UserModel user, ShoppingCartType? shoppingCartType = null, int? productId = null, DateTime? createdFromUtc = null, DateTime? createdToUtc = null);
         bool IsUserShoppingCartEmpty(UserModel user);
         Task<List<string>> GetShoppingCartItemWarningsAsync(UserModel user, ShoppingCartType shoppingCartType, Product product, string attributesJson, int quantity = 1, bool getStandardWarnings = true, bool getAttributesWarnings = true);
         Task AddToCartAsync(UserModel user, ShoppingCartType cartType, Product product, string? attributeJson = null,
@@ -31,13 +34,17 @@ namespace T.WebApi.Services.ShoppingCartServices
         private readonly IProductAttributeService _productAttribute;
         private readonly IUserService _userService;
         private readonly IProductAttributeConverter _productAttributeConverter;
+        private readonly ICategoryService _categoryService;
+        private readonly IManufacturerServices _manufacturerServices;
 
-        public ShoppingCartService(IRepository<ShoppingCartItem> shoppingCartItemService, IProductAttributeService productAttribute, IUserService userService, IProductAttributeConverter productAttributeConverter)
+        public ShoppingCartService(IRepository<ShoppingCartItem> shoppingCartItemService, IProductAttributeService productAttribute, IUserService userService, IProductAttributeConverter productAttributeConverter, ICategoryService categoryService, IManufacturerServices manufacturerServices)
         {
             _shoppingCartItemRepository = shoppingCartItemService;
             _productAttribute = productAttribute;
             _userService = userService;
             _productAttributeConverter = productAttributeConverter;
+            _categoryService = categoryService;
+            _manufacturerServices = manufacturerServices;
         }
 
         public async Task<ServiceResponse<bool>> CreateAsync(ShoppingCartItem shoppingCartItem)
@@ -97,7 +104,7 @@ namespace T.WebApi.Services.ShoppingCartServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        
+
 
         public async Task<ServiceResponse<bool>> DeleteAsync(int id)
         {
@@ -321,6 +328,7 @@ namespace T.WebApi.Services.ShoppingCartServices
 
             return warnings;
         }
+
         #endregion
     }
 }

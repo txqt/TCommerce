@@ -36,14 +36,10 @@ namespace T.Web.Controllers
                 var shippingAddress = new CheckoutShippingAddressModel
                 {
                     DefaultShippingAddress = addresses.FirstOrDefault(x => x.IsDefault),
-                    ExistingAddresses = addresses.Where(x => !x.IsDefault).ToList()
+                    ExistingAddresses = addresses.ToList()
                 };
 
                 model.ShippingAddress = shippingAddress;
-            }
-            else
-            {
-                model.ShippingAddress = null;
             }
 
             model.Cart = await _shoppingCartModelService.PrepareShoppingCartModelAsync();

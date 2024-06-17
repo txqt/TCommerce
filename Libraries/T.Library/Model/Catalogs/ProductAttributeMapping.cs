@@ -1,5 +1,6 @@
 ﻿
 
+using System.ComponentModel.DataAnnotations.Schema;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
 
@@ -69,6 +70,7 @@ namespace T.Library.Model
 
         public int ConditionAttributeSelected { get; set; }
 
+        [NotMapped]
         public AttributeControlType AttributeControlType
         {
             get => (AttributeControlType)AttributeControlTypeId;

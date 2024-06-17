@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using System.Data.SqlTypes;
+using System.Globalization;
 using System.Text;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
@@ -13,6 +14,7 @@ using T.Library.Model.ViewsModel;
 using T.WebApi.Extensions;
 using T.WebApi.Helpers;
 using T.WebApi.Services.CacheServices;
+using T.WebApi.Services.CategoryServices;
 using T.WebApi.Services.IRepositoryServices;
 using T.WebApi.Services.UrlRecordServices;
 using T.WebApi.Services.UserServices;
@@ -72,10 +74,29 @@ namespace T.WebApi.Services.ProductServices
         private readonly ICacheService _cacheService;
 
         private readonly IUserService _userSerice;
+
+        private readonly IRepository<Category> _categoryRepository;
+
+        private readonly IRepository<ProductAttribute> _productAttributeRepository;
+
+        private readonly IRepository<ProductAttributeValue> _productAttributeValueRepository;
         #endregion
 
         #region Ctor
-        public ProductService(IConfiguration configuration, IHostEnvironment environment, IRepository<Product> productsRepository, IRepository<ProductAttributeMapping> productAttributeMapping, IRepository<ProductPicture> productPictureMapping, IRepository<Picture> pictureRepository, IMapper mapper, IRepository<ProductCategory> productCategoryRepository, IUrlRecordService urlRecordService, ICacheService cacheService, IRepository<ProductManufacturer> productManufacturerRepository, IRepository<RelatedProduct> relatedProductRepository, IUserService userSerice)
+        public ProductService(IConfiguration configuration,
+            IHostEnvironment environment, IRepository<Product> productsRepository,
+            IRepository<ProductAttributeMapping> productAttributeMapping,
+            IRepository<ProductPicture> productPictureMapping,
+            IRepository<Picture> pictureRepository,
+            IMapper mapper,
+            IRepository<ProductCategory> productCategoryRepository,
+            IUrlRecordService urlRecordService,
+            ICacheService cacheService,
+            IRepository<ProductManufacturer> productManufacturerRepository,
+            IRepository<RelatedProduct> relatedProductRepository,
+            IUserService userSerice,
+            IRepository<Category> categoryRepository,
+            IRepository<ProductAttributeValue> productAttributeValueRepository, IRepository<ProductAttribute> productAttributeRepository)
         {
             _configuration = configuration;
             _environment = environment;
@@ -91,6 +112,9 @@ namespace T.WebApi.Services.ProductServices
             _productManufacturerRepository = productManufacturerRepository;
             _relatedProductRepository = relatedProductRepository;
             _userSerice = userSerice;
+            _categoryRepository = categoryRepository;
+            _productAttributeValueRepository = productAttributeValueRepository;
+            _productAttributeRepository = productAttributeRepository;
         }
         #endregion
 
@@ -183,6 +207,12 @@ namespace T.WebApi.Services.ProductServices
 
                 await _urlRecordService.SaveSlugAsync(product, model.SeName);
 
+                if (model.Sku is null)
+                {
+                    product.Sku = GenerateSku(product, "PD");
+
+                    await _productsRepository.UpdateAsync(product);
+                }
                 return new ServiceSuccessResponse<bool>();
             }
             catch (Exception ex)
@@ -196,13 +226,18 @@ namespace T.WebApi.Services.ProductServices
 
             try
             {
-                var product = (await _productsRepository.Table.Include(x => x.AttributeMappings).FirstOrDefaultAsync(x => x.Id == model.Id));
+                var product = (await _productsRepository.Table.FirstOrDefaultAsync(x => x.Id == model.Id));
 
                 ArgumentNullException.ThrowIfNull(product);
 
                 _mapper.Map(model, product);
 
                 product.UpdatedOnUtc = DateTime.Now;
+
+                if (model.Sku is null)
+                {
+                    product.Sku = GenerateSku(product, "PD");
+                }
 
                 await _productsRepository.UpdateAsync(product);
 
@@ -577,7 +612,119 @@ namespace T.WebApi.Services.ProductServices
             return (await _productsRepository.GetByIdsAsync(ids)).ToList();
         }
 
+        /// <summary>
+        /// Generates a SKU for the product based on available information
+        /// </summary>
+        public string GenerateSku(Product product, string? prefix = null)
+        {
+            var skuParts = new List<string>();
 
+            if (!string.IsNullOrEmpty(prefix))
+            {
+                skuParts.Add(prefix);
+            }
+
+            // Add the first letters of the product name
+            if (!string.IsNullOrEmpty(product.Name))
+            {
+                skuParts.Add(GetInitials(product.Name));
+            }
+
+            //var categories = (from pc in _productCategoryRepository.Table
+            //                  join c in _categoryRepository.Table
+            //                  on pc.CategoryId equals c.Id
+            //                  where pc.ProductId == product.Id
+            //                  select c).ToList();
+
+            //// Add the first letters of the first category name
+            //if (categories != null && categories.Any())
+            //{
+            //    foreach (var category in categories)
+            //    {
+            //        skuParts.Add(GetInitials(category.Name));
+            //    }
+
+            //}
+
+            //var attributes = (from pap in _productAttributeMappingRepository.Table
+            //                  join pa in _productAttributeRepository.Table
+            //                  on pap.ProductAttributeId equals pa.Id
+            //                  where pap.ProductId == product.Id
+            //                  select pa).ToList();
+
+            //var attributeSku = new List<string>();
+
+            //if (attributes != null && attributes.Any())
+            //{
+            //    foreach (var attribute in attributes)
+            //    {
+
+            //        attributeSku.Add(GetInitials(attribute.Name ?? "N/A"));
+            //        var attributeValues = (from pap in _productAttributeMappingRepository.Table
+            //                               join pav in _productAttributeValueRepository.Table
+            //                               on pap.Id equals pav.ProductAttributeMappingId
+            //                               where pap.ProductAttributeId == attribute.Id && pap.ProductId == product.Id
+            //                               select pav).ToList();
+            //        foreach (var av in attributeValues)
+            //        {
+            //            attributeSku.Add(GetInitials(av.Name ?? "N/A"));
+            //        }
+            //    }
+            //}
+
+            //if (attributeSku.Count > 0)
+            //{
+            //    skuParts.AddRange(attributeSku);
+            //}
+
+            if (product.Id > 0)
+            {
+                skuParts.Add(product.Id.ToString());
+            }
+
+            // Combine parts into a single SKU string
+            return string.Join("-", skuParts).ToUpper();
+        }
+        private static string GetInitials(string input)
+        {
+            // Loại bỏ dấu khỏi chuỗi đầu vào
+            string normalizedString = RemoveDiacritics(input);
+
+            // Tách chuỗi thành các từ
+            string[] words = normalizedString.Split(' ');
+
+            // Biến để lưu trữ kết quả
+            string initials = "";
+
+            // Duyệt qua từng từ và lấy chữ cái đầu
+            foreach (string word in words)
+            {
+                if (!string.IsNullOrEmpty(word))
+                {
+                    initials += word[0];
+                }
+            }
+
+            return initials;
+        }
+
+        private static string RemoveDiacritics(string text)
+        {
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        }
         #endregion
     }
 }
+

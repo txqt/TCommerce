@@ -41,12 +41,12 @@
                             <li><a href="#" id="logoutLink">Đăng xuất</a></li>
                             @if (ViewBag.IsAdmin)
                             {
-                                <li><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin mode</a></li>
+                                <li><a href="@Url.RouteName("HomeAdmin")">Admin mode</a></li>
                             }
                         }
                         else
                         {
-                            <li><a asp-controller="Account" asp-action="Login"><i class="icon-user"></i>Login</a></li>
+                            <li><a href="@Url.RouteName("SignInOrSignUp")"><i class="icon-user"></i>Login</a></li>
                         }
 
                     </ul>
@@ -64,7 +64,7 @@
                             success: function (response) {
                                 // Xử lý phản hồi từ action đăng xuất ở đây
                                 // Ví dụ: chuyển hướng người dùng đến trang đăng nhập
-                                window.location.href = '/Account/Login';
+                                window.location.href = '/Account/SignInOrSignUp';
                             },
                             error: function (error) {
                                 console.error('Đã xảy ra lỗi:', error);

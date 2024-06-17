@@ -16,7 +16,7 @@ namespace T.Web.Models
         public string Company { get; set; }
 
         [Required, Display(Name = "Địa chỉ")]
-        public string AddressDetails { get; set; } = null!;
+        public string AddressDetails { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Phải chọn Tỉnh/Thành phố")]
         public int ProvinceId { get; set; }

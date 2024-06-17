@@ -48,6 +48,7 @@ namespace T.Web.Services.PrepareModelServices
 
         public async Task<AddressModel> PrepareAddressModel(Address address, AddressModel model)
         {
+            ArgumentNullException.ThrowIfNull(model);
             if (address is not null)
             {
                 model ??= new AddressModel()

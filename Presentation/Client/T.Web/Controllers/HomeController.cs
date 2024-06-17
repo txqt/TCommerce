@@ -11,18 +11,29 @@ namespace T.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProductService _productService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly HttpClient _httpClient;
 
-        public HomeController(ILogger<HomeController> logger, IProductService productService)
+        public HomeController(ILogger<HomeController> logger, IProductService productService, IWebHostEnvironment webHostEnvironment, HttpClient httpClient)
         {
             _logger = logger;
             _productService = productService;
+            _webHostEnvironment = webHostEnvironment;
+            _httpClient = httpClient;
         }
 
-        [Route("")]
-        [Route("home")]
-        [Route("home/index")]
-        public IActionResult Index()
+        [HttpGet("")]
+        public async Task<IActionResult> Index()
         {
+            if (_webHostEnvironment.IsDevelopment())
+            {
+                var result = await _httpClient.GetAsync("api/db-manage/is-installed");
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index", "Install");
+                }
+            }
             return View();
         }
 

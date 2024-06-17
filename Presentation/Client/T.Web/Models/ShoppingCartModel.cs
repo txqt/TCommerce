@@ -12,8 +12,6 @@ namespace T.Web.Models
 
         public IList<ShoppingCartItemModel> Items { get; set; }
         public int TotalProducts { get; set; }
-        public string SubTotal { get; set; }
-        public decimal SubTotalValue { get; set; }
         public bool DisplayShoppingCartButton { get; set; } = true;
         public bool DisplayCheckoutButton { get; set; } = true;
         public bool ShowProductImages { get; set; }
@@ -40,7 +38,12 @@ namespace T.Web.Models
             public decimal PriceValue { get; set; }
 
             public int OrderMinimumQuantity { get; set; }
+
             public int OrderMaximumQuantity { get; set; }
+
+            public string SubTotal { get; set; }
+
+            public decimal SubTotalValue { get; set; }
 
             public string AttributeInfo { get; set; }
 

@@ -16,6 +16,8 @@ using T.Library.Model.Common;
 using Newtonsoft.Json;
 using T.WebApi.Helpers;
 using T.WebApi.Services.AddressServices;
+using T.WebApi.Services.DiscountServices;
+using T.WebApi.Services.ManufacturerServices;
 
 namespace T.WebApi.ServicesSeederService
 {
@@ -27,10 +29,11 @@ namespace T.WebApi.ServicesSeederService
         private readonly ICategoryService _categorySerivce;
         private readonly IProductAttributeService _productAttributeService;
         private readonly ISecurityService _securityService;
-        private readonly IManufacturerServicesCommon _manufacturerServicesCommon;
+        private readonly IManufacturerServices _manufacturerService;
         private readonly IMapper _mapper;
         private readonly DatabaseContext _context;
         private readonly IAddressService _addressService;
+        private readonly IDiscountService _discountService;
 
         public DataSeeder(RoleManager<Role> roleManager,
             UserManager<User> userManager,
@@ -39,10 +42,11 @@ namespace T.WebApi.ServicesSeederService
             IProductCategoryService productCategorySerivce,
             IProductAttributeService productAttributeService,
             ISecurityService permissionRecordService,
-            IManufacturerServicesCommon manufacturerServicesCommon,
+            IManufacturerServices manufacturerServices,
             IMapper mapper,
             DatabaseContext context,
-            IAddressService addressService)
+            IAddressService addressService,
+            IDiscountService discountService)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -50,10 +54,11 @@ namespace T.WebApi.ServicesSeederService
             _categorySerivce = categorySerivce;
             _productAttributeService = productAttributeService;
             _securityService = permissionRecordService;
-            _manufacturerServicesCommon = manufacturerServicesCommon;
+            _manufacturerService = manufacturerServices;
             _mapper = mapper;
             _context = context;
             _addressService = addressService;
+            _discountService = discountService;
         }
 
         public async Task Initialize(string AdminEmail, string AdminPassword, bool sampleData = false)
@@ -101,7 +106,7 @@ namespace T.WebApi.ServicesSeederService
                 }
 
 
-
+                //address seed
                 try
                 {
                     // Đường dẫn của tệp JSON
@@ -168,7 +173,14 @@ namespace T.WebApi.ServicesSeederService
                     Console.WriteLine(e.Message);
                 }
 
-
+                await SeedDiscountsAsync();
+            }
+        }
+        private async Task SeedDiscountsAsync()
+        {
+            foreach (var item in DiscountDataSeed.Instance.GetAll())
+            {
+                await _discountService.CreateDiscountAsync(item);
             }
         }
         private async Task SeedCategoriesAsync()
@@ -178,14 +190,13 @@ namespace T.WebApi.ServicesSeederService
                 var model = _mapper.Map<CategoryModel>(item);
                 await _categorySerivce.CreateCategoryAsync(model);
             }
-
         }
 
         private async Task SeedManufacturerAsync()
         {
             foreach (var item in ManufacturerDataSeed.Instance.GetAll())
             {
-                await _manufacturerServicesCommon.CreateManufacturerAsync(item);
+                await _manufacturerService.CreateManufacturerAsync(item);
             }
 
         }
@@ -243,16 +254,16 @@ namespace T.WebApi.ServicesSeederService
 
                     foreach(var pm in item.Manufacturers!)
                     {
-                        var manfacturerId = (await _manufacturerServicesCommon.GetManufacturerByNameAsync(pm.Name!))!.Id;
+                        var manfacturerId = (await _manufacturerService.GetManufacturerByNameAsync(pm.Name!))!.Id;
 
                         var productManufacturer = new ProductManufacturer()
                         {
                             ProductId = productId,
                             ManufacturerId = manfacturerId
                         };
-                        await _manufacturerServicesCommon.CreateProductManufacturerAsync(productManufacturer);
+                        await _manufacturerService.CreateProductManufacturerAsync(productManufacturer);
 
-                        var productManfacturer = (await _manufacturerServicesCommon.GetProductManufacturersByManufacturerIdAsync(manfacturerId))
+                        var productManfacturer = (await _manufacturerService.GetProductManufacturersByManufacturerIdAsync(manfacturerId))
                                                     .Where(x => x.ProductId == productId).FirstOrDefault();
                         ArgumentNullException.ThrowIfNull(productManfacturer);
                     }

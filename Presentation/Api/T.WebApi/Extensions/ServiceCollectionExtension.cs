@@ -32,6 +32,7 @@ using T.Library.Model.JwtToken;
 using T.WebApi.Services.ManufacturerServices;
 using T.WebApi.Services.CacheServices;
 using T.WebApi.Services.AddressServices;
+using T.WebApi.Services.DiscountServices;
 
 namespace T.WebApi.Extensions
 {
@@ -134,7 +135,7 @@ namespace T.WebApi.Extensions
             services.AddScoped<IEmailSender, SendMailService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductAttributeService, ProductAttributeService>();
-            services.AddScoped<IManufacturerServicesCommon, ManufacturerServices>();
+            services.AddScoped<IManufacturerServices, ManufacturerServices>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IPictureService, PictureService>();
@@ -152,6 +153,7 @@ namespace T.WebApi.Extensions
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
             services.AddScoped<ICacheService, CacheService>();
             services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<IDiscountService, DiscountService>();
             return services;
         }
 

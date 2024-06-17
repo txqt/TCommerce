@@ -78,5 +78,10 @@ namespace T.Web.Services.ManufacturerServices
         {
             return await PutAsJsonAsync<ServiceResponse<bool>>(DEFAULT_URL_PRODUCTMANUFACTURER, productManufacturer);
         }
+
+        public Task<List<ProductManufacturer>> GetProductManufacturerByProductIdAsync(int productId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
