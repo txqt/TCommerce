@@ -72,6 +72,7 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
+		<Folder Include="Middleware\" />
 		<Folder Include="TagHepersCustom\" />
 	</ItemGroup>
 </Project>

@@ -10,6 +10,7 @@ using T.Library.Model.Response;
 using T.Library.Model.ViewsModel;
 using T.Web.Attribute;
 using T.Web.Component;
+using T.Web.Extensions;
 using T.Web.Models;
 using T.Web.Services.PrepareModelServices;
 using T.Web.Services.ProductService;
@@ -249,11 +250,34 @@ namespace T.Web.Controllers
             await _shoppingCartService.UpdateBatchAsync(model);
             return RedirectToAction(nameof(Cart));
         }
+
+        //[HttpPost]
+        //public virtual async Task<IActionResult> ApplyDiscountCoupon(string counponCode)
+        //{
+        //    if (counponCode != null)
+        //        counponCode = counponCode.Trim();
+        //}
         private async Task<JsonResult> RefreshCartView(string message)
         {
             var updateMiniCartSectionHtml = await RenderViewComponentAsync(typeof(MiniCartDropDownViewComponent));
             var updateCartSectionHtml = await RenderViewAsync("Cart", ControllerContext, await _sciModelService.PrepareShoppingCartModelAsync(), true);
             return Json(new { success = true, updateminicartsectionhtml = updateMiniCartSectionHtml, updatecartsectionhtml = updateCartSectionHtml, message });
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ApplyDiscountCode(string discountCode)
+        {
+            var result = await _shoppingCartService.ApplyDiscount(discountCode);
+
+            if (result.Success)
+            {
+                var discountSessionKey = "Discount";
+                var coupons = HttpContext.Session.Get<List<string>>(discountSessionKey) ?? new List<string>();
+                coupons.Add(discountCode);
+                HttpContext.Session.Set(discountSessionKey, coupons);
+            }
+
+            return RedirectToAction(nameof(Cart));
         }
     }
 }

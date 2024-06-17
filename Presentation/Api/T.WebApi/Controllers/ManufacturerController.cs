@@ -4,6 +4,7 @@ using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
 using T.WebApi.Attribute;
+using T.WebApi.Services.ManufacturerServices;
 
 namespace T.WebApi.Controllers
 {
@@ -11,8 +12,8 @@ namespace T.WebApi.Controllers
     [ApiController]
     public class ManufacturerController : ControllerBase
     {
-        private readonly IManufacturerServicesCommon _manufacturerService;
-        public ManufacturerController(IManufacturerServicesCommon manufacturerService)
+        private readonly IManufacturerServices _manufacturerService;
+        public ManufacturerController(IManufacturerServices manufacturerService)
         {
             _manufacturerService = manufacturerService;
         }

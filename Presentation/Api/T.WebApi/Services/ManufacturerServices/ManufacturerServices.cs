@@ -7,7 +7,11 @@ using T.WebApi.Services.IRepositoryServices;
 
 namespace T.WebApi.Services.ManufacturerServices
 {
-    public class ManufacturerServices : IManufacturerServicesCommon
+    public interface IManufacturerServices : IManufacturerServicesCommon
+    {
+
+    }
+    public class ManufacturerServices : IManufacturerServices
     {
         private readonly IRepository<Manufacturer> _manufacturerRepository;
         private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
@@ -90,6 +94,11 @@ namespace T.WebApi.Services.ManufacturerServices
         {
             await _productManufacturerRepository.UpdateAsync(productManufacturer);
             return new ServiceSuccessResponse<bool>();
+        }
+
+        public async Task<List<ProductManufacturer>?> GetProductManufacturerByProductIdAsync(int productId)
+        {
+            return await _productManufacturerRepository.Table.Where(x => x.ProductId == productId).ToListAsync();
         }
     }
 }

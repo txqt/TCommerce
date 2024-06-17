@@ -8,98 +8,33 @@
 
 @{
     ViewData["Title"] = "Đăng nhập";
-    Layout = "";
 }
 
-<link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-      rel="stylesheet">
-
-<!-- Custom styles for this template-->
-
-<link href="~/css/adminstyle/sb-admin-2.min.css" rel="stylesheet" />
-<link href="~/css/adminstyle/sb-admin-2.css" rel="stylesheet" />
-
-<body class="bg-gradient-primary">
-
-    <div class="container">
-
-        <!-- Outer Row -->
-        <div class="row justify-content-center">
-
-            <div class="col-xl-10 col-lg-12 col-md-9">
-
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        
-                        <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
-                            <div class="col-lg-6">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
-                                    </div>
-                                    <form class="user" method="post" role="form" asp-route-returnUrl="@ViewBag.ReturnUrl">
-                                        <div asp-validation-summary="All" class="text-danger"></div>
-                                        <div class="form-group">
-                                            <input asp-for="UserNameOrEmail" type="text" class="form-control form-control-user"
-                                                   id="exampleInputEmail" aria-describedby="emailHelp"
-                                                   placeholder="Enter User Name Or Email Address...">
-                                            <span asp-validation-for="UserNameOrEmail" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group">
-                                            <input asp-for="Password" type="password" class="form-control form-control-user"
-                                                   id="exampleInputPassword" placeholder="Password">
-                                            <span asp-validation-for="Password" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox small">
-                                                <input asp-for="RememberMe" type="checkbox" class="custom-control-input" id="customCheck">
-                                                <label class="custom-control-label" for="customCheck">
-                                                    Remember
-                                                    Me
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary btn-user btn-block">
-                                            Login
-                                        </button>
-                                        <hr>
-                                        <a href="index.html" class="btn btn-google btn-user btn-block">
-                                            <i class="fab fa-google fa-fw"></i> Login with Google
-                                        </a>
-                                        <a href="index.html" class="btn btn-facebook btn-user btn-block">
-                                            <i class="fab fa-facebook-f fa-fw"></i> Login with Facebook
-                                        </a>
-                                    </form>
-                                    <hr>
-                                    <div class="text-center">
-                                        <a class="small" asp-controller="account" asp-action="forgot-password">Forgot Password?</a>
-                                    </div>
-                                    <div class="text-center">
-                                        <a class="small" asp-controller="account" asp-action="register">Create an Account!</a>
-                                    </div> 
-                                    <div class="text-center">
-                                        <a class="small" asp-controller="Home" asp-action="Index">Back to home!</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
+<form asp-action="Login" asp-controller="Account" class="sign-in-form" method="post" role="form" asp-route-returnUrl="@ViewBag.ReturnUrl">
+    <h2 class="title">Sign in</h2>
+    <div class="input-field">
+        <i class="fas fa-user"></i>
+        <input type="text" placeholder="Username or Email" asp-for="UserNameOrEmail" />
     </div>
+    <div class="input-field">
+        <i class="fas fa-lock"></i>
+        <input type="password" placeholder="Password" asp-for="Password" />
+    </div>
+    <input type="submit" value="Login" class="btn solid" />
+    <p class="social-text">Or Sign in with social platforms</p>
+    <div class="social-media">
+        <a href="#" class="social-icon">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="#" class="social-icon">
+            <i class="fab fa-twitter"></i>
+        </a>
+        <a href="#" class="social-icon">
+            <i class="fab fa-google"></i>
+        </a>
+        <a href="#" class="social-icon">
+            <i class="fab fa-linkedin-in"></i>
+        </a>
+    </div>
+</form>
 
-</body>
-
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

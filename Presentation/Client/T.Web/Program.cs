@@ -17,6 +17,7 @@ using T.Web.Services.AddressServices;
 using T.Web.Services.BannerServices;
 using T.Web.Services.CategoryService;
 using T.Web.Services.Database;
+using T.Web.Services.DiscountServices;
 using T.Web.Services.ManufacturerServices;
 using T.Web.Services.PictureServices;
 using T.Web.Services.PrepareModelServices;
@@ -38,15 +39,14 @@ internal class Program
         {
             options.Conventions.Add(new RouteTokenTransformerConvention(
                                          new SlugifyParameterTransformer()));
-        });
+        })
+            .AddDataAnnotationsLocalization().AddRazorRuntimeCompilation().AddJsonOptions(options =>
+            {
+                //options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
 
-        // Add services to the container.
-        builder.Services.AddControllersWithViews().AddDataAnnotationsLocalization().AddRazorRuntimeCompilation().AddJsonOptions(options =>
-        {
-            //options.JsonSerializerOptions.PropertyNamingPolicy = null;
-            options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-            options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        });
         builder.Services.AddScoped<JwtHandler>();
         builder.Services.AddHttpClient("", sp =>
         {
@@ -84,6 +84,7 @@ internal class Program
         builder.Services.AddScoped<IAccountModelService, AccountModelService>();
         builder.Services.AddScoped<IAddressService, AddressService>();
         builder.Services.AddScoped<IBaseModelService, BaseModelService>();
+        builder.Services.AddScoped<IDiscountService, DiscountService>();
         builder.Services.AddSingleton(new JsonSerializerOptions
         {
             PropertyNamingPolicy = null,
@@ -100,8 +101,8 @@ internal class Program
 
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
         {
-            options.LoginPath = "/account/login";
-            options.LogoutPath = "/account/logout";
+            options.LoginPath = "/sign-in-sign-up";
+            options.LogoutPath = "/logout";
             options.AccessDeniedPath = "/AccessDenied";
         });
 
@@ -135,42 +136,16 @@ internal class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
-        //app.ConfigureCustomExceptionMiddleware();
-
         app.MapControllerRoute(
-                    name: "MyArea",
-                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
-
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+            name: "MyArea",
+            pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
         app.RegisterRoutes();
 
-        bool hasRunOnce = false;
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}");
 
-        if (app.Environment.IsDevelopment() && !hasRunOnce)
-        {
-            app.MapGet("/", async context =>
-            {
-                using (var scope = app.Services.CreateScope())
-                {
-                    var services = scope.ServiceProvider;
-                    var _httpClient = services.GetRequiredService<HttpClient>();
-                    var result = await _httpClient.GetAsync("api/db-manage/is-installed");
-
-                    if (result.IsSuccessStatusCode)
-                    {
-                        context.Response.Redirect("/Home/Index");
-                        hasRunOnce = true;
-                        return;
-                    }
-                }
-
-                context.Response.Redirect("/Install/Index");
-            });
-        }
-            
         app.Run();
     }
 }

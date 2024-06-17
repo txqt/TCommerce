@@ -5,6 +5,7 @@ using T.Library.Model;
 using T.Library.Model.Banners;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Common;
+using T.Library.Model.Discounts;
 using T.Library.Model.Orders;
 using T.Library.Model.Security;
 using T.Library.Model.Seo;
@@ -42,15 +43,15 @@ namespace T.WebApi.Database
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
-        public DbSet<Product> Product { get; set; }
-        public DbSet<Category> Category { get; set; }
-        public DbSet<Picture> Picture { get; set; }
-        public DbSet<ProductAttribute> ProductAttribute { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Picture> Pictures { get; set; }
+        public DbSet<ProductAttribute> ProductAttributes { get; set; }
         public DbSet<ProductAttributeMapping> Product_ProductAttribute_Mapping { get; set; }
-        public DbSet<ProductAttributeValue> ProductAttributeValue { get; set; }
+        public DbSet<ProductAttributeValue> ProductAttributeValues { get; set; }
         public DbSet<ProductCategory> Product_ProductCategory_Mapping { get; set; }
         public DbSet<ProductPicture> Product_ProductPicture_Mapping { get; set; }
-        public DbSet<ProductReview> ProductReview { get; set; }
+        public DbSet<ProductReview> ProductReviews { get; set; }
         public DbSet<ProductReviewHelpfulness> ProductReviewHelpfulness { get; set; }
         public DbSet<Banner> Banners { get; set; }
         public DbSet<PermissionRecord> PermissionRecords { get; set; }
@@ -63,5 +64,9 @@ namespace T.WebApi.Database
         public DbSet<VietNamProvince> VietNamProvinces { get; set; }
         public DbSet<VietNamDistrict> VietNamDistricts { get; set; }
         public DbSet<VietNamCommune> VietNamCommunes { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<DiscountMapping> DiscountMappings { get; set; }
+        public DbSet<DiscountUsageHistory> DiscountUsageHistorys { get; set; }
+        public DbSet<Order> Orders { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using T.Library.Model;
 using T.Library.Model.Interface;
+using T.Library.Model.Orders;
 using T.Web.Models;
 using T.Web.Services.PictureServices;
 using T.Web.Services.ProductService;
@@ -14,6 +15,7 @@ namespace T.Web.Services.PrepareModelServices
     {
         Task<MiniShoppingCartModel> PrepareMiniShoppingCartModelAsync();
         Task<ShoppingCartModel> PrepareShoppingCartModelAsync();
+        Task<OrderTotalsModel> PrepareOrderTotalsModelAsync(List<ShoppingCartItem> cart);
     }
     public class ShoppingCartModelService : IShoppingCartModelService
     {
@@ -138,7 +140,6 @@ namespace T.Web.Services.PrepareModelServices
 
                     var cartProductIds = carts.Select(ci => ci.ProductId).ToArray();
 
-                    model.SubTotalValue = 0;
                     //products. sort descending (recently added products)
                     foreach (var sci in carts
                                  .OrderByDescending(x => x.Id)
@@ -172,7 +173,7 @@ namespace T.Web.Services.PrepareModelServices
                             };
                         }
 
-                        model.SubTotalValue += product.Price * sci.Quantity;
+                        cartItemModel.SubTotalValue += product.Price * sci.Quantity;
 
                         var result = new StringBuilder();
 
@@ -205,16 +206,35 @@ namespace T.Web.Services.PrepareModelServices
                         }
 
                         cartItemModel.AttributeInfo = result.ToString();
+
                         cartItemModel.Warnings = sci.Warnings;
+
                         warnings.AddRange(sci.Warnings);
-                        model.SubTotal = model.SubTotalValue.ToString("N0");
+
+                        cartItemModel.SubTotal = cartItemModel.SubTotalValue.ToString("N0");
+
                         model.Items.Add(cartItemModel);
                     }
                     model.Warnings = warnings;
                 }
             }
+            return model;
+        }
 
+        public async Task<OrderTotalsModel> PrepareOrderTotalsModelAsync(List<ShoppingCartItem> cart)
+        {
+            var model = new OrderTotalsModel();
 
+            if (cart.Any())
+            {
+                decimal subTotal = 0;
+                foreach(var item in cart)
+                {
+                    var product = await _productService.GetByIdAsync(item.ProductId);
+                    subTotal += item.Quantity * product.Price;
+                }
+                model.SubTotal = subTotal.ToString();
+            }
 
             return model;
         }

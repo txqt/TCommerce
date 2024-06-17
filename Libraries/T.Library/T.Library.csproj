@@ -12,6 +12,9 @@
     <None Remove="Model\Enum\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Model\Discounts\Discount.cs~RF321876.TMP" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />

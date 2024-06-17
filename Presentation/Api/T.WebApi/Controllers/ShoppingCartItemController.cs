@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
@@ -15,7 +17,6 @@ using T.WebApi.Attribute;
 using T.WebApi.Services.ProductServices;
 using T.WebApi.Services.ShoppingCartServices;
 using T.WebApi.Services.UserServices;
-using static T.Library.Model.ViewsModel.ShoppingCartItemModel;
 
 namespace T.WebApi.Controllers
 {
@@ -85,6 +86,14 @@ namespace T.WebApi.Controllers
             }
 
             return Ok(shoppingCartsObject);
+        }
+        
+        [HttpGet()]
+        [ProducesResponseType(typeof(ShoppingCartItemModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> GetShoppingCartAsync(UserModel user, ShoppingCartType? shoppingCartType = null, int? productId = null, DateTime? createdFromUtc = null, DateTime? createdToUtc = null)
+        {
+            return Ok(await _shoppingCartService.GetShoppingCartAsync(user, shoppingCartType, productId, createdFromUtc, createdToUtc));
         }
 
         [HttpPost]

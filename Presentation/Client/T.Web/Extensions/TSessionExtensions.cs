@@ -2,7 +2,7 @@
 
 namespace T.Web.Extensions
 {
-    public static class SessionExtensions
+    public static class TSessionExtensions
     {
         public static void Set<T>(this ISession session, string key, T value)
         {

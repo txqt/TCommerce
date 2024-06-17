@@ -19,7 +19,7 @@ namespace T.WebApi.Services.HomePageServices
 
         public async Task<List<Category>> ShowCategoriesOnHomePage()
         {
-            return await _context.Category.Where(x=>x.IncludeInTopMenu && x.Published).ToListAsync();
+            return await _context.Categories.Where(x=>x.IncludeInTopMenu && x.Published).ToListAsync();
         }
     }
 }

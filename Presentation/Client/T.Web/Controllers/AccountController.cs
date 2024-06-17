@@ -41,17 +41,17 @@ namespace T.Web.Controllers
             _addressService = addressService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Login(string returnUrl)
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            var loginVM = new AccessTokenRequestModel()
-            {
-                RememberMe = true
-            };
-            ViewBag.ReturnUrl = returnUrl;
-            return View(loginVM);
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> Login(string returnUrl)
+        //{
+        //    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        //    var loginVM = new AccessTokenRequestModel()
+        //    {
+        //        RememberMe = true
+        //    };
+        //    ViewBag.ReturnUrl = returnUrl;
+        //    return View(loginVM);
+        //}
 
         [HttpPost]
         public async Task<IActionResult> Login(AccessTokenRequestModel loginViewModel, string returnUrl = null)
@@ -111,7 +111,7 @@ namespace T.Web.Controllers
 
             await _accountService.Logout();
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("SignInOrSignUp", "Account");
         }
 
         [HttpGet]
@@ -343,6 +343,26 @@ namespace T.Web.Controllers
             SetStatusMessage(result.Success ? "Success" : "Failed");
 
             return RedirectToAction(nameof(Addresses));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SignInOrSignUp(string returnUrl)
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var accessTokenRequest = new AccessTokenRequestModel()
+            {
+                RememberMe = true
+            };
+
+            ViewBag.ReturnUrl = returnUrl;
+
+            var model = new SignInOrSignUpModel
+            {
+                AccessTokenRequest = accessTokenRequest,
+                RegisterRequest = new RegisterRequest()
+            };
+            return View(model);
         }
     }
 }

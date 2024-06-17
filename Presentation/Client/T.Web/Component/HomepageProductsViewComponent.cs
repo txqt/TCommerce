@@ -28,14 +28,20 @@ namespace T.Web.Component
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var productsHomePage = await _productService.GetAllProductsDisplayedOnHomepageAsync();
-            var homepagelist = new List<HomePageModel>()
+
+            var homepagelist = new List<HomePageModel>();
+
+            if (productsHomePage is not null)
             {
-                new HomePageModel()
+                homepagelist = new List<HomePageModel>()
                 {
-                    Title = "Featured",
-                    ProductList = (await Task.WhenAll(productsHomePage.Select(async product => await _productModelService.PrepareProductBoxModel(product, null)))).ToList()
-                }
-            };
+                    new HomePageModel()
+                    {
+                        Title = "Featured",
+                        ProductList = (await Task.WhenAll(productsHomePage.Select(async product => await _productModelService.PrepareProductBoxModel(product, null)))).ToList()
+                    }
+                };
+            }
 
             return View(homepagelist);
         }

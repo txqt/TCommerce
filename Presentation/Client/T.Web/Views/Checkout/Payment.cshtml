@@ -25,8 +25,7 @@
                                             }
                                         </div>
                                         <div class="col-lg-4 col-sm-4">
-                                            @if (Model.ShippingAddress.ExistingAddresses is not null && Model.ShippingAddress.ExistingAddresses.Count > 0)
-                                            {
+                                            
                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#selectAddressModal">
                                                     Thay đổi
                                                 </button>
@@ -39,12 +38,14 @@
                                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                 </div>
                                                                 <div class="modal-body row mx-2 my-2">
+                                                                @if (Model.ShippingAddress.ExistingAddresses is not null && Model.ShippingAddress.ExistingAddresses.Count > 0)
+                                                                {
                                                                     @foreach (var item in Model.ShippingAddress.ExistingAddresses)
                                                                     {
                                                                         <div class="col-lg-4 col-sm-6">
                                                                             <div data-bs-toggle="collapse">
                                                                                 <label class="card-radio-label mb-0">
-                                                                                    <input type="radio" name="id" class="card-radio-input" value="@item.Id">
+                                                                                    <input type="radio" name="id" class="card-radio-input" value="@item.Id" @(item.IsDefault ? "checked" : "")>
                                                                                     <div class="card-radio text-truncate p-3">
                                                                                         <span class="fs-14 mb-2 d-block">@item.FullName</span>
                                                                                         <span class="text-muted fw-normal text-wrap mb-1 d-block">Địa chỉ: @item.AddressFull</span>
@@ -59,6 +60,12 @@
                                                                             </div>
                                                                         </div>
                                                                     }
+                                                                }
+                                                                else
+                                                                {
+                                                                    <p>Không có địa chỉ để chọn</p>
+                                                                }
+                                                                
 
                                                                 </div>
                                                                 
@@ -92,7 +99,7 @@
                                                         </form>
                                                     </div>
                                                 </div>
-                                            }
+                                            
                                         </div>
                                     }
                                 </div>
@@ -175,7 +182,7 @@
                 }
             </tbody>
         </table>
-        <h4>Total: @Model.Cart.SubTotalValue</h4>
+        <h4>Total: </h4>
     </div>
 </div>
 

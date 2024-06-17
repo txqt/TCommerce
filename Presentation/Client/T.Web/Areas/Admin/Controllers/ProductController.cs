@@ -1,26 +1,18 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System.Text.Json;
 using T.Library.Model;
 using T.Library.Model.Catalogs;
 using T.Library.Model.Interface;
 using T.Library.Model.Response;
-using T.Library.Model.Roles.RoleName;
 using T.Library.Model.Security;
 using T.Library.Model.ViewsModel;
 using T.Web.Areas.Admin.Models;
 using T.Web.Areas.Admin.Models.SearchModel;
-using T.Web.Areas.Admin.Services.PrepareAdminModel;
 using T.Web.Areas.Admin.Services.PrepareModel;
 using T.Web.Attribute;
 using T.Web.Extensions;
-using T.Web.Services.CategoryService;
-
-using T.Web.Services.PrepareModelServices.PrepareAdminModel;
 using T.Web.Services.ProductService;
 
 namespace T.Web.Areas.Admin.Controllers

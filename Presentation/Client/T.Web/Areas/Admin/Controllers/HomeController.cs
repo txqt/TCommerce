@@ -6,8 +6,6 @@ using T.Web.Attribute;
 namespace T.Web.Areas.Identity.Controllers
 {
     [Area("Admin")]
-    [Route("/admin/home/[action]")]
-    //[CustomAuthorizationFilter(RoleName.Admin)]
     public class HomeController : BaseAdminController
     {
         public IActionResult Index()

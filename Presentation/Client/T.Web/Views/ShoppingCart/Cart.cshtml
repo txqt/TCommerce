@@ -76,7 +76,7 @@
                                                     </div>
                                                     <!-- End .cart-product-quantity -->
                                                 </td>
-                                                <td class="total-col">@((item.PriceValue * item.Quantity).ToString("N0"))</td>
+                                                <td class="total-col">@(item.SubTotal)</td>
                                                 <td class="remove-col"><button type="button" style="pointer-events: auto;" onclick="deleteshoppingcartitem('@Url.Action("DeleteShoppingCartItem", "ShoppingCart", new{id = item.Id})', true)" class="btn-remove"><i class="icon-close"></i></button></td>
                                             </tr>
                                         }
@@ -93,18 +93,7 @@
                 </form>
                 <div class="row">
                     <div class="col-lg-9">
-                        <div class="cart-bottom">
-                            <div class="cart-discount">
-                                <form action="#">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" required="" placeholder="coupon code">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
-                                        </div><!-- .End .input-group-append -->
-                                    </div><!-- End .input-group -->
-                                </form>
-                            </div><!-- End .cart-discount -->
-                        </div><!-- End .cart-bottom -->
+                        @await Html.PartialAsync("_DiscountBox")
                     </div>
                     <aside class="col-lg-3">
                         <div class="summary summary-cart">
@@ -114,7 +103,7 @@
                                 <tbody>
                                     <tr class="summary-subtotal">
                                         <td>Subtotal:</td>
-                                        <td>@Model.SubTotal</td>
+                                        <td></td>
                                     </tr><!-- End .summary-subtotal -->
                                     <tr class="summary-shipping">
                                         <td>Shipping:</td>

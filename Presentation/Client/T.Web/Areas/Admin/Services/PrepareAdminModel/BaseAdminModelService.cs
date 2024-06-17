@@ -68,6 +68,11 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
         {
             var manufacturers = await _manufacturerService.GetAllManufacturerAsync();
 
+            if (manufacturers == null)
+            {
+                return new List<SelectListItem>();
+            }
+
             var listItems = manufacturers.Select(m => new SelectListItem
             {
                 Text = m.Name,
@@ -75,7 +80,7 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
             }).ToList();
 
             var result = new List<SelectListItem>();
-            //clone the list to ensure that "selected" property is not set
+            // Clone the list to ensure that "selected" property is not set
             foreach (var item in listItems)
             {
                 result.Add(new SelectListItem
@@ -87,9 +92,15 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
 
             return result;
         }
+
         protected virtual async Task<List<SelectListItem>> GetCategoryListAsync()
         {
             var categories = await _categoryService.GetAllCategoryAsync();
+
+            if (categories == null)
+            {
+                return new List<SelectListItem>();
+            }
 
             var listItems = categories.Select(m => new SelectListItem
             {
@@ -98,7 +109,7 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
             }).ToList();
 
             var result = new List<SelectListItem>();
-            //clone the list to ensure that "selected" property is not set
+            // Clone the list to ensure that "selected" property is not set
             foreach (var item in listItems)
             {
                 result.Add(new SelectListItem
@@ -110,5 +121,6 @@ namespace T.Web.Services.PrepareModelServices.PrepareAdminModel
 
             return result;
         }
+
     }
 }

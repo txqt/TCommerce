@@ -18,6 +18,7 @@ namespace T.Library.Model.Interface
         Task<ServiceResponse<bool>> DeleteManufacturerByIdAsync(int id);
         Task<List<ProductManufacturer>> GetProductManufacturersByManufacturerIdAsync(int manufacturerId);
         Task<ProductManufacturer?> GetProductManufacturerByIdAsync(int productManufacturerId);
+        Task<List<ProductManufacturer>?> GetProductManufacturerByProductIdAsync(int productId);
         Task<ServiceResponse<bool>> CreateProductManufacturerAsync(ProductManufacturer productManufacturer);
         Task<ServiceResponse<bool>> BulkCreateProductManufacturersAsync(List<ProductManufacturer> productManufacturer);
         Task<ServiceResponse<bool>> DeleteManufacturerMappingById(int productManufacturerId);

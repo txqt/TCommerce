@@ -61,7 +61,7 @@ namespace T.Web.Common
                     else
                     {
                         _httpContextAccessor.HttpContext.Response.Cookies.Delete("refreshToken");
-                        _httpContextAccessor.HttpContext.Response.Redirect("/Account/Login");
+                        _httpContextAccessor.HttpContext.Response.Redirect("/Account/SignInOrSignUp");
                         //await _accountService.Logout();
                     }
                 }

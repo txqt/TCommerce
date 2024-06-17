@@ -1033,7 +1033,7 @@ $(document).ready(function () {
     $(document).ajaxError(function (event, xhr, settings, thrownError) {
         if (xhr.status == 401 || xhr.status == 403) {
             if (xhr.status == 401) {
-                window.location.href = '/Account/Login';
+                window.location.href = '/sign-in-sign-up';
             } else {
                 window.location.href = '/AccessDenied';
             }
