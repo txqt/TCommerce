@@ -1,0 +1,100 @@
+﻿@model ProductModel
+
+<div class="border border-primary" hidden>
+    <input class="collapse"
+           type="file"
+           id="selectfileupload"
+           onchange="AutoUploadPhoto()"
+           multiple="multiple"
+           accept=".jpg, .png" />
+
+    @*<span class="btn btn-primary" onclick="ClickButtonUpload()">Upload Hình ảnh</span>*@
+
+
+    <div id="box-photo-upload" class="d-flex flex-wrap photo-upload" data-id="@Model.Id">
+    </div>
+
+</div>
+
+<p class="d-flex justify-content-between">
+    <span class="btn btn-primary" onclick="ClickButtonUpload()">Upload Hình Ảnh</span>
+    <span class="btn btn-danger" onclick="DeleteAllImages()">Xóa Tất Cả Ảnh</span>
+</p>
+
+@{
+    var picturePictures = new DataTableViewModel
+            {
+                TableTitle = "Products",
+                EditUrl = Url.Action("UpdateProductImage", "Product"),
+                DeleteUrl = Url.Action("DeletePhoto", "Product"),
+                GetDataUrl = Url.Action("ListPhotos", "Product", new { productId = Model.Id }),
+                PopupWindow = true,
+                Columns = new List<ColumnDefinition>
+                        {
+                        new ColumnDefinition(nameof(ProductPictureModel.PictureUrl)) { RenderType = RenderType.RenderPicture, Title = "Picture" },
+                        new ColumnDefinition(nameof(ProductPictureModel.DisplayOrder)) { Title = "Display Order", Editable = true},
+                        new ColumnDefinition(nameof(ProductPictureModel.Id)) { Title = "Edit", RenderType = RenderType.RenderInlineEdit},
+                        new ColumnDefinition(nameof(ProductPictureModel.Id)) { RenderType = RenderType.RenderButtonRemove, Title = "Remove" },
+                        }
+            };
+}
+@await Html.PartialAsync("_Table", picturePictures)
+
+<script>
+    var tableId = "#@picturePictures.TableId";
+    var url = "@picturePictures.GetDataUrl";
+    var columns = @Html.Raw(Json.Serialize(picturePictures.Columns));
+
+    function AutoUploadPhoto() {
+        var formFiles = $("#selectfileupload").prop("files");
+        var formData = new FormData();
+        for (var i = 0; i < formFiles.length; i++) {
+            formData.append("formFiles", formFiles[i]);
+        }
+        var id = $("#box-photo-upload").data("id");
+
+        $.ajax({
+            url: "@Url.Action("AddProductImage", "Product", new {productId = Model.Id})",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                // Xử lý kết quả thành công
+                console.log(result);
+                $(tableId).DataTable().ajax.reload();
+            },
+            error: function (xhr, status, error) {
+                // Xử lý lỗi
+                console.error(error);
+            }
+        });
+    }
+    function ClickButtonUpload() {
+        $("#selectfileupload").click();
+    }
+
+    function DeleteAllImages() {
+        // Hiển thị hộp thoại "confirm"
+        if (confirm("Bạn có chắc chắn muốn xóa tất cả ảnh?")) {
+            $.ajax({
+                url: "@Url.Action("DeleteAllPhotos", "Product")", // Đường dẫn xử lý yêu cầu xóa tất cả ảnh
+                type: "POST",
+                data: { productId: @Model.Id }, // Dữ liệu gửi kèm (nếu cần)
+                success: function (response) {
+                    // Xử lý phản hồi từ API
+                    if (response.success) {
+                        $(tableId).DataTable().ajax.reload();
+                    } else {
+                        alert(response.message); // Hiển thị thông báo lỗi
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText); // Hiển thị lỗi trong console
+                    alert("Đã xảy ra lỗi trong quá trình xóa ảnh."); // Hiển thị thông báo lỗi
+                }
+            });
+        }
+    }
+
+</script>

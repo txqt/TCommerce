@@ -1,0 +1,130 @@
+﻿@model AccountInfoModel
+@{
+    Layout = "_InfoLayout";
+}
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@section account_navigation
+{
+    @await Component.InvokeAsync("AccountNavigation", new { selectedTabId = (int)AccountNavigationEnum.Info })
+}
+<style>
+    .btn-resend-email{
+        height: 40px;
+        padding: 0.85rem 2rem;
+        font-size: 1.4rem;
+        line-height: 1.5;
+        font-weight: 300;
+        border: 1px solid #ebebeb;
+        border-radius: 0;
+        margin-bottom: 2rem;
+        transition: all 0.3s;
+        box-shadow: none;
+    }
+</style>
+@if(Model is not null)
+{
+    <form method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label asp-for="FirstName" class="form-label"></label>
+            <input type="text" asp-for="FirstName" class="form-control" id="inputFirstName">
+        </div>
+        <div class="mb-3">
+            <label asp-for="LastName" class="form-label"></label>
+            <input type="text" asp-for="LastName" class="form-control" id="inputFirstName">
+        </div>
+        <div class="mb-3">
+            <label asp-for="DateOfBirth" class="form-label"></label>
+            <input type="date" asp-for="DateOfBirth" class="form-control" id="inputBirthDay">
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <div class="d-flex align-items-center">
+                <input type="email" asp-for="Email" class="form-control" id="inputEmail" style="margin-right: 10px;">
+                @if (!Model.EmailConfirmed && Model.Email is not null)
+                {
+                    <button id="resend-confirmation-email" class="btn btn-success btn-resend-email">Resend confirmation email</button>
+                }
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+}
+@Html.Script(
+    @<text>
+        <script>
+        $(document).ready(function() {
+            var resendClicked = false;
+            var delay = 60000;
+            var $button = $('#resend-confirmation-email');
+    
+            var countdownStart = localStorage.getItem('countdownStart');
+    
+            if (countdownStart) {
+                var elapsed = Date.now() - countdownStart;
+                if (elapsed < delay) {
+                    startCountdown(delay - elapsed);
+                } else {
+                    localStorage.removeItem('countdownStart');
+                }
+            }
+
+            $button.on('click', function(event) {
+                event.preventDefault();
+
+                if (resendClicked) {
+                    return;
+                }
+
+                resendClicked = true;
+
+                localStorage.setItem('countdownStart', Date.now());
+
+                var data = addAntiForgeryToken();
+
+                $.ajax({
+                    url: '@Url.Action("SendConfirmationEmail", "Account")',
+                    type: 'POST',
+                        data: data,
+                    success: function(response) {
+                        alert("Confirmation email sent.");
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error:", error);
+                        alert("Error sending confirmation email.");
+                    }
+                });
+
+                startCountdown(delay);
+            });
+
+            function startCountdown(timeLeft) {
+                    var seconds = Math.floor(timeLeft / 1000);
+
+                $button.text('' + seconds + '');
+                $button.addClass('btn-dark');
+                $button.removeClass('btn-success');
+                $button.attr('disabled', true);
+        
+                var countdown = setInterval(function() {
+                    seconds--;
+                    if (seconds > 0) {
+                        $button.text('' + seconds + '');
+                    } else {
+                        clearInterval(countdown);
+                        $button.text('Resend confirmation email');
+                        $button.addClass('btn-success');
+                        $button.removeClass('btn-dark');
+                        $button.attr('disabled', false);
+
+                        resendClicked = false;
+                        localStorage.removeItem('countdownStart');
+                    }
+                }, 1000);
+            }
+        });
+
+    </script>
+    </text>
+)

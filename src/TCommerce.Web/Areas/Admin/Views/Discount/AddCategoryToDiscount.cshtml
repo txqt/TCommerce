@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Add Category To Discount";
+    Layout = "_EmptyLayout";
+}
+
+@if (ViewBag.RefreshPage == true)
+{
+    <script>
+        window.close();
+        window.opener.location.reload();
+    </script>
+}
+
+@{
+    var model = new DataTableViewModel()
+            {
+                TableTitle = "Category List",
+                CreateButtonName = "Tạo thể loại mới",
+                GetDataUrl = Url.Action("AddCategoryToDiscountList", "Discount"),
+                Columns = new List<ColumnDefinition>()
+                {
+                    new ColumnDefinition(nameof(Category.Id))
+                    {
+                        RenderType = RenderType.RenderCheckBox,
+                        CheckBoxName = nameof(AddCategoryDiscountModel.SelectedCategoryIds),
+                        IsMasterCheckBox = true,
+                        Orderable = false,
+                        Width = "50px",
+                    },
+                    new ColumnDefinition(nameof(Category.Published))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<Category>(m => m.Published),
+                        RenderType = RenderType.RenderBoolean,
+                        Orderable = false,
+                        Width = "50px",
+                    },
+                    new ColumnDefinition(nameof(Category.Name))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<Category>(m => m.Name)
+                    },
+                }
+            };
+}
+
+<form asp-action="AddCategoryToDiscount" method="post" asp-route-discountId="@Context.Request.Query["discountId"]">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive display" style="width:100%">
+                @await Html.PartialAsync("_Table", model)
+            </div>
+        </div>
+    </div>
+    <button type="submit" name="save" class="btn btn-primary">
+        <i class="far fa-save"></i>
+        Save
+    </button>
+</form>
+
+
+

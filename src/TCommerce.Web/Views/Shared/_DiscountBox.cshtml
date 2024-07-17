@@ -1,0 +1,45 @@
+﻿<div class="cart-bottom">
+    <div class="cart-discount">
+        <form asp-controller="ShoppingCart" asp-action="ApplyDiscountCode" method="post" id="discountForm">
+            <div class="input-group">
+                <input name="discountCode" type="text" class="form-control" required="" placeholder="coupon code">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
+                </div><!-- .End .input-group-append -->
+            </div><!-- End .input-group -->
+        </form>
+    </div><!-- End .cart-discount -->
+</div><!-- End .cart-bottom -->
+
+@Html.Script(
+    @<text>
+        <script>
+            $("#discountForm").on("submit", function(event) {
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: '/ShoppingCart/ApplyDiscountCode',
+                    type: 'POST',
+                    data: formData,
+                    success: function(data) {
+                        if (data.success) {
+                            toastr.success(data.message);
+                            $('#miniCartContainer').html(data.updateminicartsectionhtml);
+                            $('#cartContainer').html(data.updatecartsectionhtml);
+                            quantityInputs();
+                            SetPictureDefault();
+                        } else {
+                            toastr.warning(data.message);
+                        }
+                    },
+                    error: function() {
+                        alert("An error occurred.");
+                    }
+                });
+            });
+
+        </script>
+    </text>
+)

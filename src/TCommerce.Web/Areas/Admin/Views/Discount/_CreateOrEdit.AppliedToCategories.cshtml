@@ -1,0 +1,15 @@
+﻿@model DiscountModel
+
+@await Html.PartialAsync("_Table", new DataTableViewModel
+{
+    TableTitle = "Categories",
+    CreateUrl = Url.Action("AddCategoryToDiscount", "Discount", new { discountId = Model.Id }),
+    DeleteUrl = Url.Action("CategoryDelete", "Discount", new { discountId = Model.Id }),
+    GetDataUrl = Url.Action("CategoryList", "Discount", new { discountId = Model.Id }),
+    PopupWindow = true,
+    Columns = new List<ColumnDefinition>
+    {
+    new ColumnDefinition(nameof(DiscountCategoryModel.CategoryName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountCategoryModel>(m=>m.CategoryName) },
+    new ColumnDefinition(nameof(DiscountCategoryModel.CategoryId)) { RenderType = RenderType.RenderButtonRemove, Title = "Remove", Width = "100px", AutoWidth = false },
+    }
+})

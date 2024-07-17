@@ -1,0 +1,149 @@
+﻿@using TCommerce.Core.Models.Startup
+@{
+    Layout = "_EmptyLayout";
+}
+
+@model StartupFormModel;
+
+<div class="container mt-5">
+    <form asp-action="Install" method="post" id="installForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <h2>Store Information</h2>
+        <div class="border p-3 mt-3">
+            <div class="form-group">
+                <label class="form-label" for="adminEmail">Admin Email:</label>
+                <input type="email" id="adminEmail" asp-for="AdminEmail" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="adminPassword">Admin Password:</label>
+                <input type="password" id="adminPassword" asp-for="AdminPassword" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" asp-for="ConfirmPassword" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input type="checkbox" id="createSampleData" asp-for="CreateSampleData" class="form-check-input">
+                    <label class="form-label" class="form-check-label" for="createSampleData">Create sample data</label>
+                </div>
+            </div>
+        </div>
+        <br />
+        <h2>Database Information</h2>
+        <div class="form-group">
+            <label for="dbType">Database Type:</label>
+            <select id="dbType" name="dbType" class="form-control">
+                <option value="SqlServer">SQL Server</option>
+                <!-- Add other options as needed -->
+            </select>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" id="createDatabaseIfNotExist" asp-for="CreateDatabaseIfNotExist" class="form-check-input">
+                <label class="form-check-label" for="createDatabaseIfNotExist">Create Database If Not Exist</label>
+            </div>
+        </div>
+        <div class="border p-3 mt-3">
+            <div class="form-group">
+                <label class="form-label" for="serverName">Server Name:</label>
+                <input type="text" id="serverName" asp-for="ServerName" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="dbName">Database Name:</label>
+                <input type="text" id="dbName" asp-for="DbName" class="form-control" required>
+            </div>
+        </div>
+        <div class="form-group form-check mt-3">
+            <input type="checkbox" id="useWindowsAuth" asp-for="UseWindowsAuth" class="form-check-input">
+            <label class="form-check-label" for="useWindowsAuth">Use Integrated Windows Authentication:</label>
+        </div>
+
+        <div id="sqlUserPass" class="border p-3 mt-3">
+            <div class="form-group">
+                <label class="form-label" for="sqlUsername">SQL Username:</label>
+                <input type="text" id="sqlUsername" asp-for="SqlUsername" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="sqlPassword">SQL Password:</label>
+                <input type="password" id="sqlPassword" asp-for="SqlPassword" class="form-control">
+            </div>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Install</button>
+    </form>
+</div>
+
+<!-- Modal Loading Overlay -->
+<div class="modal" id="loadingModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="spinner-border" role="status">
+                </div>
+                <p class="mt-3">Creating database, please wait...</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-dialog-dark">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Database created successfully. The tab will now close.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="window.close();">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Kiểm tra giá trị ban đầu của useWindowsAuth và ẩn hoặc hiển thị #sqlUserPass
+        if ($('#useWindowsAuth').is(':checked')) {
+            $('#sqlUserPass').fadeOut(0); // 0 milliseconds để ngay lập tức ẩn nếu đã được chọn
+        } else {
+            $('#sqlUserPass').fadeIn(0); // 0 milliseconds để ngay lập tức hiển thị nếu chưa được chọn
+        }
+
+        // Thêm sự kiện change để ẩn hoặc hiển thị #sqlUserPass khi checkbox thay đổi
+        $('#useWindowsAuth').change(function () {
+            if (this.checked) {
+                $('#sqlUserPass').fadeOut('fast');
+            } else {
+                $('#sqlUserPass').fadeIn('fast');
+            }
+        });
+
+        $("#installForm").on("submit", function(event) {
+            event.preventDefault();
+
+            var formData = $(this).serialize();
+
+            $('#loadingModal').modal('show');
+
+            $.ajax({
+                url: '/Install/Install',
+                type: 'POST',
+                data: formData,
+                success: function(data) {
+                    if (data.success) {
+                        $('#successModal').modal('show');
+                    } else {
+                        alert("Failed to create database.");
+                    }
+                },
+                error: function() {
+                    alert("An error occurred while creating the database.");
+                }
+            });
+        });
+    });
+
+</script>

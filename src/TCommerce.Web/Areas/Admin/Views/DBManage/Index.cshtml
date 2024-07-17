@@ -1,0 +1,53 @@
+﻿@using System.IdentityModel.Tokens.Jwt;
+@using System.Security.Claims;
+@using TCommerce.Core.Models.Accounts
+@using TCommerce.Core.Interface
+@inject IUserRegistrationService _accountSvc
+@model DatabaseControlResponse
+
+@{
+    ViewData["Title"] = "Thông tin Db";
+    
+}
+<partial name="_AlertMessage"></partial>
+
+<h2>Thông tin</h2>
+<p>- Database: @Model.dbname</p>
+<p>- Source: @Model.source</p>
+<p>- State: @Model.state</p>
+<hr />
+
+<h2>Migrations</h2>
+@if (Model.list_applied_migration != null)
+{
+    @foreach (var migration in Model.list_applied_migration)
+    {
+        <p>@migration</p>
+    }
+}
+@if (Model.list_migration_pending != null)
+{
+    @foreach (var migration in Model.list_migration_pending)
+    {
+        <p>@migration (pending)</p>
+    }
+}
+@if (Model.can_connect){
+    <h2>Các table</h2>
+    <ul>
+        @foreach(var item in Model.list_tables){
+            <li>@item</li>
+        }
+    </ul>
+    <a class="btn btn-danger" asp-action="DeleteDb">Xoá database: @Model.dbname</a>
+    <a class="btn btn-danger" asp-action="SeedData">Seed data</a>
+}
+else{
+    <p class="alert alert-danger">Không thể kết nối tới database</p>
+}
+
+@if (Model.list_migration_pending.Any()){
+    <form method="post">
+        <button class="btn btn-success" asp-action="Migrate">Tạo database (cập nhật migration)</button>
+    </form>
+}

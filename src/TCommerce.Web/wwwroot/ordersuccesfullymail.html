@@ -1,0 +1,120 @@
+﻿
+<div style="background-color:#ffffff;color:#000000">
+    <div style="margin:0px auto;width:600px">
+        <div style="padding:30px 20px">
+            <table align="center" bgcolor="#dcf0f8" border="0" cellpadding="0" cellspacing="0" style="margin:0;padding:0;background-color:#ffffff;width:100%!important;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px" width="100%">
+                <tbody>
+                    <tr>
+                        <td>
+                            <h1 style="font-size:17px;font-weight:bold;color:#444;padding:0 0 5px 0;margin:0">Cảm ơn quý khách [user-first-name] đã đặt hàng tại TCommerce,</h1>
+                            <p style="margin:4px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal">TCommerce rất vui thông báo đơn hàng #[oder-id] của quý khách đã được tiếp nhận và đang trong quá trình xử lý. TCommerce sẽ thông báo đến quý khách ngay khi hàng chuẩn bị được giao.</p>
+                            <h3 style="font-size:13px;font-weight:bold;color:#000000;text-transform:uppercase;margin:20px 0 0 0;border-bottom:1px solid #ddd">
+                                Thông tin đơn hàng #[oder-id] <span style="font-size:12px;color:#777;text-transform:none;font-weight:normal">[order-date]</span>
+                            </h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th align="left" style="padding:6px 9px 0px 9px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;font-weight:bold" width="50%">Thông tin thanh toán</th>
+                                        <th align="left" style="padding:6px 9px 0px 9px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;font-weight:bold" width="50%"> Địa chỉ giao hàng </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding:3px 9px 9px 9px;border-top:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal" valign="top">
+                                            <span style="text-transform:capitalize">[user-full-name]</span>
+                                            <br>
+                                            <a href="mailto:[user-mail]" target="_blank">[user-mail]</a>
+                                            <br> [user-phone-number]
+                                        </td>
+                                        <td style="padding:3px 9px 9px 9px;border-top:0;border-left:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal" valign="top">
+                                            <span style="text-transform:capitalize">[user-full-name]</span>
+                                            <br>
+                                            <a href="mailto:[user-mail]" target="_blank">[user-mail]</a>
+                                            <br> [user-address] <br> T: [user-phone-number]
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding:7px 9px 0px 9px;border-top:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444" valign="top">
+                                            <p style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal">
+                                                <strong>Phương thức thanh toán: </strong> [payment-method] <br>
+
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <h2 style="text-align: left; margin: 10px 0; border-bottom: 1px solid #ddd; padding-bottom: 5px; font-size: 13px; color: #000000 ">CHI TIẾT ĐƠN HÀNG</h2>
+                            <table border="0" cellpadding="0" cellspacing="0" style="background:#f5f5f5" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th align="left" bgcolor="#000000" style="padding:6px 9px;color:#fff;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:14px">Sản phẩm</th>
+                                        <th align="left" bgcolor="#000000" style="padding:6px 9px;color:#fff;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:14px">Đơn giá</th>
+                                        <th align="left" bgcolor="#000000" style="padding:6px 9px;color:#fff;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:14px">Số lượng</th>
+                                        <th align="left" bgcolor="#000000" style="padding:6px 9px;color:#fff;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:14px">Giảm giá</th>
+                                        <th align="right" bgcolor="#000000" style="padding:6px 9px;color:#fff;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:14px">Tổng tạm</th>
+                                    </tr>
+                                </thead>
+                                <tbody bgcolor="#eee" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px">
+                                    [all-products]
+
+                                </tbody>
+                                <tfoot style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px">
+                                    <tr>
+                                        <td align="right" colspan="4" style="padding:5px 9px">Tạm tính</td>
+                                        <td align="right" style="padding:5px 9px">
+                                            <span>[order-subtotal]đ</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right" colspan="4" style="padding:5px 9px">Tạm tính sau giảm giá</td>
+                                        <td align="right" style="padding:5px 9px">
+                                            <span>[order-subtotal-have-discount]đ</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right" colspan="4" style="padding:5px 9px">Thuế</td>
+                                        <td align="right" style="padding:5px 9px">
+                                            <span>[order-tax]đ</span>
+                                        </td>
+                                    </tr>
+                                    <tr bgcolor="#eee">
+                                        <td align="right" colspan="4" style="padding:7px 9px">
+                                            <strong>
+                                                <big>Tổng giá trị đơn hàng</big>
+                                            </strong>
+                                        </td>
+                                        <td align="right" style="padding:7px 9px">
+                                            <strong>
+                                                <big>
+                                                    <span>[total-price]</span>
+                                                </big>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <div style="margin:auto">
+                                <a href="[user-list-order]" style="display:inline-block;text-decoration:none;background-color:#00b7f1!important;margin-right:30px;text-align:center;border-radius:3px;color:#fff;padding:5px 10px;font-size:12px;font-weight:bold;margin-left:35%;margin-top:5px" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://x64km.mjt.lu/lnk/CAAAA3U6ov4AAAAKFZgAADIQ1S4AAAAA3NwAAAAAABPsQgBjayapULE1zvGvRRevvYaUaos6_QAPBhU/5/CMZrU7u1Hr5Zj5JaCDo0JA/aHR0cHM6Ly90aWtpLnZuL3NhbGVzL29yZGVyL3ZpZXcvODk0NjY1OTk2&amp;source=gmail&amp;ust=1668144083803000&amp;usg=AOvVaw3RHNGhP1G9v5-GW_UJm5P9">Chi tiết đơn hàng tại TCommerce</a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            &nbsp; <p>TCommerce cảm ơn quý khách.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

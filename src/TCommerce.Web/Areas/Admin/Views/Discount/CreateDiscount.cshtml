@@ -1,0 +1,15 @@
+﻿@model DiscountModel
+
+@{
+    ViewData["Title"] = "Create Discount";
+}
+
+<h1>Tạo discount mới</h1>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="CreateDiscount" style="background-color: #fff; padding: 20px; border-radius: 10px">
+            @(await Html.PartialAsync("_CreateOrEdit"))
+        </form>
+    </div>
+</div>
