@@ -1,0 +1,22 @@
+﻿@model DiscountModel
+
+@{
+    ViewData["Title"] = "Edit Discount";
+}
+
+<h1>Sửa discount</h1>
+<hr />
+<t-accordion asp-id="discount-detail-@Model.Id" asp-title="Chi tiết [@Model.Name]" asp-collapsed="false">
+    <form asp-action="EditDiscount" style="background-color: #fff; padding: 20px; border-radius: 10px">
+        @(await Html.PartialAsync("_CreateOrEdit"))
+    </form>
+</t-accordion>
+<t-accordion asp-id="applied-to-products" asp-title="Applied to products" asp-collapsed="false" asp-data-attributes='@new Dictionary<string, string> { { "card-name", "discount-applied-to-products" } }'>
+    @await Html.PartialAsync("_CreateOrEdit.AppliedToProducts", Model)
+</t-accordion>
+<t-accordion asp-id="applied-to-categories" asp-title="Applied to categories" asp-collapsed="false" asp-data-attributes='@new Dictionary<string, string> { { "card-name", "discount-applied-to-categories" } }'>
+    @await Html.PartialAsync("_CreateOrEdit.AppliedToCategories", Model)
+</t-accordion>
+<t-accordion asp-id="applied-to-manufacturers" asp-title="Applied to manufacturers" asp-collapsed="false" asp-data-attributes='@new Dictionary<string, string> { { "card-name", "discount-applied-to-manufacturers" } }'>
+    @await Html.PartialAsync("_CreateOrEdit.AppliedToManufacturers", Model)
+</t-accordion>

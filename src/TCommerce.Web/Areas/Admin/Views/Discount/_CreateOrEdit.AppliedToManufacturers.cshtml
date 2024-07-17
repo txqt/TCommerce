@@ -1,0 +1,15 @@
+﻿@model DiscountModel
+
+@await Html.PartialAsync("_Table", new DataTableViewModel
+{
+    TableTitle = "Manufacturer",
+    CreateUrl = Url.Action("AddManufacturerToDiscount", "Discount", new { discountId = Model.Id }),
+    DeleteUrl = Url.Action("ManufacturerDelete", "Discount", new { discountId = Model.Id }),
+    GetDataUrl = Url.Action("ManufacturerList", "Discount", new { discountId = Model.Id }),
+    PopupWindow = true,
+    Columns = new List<ColumnDefinition>
+    {
+    new ColumnDefinition(nameof(DiscountManufacturerModel.ManufacturerName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountManufacturerModel>(m=>m.ManufacturerName) },
+    new ColumnDefinition(nameof(DiscountManufacturerModel.ManufacturerId)) { RenderType = RenderType.RenderButtonRemove, Title = "Remove", Width = "100px", AutoWidth = false },
+    }
+})

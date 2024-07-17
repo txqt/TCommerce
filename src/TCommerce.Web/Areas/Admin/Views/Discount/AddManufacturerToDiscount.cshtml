@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Add Manufacturer To Discount";
+    Layout = "_EmptyLayout";
+}
+
+@if (ViewBag.RefreshPage == true)
+{
+    <script>
+        window.close();
+        window.opener.location.reload();
+    </script>
+}
+
+@{
+    var model = new DataTableViewModel()
+            {
+                TableTitle = "Manufacturer List",
+                CreateButtonName = "Tạo mới",
+                GetDataUrl = Url.Action("AddManufacturerToDiscountList", "Discount"),
+                Columns = new List<ColumnDefinition>()
+                {
+                    new ColumnDefinition(nameof(Manufacturer.Id))
+                    {
+                        RenderType = RenderType.RenderCheckBox,
+                        CheckBoxName = nameof(AddManufacturerDiscountModel.SelectedManufacturerIds),
+                        IsMasterCheckBox = true,
+                        Orderable = false,
+                        Width = "50px",
+                    },
+                    new ColumnDefinition(nameof(Manufacturer.Published))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<Manufacturer>(m => m.Published),
+                        RenderType = RenderType.RenderBoolean,
+                        Orderable = false,
+                        Width = "50px",
+                    },
+                    new ColumnDefinition(nameof(Manufacturer.Name))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<Manufacturer>(m => m.Name)
+                    },
+                }
+            };
+}
+
+<form asp-action="AddManufacturerToDiscount" method="post" asp-route-discountId="@Context.Request.Query["discountId"]">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive display" style="width:100%">
+                @await Html.PartialAsync("_Table", model)
+            </div>
+        </div>
+    </div>
+    <button type="submit" name="save" class="btn btn-primary">
+        <i class="far fa-save"></i>
+        Save
+    </button>
+</form>
+
+
+

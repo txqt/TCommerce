@@ -1,0 +1,176 @@
+﻿@using TCommerce.Core.Models.Discounts
+@model DiscountModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>View</h1>
+
+<h4>Create Discount</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (Model.Id > 0)
+        {
+            <div hidden class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input asp-for="Id" class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+        }
+        <div class="form-group">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="DiscountTypeId" class="control-label">@Html.DisplayNameFor(model => model.DiscountTypeId)</label>
+            <select class="form-select" asp-items="@((EnumExtensions.ToSelectList<DiscountType>()))" asp-for="DiscountTypeId">
+            </select>
+            <span asp-validation-for="DiscountTypeId" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="UsePercentage" /> @Html.DisplayNameFor(model => model.UsePercentage)
+                </label>
+            </div>
+        </div>
+        <div id="use-percent-toggle">
+            <div class="form-group">
+                <label asp-for="DiscountPercentage" class="control-label"></label>
+                <input asp-for="DiscountPercentage" class="form-control" />
+                <span asp-validation-for="DiscountPercentage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountAmount" class="control-label"></label>
+                <input asp-for="DiscountAmount" class="form-control" />
+                <span asp-validation-for="DiscountAmount" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="RequiresCouponCode" /> @Html.DisplayNameFor(model => model.RequiresCouponCode)
+                </label>
+            </div>
+        </div>
+        <div id="require-code">
+            <div class="form-group">
+                <label asp-for="CouponCode" class="control-label"></label>
+                <input asp-for="CouponCode" class="form-control" />
+                <span asp-validation-for="CouponCode" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="StartDateUtc" class="control-label"></label>
+            <input asp-for="StartDateUtc" class="form-control" />
+            <span asp-validation-for="StartDateUtc" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="EndDateUtc" class="control-label"></label>
+            <input asp-for="EndDateUtc" class="form-control" />
+            <span asp-validation-for="EndDateUtc" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsCumulative" /> @Html.DisplayNameFor(model => model.IsCumulative)
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="DiscountLimitationId" class="control-label"></label>
+            <select class="form-select" asp-items="@((EnumExtensions.ToSelectList<DiscountLimitationType>()))" asp-for="DiscountLimitationId">
+            </select>
+            <span asp-validation-for="DiscountLimitationId" class="text-danger"></span>
+        </div>
+        <div id="discount-limitation" class="form-group">
+            <label asp-for="LimitationTimes" class="control-label"></label>
+            <input asp-for="LimitationTimes" class="form-control" />
+            <span asp-validation-for="LimitationTimes" class="text-danger"></span>
+        </div>
+        <div id="maximum-discounted-quantity" class="form-group">
+            <label asp-for="MaximumDiscountedQuantity" class="control-label"></label>
+            <input asp-for="MaximumDiscountedQuantity" class="form-control" />
+            <span asp-validation-for="MaximumDiscountedQuantity" class="text-danger"></span>
+        </div>
+        <div class="form-group" id="applied-to-subCategories">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="AppliedToSubCategories" /> @Html.DisplayNameFor(model => model.AppliedToSubCategories)
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" name="continueEditing" value="true">Save and Continue Editing</button>
+            <button type="submit" class="btn btn-primary" name="continueEditing" value="false">Save</button>
+        </div>
+    </div>
+</div>
+
+@Html.Script(@<text>
+        <script>
+            $(document).ready(function () {
+                toggleElement("#@Html.IdFor(model => model.UsePercentage)", '#use-percent-toggle');
+                toggleElement("#@Html.IdFor(model => model.RequiresCouponCode)", '#require-code');
+                toggleLimitation();
+                toggleDiscountType();
+
+                $("#@Html.IdFor(model => model.UsePercentage)").change(function () {
+                    toggleElement("#@Html.IdFor(model => model.UsePercentage)", '#use-percent-toggle');
+                });
+                $("#@Html.IdFor(model => model.RequiresCouponCode)").change(function () {
+                    toggleElement("#@Html.IdFor(model => model.RequiresCouponCode)", '#require-code');
+                });
+                $("#@Html.IdFor(model => model.DiscountLimitationId)").change(toggleLimitation);
+                $("#@Html.IdFor(model => model.DiscountTypeId)").change(toggleDiscountType);
+
+                function toggleLimitation() {
+                    var selectedDiscountLimitationId = $("#@Html.IdFor(model => model.DiscountLimitationId)").val();
+                    if (selectedDiscountLimitationId == @(((int) DiscountLimitationType.NTimesOnly).ToString()) || selectedDiscountLimitationId == @(((int) DiscountLimitationType.NTimesPerCustomer).ToString())) {
+                        //'N Times Only' or 'N Times Per Customer'
+                        $('#discount-limitation').css('display', 'block');
+                    } else {
+                        $('#discount-limitation').css('display', 'none');
+                    }
+                }
+                function toggleDiscountType() {
+                    var selectedDiscountTypeId = $("#@Html.IdFor(model => model.DiscountTypeId)").val();
+                    if (selectedDiscountTypeId == @(((int) DiscountType.AssignedToCategories).ToString())) {
+                        $('[data-card-name=discount-applied-to-categories]').css('display', 'block');
+                        $('[data-card-name=discount-applied-to-manufacturers]').css('display', 'none');
+                        $('[data-card-name=discount-applied-to-products]').css('display', 'none');
+                        $('#maximum-discounted-quantity').css('display', 'block');
+                        $('#applied-to-subCategories').css('display', 'block');
+                    } else if (selectedDiscountTypeId == @(((int) DiscountType.AssignedToManufacturers).ToString())) {
+                        $('[data-card-name=discount-applied-to-categories]').css('display', 'none');
+                        $('[data-card-name=discount-applied-to-manufacturers]').css('display', 'block');
+                        $('[data-card-name=discount-applied-to-products]').css('display', 'none');
+                        $('#maximum-discounted-quantity').css('display', 'block');
+                        $('#applied-to-subCategories').css('display', 'none');
+                    } else if (selectedDiscountTypeId == @(((int) DiscountType.AssignedToSkus).ToString())) {
+                        $('[data-card-name=discount-applied-to-categories]').css('display', 'none');
+                        $('[data-card-name=discount-applied-to-manufacturers]').css('display', 'none');
+                        $('[data-card-name=discount-applied-to-products]').css('display', 'block');
+                        $('#maximum-discounted-quantity').css('display', 'block');
+                        $('#applied-to-subCategories').css('display', 'none');
+                    } else {
+                        $('[data-card-name=discount-applied-to-categories]').css('display', 'none');
+                        $('[data-card-name=discount-applied-to-manufacturers]').css('display', 'none');
+                        $('[data-card-name=discount-applied-to-products]').css('display', 'none');
+                        $('#maximum-discounted-quantity').css('display', 'none');
+                        $('#applied-to-subCategories').css('display', 'none');
+                    }
+                }
+            });
+        </script>
+    </text>)
