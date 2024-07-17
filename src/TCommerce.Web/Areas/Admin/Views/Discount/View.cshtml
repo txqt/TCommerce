@@ -1,0 +1,123 @@
+﻿@model TCommerce.Web.Areas.Admin.Models.DiscountModel
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<h4>DiscountModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="View">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountTypeId" class="control-label"></label>
+                <input asp-for="DiscountTypeId" class="form-control" />
+                <span asp-validation-for="DiscountTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountTypeName" class="control-label"></label>
+                <input asp-for="DiscountTypeName" class="form-control" />
+                <span asp-validation-for="DiscountTypeName" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="UsePercentage" /> @Html.DisplayNameFor(model => model.UsePercentage)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountPercentage" class="control-label"></label>
+                <input asp-for="DiscountPercentage" class="form-control" />
+                <span asp-validation-for="DiscountPercentage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountAmount" class="control-label"></label>
+                <input asp-for="DiscountAmount" class="form-control" />
+                <span asp-validation-for="DiscountAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaximumDiscountAmount" class="control-label"></label>
+                <input asp-for="MaximumDiscountAmount" class="form-control" />
+                <span asp-validation-for="MaximumDiscountAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartDateUtc" class="control-label"></label>
+                <input asp-for="StartDateUtc" class="form-control" />
+                <span asp-validation-for="StartDateUtc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndDateUtc" class="control-label"></label>
+                <input asp-for="EndDateUtc" class="form-control" />
+                <span asp-validation-for="EndDateUtc" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="RequiresCouponCode" /> @Html.DisplayNameFor(model => model.RequiresCouponCode)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="CouponCode" class="control-label"></label>
+                <input asp-for="CouponCode" class="form-control" />
+                <span asp-validation-for="CouponCode" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsCumulative" /> @Html.DisplayNameFor(model => model.IsCumulative)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountLimitationId" class="control-label"></label>
+                <input asp-for="DiscountLimitationId" class="form-control" />
+                <span asp-validation-for="DiscountLimitationId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LimitationTimes" class="control-label"></label>
+                <input asp-for="LimitationTimes" class="form-control" />
+                <span asp-validation-for="LimitationTimes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaximumDiscountedQuantity" class="control-label"></label>
+                <input asp-for="MaximumDiscountedQuantity" class="form-control" />
+                <span asp-validation-for="MaximumDiscountedQuantity" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="AppliedToSubCategories" /> @Html.DisplayNameFor(model => model.AppliedToSubCategories)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="TimesUsed" class="control-label"></label>
+                <input asp-for="TimesUsed" class="form-control" />
+                <span asp-validation-for="TimesUsed" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input asp-for="Id" class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

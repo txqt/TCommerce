@@ -1,0 +1,31 @@
+﻿@model OrderTotalsModel
+@if(Model is not null)
+{
+    <div class="summary summary-cart">
+        <h3 class="summary-title">Order Totals</h3><!-- End .summary-title -->
+
+        <table class="table table-summary">
+            <tbody>
+                <tr class="summary-subtotal">
+                    <td>Tạm tính:</td>
+                    <td>@Model.SubTotal</td>
+                </tr><!-- End .summary-subtotal -->
+                <tr class="summary-subtotal-discount">
+                    <td>Tạm tính sau giảm giá:</td>
+                    <td>@Model.SubTotalDiscount</td>
+                </tr><!-- End .summary-subtotal-discount -->
+                <tr class="summary-tax">
+                    <td>Thuế:</td>
+                    <td>@Model.Tax</td>
+                </tr><!-- End .summary-subtotal-discount -->
+                <tr class="summary-total">
+                    <td>Tổng tiền:</td>
+                    <td>@Model.OrderTotal</td>
+                </tr><!-- End .summary-total -->
+            </tbody>
+        </table><!-- End .table table-summary -->
+
+    </div>
+
+    <!-- End .summary -->
+}

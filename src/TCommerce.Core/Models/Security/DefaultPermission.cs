@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TCommerce.Core.Models.Security
+{
+    public class DefaultPermission
+    {
+        public static readonly PermissionRecord AccessAdminPanel = new() { Name = "Access admin area", SystemName = PermissionSystemName.AccessAdminPanel, Category = "Manager" };
+        public static readonly PermissionRecord ManageProducts = new() { Name = "Admin area: Manage Products", SystemName = PermissionSystemName.ManageProducts, Category = "Manager" };
+        public static readonly PermissionRecord ManageCategories = new() { Name = "Admin area: Manage Categories", SystemName = PermissionSystemName.ManageCategories, Category = "Manager" };
+        public static readonly PermissionRecord ManageAttributes = new() { Name = "Admin area: Manage Attributes", SystemName = PermissionSystemName.ManageAttributes, Category = "Manager" };
+        public static readonly PermissionRecord ManageUsers = new() { Name = "Admin area: Manage Users", SystemName = PermissionSystemName.ManageUsers, Category = "Manager" };
+        public static readonly PermissionRecord ManagePermissions = new() { Name = "Admin area: Manage Permissions", SystemName = PermissionSystemName.ManagePermissions, Category = "Manager" };
+        public static readonly PermissionRecord ManageDiscounts = new() { Name = "Admin area: Manage Discounts", SystemName = PermissionSystemName.ManageDiscounts, Category = "Manager" };
+    }
+}

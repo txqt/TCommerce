@@ -6,7 +6,7 @@
 
 ## Tổng quan
 - Dự án này là một ứng dụng thương mại điện tử nhỏ được xây dựng để nâng cao kỹ năng lập trình.
-- Hầu hết mọi ý tưởng dự án của tôi đều dựa vào [nopCommerce](https://github.com/nopSolutions/nopCommerce) để làm.
+- Nhiều class và phương thức của tôi đều dựa vào [nopCommerce](https://github.com/nopSolutions/nopCommerce) để làm.
 ## Yêu Cầu
 
 - [ASP.NET Core 8](https://dotnet.microsoft.com/download/dotnet/8.0)
@@ -18,7 +18,7 @@
 1. Clone dự án từ GitHub:
 
     ```bash
-    git clone https://github.com/thanhhvxqt/TCommerce-Mvc.git
+    git clone https://github.com/txqt/TCommerce.git
     ```
 
 2. Mở solution trong VS2019 hoặc VS2022.
@@ -27,8 +27,8 @@
     ```bash
     dotnet restore
     ```
-4. Build dự án (Ctrl + Shift + B) và config VS2019 hoặc VS2022 chạy 2 project T.Web và T.WebApi (hoặc bạn có thể làm cách nào đó khác để chạy 2 project này. Bắt buộc phải chạy 2 project này trong lần đầu).
-5. Run dự án với phím F5 hoặc Ctrl + F5
-6. Điền thông tin
+4. Build dự án (Ctrl + Shift + B)
+5. Run dự án (TCommerce.Web) với phím F5 hoặc Ctrl + F5
+6. Điền thông tin cơ bản về database
 ![Tài khoản admin và tạo dữ liệu mẫu](setup-images/store-info.png)
 ![Điền thông tin của datatable(MSSQL)](setup-images/db-info.png)

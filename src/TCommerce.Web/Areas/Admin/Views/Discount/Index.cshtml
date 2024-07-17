@@ -1,0 +1,68 @@
+﻿@model DiscountSearchModel
+@{
+    ViewData["Title"] = "Danh sách discount";
+}
+
+<div class="content-header p-2">
+    <div class="d-flex flex-row-reverse mx-2">
+        <button type="button" id="delete-selected" class="btn btn-danger">
+            <i class="far fa-trash-alt"></i>
+            Delete Selected
+        </button>
+        <a id="add-button" class="btn btn-success mx-2" href="@Url.Action("CreateDiscount", "Discount")">
+            Add New
+        </a>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="item">
+                    <div class="col-auto">
+                        <label asp-for="SearchStartDateUtc" class="col-form-label">Start date</label>
+                    </div>
+                    <div class="col-auto">
+                        <input class="form-select" type="date" asp-for="SearchStartDateUtc">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="col-auto">
+                        <label asp-for="SearchEndDateUtc" class="col-form-label">End date</label>
+                    </div>
+                    <div class="col-auto">
+                        <input class="form-select" type="date" asp-for="SearchEndDateUtc">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="col-auto">
+                        <label asp-for="SearchDiscountTypeId" class="col-form-label">Discount type</label>
+                    </div>
+                    <div class="col-auto">
+                        <select class="form-select" asp-items="Model.AvailableDiscountTypes" asp-for="SearchDiscountTypeId">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="col-auto">
+                    <label asp-for="IsActiveId" class="col-form-label">Is Active</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" asp-items="Model.AvailableActiveOptions" asp-for="IsActiveId">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="button text-center p-4">
+            <button type="button" id="search-discounts" class="btn btn-primary btn-search">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+        </div>
+    </div>
+</div>
+
+<t-accordion>
+    @await Html.PartialAsync("_DiscountList", Model)
+</t-accordion>
