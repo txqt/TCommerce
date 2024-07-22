@@ -18,6 +18,9 @@ namespace TCommerce.Core.Models.Catalogs
         /// Gets or sets the description
         /// </summary>
         public string? Description { get; set; }
+        public string? MetaKeywords { get; set; }
+        public string? MetaDescription { get; set; }
+        public string? MetaTitle { get; set; }
         /// <summary>
         /// Gets or sets the parent picture identifier
         /// </summary>
@@ -72,6 +75,10 @@ namespace TCommerce.Core.Models.Catalogs
         /// Gets or sets a value indicating whether the price range should be entered manually
         /// </summary>
         public bool ManuallyPriceRange { get; set; }
+
+        public int PageSize { get; set; } = 10;
+
+        public string? PageSizeOptions { get; set; }
 
         public List<ProductManufacturer>? ProductManufacturers { get; set; }
     }

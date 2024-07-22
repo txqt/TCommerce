@@ -102,7 +102,7 @@ namespace TCommerce.Services.ProductServices
         #endregion
 
         #region Methods
-        public async Task<PagedList<Product>> SearchProduct(int pageNumber = 0,
+        public async Task<PagedList<Product>> SearchProductsAsync(int pageNumber = 0,
         int pageSize = int.MaxValue,
         IList<int>? categoryIds = null,
         IList<int>? manufacturerIds = null,
@@ -169,9 +169,9 @@ namespace TCommerce.Services.ProductServices
                 (query, pageNumber, pageSize);
         }
 
-        public async Task<PagedList<Product>> SearchProduct(ProductParameters productParameters)
+        public async Task<PagedList<Product>> SearchProductsAsync(ProductParameters productParameters)
         {
-            return await SearchProduct(pageNumber: productParameters.PageNumber,
+            return await SearchProductsAsync(pageNumber: productParameters.PageNumber,
                 pageSize: productParameters.PageSize,
                 categoryIds: productParameters.CategoryIds,
                 manufacturerIds: productParameters.ManufacturerIds,
@@ -490,6 +490,33 @@ namespace TCommerce.Services.ProductServices
 
             return featuredProducts;
         }
+        public async Task<List<Product>> GetManufacturerFeaturedProductsAsync(int manufacturerId)
+        {
+            List<Product> featuredProducts = new List<Product>();
+
+            if (manufacturerId == 0)
+                return featuredProducts;
+
+            var cacheKey = "ManufacturerFeaturedProductsIdsKey_" + manufacturerId;
+
+            var featuredProductIds = (await _productRepository.GetAllAsync(func: query =>
+            {
+                query = from p in _productRepository.Table
+                        join pc in _productManufacturerRepository.Table on p.Id equals pc.ProductId
+                        where p.Published && !p.Deleted &&
+                              (!p.AvailableStartDateTimeUtc.HasValue || p.AvailableStartDateTimeUtc.Value < DateTime.UtcNow) &&
+                              (!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value > DateTime.UtcNow) &&
+                              pc.IsFeaturedProduct && manufacturerId == pc.ManufacturerId
+                        select p;
+
+                return query;
+            }, cacheKey: cacheKey)).Select(x => x.Id);
+
+            if (!featuredProducts.Any() && featuredProductIds.Any())
+                featuredProducts = (await _productRepository.GetByIdsAsync(featuredProductIds, null, false)).ToList();
+
+            return featuredProducts;
+        }
         public bool ProductIsAvailable(Product product, DateTime? dateTime = null)
         {
             ArgumentNullException.ThrowIfNull(product);
@@ -797,7 +824,6 @@ namespace TCommerce.Services.ProductServices
 
             return await products.ToListAsync();
         }
-
         #endregion
     }
 }

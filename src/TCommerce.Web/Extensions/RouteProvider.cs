@@ -1,4 +1,5 @@
-﻿using TCommerce.Services.DbManageServices;
+﻿using Microsoft.AspNetCore.Routing;
+using TCommerce.Services.DbManageServices;
 using TCommerce.Web.Routing;
 
 namespace TCommerce.Web.Extensions
@@ -18,13 +19,29 @@ namespace TCommerce.Web.Extensions
                         pattern: "cart",
                         defaults: new { controller = "ShoppingCart", action = "Cart" });
 
+                endpoints.MapControllerRoute(name: "cart",
+                        pattern: "cart/clear",
+                        defaults: new { controller = "ShoppingCart", action = "ClearShoppingCart" });
+
                 endpoints.MapControllerRoute(name: "PageNotFound",
                     pattern: $"page-not-found",
                     defaults: new { controller = "Common", action = "PageNotFound" });
 
+                endpoints.MapControllerRoute(name: "ProductSearch",
+                    pattern: $"search/",
+                    defaults: new { controller = "Catalog", action = "Search" });
+
                 endpoints.MapControllerRoute(name: "GetCategoryProducts",
                     pattern: $"category/products/",
                     defaults: new { controller = "Catalog", action = "GetCategoryProducts" });
+
+                endpoints.MapControllerRoute(name: "GetManufacturerProducts",
+                    pattern: $"manufacturer/products/",
+                    defaults: new { controller = "Catalog", action = "GetManufacturerProducts" });
+
+                endpoints.MapControllerRoute(name: "SearchProducts",
+                    pattern: "product/search",
+                    defaults: new { controller = "Catalog", action = "SearchProducts" });
 
                 endpoints.MapControllerRoute(name: "AccountInfo",
                     pattern: $"account/info",
@@ -52,7 +69,11 @@ namespace TCommerce.Web.Extensions
 
                 endpoints.MapControllerRoute(name: "HomeAdmin",
                     pattern: $"admin",
-                    defaults: new { areas = "admin", controller = "home", action = "index"  });
+                    defaults: new { areas = "admin", controller = "home", action = "index" });
+
+                endpoints.MapControllerRoute(name: "CheckoutConfirm",
+                    pattern: $"checkout/confirm",
+                    defaults: new { controller = "Checkout", action = "Confirm" });
             });
 
             return app;

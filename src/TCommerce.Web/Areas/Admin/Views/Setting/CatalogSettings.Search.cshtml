@@ -1,0 +1,54 @@
+﻿@model CatalogSettings
+
+<div class="mb-3 form-check">
+    <input type="checkbox" asp-for="ProductSearchEnabled" class="form-check-input">
+    <label class="form-check-label" asp-for="ProductSearchEnabled"></label>
+    <span asp-validation-for="ProductSearchEnabled" class="text-danger"></span>
+</div>
+<div class="mb-3 form-check">
+    <input type="checkbox" asp-for="ProductSearchAutoCompleteEnabled" class="form-check-input">
+    <label class="form-check-label" asp-for="ProductSearchAutoCompleteEnabled"></label>
+    <span asp-validation-for="ProductSearchAutoCompleteEnabled" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="ProductSearchAutoCompleteNumberOfProducts" class="form-label"></label>
+    <input type="number" class="form-control" asp-for="ProductSearchAutoCompleteNumberOfProducts">
+    <span asp-validation-for="ProductSearchAutoCompleteNumberOfProducts" class="text-danger"></span>
+</div>
+<div class="mb-3 form-check">
+    <input type="checkbox" asp-for="UseAjaxCatalogProductsLoading" class="form-check-input">
+    <label class="form-check-label" asp-for="UseAjaxCatalogProductsLoading"></label>
+    <span asp-validation-for="UseAjaxCatalogProductsLoading" class="text-danger"></span>
+</div>
+<div class="mb-3 form-check">
+    <input type="checkbox" asp-for="SearchPageAllowCustomersToSelectPageSize" class="form-check-input">
+    <label class="form-check-label" asp-for="SearchPageAllowCustomersToSelectPageSize"></label>
+    <span asp-validation-for="SearchPageAllowCustomersToSelectPageSize" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="SearchPageProductsPerPage" class="form-label"></label>
+    <input type="number" class="form-control" asp-for="SearchPageProductsPerPage">
+    <span asp-validation-for="SearchPageProductsPerPage" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="SearchPagePageSizeOptions" class="form-label"></label>
+    <input type="text" class="form-control" asp-for="SearchPagePageSizeOptions">
+    <span asp-validation-for="SearchPagePageSizeOptions" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="ProductSearchTermMinimumLength" class="form-label"></label>
+    <input type="number" class="form-control" asp-for="ProductSearchTermMinimumLength">
+    <span asp-validation-for="ProductSearchTermMinimumLength" class="text-danger"></span>
+</div>
+
+<div class="mb-3 form-check">
+    <input type="checkbox" asp-for="ShowProductImagesInSearchAutoComplete" class="form-check-input">
+    <label class="form-check-label" asp-for="ShowProductImagesInSearchAutoComplete"></label>
+    <span asp-validation-for="ShowProductImagesInSearchAutoComplete" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="ProductSearchTermMinimumLength" class="form-label"></label>
+    <input type="number" class="form-control" asp-for="ProductSearchTermMinimumLength">
+    <span asp-validation-for="ProductSearchTermMinimumLength" class="text-danger"></span>
+</div>

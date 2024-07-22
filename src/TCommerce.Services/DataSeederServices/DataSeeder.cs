@@ -46,118 +46,121 @@ namespace TCommerce.ServicesSeederService
             await SeedUserAsync();
         }
 
-        private async Task _initRequiredData(string AdminEmail, string AdminPassword, bool sampleData = false)
+        private async Task _initRequiredData(string adminEmail, string adminPassword, bool sampleData = false)
         {
             if (await SeedRoles() && await SeedPermission())
             {
                 await SeedPermissionRolesMapping();
-
-                var user = new User()
-                {
-                    Id = Guid.NewGuid(),
-                    FirstName = "Admin",
-                    LastName = "Admin",
-                    Email = AdminEmail,
-                    NormalizedEmail = AdminEmail,
-                    PhoneNumber = "0322321312",
-                    UserName = AdminEmail,
-                    NormalizedUserName = AdminEmail.ToUpper(),
-                    CreatedDate = DateTime.UtcNow,
-                    EmailConfirmed = true
-                };
-
-                var userManager = _serviceProvider.GetRequiredService<UserManager<User>>();
-
-                var result = await userManager.CreateAsync(user, AdminPassword);
-                if (result.Succeeded)
-                {
-                    try
-                    {
-                        await userManager.AddToRoleAsync(user, RoleName.Admin);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        return;
-                    }
-                }
-                else
-                {
-                    throw new Exception("Something went wrong");
-                }
-
-                // Address seed
-                try
-                {
-                    // Path to JSON file
-                    string jsonFilePath = Path.Combine("jsondata", "addressData.json");
-
-                    // Read JSON file content
-                    string jsonContent = File.ReadAllText(jsonFilePath);
-
-                    dynamic jsonData = JsonConvert.DeserializeObject(jsonContent);
-
-                    var provinceList = new List<VietNamProvince>();
-                    foreach (var p in jsonData.province)
-                    {
-                        var province = new VietNamProvince()
-                        {
-                            Id = p.idProvince,
-                            Name = p.name
-                        };
-                        provinceList.Add(province);
-                    }
-
-                    var districtList = new List<VietNamDistrict>();
-                    foreach (var d in jsonData.district)
-                    {
-                        var district = new VietNamDistrict()
-                        {
-                            Id = d.idDistrict,
-                            IdProvince = d.idProvince,
-                            Name = d.name,
-                        };
-                        districtList.Add(district);
-                    }
-
-                    var communeList = new List<VietNamCommune>();
-                    foreach (var c in jsonData.commune)
-                    {
-                        var commune = new VietNamCommune()
-                        {
-                            Id = Convert.ToInt32(c.idCommune),
-                            IdDistrict = Convert.ToInt32(c.idDistrict),
-                            Name = c.name,
-                        };
-                        communeList.Add(commune);
-                    }
-
-                    var _context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-                    var _addressService = _serviceProvider.GetRequiredService<IAddressService>();
-
-                    using var transaction = _context.Database.BeginTransaction();
-
-                    await _context.EnableIdentityInsert<VietNamProvince>();
-                    await _addressService.BulkCreateProvince(provinceList);
-                    await _context.DisableIdentityInsert<VietNamProvince>();
-
-                    await _context.EnableIdentityInsert<VietNamDistrict>();
-                    await _addressService.BulkCreateDistrict(districtList);
-                    await _context.DisableIdentityInsert<VietNamDistrict>();
-
-                    await _context.EnableIdentityInsert<VietNamCommune>();
-                    await _addressService.BulkCreateCommune(communeList);
-                    await _context.DisableIdentityInsert<VietNamCommune>();
-
-                    transaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                await SeedSettingAsync();
+                await SeedAdminUserAsync(adminEmail, adminPassword);
             }
         }
+        private async Task SeedAdminUserAsync(string adminEmail, string adminPassword)
+        {
+            var user = new User()
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Admin",
+                LastName = "Admin",
+                Email = adminEmail,
+                NormalizedEmail = adminEmail,
+                PhoneNumber = "0322321312",
+                UserName = adminEmail,
+                NormalizedUserName = adminEmail.ToUpper(),
+                CreatedDate = DateTime.UtcNow,
+                EmailConfirmed = true
+            };
 
+            var userManager = _serviceProvider.GetRequiredService<UserManager<User>>();
+
+            var result = await userManager.CreateAsync(user, adminPassword);
+            if (result.Succeeded)
+            {
+                try
+                {
+                    await userManager.AddToRoleAsync(user, RoleName.Admin);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return;
+                }
+            }
+            else
+            {
+                throw new Exception("Something went wrong");
+            }
+
+            // Address seed
+            try
+            {
+                // Path to JSON file
+                string jsonFilePath = Path.Combine("jsondata", "addressData.json");
+
+                // Read JSON file content
+                string jsonContent = File.ReadAllText(jsonFilePath);
+
+                dynamic jsonData = JsonConvert.DeserializeObject(jsonContent);
+
+                var provinceList = new List<VietNamProvince>();
+                foreach (var p in jsonData.province)
+                {
+                    var province = new VietNamProvince()
+                    {
+                        Id = p.idProvince,
+                        Name = p.name
+                    };
+                    provinceList.Add(province);
+                }
+
+                var districtList = new List<VietNamDistrict>();
+                foreach (var d in jsonData.district)
+                {
+                    var district = new VietNamDistrict()
+                    {
+                        Id = d.idDistrict,
+                        IdProvince = d.idProvince,
+                        Name = d.name,
+                    };
+                    districtList.Add(district);
+                }
+
+                var communeList = new List<VietNamCommune>();
+                foreach (var c in jsonData.commune)
+                {
+                    var commune = new VietNamCommune()
+                    {
+                        Id = Convert.ToInt32(c.idCommune),
+                        IdDistrict = Convert.ToInt32(c.idDistrict),
+                        Name = c.name,
+                    };
+                    communeList.Add(commune);
+                }
+
+                var _context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+                var _addressService = _serviceProvider.GetRequiredService<IAddressService>();
+
+                using var transaction = _context.Database.BeginTransaction();
+
+                await _context.EnableIdentityInsert<VietNamProvince>();
+                await _addressService.BulkCreateProvince(provinceList);
+                await _context.DisableIdentityInsert<VietNamProvince>();
+
+                await _context.EnableIdentityInsert<VietNamDistrict>();
+                await _addressService.BulkCreateDistrict(districtList);
+                await _context.DisableIdentityInsert<VietNamDistrict>();
+
+                await _context.EnableIdentityInsert<VietNamCommune>();
+                await _addressService.BulkCreateCommune(communeList);
+                await _context.DisableIdentityInsert<VietNamCommune>();
+
+                transaction.Commit();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
         private async Task SeedDiscountsAsync()
         {
             var _discountService = _serviceProvider.GetRequiredService<IRepository<Discount>>();
@@ -171,20 +174,30 @@ namespace TCommerce.ServicesSeederService
         private async Task SeedCategoriesAsync()
         {
             var _categorySerivce = _serviceProvider.GetRequiredService<ICategoryService>();
+            var _urlRecordService = _serviceProvider.GetRequiredService<IUrlRecordService>();
 
             foreach (var item in CategoriesDataSeed.Instance.GetAll())
             {
                 await _categorySerivce.CreateCategoryAsync(item);
+
+                var seName = await _urlRecordService.ValidateSlug(item, "", item.Name, true);
+
+                await _urlRecordService.SaveSlugAsync(item, seName);
             }
         }
 
         private async Task SeedManufacturerAsync()
         {
             var _manufacturerService = _serviceProvider.GetRequiredService<IManufacturerService>();
+            var _urlRecordService = _serviceProvider.GetRequiredService<IUrlRecordService>();
 
             foreach (var item in ManufacturerDataSeed.Instance.GetAll())
             {
                 await _manufacturerService.CreateManufacturerAsync(item);
+
+                var seName = await _urlRecordService.ValidateSlug(item, "", item.Name, true);
+
+                await _urlRecordService.SaveSlugAsync(item, seName);
             }
         }
 
@@ -442,7 +455,7 @@ namespace TCommerce.ServicesSeederService
             }
         }
 
-        public async Task<Guid> GetRoleId(string roleName)
+        private async Task<Guid> GetRoleId(string roleName)
         {
             var roleManager = _serviceProvider.GetRequiredService<RoleManager<Role>>();
             var role = await roleManager.FindByNameAsync(roleName);
@@ -451,6 +464,21 @@ namespace TCommerce.ServicesSeederService
                 return role.Id;
             }
             return Guid.Empty;
+        }
+
+        private async Task SeedSettingAsync()
+        {
+            var settingService = _serviceProvider.GetRequiredService<ISettingService>();
+            var catalogSetting = new CatalogSettings()
+            {
+                UseAjaxCatalogProductsLoading = true,
+                SearchPageAllowCustomersToSelectPageSize = true,
+                SearchPageProductsPerPage = 10,
+                SearchPagePageSizeOptions = "10,20,50",
+                ProductSearchTermMinimumLength = 3
+            };
+
+            await settingService.SaveSettingAsync(catalogSetting);
         }
     }
 }

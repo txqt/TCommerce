@@ -20,10 +20,10 @@ namespace TCommerce.Web.Models.Catalog
         public string MetaDescription { get; set; }
         public string MetaTitle { get; set; }
         public string SeName { get; set; }
+        public bool DisplayCategoryBreadcrumb { get; set; }
 
         public PictureModel PictureModel { get; set; }
 
-        public bool DisplayCategoryBreadcrumb { get; set; }
         public List<CategoryModel> CategoryBreadcrumb { get; set; }
 
         public List<SubCategoryModel> SubCategories { get; set; }
