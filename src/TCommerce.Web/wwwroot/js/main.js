@@ -170,7 +170,6 @@ var CatalogProducts = {
                 }
             });
         } else {
-            // Nếu không sử dụng AJAX, thì chuyển hướng trình duyệt đến URL mới
             window.location.href = url;
         }
     },

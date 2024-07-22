@@ -1,74 +1,38 @@
 ﻿@model CategoryModel
 
-<main class="main">
-    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-        <div class="container">
-            <h1 class="page-title">@Model.Name<span>Shop</span></h1>
-        </div><!-- End .container -->
-    </div><!-- End .page-header -->
-    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
-        <div class="container">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Grid 3 Columns</li>
-            </ol>
-        </div><!-- End .container -->
-    </nav><!-- End .breadcrumb-nav -->
+@{
+    Layout = "_ColumnsTwo";
+}
 
-    <div class="page-content">
-        <div class="container">
+<div class="col-lg-9">
+    @if (Model.SubCategories?.Count > 0)
+    {
+        <div class="cat-blocks-container">
             <div class="row">
-                <div class="col-lg-9">
-                    @if (Model.SubCategories?.Count > 0)
-                    {
-                        <div class="cat-blocks-container">
-                            <div class="row">
-                                @foreach(var item in Model.SubCategories)
-                                {
-                                    <div class="col-6 col-md-4 col-lg-3">
-                                        <a href="/@item.SeName" class="cat-block">
-                                            <figure>
-                                                <span>
-                                                    <img src="@item.PictureModel.ImageUrl" alt="@item.PictureModel.AltAttribute">
-                                                </span>
-                                            </figure>
-                                            
-                                            <h3 class="cat-block-title">@item.Name</h3><!-- End .cat-block-title -->
-                                        </a>
-                                    </div>
-                                }
-                                <!-- End .col-6 col-md-4 col-lg-3 -->
-                            </div><!-- End .row -->
-                        </div>
-                    }
-                    <div class="mb-2"></div>
-                    @await Html.PartialAsync("_CatalogToolBox", Model.CatalogProductsModel)
+                @foreach (var item in Model.SubCategories)
+                {
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <a href="/@item.SeName" class="cat-block">
+                            <figure>
+                                <span>
+                                    <img src="@item.PictureModel.ImageUrl" alt="@item.PictureModel.AltAttribute">
+                                </span>
+                            </figure>
 
-                    @{
-                        var catalogProductsViewData = new ViewDataDictionary(ViewData);
-                        catalogProductsViewData["fetchUrl"] = Html.Raw(Url.RouteUrl("GetCategoryProducts", new { categoryId = Model.Id }));
-                    }
-                    @await Html.PartialAsync("_CatalogProducts", Model.CatalogProductsModel, catalogProductsViewData)
-                </div><!-- End .col-lg-9 -->
-                <aside class="col-lg-3 order-lg-first">
-                    <div class="sidebar sidebar-shop">
-                        <div class="widget widget-clean">
-                            <label>Filters:</label>
-                            <a href="#" class="sidebar-filter-clear">Clean All</a>
-                        </div><!-- End .widget widget-clean -->
-                        @{
-                            var currentCategoryId = 0;
-                            if (Url.ActionContext.RouteData.Values["controller"].ToString().Equals("catalog", StringComparison.InvariantCultureIgnoreCase) &&
-                            Url.ActionContext.RouteData.Values["action"].ToString().Equals("category", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                currentCategoryId = Convert.ToInt32(Url.ActionContext.RouteData.Values["id"].ToString());
-                            }
-                        }
-                        @await Component.InvokeAsync("CategoryNavigation", new { currentCategoryId = currentCategoryId})
-                    </div><!-- End .sidebar sidebar-shop -->
-                </aside><!-- End .col-lg-3 -->
+                            <h3 class="cat-block-title">@item.Name</h3><!-- End .cat-block-title -->
+                        </a>
+                    </div>
+                }
+                <!-- End .col-6 col-md-4 col-lg-3 -->
             </div><!-- End .row -->
-        </div><!-- End .container -->
-    </div><!-- End .page-content -->
-</main><!-- End .main -->
+        </div>
+    }
+    <div class="mb-2"></div>
+    @await Html.PartialAsync("_CatalogToolBox", Model.CatalogProductsModel)
+
+    @{
+        var catalogProductsViewData = new ViewDataDictionary(ViewData);
+        catalogProductsViewData["fetchUrl"] = Html.Raw(Url.RouteUrl("GetCategoryProducts", new { categoryId = Model.Id }));
+    }
+    @await Html.PartialAsync("_CatalogProducts", Model.CatalogProductsModel, catalogProductsViewData)
+</div><!-- End .col-lg-9 -->

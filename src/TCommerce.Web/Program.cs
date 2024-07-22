@@ -7,6 +7,7 @@ using TCommerce.Core.Models.JwtToken;
 using TCommerce.Web.Extensions;
 using TCommerce.Web.Routing;
 using TCommerce.Web.Middleware;
+using AspNetCoreRateLimit;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddCustomOptions(builder.Configuration);
 builder.Services.AddRateLimit(builder.Configuration);
+builder.Services.AddSetting();
 builder.Services.AddSingleton(new JsonSerializerOptions
 {
     PropertyNamingPolicy = null,
@@ -77,7 +79,6 @@ app.UseStaticFiles();
 
 //app.UseExceptionHandler("/Error");
 //app.UseStatusCodePagesWithReExecute("/Error/{0}");
-
 app.UseRouting();
 app.UseSession();
 
@@ -86,8 +87,10 @@ app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
-    //app.ConfigureCustomMiddleware();
+    app.ConfigureCustomMiddleware();
 }
+
+
 
 app.MapControllerRoute(
     name: "MyArea",

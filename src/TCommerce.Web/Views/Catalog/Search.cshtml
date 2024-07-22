@@ -1,0 +1,16 @@
+﻿@model SearchModel
+
+@{
+    Layout = "_ColumnsTwo";
+}
+
+<div class="col-lg-9">
+    <div class="mb-2"></div>
+    @await Html.PartialAsync("_CatalogToolBox", Model.CatalogProductsModel)
+
+    @{
+        var catalogProductsViewData = new ViewDataDictionary(ViewData);
+        catalogProductsViewData["fetchUrl"] = Html.Raw(Url.RouteUrl("SearchProducts"));
+    }
+    @await Html.PartialAsync("_CatalogProducts", Model.CatalogProductsModel, catalogProductsViewData)
+</div><!-- End .col-lg-9 -->

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Catalogs;
+using TCommerce.Services.UrlRecordServices;
 using TCommerce.Web.Areas.Admin.Models;
 using TCommerce.Web.Areas.Admin.Models.SearchModel;
 using TCommerce.Web.Areas.Admin.Services.PrepareAdminModel;
@@ -18,14 +19,16 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
         private readonly IAdminManufacturerModelService _manufacturerModelService;
+        private readonly IUrlRecordService _urlRecordService;
 
-        public ManufacturerController(IManufacturerService manufacturerService, IProductService productService, IMapper mapper, ICategoryService categoryService, IAdminManufacturerModelService manufacturerModelService)
+        public ManufacturerController(IManufacturerService manufacturerService, IProductService productService, IMapper mapper, ICategoryService categoryService, IAdminManufacturerModelService manufacturerModelService, IUrlRecordService urlRecordService)
         {
             _manufacturerService = manufacturerService;
             _productService = productService;
             _mapper = mapper;
             _categoryService = categoryService;
             _manufacturerModelService = manufacturerModelService;
+            _urlRecordService = urlRecordService;
         }
 
         public IActionResult Index()
@@ -38,22 +41,32 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         {
             var manufacturers = await _manufacturerService.GetAllManufacturerAsync();
 
+            _mapper.Map<List<ManufacturerModel>>(manufacturers);
+
             return this.JsonWithPascalCase(manufacturers);
         }
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new Manufacturer());
+            return View(await _manufacturerModelService.PrepareManufacturerModelAsync(new ManufacturerModel(), null));
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Manufacturer model)
+        public async Task<IActionResult> Create(ManufacturerModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var result = await _manufacturerService.CreateManufacturerAsync(model);
+            var manufacturer = await _manufacturerService.GetManufacturerByIdAsync(model.Id);
+
+            _mapper.Map(model, manufacturer);
+
+            var result = await _manufacturerService.CreateManufacturerAsync(manufacturer);
+
+            var seName = await _urlRecordService.ValidateSlug(manufacturer, model.SeName ?? "", manufacturer.Name, true);
+
+            await _urlRecordService.SaveSlugAsync(manufacturer, seName);
 
             if (!result.Success)
             {
@@ -71,13 +84,13 @@ namespace TCommerce.Web.Areas.Admin.Controllers
 
             ArgumentNullException.ThrowIfNull(manufacturer);
 
-            //var model = await _prepareModelService.PrepareManufacturerAsync(new Manufacturer(), manufacturer);
+            var model = await _manufacturerModelService.PrepareManufacturerModelAsync(new ManufacturerModel(), manufacturer);
 
-            return View(manufacturer);
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Manufacturer model)
+        public async Task<IActionResult> Edit(ManufacturerModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -89,6 +102,13 @@ namespace TCommerce.Web.Areas.Admin.Controllers
             ArgumentNullException.ThrowIfNull(manufacturer);
 
             var result = await _manufacturerService.UpdateManufacturerAsync(manufacturer);
+
+            if (model.SeName is not null && model.SeName != (await _urlRecordService.GetSeNameAsync(manufacturer)))
+            {
+                model.SeName = await _urlRecordService.ValidateSlug(manufacturer, model.SeName, manufacturer.Name, true);
+
+                await _urlRecordService.SaveSlugAsync(manufacturer, model.SeName);
+            }
 
             if (!result.Success)
             {
@@ -166,7 +186,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
             productParameters.CategoryIds = new List<int> { searchModel.SearchByCategoryId };
             productParameters.ManufacturerIds = new List<int> { searchModel.SearchByManufacturerId };
 
-            var pagedList = await _productService.SearchProduct(productParameters);
+            var pagedList = await _productService.SearchProductsAsync(productParameters);
 
             var pagingResponse = new PagingResponse<Product>()
             {

@@ -85,6 +85,7 @@
                             </table><!-- End .table table-wishlist -->
 
                             <div class="cart-bottom">
+                                <button type="button" style="margin-left: 0px" class="btn btn-outline-dark-2 btn-clear-cart"><span>CLEAR CART</span><i class="icon-refresh"></i></button>
                                 <button type="submit" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></button>
                             </div><!-- End .cart-bottom -->
                         </div><!-- End .col-lg-9 -->
@@ -100,7 +101,7 @@
 
                         <div class="row">
                             <div class="col-6">
-                                <a href="@Url.Action("Checkout", "Checkout")" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                                <a href="@Url.Action("Confirm", "Checkout")" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
                             </div>
                             <div class="col-6">
                                 <a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
@@ -121,6 +122,26 @@
     <script>
         $(document).ready(function () {
             quantityInputs();
+            $('.btn-clear-cart').click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: '/cart/clear',
+                    success: function (data) {
+                        if (data.success) {
+                            toastr.success(data.message);
+                            $('#miniCartContainer').html(data.updateminicartsectionhtml);
+                            $('#cartContainer').html(data.updatecartsectionhtml);
+                            quantityInputs();
+                            SetPictureDefault();
+                        } else {
+                            toastr.warning(data.message);
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while clear cart.');
+                    }
+                });
+            });
         });
     </script>
 } 

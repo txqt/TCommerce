@@ -43,7 +43,7 @@
         <script asp-location="Footer">
             $(document).ready(function () {
                 CatalogProducts.init({
-                    ajaxEnabled: true,
+                    ajaxEnabled: @Model.UseAjaxLoading.ToString().ToLowerInvariant(),
                     ajaxSettings: {
                         type: "GET",
                         data: {}
@@ -62,5 +62,11 @@
 }
 else
 {
+    @if (!string.IsNullOrEmpty(Model.WarningMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @Model.WarningMessage
+        </div>
+    }
     <p class="text-center">No products</p>
 }

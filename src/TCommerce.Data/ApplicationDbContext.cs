@@ -9,6 +9,7 @@ using TCommerce.Core.Models.Banners;
 using TCommerce.Core.Models.Seo;
 using TCommerce.Core.Models.Orders;
 using TCommerce.Core.Models.Discounts;
+using TCommerce.Core.Models.Configuration;
 
 namespace TCommerce.Data
 {
@@ -67,5 +68,6 @@ namespace TCommerce.Data
         public DbSet<DiscountUsageHistory> DiscountUsageHistorys { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Setting> Settings { get; set; }
     }
 }

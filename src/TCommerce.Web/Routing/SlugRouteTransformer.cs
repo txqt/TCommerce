@@ -40,6 +40,11 @@ namespace TCommerce.Web.Routing
                             actionName = "Category";
                             break;
 
+                        case nameof(Manufacturer):
+                            controllerName = "Catalog";
+                            actionName = "Manufacturer";
+                            break;
+
                         default:
                             controllerName = "Home";
                             actionName = "NotFound";

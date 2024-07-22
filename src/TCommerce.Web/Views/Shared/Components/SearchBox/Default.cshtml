@@ -1,0 +1,72 @@
+﻿@model SearchBoxModel
+<div class="header-center">
+    <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
+        <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+        <form method="get" asp-route="ProductSearch" id="small-search-box-form">
+            @if (Model.ShowSearchBox)
+            {
+                <div class="header-search-wrapper search-wrapper-wide" style="border: 0.1rem solid black;">
+                    <label for="q" class="sr-only">Search</label>
+                    <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+                    <input autocomplete="off" id="small-searchterms" type="search" class="form-control search-box-text" name="q" id="q" placeholder="Search product ..." required="">
+                    @if (Model.SearchTermMinimumLength > 0)
+                    {
+                        @Html.Script(@<text>
+                            <script>
+                                $("#small-search-box-form").on("submit", function(event) {
+                                    if ($("#small-searchterms").val() == "") {
+                                        alert('@Html.Raw(JavaScriptEncoder.Default.Encode("Hãy nhập gì đó"))');
+                                        $("#small-searchterms").focus();
+                                        event.preventDefault();
+                                    }
+                                });
+                            </script>
+                            </text>)
+                    }
+                    @if (Model.AutoCompleteEnabled)
+                    {
+                        @Html.Script(@<text>
+                            <script>
+                                    $(function() {
+                                        var showLinkToResultSearch;
+                                        var searchText;
+                                        $('#small-searchterms').autocomplete({
+                                                delay: 500,
+                                                minLength: @(Model.SearchTermMinimumLength.ToString()),
+                                                source: '@(Url.RouteUrl("ProductSearchAutoComplete"))',
+                                                appendTo: '.search-box',
+                                                select: function(event, ui) {
+                                                    $("#small-searchterms").val(ui.item.label);
+                                                    setLocation(ui.item.producturl);
+                                                    return false;
+                                            },
+                                            //append link to the end of list
+                                            open: function(event, ui) {
+                                                //display link to search page
+                                                if (showLinkToResultSearch) {
+                                                    searchText = document.getElementById("small-searchterms").value;
+                                                    $(".ui-autocomplete").append("<li class=\"ui-menu-item\" role=\"presentation\"><a href=\"/search?q=" + searchText + "\">Search.SearchBox.SearchPageLink</a></li>");
+                                                }
+                                            }
+                                        })
+                                        .data("ui-autocomplete")._renderItem = function(ul, item) {
+                                            var t = item.label;
+                                            showLinkToResultSearch = item.showlinktoresultsearch;
+                                            //html encode
+                                            t = htmlEncode(t);
+                                            imageWidth = '100';
+                                            return $("<li></li>")
+                                                .data("item.autocomplete", item)
+                                                    .append("<a>@(Model.ShowProductImagesInSearchAutoComplete ? Html.Raw("<img src='\" + item.productpictureurl + \"' width='\" + imageWidth + \"'>") : null)<span>" + t + "</span></a>")
+                                                .appendTo(ul);
+                                        };
+                                    });
+                                </script>
+                                </text>)
+                    }
+                </div>
+                <!-- End .header-search-wrapper -->
+            }
+        </form>
+    </div><!-- End .header-search -->
+</div>
