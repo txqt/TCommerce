@@ -194,7 +194,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
             productParameters.CategoryIds = new List<int> { model.SearchByCategoryId };
             productParameters.ManufacturerIds = new List<int> { model.SearchByManufacturerId };
             // Call the service to get the paged data
-            var pagedList = await _productService.SearchProduct(productParameters);
+            var pagedList = await _productService.SearchProductsAsync(productParameters);
 
             var pagingResponse = new PagingResponse<Product>()
             {

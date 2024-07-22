@@ -61,7 +61,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
             productParameters.CategoryIds = new List<int> { searchModel.CategoryId };
             productParameters.ManufacturerIds = new List<int> { searchModel.ManufacturerId };
 
-            var response = await _productService.SearchProduct(pageNumber: productParameters.PageNumber,
+            var response = await _productService.SearchProductsAsync(pageNumber: productParameters.PageNumber,
                 pageSize: productParameters.PageSize,
                 categoryIds: productParameters.CategoryIds,
                 manufacturerIds: productParameters.ManufacturerIds,
@@ -805,7 +805,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
             productParameters.CategoryIds = new List<int> { searchModel.SearchByCategoryId };
             productParameters.ManufacturerIds = new List<int> { searchModel.SearchByManufacturerId };
 
-            var pagedList = await _productService.SearchProduct(productParameters);
+            var pagedList = await _productService.SearchProductsAsync(productParameters);
 
             var pagingResponse = new PagingResponse<Product>()
             {

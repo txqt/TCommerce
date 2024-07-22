@@ -39,7 +39,7 @@ namespace TCommerce.Web.Controllers
                     order.PaymentStatus = PaymentStatus.Paid; 
                     await _orderService.UpdateOrderAsync(order);
 
-                    return Content("Payment successfully processed. Order ID: " + orderId);
+                    return View("Thankyou", $"#{orderId}");
                 }
                 else
                 {

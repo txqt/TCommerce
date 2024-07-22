@@ -9,7 +9,7 @@ namespace TCommerce.Core.Interface
     public interface IProductService
     {
         #region Products
-        Task<PagedList<Product>> SearchProduct(int pageNumber = 0,
+        Task<PagedList<Product>> SearchProductsAsync(int pageNumber = 0,
         int pageSize = int.MaxValue,
         IList<int>? categoryIds = null,
         IList<int>? manufacturerIds = null,
@@ -25,7 +25,7 @@ namespace TCommerce.Core.Interface
         string? orderBy = null,
         bool showHidden = false,
         List<int>? ids = null);
-        Task<PagedList<Product>> SearchProduct(ProductParameters productParameters);
+        Task<PagedList<Product>> SearchProductsAsync(ProductParameters productParameters);
         Task<List<Product>> GetAllNewestProduct();
         Task<List<Product>> GetRandomProduct();
         Task<string> GetFirstImagePathByProductId(int productId);
@@ -38,6 +38,7 @@ namespace TCommerce.Core.Interface
         Task<ServiceSuccessResponse<bool>> BulkDeleteProductsAsync(IEnumerable<int> productIds);
         Task<List<Product>> GetAllProductsDisplayedOnHomepageAsync();
         Task<List<Product>> GetCategoryFeaturedProductsAsync(int categoryId);
+        Task<List<Product>> GetManufacturerFeaturedProductsAsync(int manufacturerId);
         public bool ProductIsAvailable(Product product, DateTime? dateTime = null);
         #endregion
 

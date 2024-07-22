@@ -17,6 +17,7 @@ using TCommerce.Services.IRepositoryServices;
 using TCommerce.Services.ManufacturerServices;
 using TCommerce.Services.ProductServices;
 using TCommerce.Services.SecurityServices;
+using TCommerce.Services.SettingServices;
 using TCommerce.Services.ShoppingCartServices;
 using TCommerce.Services.UrlRecordServices;
 using TCommerce.Services.UserServices;
@@ -109,6 +110,7 @@ namespace TCommerce.Web.Controllers
             services.AddScoped<IShoppingCartService, ShoppingCartService>();
             services.AddScoped<DatabaseManager>();
             services.AddScoped<DataSeeder>();
+            services.AddScoped<ISettingService, SettingService>();
             services.AddAutoMapper(typeof(Program).Assembly);
 
             _serviceProvider = services.BuildServiceProvider();

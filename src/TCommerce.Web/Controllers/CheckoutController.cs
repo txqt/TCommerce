@@ -66,7 +66,7 @@ namespace TCommerce.Web.Controllers
             _discountService = discountService;
         }
 
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Confirm()
         {
             var model = new CheckoutPaymentModel();
             var addresses = await _userService.GetOwnAddressesAsync();
@@ -86,10 +86,14 @@ namespace TCommerce.Web.Controllers
 
             var paymentMethodDefault = model.PaymentMethods.FirstOrDefault(x => x.Selected)?.PaymentMethodSystemName;
 
-            ViewBag.PaymentSelected = HttpContext.Session.GetString("PaymentMethodSessionKey")
-                ?? paymentMethodDefault;
+            var paymentSelected = HttpContext.Session.GetString("PaymentMethodSessionKey");
 
-            HttpContext.Session.SetString("PaymentMethodSessionKey", paymentMethodDefault);
+            if (string.IsNullOrEmpty(paymentSelected))
+            {
+                paymentSelected = paymentMethodDefault;
+                HttpContext.Session.SetString("PaymentMethodSessionKey", paymentSelected);
+            }
+
 
             return View(model);
         }
@@ -133,7 +137,7 @@ namespace TCommerce.Web.Controllers
             var discountSessionKey = "Discount";
             var session = _httpContextAccessor.HttpContext.Session;
             var discounts = session.Get<List<string>>(discountSessionKey) ?? new List<string>();
-            if(discounts is not null)
+            if (discounts is not null)
             {
                 foreach (var d in discounts)
                 {
@@ -170,7 +174,7 @@ namespace TCommerce.Web.Controllers
                 return Redirect(paymentResult.Data);
             }
 
-            return View("Thankyou");
+            return View("Thankyou", "Cảm ơn đã mua hàng, vui lòng kiểm tra email của bạn");
         }
 
         private async Task<Order> CreateOrderAsync(UserModel user, AddressInfoModel defaultAddress, PaymentMethod paymentMethod, List<ShoppingCartItem> carts)
@@ -182,7 +186,8 @@ namespace TCommerce.Web.Controllers
                 ShippingAddressId = defaultAddress.Id,
                 OrderStatus = OrderStatus.Pending,
                 CreatedOnUtc = DateTime.UtcNow,
-                PaymentMethodSystemName = paymentMethod.PaymentMethodSystemName
+                PaymentMethodSystemName = paymentMethod.PaymentMethodSystemName,
+                PaymentStatus = PaymentStatus.Pending
             };
 
             var subTotal = await CalculateSubTotalAsync(carts);
@@ -275,7 +280,7 @@ namespace TCommerce.Web.Controllers
             var result = await _userService.CreateUserAddressAsync(address);
             SetStatusMessage(result.Success ? "Success" : "Failed");
 
-            return RedirectToAction(nameof(Checkout));
+            return RedirectToAction(nameof(Confirm));
         }
 
         [HttpPost]

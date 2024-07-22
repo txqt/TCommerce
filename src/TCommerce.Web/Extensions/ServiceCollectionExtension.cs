@@ -46,6 +46,10 @@ using TCommerce.Services.OrderServices;
 using AspNetCoreRateLimit;
 using System.Configuration;
 using TCommerce.Services.VNPayServices;
+using Microsoft.AspNetCore.Mvc;
+using TCommerce.Services.SettingServices;
+using Microsoft.AspNetCore.Hosting;
+using System.Reflection;
 
 namespace TCommerce.Core.Extensions
 {
@@ -157,7 +161,8 @@ namespace TCommerce.Core.Extensions
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IVNPayService, VNPayService>();
-            
+            services.AddScoped<ISettingService, SettingService>();
+
             services.AddSingleton(new JsonSerializerOptions
             {
                 PropertyNamingPolicy = null,
@@ -245,11 +250,41 @@ namespace TCommerce.Core.Extensions
 
             services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
             services.Configure<IpRateLimitPolicies>(configuration.GetSection("IpRateLimitPolicies"));
+
             services.AddInMemoryRateLimiting();
+
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            return services;
+        }
+        public static IServiceCollection AddSetting(this IServiceCollection services)
+        {
+            if (!DatabaseManager.IsDatabaseInstalled())
+                return services;
+
+            var settings = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a =>
+            {
+                try
+                {
+                    return a.GetTypes();
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    return ex.Types.Where(t => t != null);
+                }
+            })
+            .Where(t => typeof(ISettings).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
+            .ToList();
+
+            foreach (var setting in settings)
+            {
+                services.AddScoped(setting, serviceProvider =>
+                {
+                    return serviceProvider.GetRequiredService<ISettingService>().LoadSettingAsync(setting).Result;
+                });
+            }
 
             return services;
         }
-
     }
 }

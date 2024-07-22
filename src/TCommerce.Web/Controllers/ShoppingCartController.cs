@@ -249,5 +249,12 @@ namespace TCommerce.Web.Controllers
 
             return Json(new { success = false, message = result.Message});
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ClearShoppingCart()
+        {
+            await _shoppingCartService.ClearShoppingCartAsync(await _userService.GetCurrentUser());
+            return await RefreshCartView("Đã xóa", true);
+        }
     }
 }

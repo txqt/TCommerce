@@ -82,7 +82,7 @@
             var Cols_4 = Model.AvailableViewModes[3];
 
             <div class="toolbox-layout">
-                <a href="#" class="btn-layout @(listMode.Selected ? "active" :"")" data-viewmode="@listMode.Value">
+                <a class="btn-layout @(listMode.Selected ? "active" :"")" data-viewmode="@listMode.Value">
                     <svg width="16" height="10">
                         <rect x="0" y="0" width="4" height="4" />
                         <rect x="6" y="0" width="10" height="4" />
@@ -91,7 +91,7 @@
                     </svg>
                 </a>
 
-                <a href="#" class="btn-layout @(Cols_2.Selected ? "active" :"")" data-viewmode="@Cols_2.Value">
+                <a class="btn-layout @(Cols_2.Selected ? "active" :"")" data-viewmode="@Cols_2.Value">
                     <svg width="10" height="10">
                         <rect x="0" y="0" width="4" height="4" />
                         <rect x="6" y="0" width="4" height="4" />
@@ -100,7 +100,7 @@
                     </svg>
                 </a>
 
-                <a href="#" class="btn-layout @(Cols_3.Selected ? "active" :"")" data-viewmode="@Cols_3.Value">
+                <a class="btn-layout @(Cols_3.Selected ? "active" :"")" data-viewmode="@Cols_3.Value">
                     <svg width="16" height="10">
                         <rect x="0" y="0" width="4" height="4" />
                         <rect x="6" y="0" width="4" height="4" />
@@ -111,7 +111,7 @@
                     </svg>
                 </a>
 
-                <a href="#" class="btn-layout @(Cols_4.Selected ? "active" :"")" data-viewmode="@Cols_4.Value">
+                <a class="btn-layout @(Cols_4.Selected ? "active" :"")" data-viewmode="@Cols_4.Value">
                     <svg width="22" height="10">
                         <rect x="0" y="0" width="4" height="4" />
                         <rect x="6" y="0" width="4" height="4" />
@@ -138,7 +138,6 @@
                     $('[data-viewmode]').on('click', function () {
                         var $this = $(this);
                         if (!$this.hasClass('active')) {
-                            // Xóa lớp 'active' khỏi tất cả các phần tử trước khi thêm vào phần tử được chọn
                             $('[data-viewmode]').removeClass('active');
                             $this.addClass('active');
                             CatalogProducts.getProducts();

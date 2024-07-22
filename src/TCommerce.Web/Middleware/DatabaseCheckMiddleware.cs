@@ -17,11 +17,8 @@ namespace TCommerce.Web.Middleware
         {
             if (context.Request.Path != "/Install" && !context.Request.Path.StartsWithSegments("/Install"))
             {
-                if (!DatabaseManager.IsDatabaseInstalled())
-                {
-                    context.Response.Redirect("/Install");
-                    return;
-                }
+                context.Response.Redirect("/Install");
+                return;
             }
 
             await _next(context);

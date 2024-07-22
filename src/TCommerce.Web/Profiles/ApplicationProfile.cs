@@ -189,6 +189,9 @@ namespace TCommerce.Web.Profiles
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x=>x.ManufacturerName))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x=>x.ManufacturerId))
                 .ReverseMap();
+
+            CreateMap<Areas.Admin.Models.ManufacturerModel, Manufacturer>()
+                .ReverseMap();
         }
     }
 }

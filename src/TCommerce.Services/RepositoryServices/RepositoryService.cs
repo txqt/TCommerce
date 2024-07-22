@@ -64,7 +64,7 @@ namespace TCommerce.Services.IRepositoryServices
         {
             if (id <= 0)
             {
-                throw new ArgumentException("Giá trị của 'id' phải lớn hơn 0.", nameof(id));
+                return null;
             }
 
             if (cacheKey is null)

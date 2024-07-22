@@ -1,4 +1,5 @@
-﻿@{
+﻿@model string
+@{
     Layout = "";
 }
 <!DOCTYPE html>
@@ -23,7 +24,7 @@
             </div>
             <div class="text-center">
                 <h1>Thank You !</h1>
-                <p>Cảm ơn đã mua hàng, vui lòng kiểm tra email của bạn </p>
+                <p>@Model</p>
                 <a href="/" class="btn btn-primary">Back Home</a>
             </div>
         </div>

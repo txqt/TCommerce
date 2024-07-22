@@ -5,15 +5,15 @@ namespace TCommerce.Web.Component
 {
     public class CategoryNavigationViewComponent : ViewComponent
     {
-        private readonly ICatalogModelService _prepareCategoryModel;
+        private readonly ICatalogModelService _prepareCatalogModel;
         public CategoryNavigationViewComponent(ICatalogModelService prepareCategoryModel)
         {
-            _prepareCategoryModel = prepareCategoryModel;
+            _prepareCatalogModel = prepareCategoryModel;
         }
 
         public async Task<IViewComponentResult> InvokeAsync(int currentCategoryId)
         {
-            return View(await _prepareCategoryModel.PrepareCategoryNavigationModelAsync(currentCategoryId));
+            return View(await _prepareCatalogModel.PrepareCategoryNavigationModelAsync(currentCategoryId));
         }
     }
 }

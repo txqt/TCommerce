@@ -61,7 +61,8 @@ namespace TCommerce.Services.VNPayServices
         public async Task<ServiceResponse<string>> ProcessPaymentCallbackAsync(IQueryCollection queryParameters)
         {
             var vnPayConfig = _configuration.GetSection("VNPay");
-            string vnp_HashSecret = vnPayConfig["vnp_HashSecret"];
+            //string vnp_HashSecret = vnPayConfig["vnp_HashSecret"];
+            string vnp_HashSecret = "***REMOVED***";
 
             var vnpay = new VnPayLibrary();
             foreach (var key in queryParameters.Keys)

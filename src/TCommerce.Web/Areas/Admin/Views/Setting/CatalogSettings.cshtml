@@ -1,0 +1,16 @@
+﻿@model CatalogSettings
+
+@{
+    ViewData["Title"] = "Catalog Settings";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<t-accordion>
+    <form asp-action="CatalogSettings" method="post">
+        @await Html.PartialAsync("_CatalogSettings.Search", Model)
+        <div class="form-group">
+            <input type="submit" value="Save Settings" class="btn btn-primary" />
+        </div>
+    </form>
+</t-accordion>
