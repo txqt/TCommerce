@@ -14,14 +14,14 @@ namespace TCommerce.Web.Areas.Admin.Controllers
             _settingService = settingService;
         }
 
-        public async Task<IActionResult> CatalogSettings()
+        public async Task<IActionResult> Catalog()
         {
             var model = await _settingService.LoadSettingAsync<CatalogSettings>();
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CatalogSettings(CatalogSettings catalogSettings)
+        public async Task<IActionResult> Catalog(CatalogSettings catalogSettings)
         {
             if (!ModelState.IsValid)
             {

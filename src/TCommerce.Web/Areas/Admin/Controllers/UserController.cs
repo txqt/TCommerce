@@ -55,9 +55,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         {
             var userList = await _userService.GetAllAsync();
 
-            var model = new { data = userList };
-
-            return this.JsonWithPascalCase(model);
+            return this.JsonWithPascalCase(userList);
         }
 
         [HttpGet]
