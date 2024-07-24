@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Security;
+using TCommerce.Core.Models.Users;
 using TCommerce.Core.Models.ViewsModel;
 using TCommerce.Web.Areas.Admin.Models;
 using TCommerce.Web.Areas.Admin.Services.PrepareAdminModel;
@@ -55,33 +56,36 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         {
             var userList = await _userService.GetAllAsync();
 
-            return this.JsonWithPascalCase(userList);
+            var models = _mapper.Map<List<UserModel>>(userList);
+
+            return this.JsonWithPascalCase(models);
         }
 
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var model = await _prepareModelService.PrepareUserModelAsync(new UserViewModel(), null);
+            var model = await _prepareModelService.PrepareUserModelAsync(new UserModel(), null);
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(UserViewModel model)
+        public async Task<IActionResult> Create(UserModel model)
         {
             if (!ModelState.IsValid)
             {
-                model = await _prepareModelService.PrepareUserModelAsync(new UserViewModel(), null);
+                model = await _prepareModelService.PrepareUserModelAsync(model, null);
                 return View(model);
             }
 
-            var userModel = _mapper.Map<UserModel>(model);
+            var userModel = _mapper.Map<User>(model);
 
-            var result = await _userService.CreateUserAsync(userModel);
+            var result = await _userService.CreateUserAsync(userModel, model.RoleIds, model.Password);
 
             if (!result.Success)
             {
                 ModelState.AddModelError(string.Empty, result.Message);
+                model = await _prepareModelService.PrepareUserModelAsync(model, null);
                 return View(model);
             }
 
@@ -91,29 +95,30 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var user = (await _userService.Get(id)) ??
+            var user = (await _userService.GetUserById(id)) ??
                 throw new ArgumentException("No user found with the specified id");
 
-            var model = await _prepareModelService.PrepareUserModelAsync(new UserViewModel(), user);
+            var model = await _prepareModelService.PrepareUserModelAsync(new UserModel(), user);
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(UserViewModel model)
+        public async Task<IActionResult> Edit(UserModel model)
         {
             if (!ModelState.IsValid)
             {
-                //model = await _prepareModelService.PrepareUserModelAsync(new UserViewModel(), null);
+                model = await _prepareModelService.PrepareUserModelAsync(model, null);
                 return View(model);
             }
 
-            var user = (await _userService.Get(model.Id)) ??
+            var user = (await _userService.GetUserById(model.Id)) ??
                 throw new ArgumentException("No user found with the specified id");
 
-            user = _mapper.Map(model, user);
+            _mapper.Map(model, user);
 
-            var result = await _userService.UpdateUserAsync(user);
+            var result = await _userService.UpdateUserAsync(user, model.RoleIds, model.Password);
+            
             if (!result.Success)
             {
                 SetStatusMessage($"{result.Message}");
@@ -143,7 +148,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         public async Task<IActionResult> BanUser(Guid id)
         {
 
-            var result = await _userService.BanUser(id.ToString());
+            var result = await _userService.BanUser(id);
             if (!result.Success)
             {
                 return Json(new { success = false, message = result.Message });

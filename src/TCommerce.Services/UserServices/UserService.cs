@@ -25,6 +25,7 @@ using TCommerce.Services.ProductServices;
 using TCommerce.Services.ShoppingCartServices;
 using TCommerce.Core.Interface;
 using System.Net.Http;
+using System.Data;
 
 namespace TCommerce.Services.UserServices
 {
@@ -60,51 +61,114 @@ namespace TCommerce.Services.UserServices
             _productAttributeConverter = productAttributeConverter;
         }
 
-        public async Task<ServiceResponse<bool>> CreateUserAsync(UserModel model)
+        public async Task<ServiceResponse<bool>> CreateUserAsync(User model, List<Guid>? roleIds = null, string? password = "")
         {
-            if (model.Email is not null)
-            {
-                if (!ValidateEmail(model.Email))
-                    return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
-
-                if (await UserExistsByEmail(model.Email))
-                    return new ServiceErrorResponse<bool>("Email đã tồn tại");
-            }
-
-            if (model.PhoneNumber is not null && await UserExistsByPhoneNumber(model.PhoneNumber))
-                return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
-
-            if (IsValidUsername(model.UserName))
-                return new ServiceErrorResponse<bool>("Username không thể là 1 email");
+            var validationResult = await ValidateUserModelAsync(model);
+            if (validationResult != null)
+                return validationResult;
 
             var user = _mapper.Map<User>(model);
-
             user.CreatedDate = DateTime.Now;
 
-            if (model.Password == null)
+            password ??= GenerateRandomPassword(length: 6);
+            var result = await _userManager.CreateAsync(user, password);
+
+            if (result.Succeeded)
             {
-                model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
+                var addRoleResult = await AddRole(user, roleIds);
+                if (!addRoleResult.Success)
+                    return new ServiceErrorResponse<bool>(addRoleResult.Message);
             }
 
-            if (!ValidatePassword(model.Password, model.ConfirmPassword))
-                return new ServiceErrorResponse<bool>("Password and confirm password is not");
+            return result.Succeeded
+                ? new ServiceSuccessResponse<bool>()
+                : new ServiceErrorResponse<bool>(FormatErrors(result.Errors));
+        }
+        public async Task<ServiceResponse<bool>> UpdateUserAsync(User model, List<Guid>? roleIds = null, string? password = "", bool requiredRandomPassword = false)
+        {
+            var user = await _userManager.FindByIdAsync(model.Id.ToString())
+                        ?? throw new ArgumentNullException($"Cannot find user by id");
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var validationResult = await ValidateUserModelAsync(model, user);
+            if (validationResult != null)
+                return validationResult;
 
-            if (!result.Succeeded)
-                return new ServiceErrorResponse<bool>(FormatErrors(result.Errors));
+            _mapper.Map(model, user);
 
-            if (!await AssignDefaultRole(user))
-                return new ServiceErrorResponse<bool>("Something went wrong!");
-
-            if (model.RoleNames != null && model.RoleNames.Any())
+            if (!string.IsNullOrEmpty(password) || requiredRandomPassword)
             {
-                var selectedRoles = model.RoleNames.Distinct();
-                var roleResult = await _userManager.AddToRolesAsync(user, selectedRoles);
-                return new ServiceErrorResponse<bool>(FormatErrors(roleResult.Errors));
+                password ??= GenerateRandomPassword(length: 6);
+                user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, password);
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                var addRoleResult = await AddRole(user, roleIds);
+                if (!addRoleResult.Success)
+                    return new ServiceErrorResponse<bool>(addRoleResult.Message);
+            }
+
+            return result.Succeeded
+                ? new ServiceSuccessResponse<bool>()
+                : new ServiceErrorResponse<bool>(FormatErrors(result.Errors));
+        }
+        private async Task<ServiceResponse<bool>> AddRole(User user, List<Guid>? roleIds)
+        {
+            if (roleIds is not null)
+            {
+                foreach (var roleId in roleIds)
+                {
+                    var role = await _roleManager.FindByIdAsync(roleId.ToString());
+                    if (role != null && !await _userManager.IsInRoleAsync(user, role.Name))
+                    {
+                        var result = await _userManager.AddToRoleAsync(user, role.Name);
+                        if (!result.Succeeded)
+                        {
+                            return new ServiceErrorResponse<bool>(FormatErrors(result.Errors));
+                        }
+                    }
+                }
+
+            }
+            var defaultRole = await _roleManager.FindByNameAsync(RoleName.Customer);
+
+            if (defaultRole != null && defaultRole.Name != null && !await _userManager.IsInRoleAsync(user, defaultRole.Name))
+            {
+                var result = (await _userManager.AddToRoleAsync(user, defaultRole.Name));
+                if (!result.Succeeded)
+                {
+                    return new ServiceErrorResponse<bool>(FormatErrors(result.Errors));
+                }
             }
 
             return new ServiceSuccessResponse<bool>();
+        }
+        private async Task<ServiceResponse<bool>> ValidateUserModelAsync(User model, User existingUser = null)
+        {
+            if (!string.IsNullOrWhiteSpace(model.Email))
+            {
+                if (!AppUtilities.IsValidEmail(model.Email))
+                    return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
+
+                if (existingUser?.Email != model.Email && await _userManager.FindByEmailAsync(model.Email) != null)
+                    return new ServiceErrorResponse<bool>("Email đã tồn tại");
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.PhoneNumber) &&
+                existingUser?.PhoneNumber != model.PhoneNumber &&
+                await _context.Users.AnyAsync(x => x.PhoneNumber == model.PhoneNumber))
+            {
+                return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
+            }
+
+            if (AppUtilities.IsValidEmail(model.UserName) && (existingUser is not null && model.UserName != existingUser.UserName))
+            {
+                return new ServiceErrorResponse<bool>("Username không nên là email");
+            }
+
+            return null;
         }
 
         private string FormatErrors(IEnumerable<IdentityError> errors)
@@ -138,75 +202,16 @@ namespace TCommerce.Services.UserServices
 
             return userName is not null && regex.IsMatch(userName) && AppUtilities.IsValidEmail(userName);
         }
-
-        private async Task<bool> AssignDefaultRole(User user)
-        {
-            var defaultRole = await _roleManager.FindByNameAsync(RoleName.Customer);
-
-            if (defaultRole != null && defaultRole.Name != null)
-                return (await _userManager.AddToRoleAsync(user, defaultRole.Name)).Succeeded;
-
-            return false;
-        }
-
-        public async Task<ServiceResponse<bool>> UpdateUserAsync(UserModel model, bool requiredRandomPassword = false)
-        {
-            var user = await _userManager.FindByIdAsync(model.Id.ToString()) ??
-                throw new ArgumentNullException($"Cannot find user by id");
-
-            if (model.Email is not null)
-            {
-                if (!ValidateEmail(model.Email))
-                    return new ServiceErrorResponse<bool>("Cần nhập đúng định dạng email");
-
-                if (user.Email != model.Email && await UserExistsByEmail(model.Email))
-                    return new ServiceErrorResponse<bool>("Email đã tồn tại");
-            }
-
-            if (model.PhoneNumber is not null && user.PhoneNumber != model.PhoneNumber && await UserExistsByPhoneNumber(model.PhoneNumber))
-                return new ServiceErrorResponse<bool>("Số điện thoại đã được đăng ký");
-
-            if (user.UserName != model.UserName && IsValidUsername(model.UserName))
-                return new ServiceErrorResponse<bool>("Username không thể là 1 email");
-
-            if (model.RoleNames != null && model.RoleNames.Any())
-            {
-                var userRoles = await _userManager.GetRolesAsync(user);
-                await _userManager.RemoveFromRolesAsync(user, userRoles);
-                var selectedRoles = model.RoleNames.Distinct();
-                var roleResult = await _userManager.AddToRolesAsync(user, selectedRoles);
-                if (!roleResult.Succeeded)
-                {
-                    return new ServiceErrorResponse<bool>(FormatErrors(roleResult.Errors));
-                }
-            }
-            var currentPasswordHash = user.PasswordHash;
-
-            _mapper.Map(model, user);
-
-            if (!string.IsNullOrEmpty(model.Password))
-            {
-                model.Password = model.ConfirmPassword = GenerateRandomPassword(length: 6);
-                user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, model.Password);
-            }
-            else
-            {
-                user.PasswordHash = currentPasswordHash;
-            }
-
-            var result = await _userManager.UpdateAsync(user);
-
-            if (!result.Succeeded)
-                return new ServiceErrorResponse<bool>(FormatErrors(result.Errors));
-
-            return new ServiceSuccessResponse<bool>();
-        }
-
         public async Task<ServiceResponse<bool>> DeleteUserByUserIdAsync(Guid id)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString()); ;
+            var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (user == null) { throw new Exception($"Cannot find user: {id}"); }
+
+            if(await _userManager.IsInRoleAsync(user, RoleName.Admin))
+            {
+                return new ServiceErrorResponse<bool>("Cannot delete Admin");
+            }
 
             user.Deleted = true;
 
@@ -219,23 +224,17 @@ namespace TCommerce.Services.UserServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<UserModel> Get(Guid id)
+        public async Task<User> GetUserById(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString()) ??
                 throw new ArgumentNullException("Cannot find user by that id");
 
-            var roles = await _userManager.GetRolesAsync(user);
-
-            var model = _mapper.Map<UserModel>(user);
-
-            model.RoleNames = roles;
-
-            return model;
+            return user;
         }
 
-        public async Task<List<UserModel>> GetAllAsync()
+        public async Task<List<User>> GetAllAsync()
         {
-            var model = _mapper.Map<List<UserModel>>(await _context.Users.Where(x => x.Deleted == false).ToListAsync());
+            var model = await _context.Users.Where(x => x.Deleted == false).ToListAsync();
             return model;
         }
 
@@ -254,27 +253,25 @@ namespace TCommerce.Services.UserServices
             return password.ToString();
         }
 
-        public async Task<UserModel> GetCurrentUser()
+        public async Task<User> GetCurrentUser()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-
-            var userModel = new UserModel();
-
-            if (httpContext.User.Identity.IsAuthenticated)
-            {
-                var user = await _userManager.GetUserAsync(httpContext.User);
-                _mapper.Map(user, userModel);
-
-                userModel.RoleNames = await _userManager.GetRolesAsync(user);
-            }
 
             if (httpContext == null)
             {
                 throw new InvalidOperationException("HttpContext is null");
             }
 
-            return userModel;
+            var user = new User();
+
+            if (httpContext.User.Identity.IsAuthenticated)
+            {
+                user = await _userManager.GetUserAsync(httpContext.User);
+            }
+
+            return user;
         }
+
 
         public async Task<List<Role>> GetRolesByUserAsync(User user)
         {
@@ -285,7 +282,7 @@ namespace TCommerce.Services.UserServices
             return await list_role.ToListAsync();
         }
 
-        public async Task<ServiceResponse<bool>> BanUser(string userId)
+        public async Task<ServiceResponse<bool>> BanUser(Guid userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)

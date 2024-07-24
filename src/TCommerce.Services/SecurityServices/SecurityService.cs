@@ -36,12 +36,10 @@ namespace TCommerce.Services.SecurityServices
             if (permissionRecord is null)
                 return false;
 
-            var userModel = (await _userService.GetCurrentUser());
+            var user = (await _userService.GetCurrentUser());
 
-            if (userModel == null)
+            if (user == null)
                 return false;
-
-            var user = _mapper.Map<User>(userModel);
 
             return await AuthorizeAsync(permissionRecord.SystemName, user);
         }

@@ -1047,7 +1047,7 @@ $(document).ready(function () {
     $(document).ajaxError(function (event, xhr, settings, thrownError) {
         if (xhr.status == 401 || xhr.status == 403) {
             if (xhr.status == 401) {
-                window.location.href = '/sign-in-sign-up';
+                window.location.href = '/login';
             } else {
                 window.location.href = '/AccessDenied';
             }

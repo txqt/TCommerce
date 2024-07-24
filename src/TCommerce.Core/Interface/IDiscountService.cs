@@ -19,7 +19,7 @@ namespace TCommerce.Core.Interface
         Task DeleteDiscountAsync(int id);
         Task<Discount?> GetDiscountByCode(string discountCode);
         Task<Discount?> GetByIdAsync(int id);
-        Task<ServiceResponse<string>> ValidateDiscountAsync(Discount discount, UserModel user);
+        Task<ServiceResponse<string>> ValidateDiscountAsync(Discount discount, User user);
         Task<ServiceResponse<bool>> CheckValidDiscountAsync(Discount discount);
         Task<List<DiscountUsageHistory>> GetAllDiscountUsageHistoryAsync(int? discountId = null,
         Guid? userId = null, int? orderId = null, bool includeCancelledOrders = true);

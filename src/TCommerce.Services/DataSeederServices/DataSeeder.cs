@@ -368,8 +368,6 @@ namespace TCommerce.ServicesSeederService
                         DefaultPermission.ManageCategories,
                         DefaultPermission.ManageAttributes,
                         DefaultPermission.ManageDiscounts,
-                        DefaultPermission.ManageUsers,
-                        DefaultPermission.ManagePermissions,
                     }
                 },
                 new RolePermissionMappingSeedModel()

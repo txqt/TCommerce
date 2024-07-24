@@ -59,6 +59,18 @@ namespace TCommerce.Web.Profiles
             CreateMap<User, UserModel>()
                 .ReverseMap();
 
+            CreateMap<User, User>()
+                .ReverseMap();
+
+            CreateMap<User, RegisterRequest>()
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Dob))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+                .ReverseMap();
+
             CreateMap<UserModel, UserModel>()
                 .ReverseMap();
 
@@ -133,7 +145,7 @@ namespace TCommerce.Web.Profiles
                 .ForMember(dest => dest.DisplayOrder, opt => opt.MapFrom(src => src.DisplayOrder))
                 .ReverseMap();
 
-            CreateMap<UserModel, UserViewModel>()
+            CreateMap<UserModel, UserModel>()
                 .ReverseMap();
             CreateMap<ProductCategoryModel, ProductCategory>()
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))

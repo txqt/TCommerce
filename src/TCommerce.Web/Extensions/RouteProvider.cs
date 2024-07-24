@@ -59,9 +59,13 @@ namespace TCommerce.Web.Extensions
                     pattern: $"account/address/create",
                     defaults: new { controller = "Account", action = "CreateAddress" });
 
-                endpoints.MapControllerRoute(name: "SignInOrSignUp",
-                    pattern: $"sign-in-sign-up",
-                    defaults: new { controller = "Account", action = "SignInOrSignUp" });
+                endpoints.MapControllerRoute(name: "Login",
+                    pattern: $"login/",
+                    defaults: new { controller = "Account", action = "Login" });
+
+                endpoints.MapControllerRoute(name: "Register",
+                    pattern: $"register/",
+                    defaults: new { controller = "Account", action = "Register" });
 
                 endpoints.MapControllerRoute(name: "Logout",
                     pattern: $"logout",

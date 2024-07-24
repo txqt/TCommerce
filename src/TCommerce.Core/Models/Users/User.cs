@@ -16,6 +16,7 @@ namespace TCommerce.Core.Models.Users
 
         [Required(ErrorMessage = "Phải nhập ngày tháng năm sinh")]
         public DateTime Dob { get; set; } // date of birth
+
         public string? AvatarPath { get; set; }
 
         public string? RefreshToken { get; set; }
