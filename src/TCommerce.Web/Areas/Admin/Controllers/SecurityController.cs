@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TCommerce.Core.Interface;
+using TCommerce.Core.Models.RoleName;
 using TCommerce.Core.Models.Security;
 using TCommerce.Core.Models.ViewsModel;
 using TCommerce.Web.Attribute;
@@ -71,6 +72,10 @@ namespace TCommerce.Web.Areas.Admin.Controllers
                         }
                         var mapping = (await _securityService.GetPermissionMappingAsync(role.Id.ToString(), permissionRecord.Id));
 
+                        if(role.Name == RoleName.Admin)
+                        {
+                            continue;
+                        }
 
                         // Nếu vai trò có quyền, thêm quyền vào vai trò
                         if (hasPermission)

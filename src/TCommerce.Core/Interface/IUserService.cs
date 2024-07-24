@@ -10,20 +10,19 @@ namespace TCommerce.Core.Interface
 {
     public interface IUserService
     {
-        Task<List<UserModel>> GetAllAsync();
+        Task<List<User>> GetAllAsync();
         Task<List<Role>> GetRolesByUserAsync(User user);
-        Task<UserModel> Get(Guid id);
-        Task<UserModel> GetCurrentUser();
-        Task<ServiceResponse<bool>> CreateUserAsync(UserModel model);
+        Task<User> GetUserById(Guid id);
+        Task<User> GetCurrentUser();
+        Task<ServiceResponse<bool>> CreateUserAsync(User user, List<Guid>? roleIds = null, string? password = "");
+        Task<ServiceResponse<bool>> UpdateUserAsync(User model, List<Guid>? roleIds = null, string? password = "", bool requiredRandomPassword = false);
         Task<ServiceResponse<bool>> DeleteUserByUserIdAsync(Guid id);
-        Task<ServiceResponse<bool>> BanUser(string userId);
+        Task<ServiceResponse<bool>> BanUser(Guid userId);
         Task<bool> Logout(Guid userId);
         Task<ServiceResponse<bool>> UpdateUserAccountInfo(AccountInfoModel model);
         Task<ServiceResponse<bool>> CreateUserAddressAsync(Address deliveryAddress);
         Task<ServiceResponse<bool>> UpdateUserAddressAsync(Address deliveryAddress);
         Task<ServiceResponse<bool>> DeleteUserAddressAsync(int id);
         Task<List<AddressInfoModel>> GetOwnAddressesAsync();
-        Task<ServiceResponse<bool>> UpdateUserAsync(UserModel model, bool requiredRandomPassword = false);
-        //Task<List<ShoppingCartItemModel>> GetShoppingCartAsync();
     }
 }

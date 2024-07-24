@@ -228,10 +228,10 @@
 <div class="container">
         @(await Component.InvokeAsync("OrderTotals"))
         <div class="col-sm-6">
-                            <form asp-action="ConfirmOrder" method="post" id="checkoutForm">
-                                <button type="submit" class="btn btn-success float-end" id="confirmOrderButton">Xác nhận</button>
-                            </form>
-                        </div>
+            <form asp-action="ConfirmOrder" method="post" id="checkoutForm">
+                <button type="submit" class="btn btn-success float-end" id="confirmOrderButton">Xác nhận</button>
+            </form>
+        </div>
 </div>
 
 @Html.Script(@<text>
@@ -286,6 +286,32 @@
                     }
                 });
             });
+            $(document).ready(function () {
+            $('#checkoutForm').submit(function (event) {
+                event.preventDefault();
+
+                var form = $(this);
+                var url = form.attr('action');
+                var formData = form.serialize();
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                            window.location.href = response.redirectUrl;
+                        } else {
+                                toastr.error(response.message);
+                        }
+                    },
+                    error: function () {
+                        toastr.error('An error occurred while processing your request.');
+                    }
+                });
+            });
+        });
         </script>
     </text>)
 

@@ -1,48 +1,57 @@
 ﻿@model RegisterRequest
 @{
     ViewData["Title"] = "Đăng ký tài khoản";
+    Layout = "_EmptyLayout";
 }
 
-<form asp-action="Register" asp-controller="Account" method="post" class="sign-up-form">
-    <h2 class="title">Sign up</h2>
-    <div class="input-field">
-        <i class="fas fa-user"></i>
-        <input type="text" placeholder="Username" asp-for="UserName" />
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 30vh;
+    }
+
+    .centered-div {
+        width: 400px;
+        height: 200px;
+    }
+</style>
+<div class="container">
+    <div class="centered-div">
+        <form asp-action="Register" asp-controller="Account" method="post" class="sign-up-form">
+            <!-- Email input -->
+            <div data-mdb-input-init class="form-outline mb-4">
+                <label class="form-label" asp-for="UserName"></label>
+                <input class="form-control" type="text" placeholder="Username" asp-for="UserName" />
+            </div>
+            <div data-mdb-input-init class="form-outline mb-4">
+                <label class="form-label" asp-for="Email"></label>
+                <input class="form-control" type="email" placeholder="Email" asp-for="Email" />
+            </div>
+            <div data-mdb-input-init class="form-outline mb-4">
+                <label class="form-label" asp-for="FirstName"></label>
+                <input class="form-control" type="text" placeholder="FirstName" asp-for="FirstName" />
+            </div>
+            <div data-mdb-input-init class="form-outline mb-4">
+                <label class="form-label" asp-for="LastName"></label>
+                <input class="form-control" type="text" placeholder="LastName" asp-for="LastName" />
+            </div>
+            <div data-mdb-input-init class="form-outline mb-4">
+                <label class="form-label" asp-for="Password"></label>
+                <input class="form-control" type="password" placeholder="Password" asp-for="Password" />
+            </div>
+            <div data-mdb-input-init class="form-outline mb-4">
+                <label class="form-label" asp-for="ConfirmPassword"></label>
+                <input class="form-control" type="password" placeholder="ConfirmPassword" asp-for="ConfirmPassword" />
+            </div>
+            <!-- Submit button -->
+            <button style="width: 100%" type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Sign up</button>
+
+            <!-- Login buttons -->
+            <div class="text-center">
+                <p>Have an account? <a href="/login">Login</a></p>
+            </div>
+        </form>
     </div>
-    <div class="input-field">
-        <i class="fas fa-envelope"></i>
-        <input type="email" placeholder="Email" asp-for="Email" />
-    </div>
-    <div class="input-field">
-        <i class="fa-solid fa-signature"></i>
-        <input type="text" placeholder="FirstName" asp-for="FirstName" />
-    </div>
-    <div class="input-field">
-        <i class="fa-solid fa-signature"></i>
-        <input type="text" placeholder="LastName" asp-for="LastName" />
-    </div>
-    <div class="input-field">
-        <i class="fas fa-lock"></i>
-        <input type="password" placeholder="Password" asp-for="Password" />
-    </div>
-    <div class="input-field">
-        <i class="fas fa-lock"></i>
-        <input type="password" placeholder="ConfirmPassword" asp-for="ConfirmPassword" />
-    </div>
-    <input type="submit" class="btn" value="Sign up" />
-    <p class="social-text">Or Sign up with social platforms</p>
-    <div class="social-media">
-        <a href="#" class="social-icon">
-            <i class="fab fa-facebook-f"></i>
-        </a>
-        <a href="#" class="social-icon">
-            <i class="fab fa-twitter"></i>
-        </a>
-        <a href="#" class="social-icon">
-            <i class="fab fa-google"></i>
-        </a>
-        <a href="#" class="social-icon">
-            <i class="fab fa-linkedin-in"></i>
-        </a>
-    </div>
-</form>
+</div>

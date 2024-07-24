@@ -45,7 +45,7 @@
                         }
                         else
                         {
-                            <li><a href="@Url.RouteName("SignInOrSignUp")"><i class="icon-user"></i>Login</a></li>
+                            <li><a href="@Url.RouteName("Login")"><i class="icon-user"></i>Login</a></li>
                         }
 
                     </ul>
@@ -63,7 +63,7 @@
                             success: function (response) {
                                 // Xử lý phản hồi từ action đăng xuất ở đây
                                 // Ví dụ: chuyển hướng người dùng đến trang đăng nhập
-                                window.location.href = '/Account/SignInOrSignUp';
+                                window.location.href = '/Account/Login';
                             },
                             error: function (error) {
                                 console.error('Đã xảy ra lỗi:', error);
