@@ -2,9 +2,9 @@
 
 namespace TCommerce.Web.Models
 {
-    public class SignInOrSignUpModel
+    public class LoginModel
     {
-        public SignInOrSignUpModel()
+        public LoginModel()
         {
             RegisterRequest = new RegisterRequest();
             AccessTokenRequest = new AccessTokenRequestModel();

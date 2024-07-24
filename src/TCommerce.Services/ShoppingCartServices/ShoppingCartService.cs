@@ -43,7 +43,7 @@ namespace TCommerce.Services.ShoppingCartServices
             return await _shoppingCartItemRepository.GetByIdAsync(id);
         }
 
-        public virtual async Task<List<ShoppingCartItem>> GetShoppingCartAsync(UserModel user, ShoppingCartType? shoppingCartType = null, int? productId = null, DateTime? createdFromUtc = null, DateTime? createdToUtc = null)
+        public virtual async Task<List<ShoppingCartItem>> GetShoppingCartAsync(User user, ShoppingCartType? shoppingCartType = null, int? productId = null, DateTime? createdFromUtc = null, DateTime? createdToUtc = null)
         {
             ArgumentNullException.ThrowIfNull(user);
 
@@ -66,7 +66,7 @@ namespace TCommerce.Services.ShoppingCartServices
             return await items.ToListAsync();
         }
 
-        public bool IsUserShoppingCartEmpty(UserModel user)
+        public bool IsUserShoppingCartEmpty(User user)
         {
             return !_shoppingCartItemRepository.Table.Any(sci => sci.UserId == user.Id);
         }
@@ -97,7 +97,7 @@ namespace TCommerce.Services.ShoppingCartServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task AddToCartAsync(UserModel user, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
+        public async Task AddToCartAsync(User user, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
         {
             ArgumentNullException.ThrowIfNull(user);
             ArgumentNullException.ThrowIfNull(product);
@@ -128,7 +128,7 @@ namespace TCommerce.Services.ShoppingCartServices
             await UpdateUserCartItemState(user);
         }
 
-        private async Task UpdateUserCartItemState(UserModel user)
+        private async Task UpdateUserCartItemState(User user)
         {
             if (user is not null)
             {
@@ -136,12 +136,12 @@ namespace TCommerce.Services.ShoppingCartServices
                 if (hasShoppingCartItems != user.HasShoppingCartItems)
                 {
                     user.HasShoppingCartItems = hasShoppingCartItems;
-                    await _userService.UpdateUserAsync(user, false);
+                    await _userService.UpdateUserAsync(user, null, null, false);
                 }
             }
         }
 
-        public async Task UpdateCartItemAsync(UserModel user, int cartId, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
+        public async Task UpdateCartItemAsync(User user, int cartId, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
         {
             ArgumentNullException.ThrowIfNull(user);
 
@@ -184,7 +184,7 @@ namespace TCommerce.Services.ShoppingCartServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task ClearShoppingCartAsync(UserModel user)
+        public async Task ClearShoppingCartAsync(User user)
         {
             ArgumentNullException.ThrowIfNull(user);
 
@@ -196,7 +196,7 @@ namespace TCommerce.Services.ShoppingCartServices
         }
 
         #region Warnings
-        public async Task<List<string>> GetShoppingCartItemWarningsAsync(UserModel user, ShoppingCartType shoppingCartType, Product product, string attributesJson, int quantity = 1, bool getStandardWarnings = true, bool getAttributesWarnings = true)
+        public async Task<List<string>> GetShoppingCartItemWarningsAsync(User user, ShoppingCartType shoppingCartType, Product product, string attributesJson, int quantity = 1, bool getStandardWarnings = true, bool getAttributesWarnings = true)
         {
             var warnings = new List<string>();
 
@@ -213,7 +213,7 @@ namespace TCommerce.Services.ShoppingCartServices
             return warnings;
         }
 
-        protected virtual List<string> GetStandardWarningsAsync(UserModel user, ShoppingCartType shoppingCartType, Product product,
+        protected virtual List<string> GetStandardWarningsAsync(User user, ShoppingCartType shoppingCartType, Product product,
         string attributesJson, int quantity)
         {
             List<string> warnings = new List<string>();
@@ -283,7 +283,7 @@ namespace TCommerce.Services.ShoppingCartServices
             return warnings;
         }
 
-        public virtual async Task<List<string>> GetShoppingCartItemAttributeWarningsAsync(UserModel user,
+        public virtual async Task<List<string>> GetShoppingCartItemAttributeWarningsAsync(User user,
         Product product,
         string attributesJson = "")
         {

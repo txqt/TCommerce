@@ -104,31 +104,31 @@ namespace TCommerce.Web.Controllers
             var user = await _userService.GetCurrentUser();
             if (user == null)
             {
-                return BadRequest("User not found");
+                return Json(new { success = false, message = "User not found" });
             }
 
             var defaultAddress = (await _userService.GetOwnAddressesAsync())?.FirstOrDefault(x => x.IsDefault);
             if (defaultAddress == null)
             {
-                return BadRequest("Default address not found");
+                return Json(new { success = false, message = "Default address not found" });
             }
 
             var paymentMethodSession = HttpContext.Session.GetString("PaymentMethodSessionKey");
             if (paymentMethodSession == null)
             {
-                return BadRequest("Payment method not selected");
+                return Json(new { success = false, message = "Payment method not selected" });
             }
 
             var paymentMethod = _paymentService.GetPaymentMethodBySystemName(paymentMethodSession);
             if (paymentMethod == null)
             {
-                return BadRequest("Payment method not found");
+                return Json(new { success = false, message = "Payment method not found" });
             }
 
             var carts = await _shoppingCartService.GetShoppingCartAsync(user, ShoppingCartType.ShoppingCart);
             if (carts == null || !carts.Any())
             {
-                return BadRequest("Shopping cart is empty");
+                return Json(new { success = false, message = "Shopping cart is empty" });
             }
 
             var order = await CreateOrderAsync(user, defaultAddress, paymentMethod, carts);
@@ -166,18 +166,22 @@ namespace TCommerce.Web.Controllers
 
             if (!paymentResult.Success)
             {
-                return BadRequest(paymentResult.Message);
+                return Json(new { success = false, message = paymentResult.Message });
             }
 
             if (!string.IsNullOrEmpty(paymentResult.Data))
             {
                 return Redirect(paymentResult.Data);
             }
-
-            return View("Thankyou", "Cảm ơn đã mua hàng, vui lòng kiểm tra email của bạn");
+            var redirectUrl = Url.Action("Thankyou", "Checkout", new { message = "Order confirmed successfully!" });
+            return Json(new { success = true, message = "Cảm ơn đã mua hàng, vui lòng kiểm tra email của bạn", redirectUrl });
+        }
+        public IActionResult Thankyou(string message)
+        {
+            return View("Thankyou", message);
         }
 
-        private async Task<Order> CreateOrderAsync(UserModel user, AddressInfoModel defaultAddress, PaymentMethod paymentMethod, List<ShoppingCartItem> carts)
+        private async Task<Order> CreateOrderAsync(User user, AddressInfoModel defaultAddress, PaymentMethod paymentMethod, List<ShoppingCartItem> carts)
         {
             var order = new Order
             {

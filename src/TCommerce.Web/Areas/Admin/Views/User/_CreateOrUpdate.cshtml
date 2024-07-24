@@ -1,0 +1,49 @@
+﻿@model UserModel
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+@Html.AntiForgeryToken()
+@if (Model.Id != Guid.Empty)
+{
+    <input asp-for="Id" hidden />
+}
+<div class="form-group">
+    <label asp-for="LastName" class="control-label"></label>
+    <input asp-for="LastName" class="form-control" />
+    <span asp-validation-for="LastName" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="FirstName" class="control-label"></label>
+    <input asp-for="FirstName" class="form-control" />
+    <span asp-validation-for="FirstName" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Email" class="control-label"></label>
+    <input asp-for="Email" class="form-control" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="UserName" class="control-label"></label>
+    <input asp-for="UserName" class="form-control" />
+    <span asp-validation-for="UserName" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="PhoneNumber" class="control-label"></label>
+    <input asp-for="PhoneNumber" class="form-control" />
+    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="RoleIds" class="control-label"></label>
+    <select class="form-select" asp-items="Model.AvailableRoles" asp-for="RoleIds" multiple="multiple">
+    </select>
+    <span asp-validation-for="RoleIds" class="text-danger"></span>
+</div>
+
+@Html.Script(
+    @<text>
+        <script>
+            $(document).ready(function () {
+                $('#@nameof(Model.RoleIds)').select2();
+            });
+        </script>
+    </text>
+    )

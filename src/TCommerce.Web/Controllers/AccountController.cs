@@ -48,17 +48,17 @@ namespace TCommerce.Web.Controllers
             _userRegistrationService = userRegistrationService;
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Login(string returnUrl)
-        //{
-        //    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        //    var loginVM = new AccessTokenRequestModel()
-        //    {
-        //        RememberMe = true
-        //    };
-        //    ViewBag.ReturnUrl = returnUrl;
-        //    return View(loginVM);
-        //}
+        [HttpGet]
+        public async Task<IActionResult> Login(string returnUrl)
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var loginVM = new AccessTokenRequestModel()
+            {
+                RememberMe = true
+            };
+            ViewBag.ReturnUrl = returnUrl;
+            return View(loginVM);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Login(AccessTokenRequestModel model, string returnUrl = null)
@@ -97,7 +97,7 @@ namespace TCommerce.Web.Controllers
             }
 
             // If we reach here, something went wrong, return the model with errors
-            return View(model);
+            return RedirectToAction(nameof(Login));
         }
 
 
@@ -110,7 +110,7 @@ namespace TCommerce.Web.Controllers
             await _signInManager.SignOutAsync();
             await _accountService.Logout();
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("SignInOrSignUp", "Account");
+            return RedirectToAction("Login", "Account");
         }
 
         [HttpGet]
@@ -123,19 +123,20 @@ namespace TCommerce.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(registerRequest);
+                return RedirectToAction(nameof(Login));
             }
-            var model = _mapper.Map<UserModel>(registerRequest);
-            var result = await _userService.CreateUserAsync(model);
+            var model = _mapper.Map<User>(registerRequest);
+
+            var result = await _userService.CreateUserAsync(model, null, registerRequest.Password);
 
             if (!result.Success)
             {
                 ModelState.AddModelError(string.Empty, result.Message);
-                return View(registerRequest);
+                return RedirectToAction(nameof(Login));
             }
 
 
-            return LocalRedirect(Url.Action(nameof(RegisterConfirmation)));
+            return View("Thankyou", "Đăng ký thành công !");
         }
 
         [HttpGet]
@@ -351,26 +352,6 @@ namespace TCommerce.Web.Controllers
             SetStatusMessage(result.Success ? "Success" : "Failed");
 
             return RedirectToAction(nameof(Addresses));
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> SignInOrSignUp(string returnUrl)
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            var accessTokenRequest = new AccessTokenRequestModel()
-            {
-                RememberMe = true
-            };
-
-            ViewBag.ReturnUrl = returnUrl;
-
-            var model = new SignInOrSignUpModel
-            {
-                AccessTokenRequest = accessTokenRequest,
-                RegisterRequest = new RegisterRequest()
-            };
-            return View(model);
         }
 
         [HttpPost]

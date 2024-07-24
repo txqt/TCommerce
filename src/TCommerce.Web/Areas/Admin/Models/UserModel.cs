@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,10 +9,15 @@ using System.Xml.Linq;
 using TCommerce.Core.Models.Common;
 using TCommerce.Core.Models.Users;
 
-namespace TCommerce.Core.Models.ViewsModel
+namespace TCommerce.Web.Areas.Admin.Models
 {
     public partial class UserModel : ISoftDeletedEntity
     {
+        public UserModel()
+        {
+            RoleIds = new List<Guid>();
+            AvailableRoles = new List<SelectListItem>();
+        }
         public Guid Id { get; set; }
         public string UserName { get; set; }
 
@@ -45,17 +51,12 @@ namespace TCommerce.Core.Models.ViewsModel
         [Compare("Password", ErrorMessage = "Mật khẩu nhập lại không đúng")]
 
         public string ConfirmPassword { get; set; } = null!;
-
-        [Display(Name = "Số điện thoại")]
-
-        public IList<string> RoleNames { get; set; }
-
-        public UserModel()
-        {
-            RoleNames = new List<string>();
-        }
+        [Display(Name = "Danh sách role")]
+        public List<Guid>? RoleIds { get; set; }
+        public IList<SelectListItem> AvailableRoles { get; set; }
 
         public bool HasShoppingCartItems { get; set; }
+
         public bool Deleted { get; set; }
     }
 }

@@ -6,7 +6,7 @@
     }
 </style>
 
-<form method="post" asp-action="UpdateRolePermissions">
+<form method="post" asp-action="UpdateRolePermissions" onsubmit="return confirmRoleChange();">
     <div class="content-header clearfix">
         <h1 class="float-left">
             Quản lý quyền
@@ -65,3 +65,11 @@
         </div>
     </section>
 </form>
+
+@Html.Script(
+    @<text>
+        function confirmRoleChange() {
+        return confirm("Bạn có chắc chắn muốn thay đổi quyền của Admin? Điều này có thể ảnh hưởng đến truy cập của bạn vào trang quản trị.");
+        }
+    </text>
+)

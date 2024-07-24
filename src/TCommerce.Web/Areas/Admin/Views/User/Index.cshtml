@@ -4,4 +4,6 @@
     ViewData["Title"] = "Danh sách người dùng";
 }
 
-@await Html.PartialAsync("_Table", Model)
+<t-accordion>
+    @await Html.PartialAsync("_Table", Model)
+</t-accordion>

@@ -8,6 +8,7 @@ using TCommerce.Core.Models.Discounts;
 using TCommerce.Core.Models.Orders;
 using TCommerce.Core.Models.Paging;
 using TCommerce.Core.Models.Response;
+using TCommerce.Core.Models.Users;
 using TCommerce.Core.Models.ViewsModel;
 using TCommerce.Services.IRepositoryServices;
 using TCommerce.Services.ManufacturerServices;
@@ -54,7 +55,7 @@ namespace TCommerce.Services.DiscountServices
             await _discountRepository.UpdateAsync(discount);
         }
 
-        public async Task<ServiceResponse<string>> ValidateDiscountAsync(Discount discount, UserModel user)
+        public async Task<ServiceResponse<string>> ValidateDiscountAsync(Discount discount, User user)
         {
             if (discount == null)
                 return new ServiceErrorResponse<string>("Invalid coupon code.");
