@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using TCommerce.Core.Models.Discounts;
 using TCommerce.Services.PrepareModelServices.PrepareAdminModel;
-using TCommerce.Web.Areas.Admin.Models;
-using TCommerce.Web.Areas.Admin.Models.SearchModel;
+using TCommerce.Web.Areas.Admin.Models.Discounts;
 
 namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
 {

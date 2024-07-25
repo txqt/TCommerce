@@ -5,7 +5,7 @@ using TCommerce.Core.Models.Catalogs;
 using TCommerce.Core.Models.Users;
 using TCommerce.Core.Models.ViewsModel;
 using TCommerce.Services.CategoryServices;
-using TCommerce.Web.Areas.Admin.Models;
+using TCommerce.Web.Areas.Admin.Models.Users;
 
 namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
 {

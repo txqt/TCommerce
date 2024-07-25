@@ -6,10 +6,13 @@ using TCommerce.Core.Models.Common;
 using TCommerce.Core.Models.Orders;
 using TCommerce.Core.Models.Users;
 using TCommerce.Core.Models.ViewsModel;
-using TCommerce.Web.Areas.Admin.Models;
 using TCommerce.Web.Models.Catalog;
 using TCommerce.Web.Models;
 using TCommerce.Core.Models.Discounts;
+using TCommerce.Web.Areas.Admin.Models.Discounts;
+using TCommerce.Web.Areas.Admin.Models.Catalog;
+using TCommerce.Web.Areas.Admin.Models.Users;
+using TCommerce.Web.Areas.Admin.Models.Banners;
 
 namespace TCommerce.Web.Profiles
 {
@@ -17,7 +20,7 @@ namespace TCommerce.Web.Profiles
     {
         public ApplicationProfile()
         {
-            CreateMap<Product, Areas.Admin.Models.ProductModel>()
+            CreateMap<Product, Areas.Admin.Models.Catalog.ProductModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.ShortDescription, opt => opt.MapFrom(src => src.ShortDescription))
@@ -75,6 +78,9 @@ namespace TCommerce.Web.Profiles
                 .ReverseMap();
 
             CreateMap<BannerViewModel, Banner>()
+                .ReverseMap();
+
+            CreateMap<BannerModel, Banner>()
                 .ReverseMap();
 
             CreateMap<RegisterRequest, UserModel>()
@@ -175,7 +181,7 @@ namespace TCommerce.Web.Profiles
             CreateMap<Web.Models.Catalog.CategoryModel, Category>()
                 .ReverseMap();
 
-            CreateMap<Web.Areas.Admin.Models.CategoryModel, Category>()
+            CreateMap<Areas.Admin.Models.Catalog.CategoryModel, Category>()
                 .ReverseMap();
 
             CreateMap<AddressModel, Address>()
@@ -202,7 +208,7 @@ namespace TCommerce.Web.Profiles
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x=>x.ManufacturerId))
                 .ReverseMap();
 
-            CreateMap<Areas.Admin.Models.ManufacturerModel, Manufacturer>()
+            CreateMap<Areas.Admin.Models.Catalog.ManufacturerModel, Manufacturer>()
                 .ReverseMap();
         }
     }

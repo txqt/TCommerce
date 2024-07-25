@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TCommerce.Core.Interface;
@@ -35,13 +36,13 @@ namespace TCommerce.Services.BannerServices
             return await _bannerRepository.GetByIdAsync(id);
         }
 
-        public async Task<ServiceResponse<bool>> CreateBannerAsync(BannerViewModel model)
+        public async Task<ServiceResponse<bool>> CreateBannerAsync(Banner banner, IFormFile? imageFile = null)
         {
             var pictureId = 0;
 
-            if(model.ImageFile is not null)
+            if(imageFile is not null)
             {
-                var pictureResult = await _pictureService.SavePictureWithEncryptFileName(model.ImageFile);
+                var pictureResult = await _pictureService.SavePictureWithEncryptFileName(imageFile);
 
                 pictureId = pictureResult.Data;
 
@@ -53,8 +54,6 @@ namespace TCommerce.Services.BannerServices
 
             try
             {
-                var banner = _mapper.Map<Banner>(model);
-
                 banner.PictureId = pictureId;
 
                 await _bannerRepository.CreateAsync(banner);
@@ -68,18 +67,17 @@ namespace TCommerce.Services.BannerServices
             }
         }
 
-        public async Task<ServiceResponse<bool>> UpdateBannerAsync(BannerViewModel model)
+        public async Task<ServiceResponse<bool>> UpdateBannerAsync(Banner banner, IFormFile? imageFile = null)
         {
-            var banner = await _bannerRepository.GetByIdAsync(model.Id);
             if (banner == null)
             {
                 return ErrorResponse("Banner not found");
             }
 
             int? oldPictureId = null;
-            if (model.ImageFile != null)
+            if (imageFile != null)
             {
-                var pictureResult = await _pictureService.SavePictureWithEncryptFileName(model.ImageFile);
+                var pictureResult = await _pictureService.SavePictureWithEncryptFileName(imageFile);
                 if (!pictureResult.Success)
                 {
                     return ErrorResponse(pictureResult.Message);
@@ -92,8 +90,6 @@ namespace TCommerce.Services.BannerServices
 
             try
             {
-                // Update the banner
-                banner = _mapper.Map(model, banner);
                 await _bannerRepository.UpdateAsync(banner);
 
                 // Delete the old picture

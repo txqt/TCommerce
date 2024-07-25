@@ -473,7 +473,10 @@ namespace TCommerce.ServicesSeederService
                 SearchPageAllowCustomersToSelectPageSize = true,
                 SearchPageProductsPerPage = 10,
                 SearchPagePageSizeOptions = "10,20,50",
-                ProductSearchTermMinimumLength = 3
+                ProductSearchTermMinimumLength = 3,
+                ProductSearchEnabled = true,
+                AllowProductViewModeChanging = true,
+                DefaultViewMode = "3-cols"
             };
 
             await settingService.SaveSettingAsync(catalogSetting);

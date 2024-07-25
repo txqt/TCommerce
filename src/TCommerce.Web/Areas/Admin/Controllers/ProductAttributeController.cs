@@ -2,7 +2,7 @@
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Catalogs;
 using TCommerce.Core.Models.Security;
-using TCommerce.Web.Areas.Admin.Models;
+using TCommerce.Web.Areas.Admin.Models.Datatables;
 using TCommerce.Web.Attribute;
 using TCommerce.Web.Extensions;
 

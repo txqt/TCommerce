@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using TCommerce.Web.Areas.Admin.Controllers;
 using TCommerce.Services.DiscountServices;
 using TCommerce.Web.Areas.Admin.Services.PrepareAdminModel;
-using TCommerce.Web.Areas.Admin.Models.SearchModel;
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Discounts;
 using TCommerce.Core.Models.Paging;
-using TCommerce.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
+using TCommerce.Web.Areas.Admin.Models.Discounts;
 
 namespace TCommerce.Tests.TCommerce.Web.Areas.Admin.Controllers
 {

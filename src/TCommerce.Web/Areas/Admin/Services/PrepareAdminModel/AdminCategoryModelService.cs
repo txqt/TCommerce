@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using TCommerce.Core.Models.Catalogs;
-using TCommerce.Web.Areas.Admin.Models;
-using TCommerce.Web.Areas.Admin.Models.SearchModel;
 using TCommerce.Services.PrepareModelServices.PrepareAdminModel;
 using TCommerce.Core.Interface;
+using TCommerce.Web.Areas.Admin.Models.Catalog;
 
 namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
 {

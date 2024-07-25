@@ -35,10 +35,11 @@ namespace TCommerce.Services.PictureServices
                     var fileExtension = Path.GetExtension(imageFile.FileName);
                     var newFileName = uniqueFileName + fileExtension;
 
-                    var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/images/uploads/", newFileName);
-                    if (!Directory.Exists(filePath))
+                    var directoryPath = Path.Combine(_environment.ContentRootPath, "wwwroot/images/uploads/");
+                    var filePath = Path.Combine(directoryPath, newFileName);
+                    if (!Directory.Exists(directoryPath))
                     {
-                        Directory.CreateDirectory(filePath);
+                        Directory.CreateDirectory(directoryPath);
                     }
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
@@ -76,7 +77,9 @@ namespace TCommerce.Services.PictureServices
                 if (imageFile != null && imageFile.Length > 0)
                 {
                     var fileName = imageFile.FileName;
-                    var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/images/uploads/", fileName);
+                    var directoryPath = Path.Combine(_environment.ContentRootPath, "wwwroot/images/uploads/");
+                    var filePath = Path.Combine(directoryPath, fileName);
+
                     if (!Directory.Exists(filePath))
                     {
                         Directory.CreateDirectory(filePath);

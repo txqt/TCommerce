@@ -1,0 +1,63 @@
+﻿@model OrderSearchModel
+
+<div class="content-header p-2">
+    <div class="d-flex flex-row-reverse mx-2">
+        <button type="button" id="delete-selected" class="btn btn-danger">
+            <i class="far fa-trash-alt"></i>
+            Delete Selected
+        </button>
+        <a id="add-button" class="btn btn-success mx-2" href="@Url.Action("CreateDiscount", "Discount")">
+            Add New
+        </a>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="item">
+                    <div class="col-auto">
+                        <label asp-for="StartDate" class="col-form-label">Start date</label>
+                    </div>
+                    <div class="col-auto">
+                        <input class="form-select" type="date" asp-for="StartDate">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="col-auto">
+                        <label asp-for="EndDate" class="col-form-label">End date</label>
+                    </div>
+                    <div class="col-auto">
+                        <input class="form-select" type="date" asp-for="EndDate">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="col-auto">
+                    <label asp-for="OrderStatusIds" class="col-form-label">Order statuses</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" asp-items="Model.AvailableOrderStatuses" asp-for="OrderStatusIds" multiple="multiple">
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label asp-for="PaymentStatusIds" class="col-form-label">Order statuses</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" asp-items="Model.AvailablePaymentStatuses" asp-for="PaymentStatusIds" multiple="multiple">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="button text-center p-4">
+            <button type="button" id="search-orders" class="btn btn-primary btn-search">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+        </div>
+    </div>
+</div>
+
+<t-accordion>
+    @await Html.PartialAsync("_List", Model)
+</t-accordion>
