@@ -428,11 +428,12 @@ namespace TCommerce.Web.PrepareModelServices
 
         public virtual void PrepareViewModes(CatalogProductsModel model, CatalogProductsCommand command)
         {
-            model.AllowProductViewModeChanging = true;
+            model.AllowProductViewModeChanging = _catalogSettings.AllowProductViewModeChanging;
 
             var viewMode = !string.IsNullOrEmpty(command.ViewMode)
                 ? command.ViewMode
-                : "3-cols";
+                : _catalogSettings.DefaultViewMode;
+
             model.ViewMode = viewMode;
             if (model.AllowProductViewModeChanging)
             {

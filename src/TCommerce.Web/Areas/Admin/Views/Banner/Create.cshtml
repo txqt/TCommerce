@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "Create";
 }
-<form asp-action="Create" method="post" enctype="multipart/form-data">
-    @await Html.PartialAsync("_AddOrEditBanner", Model)
-</form>
+<t-accordion>
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        @await Html.PartialAsync("_CreateOrUpdate", Model)
+    </form>
+</t-accordion>
 

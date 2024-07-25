@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Catalogs;
 using TCommerce.Services.UrlRecordServices;
-using TCommerce.Web.Areas.Admin.Models;
-using TCommerce.Web.Areas.Admin.Models.SearchModel;
+using TCommerce.Web.Areas.Admin.Models.Catalog;
+
 using TCommerce.Web.Areas.Admin.Services.PrepareAdminModel;
 using TCommerce.Web.Extensions;
 

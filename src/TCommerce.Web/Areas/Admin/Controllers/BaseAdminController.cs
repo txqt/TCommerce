@@ -1,6 +1,6 @@
 ﻿using TCommerce.Core.Models.Common;
 using TCommerce.Core.Models.Security;
-using TCommerce.Web.Areas.Admin.Models;
+using TCommerce.Web.Areas.Admin.Models.Datatables;
 using TCommerce.Web.Attribute;
 using TCommerce.Web.Controllers;
 

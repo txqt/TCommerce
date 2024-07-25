@@ -1,0 +1,68 @@
+﻿@model OrderSearchModel
+
+@{
+    var orderTable = new DataTableViewModel()
+            {
+                TableTitle = "Danh sách đơn hàng",
+                EditUrl = Url.Action("EditDiscount", "Discount"),
+                DeleteUrl = Url.Action("DeleteDiscount", "Discount"),
+                SearchButtonId = "search-discounts",
+                GetDataUrl = Url.Action("GetAll", "Discount"),
+                DefaultSort = new DefaultSort(2, "desc"),
+                ServerSide = true,
+                Filters = new List<Filter>()
+                {
+                    new Filter(nameof(Model.StartDate)),
+                    new Filter(nameof(Model.EndDate)),
+                    new Filter(nameof(Model.OrderStatusIds)),
+                    new Filter(nameof(Model.PaymentStatusIds)),
+                },
+                Columns = new List<ColumnDefinition>()
+                {
+                    new ColumnDefinition(nameof(DiscountModel.Id))
+                    {
+                        RenderType = RenderType.RenderCheckBox,
+                        Orderable = false
+                    },
+                    new ColumnDefinition(nameof(DiscountModel.DiscountTypeName))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.DiscountTypeName)
+                    },
+                    new ColumnDefinition(nameof(DiscountModel.Name))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.Name),
+                    },
+                    new ColumnDefinition(nameof(DiscountModel.StartDateUtc))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.StartDateUtc)
+                    },
+                    new ColumnDefinition(nameof(DiscountModel.EndDateUtc))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.EndDateUtc)
+                    },
+                    new ColumnDefinition(nameof(DiscountModel.TimesUsed))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.TimesUsed)
+                    },
+                    new ColumnDefinition(nameof(DiscountModel.IsActive))
+                    {
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.IsActive),
+                        RenderType = RenderType.RenderBoolean
+                    },
+                    new ColumnDefinition(nameof(DiscountModel.Id))
+                    {
+                        RenderType = RenderType.RenderButtonEdit,
+                        Title = "Edit",
+                        Orderable = false
+                    },
+                    new ColumnDefinition(nameof(DiscountModel.Id))
+                    {
+                        RenderType = RenderType.RenderButtonRemove,
+                        Title = "Delete",
+                        Orderable = false
+                    },
+                }
+            };
+}
+
+@await Html.PartialAsync("_Table", orderTable)
