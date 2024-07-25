@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Banners;
 using TCommerce.Core.Models.ViewsModel;
-using TCommerce.Web.Areas.Admin.Models;
+using TCommerce.Web.Areas.Admin.Models.Banners;
+using TCommerce.Web.Areas.Admin.Models.Datatables;
 using TCommerce.Web.Areas.Admin.Services.PrepareAdminModel;
 using TCommerce.Web.Extensions;
 
@@ -36,7 +37,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
                 {
                     new ColumnDefinition { Data = nameof(Banner.Title), Title = DisplayNameExtensions.GetPropertyDisplayName<Banner>(m=>m.Title) },
                     new ColumnDefinition { Data = nameof(Banner.Subtitle), Title = DisplayNameExtensions.GetPropertyDisplayName<Banner>(m=>m.Subtitle) },
-                    new ColumnDefinition { Data = nameof(Banner.Price), Title = DisplayNameExtensions.GetPropertyDisplayName<Banner>(m=>m.Price) },
+                    new ColumnDefinition { Data = nameof(Banner.Text), Title = DisplayNameExtensions.GetPropertyDisplayName<Banner>(m=>m.Text) },
                     //new ColumnDefinition { Data = $"{nameof(Banner.Picture)}.{nameof(Banner.Picture.UrlPath)}", Title = DisplayNameExtensions.GetPropertyDisplayName<Banner>(m=>m.Picture), RenderType = RenderType.RenderPicture },
                     new ColumnDefinition(nameof(Banner.Id)) { RenderType = RenderType.RenderButtonEdit },
                     new ColumnDefinition(nameof(Banner.Id)) { RenderType = RenderType.RenderButtonRemove },
@@ -67,9 +68,9 @@ namespace TCommerce.Web.Areas.Admin.Controllers
                 AddErrorsFromModel(ModelState.Values);
                 return View(model);
             }
-            //var banner = _mapper.Map<Banner>(bannerViewModel);
+            var banner = _mapper.Map<Banner>(model);
 
-            var result = await _bannerService.CreateBannerAsync(model);
+            var result = await _bannerService.CreateBannerAsync(banner, model.ImageFile);
             if (result.Success)
             {
                 SetStatusMessage("Thêm banner mới thành công");
@@ -85,7 +86,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
             var banner = await _bannerService.GetBannerByIdAsync(id) ??
                 throw new ArgumentException("Not found with the specified id");
 
-            var model = _prepareModelService.PrepareBannerModel(new BannerViewModel(), banner);
+            var model = await _prepareModelService.PrepareBannerModel(new BannerViewModel(), banner);
 
             return View(model);
         }
@@ -103,13 +104,13 @@ namespace TCommerce.Web.Areas.Admin.Controllers
             var banner = await _bannerService.GetBannerByIdAsync(model.Id) ??
                 throw new ArgumentException("Not found with the specified id");
 
-            //banner = _mapper.Map(model, banner);
+            banner = _mapper.Map(model, banner);
 
-            var result = await _bannerService.UpdateBannerAsync(model);
+            var result = await _bannerService.UpdateBannerAsync(banner, model.ImageFile);
             if (!result.Success)
             {
                 SetStatusMessage($"{result.Message}");
-                model = _prepareModelService.PrepareBannerModel(model, banner);
+                model = await _prepareModelService.PrepareBannerModel(model, banner);
                 return View(model);
             }
 

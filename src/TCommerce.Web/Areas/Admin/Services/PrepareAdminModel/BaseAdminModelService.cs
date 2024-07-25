@@ -2,6 +2,7 @@
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Discounts;
 using TCommerce.Core.Models.Orders;
+using TCommerce.Core.Models.Payments;
 using TCommerce.Web.Extensions;
 
 namespace TCommerce.Services.PrepareModelServices.PrepareAdminModel
@@ -11,6 +12,8 @@ namespace TCommerce.Services.PrepareModelServices.PrepareAdminModel
         Task PrepareSelectListCategoryAsync(List<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
         Task PrepareSelectListManufactureAsync(List<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
         Task PrepareSelectListDiscountTypeAsync(List<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+        Task PrepareOrderStatusesAsync(List<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+        Task PreparePaymentStatusesAsync(List<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
     }
     public class BaseAdminModelService : IBaseAdminModelService
     {
@@ -134,6 +137,36 @@ namespace TCommerce.Services.PrepareModelServices.PrepareAdminModel
             foreach (var discountItem in availableDiscountItems)
             {
                 items.Add(discountItem);
+            }
+
+            //insert special item for the default value
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        public async Task PrepareOrderStatusesAsync(List<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            ArgumentNullException.ThrowIfNull(items);
+
+            //prepare available order statuses
+            var availableStatusItems = EnumExtensions.ToSelectList<OrderStatus>();
+            foreach (var statusItem in availableStatusItems)
+            {
+                items.Add(statusItem);
+            }
+
+            //insert special item for the default value
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        public async Task PreparePaymentStatusesAsync(List<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            ArgumentNullException.ThrowIfNull(items);
+
+            //prepare available payment statuses
+            var availableStatusItems = EnumExtensions.ToSelectList<PaymentStatus>();
+            foreach (var statusItem in availableStatusItems)
+            {
+                items.Add(statusItem);
             }
 
             //insert special item for the default value
