@@ -472,8 +472,15 @@
                             break;
                         case RenderType.NotRender:
                             <text>
-                            render: function (data, type, row, meta) {
+                                render: function (data, type, row, meta) {
                                 return escapeHtml(data);
+                            },
+                            </text>
+                            break;
+                        case RenderType.Custom:
+                            <text>
+                            render: function (data, type, row, meta) {
+                                return @(column.FunctionName)(data, type, row, meta);
                             },
                             </text>
                             break;

@@ -1,0 +1,8 @@
+﻿@model OrderModel
+
+<t-accordion>
+    <form method="post" asp-action="Edit">
+        <input asp-for="Id" hidden />
+        @await Html.PartialAsync("_CreateOrUpdate.Info")
+    </form>
+</t-accordion>

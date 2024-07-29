@@ -13,6 +13,7 @@ using TCommerce.Web.Areas.Admin.Models.Discounts;
 using TCommerce.Web.Areas.Admin.Models.Catalog;
 using TCommerce.Web.Areas.Admin.Models.Users;
 using TCommerce.Web.Areas.Admin.Models.Banners;
+using TCommerce.Web.Areas.Admin.Models.Orders;
 
 namespace TCommerce.Web.Profiles
 {
@@ -63,6 +64,9 @@ namespace TCommerce.Web.Profiles
                 .ReverseMap();
 
             CreateMap<User, User>()
+                .ReverseMap();
+
+            CreateMap<AccountInfoModel, User>()
                 .ReverseMap();
 
             CreateMap<User, RegisterRequest>()
@@ -209,6 +213,9 @@ namespace TCommerce.Web.Profiles
                 .ReverseMap();
 
             CreateMap<Areas.Admin.Models.Catalog.ManufacturerModel, Manufacturer>()
+                .ReverseMap();
+
+            CreateMap<OrderModel, Order>()
                 .ReverseMap();
         }
     }

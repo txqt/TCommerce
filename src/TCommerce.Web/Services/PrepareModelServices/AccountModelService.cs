@@ -1,4 +1,5 @@
-﻿using TCommerce.Core.Interface;
+﻿using AutoMapper;
+using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Common;
 using TCommerce.Core.Models.ViewsModel;
 using TCommerce.Web.Models;
@@ -14,11 +15,13 @@ namespace TCommerce.Web.PrepareModelServices
     {
         private readonly IAddressService _addressService;
         private readonly IBaseModelService _baseModelService;
+        private readonly IMapper _mapper;
 
-        public AccountModelService(IAddressService addressService, IBaseModelService baseModelService)
+        public AccountModelService(IAddressService addressService, IBaseModelService baseModelService, IMapper mapper)
         {
             _addressService = addressService;
             _baseModelService = baseModelService;
+            _mapper = mapper;
         }
 
         public AccountNavigationModel PrepareAccountNavigationModel(int selectedTabId = 0)
@@ -48,7 +51,6 @@ namespace TCommerce.Web.PrepareModelServices
 
         public async Task<AddressModel> PrepareAddressModel(Address address, AddressModel model)
         {
-            ArgumentNullException.ThrowIfNull(model);
             if (address is not null)
             {
                 model ??= new AddressModel()
@@ -56,17 +58,7 @@ namespace TCommerce.Web.PrepareModelServices
                     Id = address.Id
                 };
 
-                model.FirstName = address.FirstName;
-                model.LastName = address.LastName;
-                model.PhoneNumber = address.PhoneNumber;
-                model.AddressDetails = address.AddressDetails;
-                model.AddressType = address.AddressType;
-                model.ProvinceId = address.ProvinceId;
-                model.DistrictId = address.DistrictId;
-                model.CommuneId = address.CommuneId;
-                model.AddressTypeId = address.AddressTypeId;
-                model.AddressType = address.AddressType;
-                model.IsDefault = address.IsDefault;
+                _mapper.Map(address, model);
             }
 
             await _baseModelService.PrepareSelectListProvinceAsync(model.AvaiableProvinces, true, "Chọn Tỉnh/Thành phố");

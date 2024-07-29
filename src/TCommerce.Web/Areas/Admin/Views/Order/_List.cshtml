@@ -4,10 +4,10 @@
     var orderTable = new DataTableViewModel()
             {
                 TableTitle = "Danh sách đơn hàng",
-                EditUrl = Url.Action("EditDiscount", "Discount"),
+                EditUrl = Url.Action("Edit", "Order"),
                 DeleteUrl = Url.Action("DeleteDiscount", "Discount"),
-                SearchButtonId = "search-discounts",
-                GetDataUrl = Url.Action("GetAll", "Discount"),
+                SearchButtonId = "search-orders",
+                GetDataUrl = Url.Action("OrderList", "Order"),
                 DefaultSort = new DefaultSort(2, "desc"),
                 ServerSide = true,
                 Filters = new List<Filter>()
@@ -16,46 +16,39 @@
                     new Filter(nameof(Model.EndDate)),
                     new Filter(nameof(Model.OrderStatusIds)),
                     new Filter(nameof(Model.PaymentStatusIds)),
+                    new Filter(nameof(Model.PaymentMethodSystemName)),
+                    new Filter(nameof(Model.ProductId)),
+                    new Filter(nameof(Model.OrderNotes)),
                 },
                 Columns = new List<ColumnDefinition>()
                 {
-                    new ColumnDefinition(nameof(DiscountModel.Id))
+                    new ColumnDefinition(nameof(OrderModel.Id))
                     {
                         RenderType = RenderType.RenderCheckBox,
-                        Orderable = false
+                        Orderable = false,
+                        IsMasterCheckBox = true
                     },
-                    new ColumnDefinition(nameof(DiscountModel.DiscountTypeName))
+                    new ColumnDefinition(nameof(OrderModel.Id))
                     {
-                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.DiscountTypeName)
+                        Title = "Order #"
                     },
-                    new ColumnDefinition(nameof(DiscountModel.Name))
+                    new ColumnDefinition(nameof(OrderModel.OrderStatus))
                     {
-                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.Name),
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<OrderModel>(m=>m.OrderStatus),
+                        RenderType = RenderType.Custom,
+                        FunctionName = "renderColumnOrderStatus"
                     },
-                    new ColumnDefinition(nameof(DiscountModel.StartDateUtc))
+                    new ColumnDefinition(nameof(OrderModel.CustomerEmail))
                     {
-                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.StartDateUtc)
+                        Title = DisplayNameExtensions.GetPropertyDisplayName<OrderModel>(m=>m.CustomerEmail)
                     },
-                    new ColumnDefinition(nameof(DiscountModel.EndDateUtc))
-                    {
-                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.EndDateUtc)
-                    },
-                    new ColumnDefinition(nameof(DiscountModel.TimesUsed))
-                    {
-                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.TimesUsed)
-                    },
-                    new ColumnDefinition(nameof(DiscountModel.IsActive))
-                    {
-                        Title = DisplayNameExtensions.GetPropertyDisplayName<DiscountModel>(m=>m.IsActive),
-                        RenderType = RenderType.RenderBoolean
-                    },
-                    new ColumnDefinition(nameof(DiscountModel.Id))
+                    new ColumnDefinition(nameof(OrderModel.Id))
                     {
                         RenderType = RenderType.RenderButtonEdit,
                         Title = "Edit",
                         Orderable = false
                     },
-                    new ColumnDefinition(nameof(DiscountModel.Id))
+                    new ColumnDefinition(nameof(OrderModel.Id))
                     {
                         RenderType = RenderType.RenderButtonRemove,
                         Title = "Delete",
@@ -65,4 +58,26 @@
             };
 }
 
+<script>
+    function renderColumnOrderStatus(data, type, row, meta) {
+        var color;
+        switch (row.OrderStatusId) {
+        case 1:
+            color = 'bg-warning text-dark';
+            break;
+        case 2:
+            color = 'bg-info text-dark';
+            break;
+        case 3:
+            color = 'bg-success';
+            break;
+        case 4:
+            color = 'bg-danger';
+            break;
+        }
+        return '<span class="badge ' + color + '">' + data + '</span >';
+    }
+</script>
+
 @await Html.PartialAsync("_Table", orderTable)
+

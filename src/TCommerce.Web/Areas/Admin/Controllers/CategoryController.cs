@@ -188,7 +188,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         public async Task<IActionResult> GetProductList(ProductCategorySearchModel model)
         {
             // Create ProductParameters from DataTables parameters
-            var productParameters = ExtractQueryStringParameters<ProductParameters>();
+            var productParameters = ParseQueryStringParameters<ProductParameters>();
 
             productParameters.CategoryIds = new List<int> { model.SearchByCategoryId };
             productParameters.ManufacturerIds = new List<int> { model.SearchByManufacturerId };

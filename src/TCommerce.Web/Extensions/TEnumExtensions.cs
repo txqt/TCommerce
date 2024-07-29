@@ -2,7 +2,7 @@
 
 namespace TCommerce.Web.Extensions
 {
-    public static class EnumExtensions
+    public static class TEnumExtensions
     {
         public static IEnumerable<SelectListItem> ToSelectList<TEnum>() where TEnum : struct, Enum
         {

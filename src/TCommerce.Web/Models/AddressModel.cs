@@ -30,6 +30,9 @@ namespace TCommerce.Web.Models
         [Required, Display(Name = "Số điện thoại")]
         public string PhoneNumber { get; set; } = null!;
 
+        [Display(Name = "Email")]
+        public string? Email { get; set; } = null!;
+
         public int AddressTypeId { get; set; }
 
         [Required, Display(Name = "Loại địa chỉ")]

@@ -84,6 +84,7 @@ namespace TCommerce.Web.Areas.Admin.Models.Datatables
         public RenderType RenderType { get; set; }
         public string CheckBoxName { get; set; }
         public bool Editable { get; set; }
+        public string FunctionName { get; set; }
     }
 
     public enum RenderType
@@ -94,7 +95,8 @@ namespace TCommerce.Web.Areas.Admin.Models.Datatables
         RenderPicture,
         RenderButtonRemove,
         RenderButtonEdit,
-        RenderInlineEdit
+        RenderInlineEdit,
+        Custom
     }
 
     public class Filter

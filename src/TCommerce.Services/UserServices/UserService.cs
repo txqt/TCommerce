@@ -479,6 +479,11 @@ namespace TCommerce.Services.UserServices
                 }
             }
 
+            if(deliveryAddress.Email is null)
+            {
+                deliveryAddress.Email = (await GetCurrentUser()).Email;
+            }
+
             await _addressService.CreateAddressAsync(deliveryAddress);
 
             if (await _userAddressMappingRepository.Table
@@ -597,6 +602,11 @@ namespace TCommerce.Services.UserServices
                         }
                     }
                 }
+            }
+
+            if (deliveryAddress.Email is null)
+            {
+                deliveryAddress.Email = (await GetCurrentUser()).Email;
             }
 
             await _addressService.UpdateAddressAsync(deliveryAddress);

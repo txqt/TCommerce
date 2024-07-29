@@ -10,5 +10,8 @@ namespace TCommerce.Core.Models.Payments
         public string? Fee { get; set; }
         public bool Selected { get; set; }
         public string? LogoUrl { get; set; }
+        public bool SupportRefund { get; set; }
+        public bool SupportPartiallyRefund { get; set; }
+        public bool SupportVoid { get; set; }
     }
 }

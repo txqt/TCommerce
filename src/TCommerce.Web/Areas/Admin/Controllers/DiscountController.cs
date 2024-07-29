@@ -47,7 +47,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAllAsync(DiscountSearchModel searchModel)
         {
-            var discountParameters = ExtractQueryStringParameters<DiscountParameters>();
+            var discountParameters = ParseQueryStringParameters<DiscountParameters>();
 
             discountParameters.DiscountType = (DiscountType)searchModel.SearchDiscountTypeId;
             discountParameters.IsActiveId = searchModel.IsActiveId;
@@ -212,7 +212,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         public async Task<IActionResult> AddProductToDiscountList(DiscountProductSearchModel model)
         {
             // Create ProductParameters from DataTables parameters
-            var productParameters = ExtractQueryStringParameters<ProductParameters>();
+            var productParameters = ParseQueryStringParameters<ProductParameters>();
 
             productParameters.CategoryIds = new List<int> { model.CategoryId };
             productParameters.ManufacturerIds = new List<int> { model.ManufacturerId };

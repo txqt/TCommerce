@@ -22,7 +22,7 @@ namespace TCommerce.Web.Areas.Admin.Models.Orders
         #region Properties
         public Guid OrderGuid { get; set; }
         public string CustomOrderNumber { get; set; }
-        public int CustomerId { get; set; }
+        public Guid CustomerId { get; set; }
         public string CustomerInfo { get; set; }
         public string CustomerEmail { get; set; }
         public string CustomerFullName { get; set; }
