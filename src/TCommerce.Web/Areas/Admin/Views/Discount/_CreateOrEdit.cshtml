@@ -33,7 +33,7 @@
         </div>
         <div class="form-group">
             <label asp-for="DiscountTypeId" class="control-label">@Html.DisplayNameFor(model => model.DiscountTypeId)</label>
-            <select class="form-select" asp-items="@((EnumExtensions.ToSelectList<DiscountType>()))" asp-for="DiscountTypeId">
+            <select class="form-select" asp-items="@((TEnumExtensions.ToSelectList<DiscountType>()))" asp-for="DiscountTypeId">
             </select>
             <span asp-validation-for="DiscountTypeId" class="text-danger"></span>
         </div>
@@ -89,7 +89,7 @@
         </div>
         <div class="form-group">
             <label asp-for="DiscountLimitationId" class="control-label"></label>
-            <select class="form-select" asp-items="@((EnumExtensions.ToSelectList<DiscountLimitationType>()))" asp-for="DiscountLimitationId">
+            <select class="form-select" asp-items="@((TEnumExtensions.ToSelectList<DiscountLimitationType>()))" asp-for="DiscountLimitationId">
             </select>
             <span asp-validation-for="DiscountLimitationId" class="text-danger"></span>
         </div>

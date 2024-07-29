@@ -27,6 +27,12 @@
     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
 </div>
 <div class="form-group">
+    <label asp-for="Email" class="control-label"></label>
+    <input type="email" asp-for="Email" class="form-control" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+    <p>Nếu bạn đã điền email ở phần thông tin có thể để trống (Email để chúng tôi gửi thông báo đơn hàng cho bạn)</p>
+</div>
+<div class="form-group">
     <label class="control-label">Tỉnh/Thành phố:</label>
     <select required class="form-select form-select-lg mb-3" asp-items="Model.AvaiableProvinces" asp-for="ProvinceId">
     </select>

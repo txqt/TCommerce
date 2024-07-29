@@ -230,28 +230,25 @@ namespace TCommerce.Web.PrepareModelServices
 
             if (carts.Any())
             {
-                decimal subTotal = 0;
-                foreach (var item in carts)
-                {
-                    var product = await _productService.GetByIdAsync(item.ProductId);
-                    subTotal += await _priceCalculationService.CalculateAdjustedPriceAsync(product, item);
-                }
-                model.SubTotal = subTotal.ToString();
+                decimal orderSubtotal = await _priceCalculationService.CalculateSubTotalAsync(carts);
 
-                decimal discountAmount = await _priceCalculationService.CalculateDiscountsAsync(carts, subTotal);
+                var subTotalDiscountAmount = await _priceCalculationService.CalculateSubtotalDiscountAmountAsync(carts, orderSubtotal);
 
-                decimal subTotalAfterDiscount = subTotal - discountAmount;
-                model.SubTotalDiscount = subTotalAfterDiscount.ToString();
+                var orderSubtotalAfterDiscount = orderSubtotal - subTotalDiscountAmount;
 
-                decimal taxAmount = _priceCalculationService.CalculateTax(subTotalAfterDiscount);
-                decimal shippingFee = _priceCalculationService.CalculateShippingFee(carts);
+                var taxRate = 10;
+                var taxAmount = _priceCalculationService.CalculateTax(orderSubtotalAfterDiscount, taxRate);
 
-                decimal total = subTotalAfterDiscount + taxAmount + shippingFee;
+                var shippingFee = _priceCalculationService.CalculateShippingFee(carts);
 
-                // Calculate the total discount if there are any order total discounts
-                decimal orderTotalDiscountAmount = await _priceCalculationService.CalculateOrderTotalDiscount(total);
-                total -= orderTotalDiscountAmount;
-                model.OrderTotal = total.ToString();
+                var orderTotal = orderSubtotalAfterDiscount + taxAmount + shippingFee;
+
+                var orderTotalDiscountAmount = await _priceCalculationService.CalculateOrderTotalDiscount(orderTotal);
+
+                model.SubTotal = orderSubtotal.ToString();
+                model.SubTotalDiscount = orderSubtotalAfterDiscount.ToString();
+
+                model.OrderTotal = orderTotal.ToString();
                 model.Tax = taxAmount.ToString();
                 model.ShippingFee = shippingFee.ToString();
             }

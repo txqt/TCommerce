@@ -12,13 +12,19 @@ namespace TCommerce.Core.Models.Orders
         public int? ShippingAddressId { get; set; }
         public int OrderStatusId { get; set; }
         public int PaymentStatusId { get; set; }
-        public string? SubTotal { get; set; }
-        public string? SubTotalDiscount { get; set; }
-        public string? OrderTotalDiscount { get; set; }
-        public string? OrderTotal { get; set; }
-        public string? Tax { get; set; }
+        public decimal OrderSubtotalInclTax { get; set; }
+        public decimal OrderSubtotalExclTax { get; set; }
+        public decimal OrderSubTotalDiscountInclTax { get; set; }
+        public decimal OrderSubTotalDiscountExclTax { get; set; }
+        public decimal OrderDiscount { get; set; }
+        public decimal OrderTotal { get; set; }
+        public string? TaxRates { get; set; }
+        public string? OrderTax { get; set; }
         public string? ShippingFee { get; set; }
+        public decimal OrderShippingInclTax { get; set; }
+        public decimal OrderShippingExclTax { get; set; }
         public string PaymentMethodSystemName { get; set; }
+        public decimal RefundedAmount { get; set; }
         public DateTime CreatedOnUtc { get; set; }
         public bool Deleted { get; set; }
 

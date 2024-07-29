@@ -19,7 +19,14 @@ namespace TCommerce.Services.PriceCalulationServices
         private readonly ICategoryService _categoryService;
         private readonly IManufacturerService _manufacturerService;
 
-        public PriceCalculationService(IProductAttributeConverter productAttributeConverter, IProductAttributeService productAttributeService, IProductService productService, IHttpContextAccessor httpContextAccessor, IDiscountService discountService, ICategoryService categoryService, IManufacturerService manufacturerService)
+        public PriceCalculationService(
+            IProductAttributeConverter productAttributeConverter,
+            IProductAttributeService productAttributeService,
+            IProductService productService,
+            IHttpContextAccessor httpContextAccessor,
+            IDiscountService discountService,
+            ICategoryService categoryService,
+            IManufacturerService manufacturerService)
         {
             _productAttributeConverter = productAttributeConverter;
             _productAttributeService = productAttributeService;
@@ -36,326 +43,222 @@ namespace TCommerce.Services.PriceCalulationServices
 
             if (sci.AttributeJson is not null)
             {
-                foreach (var selectedAttribute in _productAttributeConverter.ConvertToObject(sci.AttributeJson))
+                var selectedAttributes = _productAttributeConverter.ConvertToObject(sci.AttributeJson);
+                foreach (var selectedAttribute in selectedAttributes)
                 {
                     foreach (var attributeValueId in selectedAttribute.ProductAttributeValueIds)
                     {
                         var attributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(attributeValueId);
 
-                        if (attributeValue.PriceAdjustment > 0)
-                        {
-                            if (attributeValue.PriceAdjustmentUsePercentage)
-                            {
-                                adjustedPrice += (attributeValue.PriceAdjustment * product.Price / 100) * sci.Quantity;
-                            }
-                            else
-                            {
-                                adjustedPrice += attributeValue.PriceAdjustment * sci.Quantity;
-                            }
-                        }
+                        adjustedPrice += attributeValue.PriceAdjustmentUsePercentage
+                            ? (attributeValue.PriceAdjustment * product.Price / 100) * sci.Quantity
+                            : attributeValue.PriceAdjustment * sci.Quantity;
                     }
                 }
             }
 
             return adjustedPrice;
         }
+
         public decimal CalculateAdjustedPrice(Product product, decimal priceAdjustment, bool priceAdjustmentUsePercentage = false)
         {
-            var productPrice = product.Price;
-            if (priceAdjustmentUsePercentage)
-            {
-                return (productPrice += (productPrice *= priceAdjustment / 100));
-            }
-
-            return (productPrice + priceAdjustment);
+            return priceAdjustmentUsePercentage
+                ? product.Price * (1 + priceAdjustment / 100)
+                : product.Price + priceAdjustment;
         }
-        public async Task<decimal> CalculateDiscountsAsync(List<ShoppingCartItem> carts, decimal subTotal)
-        {
-            decimal discountAmount = 0;
-            var discountSessionKey = "Discount";
-            var session = _httpContextAccessor.HttpContext.Session;
-            var discounts = session.Get<List<string>>(discountSessionKey) ?? new List<string>();
 
-            // Dictionaries to store the maximum non-cumulative discounts
+        public async Task<decimal> CalculateSubtotalDiscountAmountAsync(List<ShoppingCartItem> carts, decimal subTotal)
+        {
+            var discountAmount = 0m;
+            var session = _httpContextAccessor.HttpContext.Session;
+            var discounts = session.Get<List<string>>("Discount") ?? new List<string>();
             var maxDiscounts = new Dictionary<DiscountType, decimal>();
 
-            if (discounts != null)
+            foreach (var discountCode in discounts.ToList())
             {
-                foreach (var d in discounts)
+                var discount = await _discountService.GetDiscountByCode(discountCode);
+                if (discount == null || !(await _discountService.CheckValidDiscountAsync(discount)).Success)
                 {
-                    var discount = await _discountService.GetDiscountByCode(d);
-                    if (discount != null && (await _discountService.CheckValidDiscountAsync(discount)).Success)
-                    {
-                        decimal tempDiscountAmount = 0;
-                        switch (discount.DiscountType)
-                        {
-                            case DiscountType.AssignedToSkus:
-                                tempDiscountAmount = await CalculateSkuDiscountsAsync(carts, discount);
-                                break;
-                            case DiscountType.AssignedToCategories:
-                                tempDiscountAmount = await CalculateCategoriesDiscountsAsync(carts, discount);
-                                break;
-                            case DiscountType.AssignedToManufacturers:
-                                tempDiscountAmount = await CalculateManufacturersDiscountsAsync(carts, discount);
-                                break;
-                            case DiscountType.AssignedToOrderSubTotal:
-                                tempDiscountAmount = CalculateOrderSubTotalDiscount(subTotal, discount);
-                                break;
-                            case DiscountType.AssignedToOrderTotal:
-                                // CalculateOrderTotalDiscount will be called later with the final total amount
-                                break;
-                        }
+                    discounts.Remove(discountCode);
+                    session.Set("Discount", discounts);
+                    continue;
+                }
 
-                        if (discount.IsCumulative)
-                        {
-                            discountAmount += tempDiscountAmount;
-                        }
-                        else
-                        {
-                            if (maxDiscounts.ContainsKey(discount.DiscountType))
-                            {
-                                if (tempDiscountAmount > maxDiscounts[discount.DiscountType])
-                                {
-                                    maxDiscounts[discount.DiscountType] = tempDiscountAmount;
-                                }
-                            }
-                            else
-                            {
-                                maxDiscounts[discount.DiscountType] = tempDiscountAmount;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        discounts.Remove(d);
-                        session.Set(discountSessionKey, discounts);
-                    }
+                var tempDiscountAmount = await CalculateDiscountAmountAsync(carts, subTotal, discount);
+
+                if (discount.IsCumulative)
+                {
+                    discountAmount += tempDiscountAmount;
+                }
+                else
+                {
+                    maxDiscounts[discount.DiscountType] = Math.Max(maxDiscounts.GetValueOrDefault(discount.DiscountType), tempDiscountAmount);
                 }
             }
 
-            // Add the non-cumulative discounts to the total discount amount
-            discountAmount += maxDiscounts.Values.Sum();
-
-            return discountAmount;
+            return discountAmount + maxDiscounts.Values.Sum();
         }
+
+        private async Task<decimal> CalculateDiscountAmountAsync(List<ShoppingCartItem> carts, decimal subTotal, Discount discount)
+        {
+            return discount.DiscountType switch
+            {
+                DiscountType.AssignedToSkus => await CalculateSkuDiscountsAsync(carts, discount),
+                DiscountType.AssignedToCategories => await CalculateCategoriesDiscountsAsync(carts, discount),
+                DiscountType.AssignedToManufacturers => await CalculateManufacturersDiscountsAsync(carts, discount),
+                DiscountType.AssignedToOrderSubTotal => CalculateOrderSubTotalDiscount(subTotal, discount),
+                DiscountType.AssignedToOrderTotal => 0, // Will be calculated later
+                _ => 0,
+            };
+        }
+
         private async Task<decimal> CalculateSkuDiscountsAsync(List<ShoppingCartItem> carts, Discount discount)
         {
-            decimal discountAmount = 0;
+            var discountAmount = 0m;
 
             foreach (var item in carts)
             {
                 var product = await _productService.GetByIdAsync(item.ProductId);
-                var mapping = await _productService.GetDiscountAppliedToProductAsync(product.Id, discount.Id);
+                if (await _productService.GetDiscountAppliedToProductAsync(product.Id, discount.Id) == null) continue;
 
-                var productQuantityToDiscount = item.Quantity;
-
-                if (discount.MaximumDiscountedQuantity.HasValue && productQuantityToDiscount > discount.MaximumDiscountedQuantity)
-                {
-                    productQuantityToDiscount = discount.MaximumDiscountedQuantity.Value;
-                }
-
-                if (mapping != null)
-                {
-                    if (discount.UsePercentage && discount.DiscountPercentage > 0)
-                    {
-                        var discountAmountTemp = discount.DiscountPercentage * (product.Price / 100);
-
-                        if (discount.MaximumDiscountAmount.HasValue && discountAmountTemp > discount.MaximumDiscountAmount)
-                        {
-                            discountAmountTemp = discount.MaximumDiscountAmount.Value;
-                        }
-
-                        discountAmount += discountAmountTemp * productQuantityToDiscount;
-                    }
-                    else
-                    {
-                        discountAmount += discount.DiscountAmount * productQuantityToDiscount;
-                    }
-                }
+                var productQuantity = Math.Min(item.Quantity, discount.MaximumDiscountedQuantity ?? item.Quantity);
+                var productDiscount = CalculateProductDiscount(product.Price, productQuantity, discount);
+                discountAmount += productDiscount;
             }
 
             return discountAmount;
         }
+
         private async Task<decimal> CalculateCategoriesDiscountsAsync(List<ShoppingCartItem> carts, Discount discount)
         {
-            decimal discountAmount = 0;
+            var discountAmount = 0m;
 
             foreach (var item in carts)
             {
-                var productCategories = await _categoryService.GetProductCategoriesByProductIdAsync(item.ProductId);
-                var categoryIdList = productCategories.Select(x => x.CategoryId).ToList();
-                foreach (var c in categoryIdList)
+                var categoryIdList = (await _categoryService.GetProductCategoriesByProductIdAsync(item.ProductId))
+                    .Select(x => x.CategoryId)
+                    .ToList();
+
+                foreach (var categoryId in categoryIdList)
                 {
-                    var category = await _categoryService.GetCategoryByIdAsync(c);
-                    if (category is not null)
-                    {
-                        var mapping = await _categoryService.GetDiscountAppliedToCategoryAsync(category.Id, discount.Id);
-                        if (mapping != null)
-                        {
-                            var product = await _productService.GetByIdAsync(item.ProductId);
-                            var productQuantity = item.Quantity;
+                    if (await _categoryService.GetDiscountAppliedToCategoryAsync(categoryId, discount.Id) == null) continue;
 
-                            if (discount.MaximumDiscountedQuantity.HasValue && productQuantity > discount.MaximumDiscountedQuantity)
-                            {
-                                productQuantity = discount.MaximumDiscountedQuantity.Value;
-                            }
-
-                            if (discount.UsePercentage && discount.DiscountPercentage > 0)
-                            {
-                                var discountAmountTemp = discount.DiscountPercentage * (product.Price / 100);
-                                if (discount.MaximumDiscountAmount.HasValue && discountAmountTemp > discount.MaximumDiscountAmount)
-                                {
-                                    discountAmountTemp = discount.MaximumDiscountAmount.Value;
-                                }
-                                discountAmount += discountAmountTemp * productQuantity;
-                            }
-                            else
-                            {
-                                discountAmount += discount.DiscountAmount * productQuantity;
-                            }
-                            break;
-                        }
-                    }
+                    var product = await _productService.GetByIdAsync(item.ProductId);
+                    var productQuantity = Math.Min(item.Quantity, discount.MaximumDiscountedQuantity ?? item.Quantity);
+                    var productDiscount = CalculateProductDiscount(product.Price, productQuantity, discount);
+                    discountAmount += productDiscount;
+                    break;
                 }
             }
 
             return discountAmount;
         }
+
         private async Task<decimal> CalculateManufacturersDiscountsAsync(List<ShoppingCartItem> carts, Discount discount)
         {
-            decimal discountAmount = 0;
+            var discountAmount = 0m;
 
             foreach (var item in carts)
             {
-                var productManufacturers = await _manufacturerService.GetProductManufacturerByProductIdAsync(item.ProductId);
-                var manufacturerIdList = productManufacturers.Select(x => x.ManufacturerId).ToList();
-                foreach (var c in manufacturerIdList)
+                var manufacturerIdList = (await _manufacturerService.GetProductManufacturerByProductIdAsync(item.ProductId))
+                    .Select(x => x.ManufacturerId)
+                    .ToList();
+
+                foreach (var manufacturerId in manufacturerIdList)
                 {
-                    var manufacturer = await _manufacturerService.GetManufacturerByIdAsync(c);
-                    if (manufacturer is not null)
-                    {
-                        var mapping = await _manufacturerService.GetDiscountAppliedToManufacturerAsync(manufacturer.Id, discount.Id);
-                        if (mapping != null)
-                        {
-                            var product = await _productService.GetByIdAsync(item.ProductId);
-                            var productQuantity = item.Quantity;
+                    if (await _manufacturerService.GetDiscountAppliedToManufacturerAsync(manufacturerId, discount.Id) == null) continue;
 
-                            if (discount.MaximumDiscountedQuantity.HasValue && productQuantity > discount.MaximumDiscountedQuantity)
-                            {
-                                productQuantity = discount.MaximumDiscountedQuantity.Value;
-                            }
-
-                            if (discount.UsePercentage && discount.DiscountPercentage > 0)
-                            {
-                                var discountAmountTemp = discount.DiscountPercentage * (product.Price / 100);
-                                if (discount.MaximumDiscountAmount.HasValue && discountAmountTemp > discount.MaximumDiscountAmount)
-                                {
-                                    discountAmountTemp = discount.MaximumDiscountAmount.Value;
-                                }
-                                discountAmount += discountAmountTemp * productQuantity;
-                            }
-                            else
-                            {
-                                discountAmount += discount.DiscountAmount * productQuantity;
-                            }
-                            break;
-                        }
-                    }
+                    var product = await _productService.GetByIdAsync(item.ProductId);
+                    var productQuantity = Math.Min(item.Quantity, discount.MaximumDiscountedQuantity ?? item.Quantity);
+                    var productDiscount = CalculateProductDiscount(product.Price, productQuantity, discount);
+                    discountAmount += productDiscount;
+                    break;
                 }
             }
 
             return discountAmount;
         }
-        public decimal CalculateOrderSubTotalDiscount(decimal subTotal, Discount discount)
+
+        private static decimal CalculateProductDiscount(decimal productPrice, int productQuantity, Discount discount)
         {
-            decimal discountAmount = 0;
+            var discountAmount = discount.UsePercentage
+                ? discount.DiscountPercentage * (productPrice / 100)
+                : discount.DiscountAmount;
 
-            if (discount.UsePercentage && discount.DiscountPercentage > 0)
+            if (discount.MaximumDiscountAmount.HasValue)
             {
-                discountAmount = discount.DiscountPercentage * (subTotal / 100);
-                if (discount.MaximumDiscountAmount.HasValue && discountAmount > discount.MaximumDiscountAmount)
-                {
-                    discountAmount = discount.MaximumDiscountAmount.Value;
-                }
-            }
-            else
-            {
-                discountAmount = discount.DiscountAmount;
-                if (discount.MaximumDiscountAmount.HasValue && discountAmount > discount.MaximumDiscountAmount)
-                {
-                    discountAmount = discount.MaximumDiscountAmount.Value;
-                }
+                discountAmount = Math.Min(discountAmount, discount.MaximumDiscountAmount.Value);
             }
 
-            return discountAmount;
+            return discountAmount * productQuantity;
         }
+
+        private decimal CalculateOrderSubTotalDiscount(decimal subTotal, Discount discount)
+        {
+            return CalculateDiscountAmount(subTotal, discount);
+        }
+
         public async Task<decimal> CalculateOrderTotalDiscount(decimal orderTotal)
         {
-            decimal discountAmount = 0;
-            var discountSessionKey = "Discount";
+            var discountAmount = 0m;
             var session = _httpContextAccessor.HttpContext.Session;
-            var discounts = session.Get<List<string>>(discountSessionKey) ?? new List<string>();
+            var discounts = session.Get<List<string>>("Discount") ?? new List<string>();
 
             var maxOrderTotalDiscount = 0m;
 
-            if (discounts != null)
+            foreach (var discountCode in discounts)
             {
-                foreach (var d in discounts)
+                var discount = await _discountService.GetDiscountByCode(discountCode);
+                if (discount?.DiscountType != DiscountType.AssignedToOrderTotal) continue;
+
+                var tempDiscountAmount = CalculateDiscountAmount(orderTotal, discount);
+
+                if (discount.IsCumulative)
                 {
-                    var discount = await _discountService.GetDiscountByCode(d);
-                    if (discount != null && discount.DiscountType == DiscountType.AssignedToOrderTotal)
-                    {
-                        var tempDiscountAmount = CalculateOrderTotalDiscount(orderTotal, discount);
-                        if (discount.IsCumulative)
-                        {
-                            discountAmount += tempDiscountAmount;
-                        }
-                        else
-                        {
-                            if (tempDiscountAmount > maxOrderTotalDiscount)
-                            {
-                                maxOrderTotalDiscount = tempDiscountAmount;
-                            }
-                        }
-                    }
+                    discountAmount += tempDiscountAmount;
+                }
+                else
+                {
+                    maxOrderTotalDiscount = Math.Max(maxOrderTotalDiscount, tempDiscountAmount);
                 }
             }
 
-            return discountAmount;
+            return discountAmount + maxOrderTotalDiscount;
         }
-        private decimal CalculateOrderTotalDiscount(decimal orderTotal, Discount discount)
+
+        private static decimal CalculateDiscountAmount(decimal amount, Discount discount)
         {
-            decimal discountAmount = 0;
+            var discountAmount = discount.UsePercentage
+                ? discount.DiscountPercentage * (amount / 100)
+                : discount.DiscountAmount;
 
-            if (discount.UsePercentage && discount.DiscountPercentage > 0)
-            {
-                discountAmount = discount.DiscountPercentage * (orderTotal / 100);
-                if (discount.MaximumDiscountAmount.HasValue && discountAmount > discount.MaximumDiscountAmount)
-                {
-                    discountAmount = discount.MaximumDiscountAmount.Value;
-                }
-            }
-            else
-            {
-                discountAmount = discount.DiscountAmount;
-                if (discount.MaximumDiscountAmount.HasValue && discountAmount > discount.MaximumDiscountAmount)
-                {
-                    discountAmount = discount.MaximumDiscountAmount.Value;
-                }
-            }
-
-            return discountAmount;
+            return discount.MaximumDiscountAmount.HasValue
+                ? Math.Min(discountAmount, discount.MaximumDiscountAmount.Value)
+                : discountAmount;
         }
-        public decimal CalculateTax(decimal subTotalAfterDiscount)
+
+        public decimal CalculateTax(decimal subTotalAfterDiscount, decimal taxRates)
         {
-            // Add logic to calculate tax
-            const decimal taxRate = 0.10m; // 10% tax rate for example
+            decimal taxRate = taxRates / 10;
             return subTotalAfterDiscount * taxRate;
         }
+
         public decimal CalculateShippingFee(List<ShoppingCartItem> carts)
         {
-            // Add logic to calculate shipping fee
-            return 50_000; // Fixed shipping fee for example
+            return 50_000;
+        }
+
+        public async Task<decimal> CalculateSubTotalAsync(List<ShoppingCartItem> carts)
+        {
+            decimal subTotal = 0;
+            foreach (var item in carts)
+            {
+                var product = await _productService.GetByIdAsync(item.ProductId);
+                subTotal += await CalculateAdjustedPriceAsync(product, item);
+            }
+            return subTotal;
         }
     }
+
 }
+

@@ -89,6 +89,20 @@
     </li>
 
     <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSale"
+           aria-expanded="true" aria-controls="collapseSale">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Sales</span>
+        </a>
+        <div id="collapseSale" class="collapse" aria-labelledby="headingSlider" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Order:</h6>
+                <a class="collapse-item" asp-controller="Order" asp-action="Index">List</a>
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePromotion"
            aria-expanded="true" aria-controls="collapsePromotion">
             <i class="fas fa-fw fa-cog"></i>

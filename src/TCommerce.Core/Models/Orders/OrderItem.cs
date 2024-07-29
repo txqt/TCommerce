@@ -9,7 +9,8 @@ namespace TCommerce.Core.Models.Orders
         public int Quantity { get; set; }
         public decimal? ItemWeight { get; set; }
         public decimal Price { get; set; }
+        public decimal DiscountAmount { get; set; }
         public decimal OriginalProductCost { get; set; }
-        public string? AttributesJson { get; set; }
+        public string? AttributeInfo { get; set; }
     }
 }

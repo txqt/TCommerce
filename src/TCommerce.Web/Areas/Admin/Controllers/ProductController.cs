@@ -55,7 +55,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> GetAll(ProductSearchModel searchModel)
         {
-            var productParameters = ExtractQueryStringParameters<ProductParameters>();
+            var productParameters = ParseQueryStringParameters<ProductParameters>();
 
             productParameters.CategoryIds = new List<int> { searchModel.CategoryId };
             productParameters.ManufacturerIds = new List<int> { searchModel.ManufacturerId };
@@ -799,7 +799,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> RelatedProductList(RelatedProductSearchModel searchModel)
         {
-            var productParameters = ExtractQueryStringParameters<ProductParameters>();
+            var productParameters = ParseQueryStringParameters<ProductParameters>();
 
             productParameters.CategoryIds = new List<int> { searchModel.SearchByCategoryId };
             productParameters.ManufacturerIds = new List<int> { searchModel.SearchByManufacturerId };

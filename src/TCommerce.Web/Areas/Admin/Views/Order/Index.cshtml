@@ -41,7 +41,7 @@
                     </select>
                 </div>
                 <div class="col-auto">
-                    <label asp-for="PaymentStatusIds" class="col-form-label">Order statuses</label>
+                    <label asp-for="PaymentStatusIds" class="col-form-label">Payment statuses</label>
                 </div>
                 <div class="col-auto">
                     <select class="form-select" asp-items="Model.AvailablePaymentStatuses" asp-for="PaymentStatusIds" multiple="multiple">
@@ -61,3 +61,13 @@
 <t-accordion>
     @await Html.PartialAsync("_List", Model)
 </t-accordion>
+
+@Html.Script(@<text>
+        <script>
+            $(document).ready(function () {
+                $('#@nameof(Model.OrderStatusIds)').select2();
+                $('#@nameof(Model.PaymentStatusIds)').select2();
+            });
+        </script>
+    </text>
+)

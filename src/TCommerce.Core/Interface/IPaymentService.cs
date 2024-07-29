@@ -14,5 +14,8 @@ namespace TCommerce.Core.Interface
         public List<PaymentMethod> GetAllPaymentMethods();
         public PaymentMethod GetPaymentMethodBySystemName(string paymentSystemName);
         public Task<ServiceResponse<string>> ProcessPaymentAsync(Order oder, PaymentMethod paymentMethod);
+        public bool SupportRefund(string paymentMethodSystemName);
+        public bool SupportPartiallyRefund(string paymentMethodSystemName);
+        public bool SupportVoid(string paymentMethodSystemName);
     }
 }

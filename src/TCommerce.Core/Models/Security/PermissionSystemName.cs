@@ -15,5 +15,6 @@ namespace TCommerce.Core.Models.Security
         public const string ManageUsers = "ManageUsers";
         public const string ManagePermissions = "ManagePermissions";
         public const string ManageDiscounts = "ManageDiscounts";
+        public const string ManageOrders = "ManageOrders";
     }
 }
