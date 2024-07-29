@@ -18,6 +18,7 @@ using TCommerce.Core.Extensions;
 using TCommerce.Web.Models;
 using TCommerce.Web.PrepareModelServices;
 using TCommerce.Core.Models.Discounts;
+using TCommerce.Services.UrlRecordServices;
 
 namespace TCommerce.Web.Controllers
 {
@@ -171,7 +172,7 @@ namespace TCommerce.Web.Controllers
 
             if (!string.IsNullOrEmpty(paymentResult.Data))
             {
-                return Redirect(paymentResult.Data);
+                return Json(new { success = true, message = "Cảm ơn đã mua hàng, vui lòng kiểm tra email của bạn", redirectUrl = paymentResult.Data });
             }
             var redirectUrl = Url.Action("Thankyou", "Checkout", new { message = "Order confirmed successfully!" });
             return Json(new { success = true, message = "Cảm ơn đã mua hàng, vui lòng kiểm tra email của bạn", redirectUrl });
@@ -183,7 +184,47 @@ namespace TCommerce.Web.Controllers
 
         private async Task<Order> CreateOrderAsync(User user, AddressInfoModel defaultAddress, PaymentMethod paymentMethod, List<ShoppingCartItem> carts)
         {
-            var order = new Order
+            var order = InitializeOrder(user, defaultAddress, paymentMethod);
+
+            decimal orderSubtotal = await _priceCalculationService.CalculateSubTotalAsync(carts);
+
+            var subTotalDiscountAmount = await _priceCalculationService.CalculateSubtotalDiscountAmountAsync(carts, orderSubtotal);
+
+            var orderSubtotalAfterDiscount = orderSubtotal - subTotalDiscountAmount;
+
+            var taxRate = 10;  //%
+            var taxAmount = _priceCalculationService.CalculateTax(orderSubtotalAfterDiscount, taxRate);
+
+            var shippingFee = _priceCalculationService.CalculateShippingFee(carts);
+
+            var orderTotal = orderSubtotalAfterDiscount + taxAmount + shippingFee;
+
+            var orderTotalDiscountAmount = await _priceCalculationService.CalculateOrderTotalDiscount(orderTotal);
+
+            // Lưu các giá trị vào đơn hàng
+            order.OrderSubtotalInclTax = orderSubtotal + taxAmount;
+            order.OrderSubtotalExclTax = orderSubtotal;
+
+            order.OrderSubTotalDiscountInclTax = orderSubtotal - subTotalDiscountAmount + taxAmount;
+            order.OrderSubTotalDiscountExclTax = orderSubtotal - subTotalDiscountAmount;
+
+            order.OrderDiscount = orderTotalDiscountAmount;
+            order.OrderTotal = orderTotal - orderTotalDiscountAmount;
+
+            order.TaxRates = $"{taxRate}%";
+            order.OrderTax = taxAmount.ToString();
+            order.ShippingFee = shippingFee.ToString();
+
+            order.OrderShippingInclTax = shippingFee + taxAmount;
+            order.OrderShippingExclTax = shippingFee;
+
+
+            return order;
+        }
+
+        private Order InitializeOrder(User user, AddressInfoModel defaultAddress, PaymentMethod paymentMethod)
+        {
+            return new Order
             {
                 OrderGuid = Guid.NewGuid(),
                 UserId = user.Id,
@@ -193,36 +234,6 @@ namespace TCommerce.Web.Controllers
                 PaymentMethodSystemName = paymentMethod.PaymentMethodSystemName,
                 PaymentStatus = PaymentStatus.Pending
             };
-
-            var subTotal = await CalculateSubTotalAsync(carts);
-            order.SubTotal = subTotal.ToString();
-
-            var discountAmount = await _priceCalculationService.CalculateDiscountsAsync(carts, subTotal);
-            var subTotalAfterDiscount = subTotal - discountAmount;
-            order.SubTotalDiscount = subTotalAfterDiscount.ToString();
-
-            var taxAmount = _priceCalculationService.CalculateTax(subTotalAfterDiscount);
-            var shippingFee = _priceCalculationService.CalculateShippingFee(carts);
-            var total = subTotalAfterDiscount + taxAmount + shippingFee;
-
-            var orderTotalDiscountAmount = await _priceCalculationService.CalculateOrderTotalDiscount(total);
-            total -= orderTotalDiscountAmount;
-            order.OrderTotal = total.ToString();
-            order.Tax = taxAmount.ToString();
-            order.ShippingFee = shippingFee.ToString();
-
-            return order;
-        }
-
-        private async Task<decimal> CalculateSubTotalAsync(IList<ShoppingCartItem> carts)
-        {
-            decimal subTotal = 0;
-            foreach (var item in carts)
-            {
-                var product = await _productService.GetByIdAsync(item.ProductId);
-                subTotal += await _priceCalculationService.CalculateAdjustedPriceAsync(product, item);
-            }
-            return subTotal;
         }
 
         private async Task<List<OrderItem>> CreateOrderItemsAsync(int orderId, IList<ShoppingCartItem> carts)
@@ -231,90 +242,10 @@ namespace TCommerce.Web.Controllers
             foreach (var cart in carts)
             {
                 var product = await _productService.GetByIdAsync(cart.ProductId);
-                orderItems.Add(new OrderItem
-                {
-                    OrderId = orderId,
-                    ProductId = product.Id,
-                    Quantity = cart.Quantity,
-                    ItemWeight = product.Weight,
-                    Price = await _priceCalculationService.CalculateAdjustedPriceAsync(product, cart),
-                    OriginalProductCost = product.Price,
-                    AttributesJson = cart.AttributeJson
-                });
-            }
-            return orderItems;
-        }
+                string separator = "<br />";
 
-        [HttpPost]
-        public async Task<IActionResult> SelectAddress(int id)
-        {
-            var address = await _addressService.GetAddressByIdAsync(id);
-            if (address == null)
-            {
-                return Json(new { success = false });
-            }
+                var attributeInfo = new StringBuilder();
 
-            var addresses = await _userService.GetOwnAddressesAsync();
-            if (addresses == null || !addresses.Any(x => x.Id != address.Id))
-            {
-                return Json(new { success = false });
-            }
-
-            address.IsDefault = true;
-            var result = await _userService.UpdateUserAddressAsync(address);
-            SetStatusMessage(result.Success ? "Success" : "Failed");
-
-            ViewBag.RefreshPage = true;
-            return Json(new { success = result.Success });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> NewDefaultAddress(AddressModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                model = await _accountModelService.PrepareAddressModel(null, model);
-                return View(model);
-            }
-
-            var address = _mapper.Map<Address>(model);
-            address.CreatedOnUtc = DateTime.UtcNow;
-            address.IsDefault = true;
-
-            var result = await _userService.CreateUserAddressAsync(address);
-            SetStatusMessage(result.Success ? "Success" : "Failed");
-
-            return RedirectToAction(nameof(Confirm));
-        }
-
-        [HttpPost]
-        public IActionResult SavePaymentMethod(string payment_method)
-        {
-            if (string.IsNullOrEmpty(payment_method))
-            {
-                return Json(new { success = false, message = "Payment method not selected." });
-            }
-
-            HttpContext.Session.SetString("PaymentMethodSessionKey", payment_method);
-
-            return Json(new { success = true });
-        }
-
-        private async Task SendMailConfirmedOrder(Order order)
-        {
-            var user = await _userService.GetCurrentUser();
-            var carts = await _shoppingCartService.GetShoppingCartAsync(user, ShoppingCartType.ShoppingCart);
-            var path = Path.Combine(_env.ContentRootPath, "wwwroot/ordersuccesfullymail.html");
-
-
-            string bodyBuilder = "";
-
-            List<string> products = new List<string>();
-
-            foreach (var cart in carts)
-            {
-                var result = new StringBuilder();
-                var product = await _productService.GetByIdAsync(cart.ProductId);
                 if (cart.AttributeJson is not null)
                 {
                     foreach (var selectedAttribute in _productAttributeConverter.ConvertToObject(cart.AttributeJson))
@@ -327,77 +258,190 @@ namespace TCommerce.Web.Controllers
                         foreach (var attributeValueId in selectedAttribute.ProductAttributeValueIds)
                         {
                             var attributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(attributeValueId);
-
                             var formattedAttribute = $"{attributeName}: {attributeValue.Name}";
+
+
 
                             if (!string.IsNullOrEmpty(formattedAttribute))
                             {
-                                if (result.Length > 0)
+                                if (attributeInfo.Length > 0)
                                 {
-                                    result.Append("<br />");
+                                    attributeInfo.Append(separator);
                                 }
-                                result.Append(formattedAttribute);
+                                attributeInfo.Append(formattedAttribute);
                             }
                         }
                     }
                 }
+            
 
-                var subTotal = await _priceCalculationService.CalculateAdjustedPriceAsync(product, cart);
+            orderItems.Add(new OrderItem
+            {
+                OrderId = orderId,
+                ProductId = product.Id,
+                Quantity = cart.Quantity,
+                ItemWeight = product.Weight,
+                Price = await _priceCalculationService.CalculateAdjustedPriceAsync(product, cart),
+                OriginalProductCost = product.Price,
+                AttributeInfo = attributeInfo.ToString()
+            });
+        }
+            return orderItems;
+        }
 
-                products.Add("<tr>\r\n" +
-                "<td align=\"left\" style=\"padding:3px 9px\" valign=\"top\">\r\n" +
-                $"<span>{product.Name + "<br>\r\n" + result.ToString()}</span>\r\n" +
-                "<br>\r\n" +
-                "</td>\r\n" +
-                "<td align=\"left\" style=\"padding:3px 9px\" valign=\"top\">\r\n" +
-                $"<span>{product.Price}đ</span>\r\n" +
-                "</td>\r\n                                            " +
-                        $"<td align=\"left\" style=\"padding:3px 9px\" valign=\"top\">{cart.Quantity}</td>\r\n" +
-                        "<td align=\"left\" style=\"padding:3px 9px\" valign=\"top\">\r\n" +
-                        "<span>0đ</span>\r\n" +
-                        "</td>\r\n" +
-                        "<td align=\"right\" style=\"padding:3px 9px\" valign=\"top\">\r\n" +
-                $"<span>{subTotal}đ</span>\r\n" +
-                "</td>\r\n" +
-                        "</tr>");
+    [HttpPost]
+    public async Task<IActionResult> SelectAddress(int id)
+    {
+        var address = await _addressService.GetAddressByIdAsync(id);
+        if (address == null)
+        {
+            return Json(new { success = false });
+        }
 
-                result.Clear();
+        var addresses = await _userService.GetOwnAddressesAsync();
+        if (addresses == null || !addresses.Any(x => x.Id != address.Id))
+        {
+            return Json(new { success = false });
+        }
+
+        address.IsDefault = true;
+        var result = await _userService.UpdateUserAddressAsync(address);
+        SetStatusMessage(result.Success ? "Success" : "Failed");
+
+        ViewBag.RefreshPage = true;
+        return Json(new { success = result.Success });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> NewDefaultAddress(AddressModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            model = await _accountModelService.PrepareAddressModel(null, model);
+            return View(model);
+        }
+
+        var address = _mapper.Map<Address>(model);
+        address.CreatedOnUtc = DateTime.UtcNow;
+        address.IsDefault = true;
+
+        var result = await _userService.CreateUserAddressAsync(address);
+        SetStatusMessage(result.Success ? "Success" : "Failed");
+
+        return RedirectToAction(nameof(Confirm));
+    }
+
+    [HttpPost]
+    public IActionResult SavePaymentMethod(string payment_method)
+    {
+        if (string.IsNullOrEmpty(payment_method))
+        {
+            return Json(new { success = false, message = "Payment method not selected." });
+        }
+
+        HttpContext.Session.SetString("PaymentMethodSessionKey", payment_method);
+
+        return Json(new { success = true });
+    }
+
+    private async Task SendMailConfirmedOrder(Order order)
+    {
+        var user = await _userService.GetCurrentUser();
+        var carts = await _shoppingCartService.GetShoppingCartAsync(user, ShoppingCartType.ShoppingCart);
+        var path = Path.Combine(_env.ContentRootPath, "wwwroot/ordersuccesfullymail.html");
+
+
+        string bodyBuilder = "";
+
+        List<string> products = new List<string>();
+
+        foreach (var cart in carts)
+        {
+            var result = new StringBuilder();
+            var product = await _productService.GetByIdAsync(cart.ProductId);
+            if (cart.AttributeJson is not null)
+            {
+                foreach (var selectedAttribute in _productAttributeConverter.ConvertToObject(cart.AttributeJson))
+                {
+                    var productAttributeMapping = await _productAttributeService.GetProductAttributeMappingByIdAsync(selectedAttribute.ProductAttributeMappingId);
+                    var productAttribute = await _productAttributeService.GetProductAttributeByIdAsync(productAttributeMapping.ProductAttributeId);
+
+                    var attributeName = productAttribute.Name;
+
+                    foreach (var attributeValueId in selectedAttribute.ProductAttributeValueIds)
+                    {
+                        var attributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(attributeValueId);
+
+                        var formattedAttribute = $"{attributeName}: {attributeValue.Name}";
+
+                        if (!string.IsNullOrEmpty(formattedAttribute))
+                        {
+                            if (result.Length > 0)
+                            {
+                                result.Append("<br />");
+                            }
+                            result.Append(formattedAttribute);
+                        }
+                    }
+                }
             }
 
-            using (StreamReader SourceReader = System.IO.File.OpenText(path))
-            {
-                bodyBuilder = SourceReader.ReadToEnd();
-            }
+            var subTotal = await _priceCalculationService.CalculateAdjustedPriceAsync(product, cart);
 
-            bodyBuilder = bodyBuilder.Replace("[oder-id]", order.OrderGuid.ToString().ToUpper());
-            bodyBuilder = bodyBuilder.Replace("[user-first-name]", user.FirstName);
-            bodyBuilder = bodyBuilder.Replace("[order-date]", order.CreatedOnUtc.ToString("dddd, dd MMMM yyyy HH:mm:ss"));
-            bodyBuilder = bodyBuilder.Replace("[user-full-name]", user.LastName + " " + user.FirstName);
-            bodyBuilder = bodyBuilder.Replace("[user-mail]", user.Email);
-            bodyBuilder = bodyBuilder.Replace("[user-list-order]", _configuration["ClientUrl"] + "/user/list-order");
-            bodyBuilder = bodyBuilder.Replace("[user-phone-number]", user.PhoneNumber);
-            bodyBuilder = bodyBuilder.Replace("[payment-method]", order.PaymentMethodSystemName);
-            bodyBuilder = bodyBuilder.Replace("[total-price]", order.OrderTotal.ToString());
-            bodyBuilder = bodyBuilder.Replace("[all-products]", String.Join("", products.ToArray()));
-            bodyBuilder = bodyBuilder.Replace("[order-subtotal]", order.SubTotal.ToString());
-            bodyBuilder = bodyBuilder.Replace("[order-subtotal-have-discount]", order.SubTotalDiscount.ToString());
-            bodyBuilder = bodyBuilder.Replace("[order-tax]", order.Tax.ToString());
-            bodyBuilder = bodyBuilder.Replace("[user-address]", (await _userService.GetOwnAddressesAsync()).Where(x => x.IsDefault).FirstOrDefault().AddressFull);
+            products.Add("<tr>\r\n" +
+            "<td align=\"left\" style=\"padding:3px 9px\" valign=\"top\">\r\n" +
+            $"<span>{product.Name + "<br>\r\n" + result.ToString()}</span>\r\n" +
+            "<br>\r\n" +
+            "</td>\r\n" +
+            "<td align=\"left\" style=\"padding:3px 9px\" valign=\"top\">\r\n" +
+            $"<span>{product.Price}đ</span>\r\n" +
+            "</td>\r\n                                            " +
+                    $"<td align=\"left\" style=\"padding:3px 9px\" valign=\"top\">{cart.Quantity}</td>\r\n" +
+                    "<td align=\"left\" style=\"padding:3px 9px\" valign=\"top\">\r\n" +
+                    "<span>0đ</span>\r\n" +
+                    "</td>\r\n" +
+                    "<td align=\"right\" style=\"padding:3px 9px\" valign=\"top\">\r\n" +
+            $"<span>{subTotal}đ</span>\r\n" +
+            "</td>\r\n" +
+                    "</tr>");
 
-            EmailDto emailDto = new EmailDto
-            {
-                Subject = $"[TCommerce] Xác nhận đơn hàng #{order.OrderGuid.ToString().ToUpper()}",
-                Body = bodyBuilder,
-                To = user.Email
-            };
-            try
-            {
-                await _emailSender.SendEmailAsync(emailDto);
-            }
-            catch
-            {
+            result.Clear();
+        }
 
-            }
+        using (StreamReader SourceReader = System.IO.File.OpenText(path))
+        {
+            bodyBuilder = SourceReader.ReadToEnd();
+        }
+
+        bodyBuilder = bodyBuilder.Replace("[oder-id]", order.OrderGuid.ToString().ToUpper());
+        bodyBuilder = bodyBuilder.Replace("[user-first-name]", user.FirstName);
+        bodyBuilder = bodyBuilder.Replace("[order-date]", order.CreatedOnUtc.ToString("dddd, dd MMMM yyyy HH:mm:ss"));
+        bodyBuilder = bodyBuilder.Replace("[user-full-name]", user.LastName + " " + user.FirstName);
+        bodyBuilder = bodyBuilder.Replace("[user-mail]", user.Email);
+        bodyBuilder = bodyBuilder.Replace("[user-list-order]", _configuration["ClientUrl"] + "/user/list-order");
+        bodyBuilder = bodyBuilder.Replace("[user-phone-number]", user.PhoneNumber);
+        bodyBuilder = bodyBuilder.Replace("[payment-method]", order.PaymentMethodSystemName);
+        bodyBuilder = bodyBuilder.Replace("[total-price]", order.OrderTotal.ToString());
+        bodyBuilder = bodyBuilder.Replace("[all-products]", String.Join("", products.ToArray()));
+        bodyBuilder = bodyBuilder.Replace("[order-subtotal]", order.OrderSubtotalExclTax.ToString());
+        bodyBuilder = bodyBuilder.Replace("[order-subtotal-have-discount]", order.OrderSubTotalDiscountExclTax.ToString());
+        bodyBuilder = bodyBuilder.Replace("[order-tax]", order.OrderTax.ToString());
+        bodyBuilder = bodyBuilder.Replace("[user-address]", (await _userService.GetOwnAddressesAsync()).Where(x => x.IsDefault).FirstOrDefault().AddressFull);
+
+        EmailDto emailDto = new EmailDto
+        {
+            Subject = $"[TCommerce] Xác nhận đơn hàng #{order.OrderGuid.ToString().ToUpper()}",
+            Body = bodyBuilder,
+            To = user.Email
+        };
+        try
+        {
+            await _emailSender.SendEmailAsync(emailDto);
+        }
+        catch
+        {
+
         }
     }
+}
 }

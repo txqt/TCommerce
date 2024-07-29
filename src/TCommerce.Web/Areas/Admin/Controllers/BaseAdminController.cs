@@ -9,7 +9,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
     [CheckPermission(PermissionSystemName.AccessAdminPanel)]
     public class BaseAdminController : BaseController
     {
-        protected T ExtractQueryStringParameters<T>() where T : QueryStringParameters, new()
+        protected T ParseQueryStringParameters<T>() where T : QueryStringParameters, new()
         {
             
             var start = int.Parse(Request.Form["start"].FirstOrDefault());

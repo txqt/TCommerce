@@ -14,7 +14,6 @@ namespace TCommerce.Web.Areas.Admin.Models.Orders
             AvailablePaymentMethods = new List<SelectListItem>();
             OrderStatusIds = new List<int>();
             PaymentStatusIds = new List<int>();
-            ShippingStatusIds = new List<int>();
         }
 
         #endregion
@@ -31,8 +30,6 @@ namespace TCommerce.Web.Areas.Admin.Models.Orders
 
         public List<int> PaymentStatusIds { get; set; }
 
-        public List<int> ShippingStatusIds { get; set; }
-
         public string PaymentMethodSystemName { get; set; }
 
         public int ProductId { get; set; }
@@ -44,8 +41,6 @@ namespace TCommerce.Web.Areas.Admin.Models.Orders
         public bool BillingPhoneEnabled { get; set; }
 
         public string BillingLastName { get; set; }
-
-        public int BillingCountryId { get; set; }
 
         public string OrderNotes { get; set; }
 

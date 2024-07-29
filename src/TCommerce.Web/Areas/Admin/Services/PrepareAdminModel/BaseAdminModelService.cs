@@ -133,7 +133,7 @@ namespace TCommerce.Services.PrepareModelServices.PrepareAdminModel
             ArgumentNullException.ThrowIfNull(items);
 
             //prepare available manufacturers
-            var availableDiscountItems = EnumExtensions.ToSelectList<DiscountType>();
+            var availableDiscountItems = TEnumExtensions.ToSelectList<DiscountType>();
             foreach (var discountItem in availableDiscountItems)
             {
                 items.Add(discountItem);
@@ -148,7 +148,7 @@ namespace TCommerce.Services.PrepareModelServices.PrepareAdminModel
             ArgumentNullException.ThrowIfNull(items);
 
             //prepare available order statuses
-            var availableStatusItems = EnumExtensions.ToSelectList<OrderStatus>();
+            var availableStatusItems = TEnumExtensions.ToSelectList<OrderStatus>();
             foreach (var statusItem in availableStatusItems)
             {
                 items.Add(statusItem);
@@ -163,7 +163,7 @@ namespace TCommerce.Services.PrepareModelServices.PrepareAdminModel
             ArgumentNullException.ThrowIfNull(items);
 
             //prepare available payment statuses
-            var availableStatusItems = EnumExtensions.ToSelectList<PaymentStatus>();
+            var availableStatusItems = TEnumExtensions.ToSelectList<PaymentStatus>();
             foreach (var statusItem in availableStatusItems)
             {
                 items.Add(statusItem);

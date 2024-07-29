@@ -49,7 +49,7 @@ namespace TCommerce.Services.PaymentServices
 
         public PaymentMethod GetPaymentMethodBySystemName(string paymentSystemName)
         {
-            return GetAllPaymentMethods().Where(x => x.PaymentMethodSystemName == paymentSystemName).FirstOrDefault();
+            return _paymentMethods.Where(x => x.PaymentMethodSystemName == paymentSystemName).FirstOrDefault();
         }
 
         public async Task<ServiceResponse<string>> ProcessPaymentAsync(Order order, PaymentMethod paymentMethod)
@@ -71,6 +71,24 @@ namespace TCommerce.Services.PaymentServices
             }
 
             return result;
+        }
+
+        public bool SupportPartiallyRefund(string paymentMethodSystemName)
+        {
+            var paymentMethod = _paymentMethods.Where(x=>x.PaymentMethodSystemName == paymentMethodSystemName).FirstOrDefault();
+            return paymentMethod.SupportPartiallyRefund;
+        }
+
+        public bool SupportRefund(string paymentMethodSystemName)
+        {
+            var paymentMethod = _paymentMethods.Where(x => x.PaymentMethodSystemName == paymentMethodSystemName).FirstOrDefault();
+            return paymentMethod.SupportRefund;
+        }
+
+        public bool SupportVoid(string paymentMethodSystemName)
+        {
+            var paymentMethod = _paymentMethods.Where(x => x.PaymentMethodSystemName == paymentMethodSystemName).FirstOrDefault();
+            return paymentMethod.SupportVoid;
         }
     }
 }

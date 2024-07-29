@@ -22,31 +22,11 @@ namespace TCommerce.Web.Areas.Admin.Models.Orders
 
         public string PictureThumbnailUrl { get; set; }
 
-        public string UnitPriceInclTax { get; set; }
+        public decimal Price { get; set; }
 
-        public string UnitPriceExclTax { get; set; }
-
-        public decimal UnitPriceInclTaxValue { get; set; }
-
-        public decimal UnitPriceExclTaxValue { get; set; }
+        public decimal DiscountAmount { get; set; }
 
         public int Quantity { get; set; }
-
-        public string DiscountInclTax { get; set; }
-
-        public string DiscountExclTax { get; set; }
-
-        public decimal DiscountInclTaxValue { get; set; }
-
-        public decimal DiscountExclTaxValue { get; set; }
-
-        public string SubTotalInclTax { get; set; }
-
-        public string SubTotalExclTax { get; set; }
-
-        public decimal SubTotalInclTaxValue { get; set; }
-
-        public decimal SubTotalExclTaxValue { get; set; }
 
         public string AttributeInfo { get; set; }
 
