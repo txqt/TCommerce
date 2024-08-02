@@ -14,8 +14,6 @@ namespace TCommerce.Core.Models.Payments
             Name = "VNPay";
             Description = "Pay with VNPay";
             Fee = "0";
-            SupportRefund = true;
-            SupportPartiallyRefund = true;
         }
     }
 }

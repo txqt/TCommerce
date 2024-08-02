@@ -9,6 +9,7 @@ using TCommerce.Services.PriceCalulationServices;
 using TCommerce.Services.ProductServices;
 using TCommerce.Web.Extensions;
 using TCommerce.Web.Models;
+using TCommerce.Core.Extensions;
 
 namespace TCommerce.Web.PrepareModelServices
 {
@@ -93,7 +94,7 @@ namespace TCommerce.Web.PrepareModelServices
 
                         var result = new StringBuilder();
 
-                        if (sci.AttributeJson is not null)
+                        if (!string.IsNullOrEmpty(sci.AttributeJson))
                         {
                             foreach (var selectedAttribute in _productAttributeConverter.ConvertToObject(sci.AttributeJson))
                             {
@@ -180,9 +181,11 @@ namespace TCommerce.Web.PrepareModelServices
                             };
                         }
 
+                        cartItemModel.SubTotalValue += await _priceCalculationService.CalculateAdjustedPriceAsync(product, sci);
+
                         var result = new StringBuilder();
 
-                        if (sci.AttributeJson is not null)
+                        if (!string.IsNullOrEmpty(sci.AttributeJson))
                         {
                             foreach (var selectedAttribute in _productAttributeConverter.ConvertToObject(sci.AttributeJson))
                             {
@@ -195,7 +198,6 @@ namespace TCommerce.Web.PrepareModelServices
                                 {
                                     var attributeValue = await _productAttributeService.GetProductAttributeValuesByIdAsync(attributeValueId);
 
-                                    cartItemModel.SubTotalValue += await _priceCalculationService.CalculateAdjustedPriceAsync(product, sci);
 
                                     var formattedAttribute = $"{attributeName}: {attributeValue.Name}";
 
@@ -222,6 +224,19 @@ namespace TCommerce.Web.PrepareModelServices
                     model.Warnings = warnings;
                 }
             }
+            var discountSessionKey = "Discount";
+            var discounts = _httpContextAccessor.HttpContext.Session.Get<List<string>>(discountSessionKey) ?? new List<string>();
+            foreach (var d in discounts)
+            {
+                var discount = await _discountService.GetDiscountByCode(d);
+
+                model.UsedDiscounts.Add(new ShoppingCartModel.UsedDiscountModel
+                {
+                    DiscountId = discount.Id,
+                    DiscountCode = discount.CouponCode,
+                    DiscountName = discount.Name
+                });
+            }
             return model;
         }
         public async Task<OrderTotalsModel> PrepareOrderTotalsModelAsync(List<ShoppingCartItem> carts)
@@ -236,7 +251,7 @@ namespace TCommerce.Web.PrepareModelServices
 
                 var orderSubtotalAfterDiscount = orderSubtotal - subTotalDiscountAmount;
 
-                var taxRate = 10;
+                var taxRate = 0;
                 var taxAmount = _priceCalculationService.CalculateTax(orderSubtotalAfterDiscount, taxRate);
 
                 var shippingFee = _priceCalculationService.CalculateShippingFee(carts);

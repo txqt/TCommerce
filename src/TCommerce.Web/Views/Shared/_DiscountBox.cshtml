@@ -1,4 +1,5 @@
-﻿<div class="cart-bottom">
+﻿@model ShoppingCartModel
+<div class="cart-bottom">
     <div class="cart-discount">
         <form asp-controller="ShoppingCart" asp-action="ApplyDiscountCode" method="post" id="discountForm">
             <div class="input-group">
@@ -10,19 +11,66 @@
         </form>
     </div><!-- End .cart-discount -->
 </div><!-- End .cart-bottom -->
+<em>Các discount đã sử dụng:</em>
+<br />
+@if (Model.UsedDiscounts.Count > 0)
+{
+    @for (var i = 0; i < Model.UsedDiscounts.Count; i++)
+    {
+        var discount = Model.UsedDiscounts[i];
+        <p>
+            @discount.DiscountName 
+            <button type="button" style="border: none" onclick="removeDiscountCode('@discount.DiscountCode')">Xóa</button>
+        </p>
+        if (i != Model.UsedDiscounts.Count - 1)
+        {
+            <text>,</text>
+        }
+    }
+}
 
 @Html.Script(
     @<text>
         <script>
-            $("#discountForm").on("submit", function(event) {
-                event.preventDefault();
+            $(document).ready(function() {
+                attachSubmitHandler();
+            });
 
-                var formData = $(this).serialize();
+            function attachSubmitHandler() {
+                $("#discountForm").off("submit").on("submit", function(event) {
+                    event.preventDefault();
 
+                    var formData = $(this).serialize();
+
+                    $.ajax({
+                        url: '@Url.Action("ApplyDiscountCode", "ShoppingCart")',
+                        type: 'POST',
+                        data: formData,
+                        success: function(data) {
+                            if (data.success) {
+                                toastr.success(data.message);
+                                $('#miniCartContainer').html(data.updateminicartsectionhtml);
+                                $('#cartContainer').html(data.updatecartsectionhtml);
+                                quantityInputs();
+                                SetPictureDefault();
+                                attachSubmitHandler(); // Re-attach the submit handler
+                            } else {
+                                toastr.warning(data.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("AJAX error: ", status, error);
+                            alert("An error occurred.");
+                        }
+                    });
+                });
+            }
+
+            window.removeDiscountCode = function(discountCode) {
                 $.ajax({
-                    url: '/ShoppingCart/ApplyDiscountCode',
+                    url: '@Url.Action("RemoveDiscountCode", "ShoppingCart")',
                     type: 'POST',
-                    data: formData,
+                    data: { discountCode: discountCode },
                     success: function(data) {
                         if (data.success) {
                             toastr.success(data.message);
@@ -30,16 +78,18 @@
                             $('#cartContainer').html(data.updatecartsectionhtml);
                             quantityInputs();
                             SetPictureDefault();
+                            attachSubmitHandler(); // Re-attach the submit handler
                         } else {
                             toastr.warning(data.message);
                         }
                     },
-                    error: function() {
-                        alert("An error occurred.");
+                    error: function(xhr, status, error) {
+                        console.error("AJAX error: ", status, error);
+                        alert("Có lỗi xảy ra. Vui lòng thử lại.");
                     }
                 });
-            });
-
+            }
         </script>
     </text>
-)
+    )
+

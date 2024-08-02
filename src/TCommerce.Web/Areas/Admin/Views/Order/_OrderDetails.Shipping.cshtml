@@ -1,0 +1,45 @@
+﻿@using TCommerce.Core.Interface
+@model OrderModel
+@inject IAddressService _addressService;
+
+<t-accordion>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    <strong>Billing address</strong>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><label asp-for="ShippingAddress.FirstName" class="control-label"></label></td>
+                <td>@Model.ShippingAddress.FirstName</td>
+            </tr>
+            <tr>
+                <td><label asp-for="ShippingAddress.LastName" class="control-label"></label></td>
+                <td>@Model.ShippingAddress.LastName</td>
+            </tr>
+            <tr>
+                <td><label asp-for="ShippingAddress.Company" class="control-label"></label></td>
+                <td>@Model.ShippingAddress.Company</td>
+            </tr>
+            <tr>
+                <td><label asp-for="ShippingAddress.PhoneNumber" class="control-label"></label></td>
+                <td>@Model.ShippingAddress.PhoneNumber</td>
+            </tr>
+            <tr>
+                <td><label class="control-label">Tỉnh/Thành phố</label></td>
+                <td>@((await _addressService.GetProvinceByIdAsync(Model.ShippingAddress.ProvinceId)).Name)</td>
+            </tr>
+            <tr>
+                <td><label class="control-label">Phường xã</label></td>
+                <td>@((await _addressService.GetCommuneByIdAsync(Model.ShippingAddress.CommuneId)).Name)</td>
+            </tr>
+            <tr>
+                <td><label class="control-label" asp-for="ShippingAddress.AddressDetails"></label></td>
+                <td>@Model.ShippingAddress.AddressDetails</td>
+            </tr>
+        </tbody>
+    </table>
+</t-accordion>

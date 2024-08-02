@@ -1,0 +1,402 @@
+﻿@model OrderModel
+
+<script>
+    $(function() {
+        toggleChangeOrderStatus(false);
+        toggleOrderTotals(false);
+    });
+
+    function toggleChangeOrderStatus(editmode) {
+        if (editmode) {
+            $('#pnlChangeOrderStatus').show();
+            $('#btnChangeOrderStatus').hide();
+        } else {
+            $('#pnlChangeOrderStatus').hide();
+            $('#btnChangeOrderStatus').show();
+        }
+    }
+
+    function toggleOrderTotals(editmode) {
+        if (editmode) {
+            $('#trinputderTotals').show();
+            $('#btninputderTotals').hide();
+            $('#btnSaveOrderTotals').show();
+            $('#btnCancelOrderTotals').show();
+        } else {
+            $('#trinputderTotals').hide();
+            $('#btninputderTotals').show();
+            $('#btnSaveOrderTotals').hide();
+            $('#btnCancelOrderTotals').hide();
+        }
+    }
+</script>
+  
+<t-accordion>
+    <div class="form-group row">
+    <div class="col-md-3">
+        <label class="control-label" asp-for="CustomOrderNumber" class="control-label"></label>
+    </div>
+    <div class="col-md-9">
+        <strong>
+            <span>@Model.CustomOrderNumber</span>
+        </strong>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-3">
+        <label class="control-label" asp-for="CreatedOn" class="control-label"></label>
+    </div>
+    <div class="col-md-9">
+        <strong>
+            <span >@Model.CreatedOn</span>
+        </strong>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-3">
+        <label class="control-label" asp-for="CustomerId" class="control-label"></label>
+    </div>
+    <div class="col-md-9">
+        <strong>
+            <span>@Model.CustomerId</span>
+        </strong>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-3">
+        <label class="control-label" asp-for="OrderStatus" class="control-label"></label>
+    </div>
+    <div class="col-md-9">
+        <strong>
+            <span>@Model.OrderStatus.ToString()</span>
+        </strong>
+        @if (Model.CanCancelOrder)
+        {
+            <button type="submit" name="cancelorder" id="cancelorder" class="btn btn-danger" style="margin-right: 3px;">
+                Cancel order
+            </button>
+            <t-action-confirmation asp-button-id="cancelorder" ></t-action-confirmation>
+        }
+        <button type="submit" name="btnChangeOrderStatus" onclick="toggleChangeOrderStatus(true);return false;" id="btnChangeOrderStatus" class="btn btn-primary">
+            Change status
+        </button>
+        <div id="pnlChangeOrderStatus">
+            <select asp-for="OrderStatusId" asp-items="TEnumExtensions.ToSelectList<OrderStatus>()" class="mt-1"></select>
+            <button type="submit" name="btnSaveOrderStatus" id="btnSaveOrderStatus" class="btn btn-primary mt-1 mr-1">
+                    Save
+                </button>
+            <t-action-confirmation asp-button-id="btnSaveOrderStatus" ></t-action-confirmation>
+            <button type="submit" name="btnCancelOrderStatus" onclick="toggleChangeOrderStatus(false);return false;" id="btnCancelOrderStatus" class="btn btn-secondary mt-1">
+                Cancel
+            </button>
+            <div class="input-group-btn-hint">
+                <em>Order Status Change For Advanced Users</em>
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.OrderStatusId == (int)OrderStatus.Cancelled)
+    {
+        <div class="form-group row">
+            <div class="col-md-3">
+                &nbsp;
+            </div>
+            <div class="col-md-9">
+                <strong>
+                    Order status cancelled
+                </strong>
+            </div>
+        </div>
+    }
+</t-accordion>
+
+<t-accordion>
+<div class="form-group row">
+    <div class="col-md-3">
+            <label class="control-label">Order Subtotal <i class="fas fa-question-circle"></i></label>
+    </div>
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-text-row">
+                    @Html.Raw(Model.OrderSubtotalInclTax) <strong>include tax</strong>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-text-row">
+                    @Html.Raw(Model.OrderSubtotalExclTax) <strong>exclude tax</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@if (!string.IsNullOrEmpty(Model.OrderTotalDiscount))
+{
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label class="control-label" asp-for="OrderTotalDiscount" />
+        </div>
+        <div class="col-md-9">
+            <div class="form-text-row">@Html.Raw(Model.OrderTotalDiscount)</div>
+        </div>
+    </div>
+}
+<div class="form-group row">
+    <div class="col-md-3">
+        <label class="control-label" asp-for="Tax" ></label>
+    </div>
+    <div class="col-md-9">
+        <div class="form-text-row">@Html.Raw(Model.Tax)</div>
+    </div>
+</div>           
+<div class="form-group row">
+    <div class="col-md-3">
+        <label class="control-label" asp-for="OrderTotal" ></label>
+    </div>
+    <div class="col-md-9">
+        <div class="form-text-row">@Html.Raw(Model.OrderTotal)</div>
+    </div>
+</div>
+@if (!string.IsNullOrEmpty(Model.RefundedAmount))
+{
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label class="control-label" asp-for="RefundedAmount" />
+        </div>
+        <div class="col-md-9">
+            <div class="form-text-row">@Model.RefundedAmount</div>
+        </div>
+    </div>
+}
+@if (Model.UsedDiscounts.Count > 0)
+{
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label class="control-label" asp-for="UsedDiscounts" ></label>
+        </div>
+        <div class="col-md-9">
+            @for (var i = 0; i < Model.UsedDiscounts.Count; i++)
+            {
+                var discount = Model.UsedDiscounts[i];
+                <a asp-controller="Discount" asp-action="Edit-Discount" asp-route-id="@discount.DiscountId">@discount.DiscountName</a>
+                if (i != Model.UsedDiscounts.Count - 1)
+                {
+                    <text>,</text>
+                }
+            }
+        </div>
+    </div>
+}
+<div class="form-group row">
+    <div class="col-md-3">
+        <label class="control-label" asp-for="Profit"></label>
+    </div>
+    <div class="col-md-9">
+        <div class="form-text-row">@Html.Raw(Model.Profit)</div>
+    </div>
+</div>
+<div id="trinputderTotals">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label class="control-label">Order subtotal</label>
+        </div>
+        <div class="col-md-9 row">
+            <div class="col-md-6">
+                include tax
+                <input asp-for="OrderSubtotalInclTaxValue" />
+            </div>
+            <div class="col-md-6">
+                exclude tax
+                <input asp-for="OrderSubtotalExclTaxValue" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label class="control-label">Order subtotal discount</label>
+        </div>
+        <div class="col-md-9 row">
+            <div class="col-md-6">
+                include tax
+                <input asp-for="OrderSubTotalDiscountInclTaxValue" />
+            </div>
+            <div class="col-md-6">
+                exclude tax
+                <input asp-for="OrderSubTotalDiscountExclTaxValue" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+                <label class="control-label">Order shipping</label>
+        </div>
+        <div class="col-md-9 row">
+            <div class="col-md-6">
+                include tax
+                <input asp-for="OrderShippingInclTaxValue" />
+            </div>
+            <div class="col-md-6">
+                exclude tax
+                <input asp-for="OrderShippingExclTaxValue" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label class="control-label" asp-for="TaxRatesValue"></label>
+        </div>
+        <div class="col-md-9">
+            <input asp-for="TaxRatesValue" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label class="control-label" asp-for="TaxValue"></label>
+        </div>
+        <div class="col-md-9">
+            <input asp-for="TaxValue" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label class="control-label" asp-for="OrderTotalDiscountValue" ></label>
+        </div>
+        <div class="col-md-9">
+            <input asp-for="OrderTotalDiscountValue" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <label class="control-label" asp-for="OrderTotalValue" ></label>
+        </div>
+        <div class="col-md-9">
+            <input asp-for="OrderTotalValue" />
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-9 offset-md-3">
+        <button type="submit" name="btninputderTotals" onclick="toggleOrderTotals(true);return false;" id="btninputderTotals" class="btn btn-primary">
+            Edit order totals
+        </button>
+
+        <button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-primary margin-r-5">
+            Save
+        </button>
+        <t-action-confirmation asp-button-id="btnSaveOrderTotals" ></t-action-confirmation>
+
+        <button type="submit" name="btnCancelOrderTotals" onclick="toggleOrderTotals(false);return false;" id="btnCancelOrderTotals" class="btn btn-secondary">
+            Cancel
+        </button>                    
+    </div>
+</div>
+            
+<div class="form-group row">
+    <div class="col-md-3">
+        <label class="control-label" asp-for="PaymentMethod"></label>
+    </div>
+    <div class="col-md-9">
+        <div class="form-text-row">@Model.PaymentMethod</div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-md-3">
+        <label class="control-label" asp-for="PaymentStatus"></label>
+    </div>
+    <div class="col-md-9">
+        <div class="form-text-row">@Model.PaymentStatus</div>
+    </div>
+</div>
+@if(Model.CanCapture || Model.CanMarkOrderAsPaid || Model.CanRefund || Model.CanRefundOffline ||
+    Model.CanPartiallyRefund || Model.CanPartiallyRefundOffline || Model.CanVoid || Model.CanVoidOffline)
+{
+    <div class="form-group row">
+        <div class="col-md-9 offset-md-3">
+                @if (Model.CanCapture)
+                {
+                    <button type="submit" name="captureorder" id="captureorder" class="btn btn-primary">
+                        Capture
+                    </button>
+                    <text>&nbsp;</text>
+                    <action-confirmation asp-button-id="captureorder" />
+                }
+                @if (Model.CanMarkOrderAsPaid)
+                {
+                    <button type="submit" name="markorderaspaid" id="markorderaspaid" class="btn btn-primary">
+                        MarkAsPaid
+                    </button>
+                    <text>&nbsp;</text>
+                    <t-action-confirmation asp-button-id="markorderaspaid"></t-action-confirmation>
+                }
+                @if (Model.CanRefund)
+                {
+                    <button type="submit" name="refundorder" id="refundorder" class="btn btn-primary">
+                        Refund
+                    </button>
+                    <text>&nbsp;</text>
+                    <action-confirmation asp-button-id="refundorder" />
+                }
+                @if (Model.CanRefundOffline)
+                {
+                    <button type="submit" name="refundorderoffline" id="refundorderoffline" class="btn btn-primary">
+                        RefundOffline
+                    </button>
+                    <text>&nbsp;</text>
+                    <action-confirmation asp-button-id="refundorderoffline" />
+                }
+                @if (Model.CanPartiallyRefund)
+                {
+                    <button type="submit" id="partiallyrefundorder" name="partiallyrefundorder" onclick="javascript:OpenWindow('@(Url.Action("PartiallyRefundOrderPopup", "Order", new {id = Model.Id, online = true, btnId = "btnRefreshPage", formId = "order-form"}))', 500, 300, true); return false;" class="btn btn-primary">
+                        PartialRefund
+                    </button>
+                    <text>&nbsp;</text>
+                }
+                @if (Model.CanPartiallyRefundOffline)
+                {
+                    <button type="submit" id="partiallyrefundorderoffline" name="partiallyrefundorderoffline" onclick="javascript:OpenWindow('@(Url.Action("PartiallyRefundOrderPopup", "Order", new {id = Model.Id, online = false, btnId = "btnRefreshPage", formId = "order-form"}))', 500, 300, true); return false;" class="btn btn-primary">
+                        PartialRefundOffline
+                    </button>
+                    <text>&nbsp;</text>
+                }
+                @if (Model.CanVoid)
+                {
+                    <button type="submit" name="voidorder" id="voidorder" class="btn btn-primary">
+                        Void
+                    </button>
+                    <text>&nbsp;</text>
+                    <action-confirmation asp-button-id="voidorder" />
+                }
+                @if (Model.CanVoidOffline)
+                {
+                    <button type="submit" name="voidorderoffline" id="voidorderoffline" class="btn btn-primary">
+                        VoidOffline
+                    </button>
+                    <text>&nbsp;</text>
+                    <action-confirmation asp-button-id="voidorderoffline" />
+                }
+                        
+        </div>
+    </div>
+}
+</t-accordion>
+
+<t-accordion>
+    <div class="form-group row">
+                    <div class="col-md-3">
+                        <label class="control-label" asp-for="OrderGuid"></label>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-text-row">@Model.OrderGuid</div>
+                    </div>
+                </div>
+            
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label class="control-label" asp-for="CustomerIp"></label>
+                </div>
+                <div class="col-md-9">
+                    <div class="form-text-row">@Model.CustomerIp</div>
+                </div>
+            </div>
+</t-accordion>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Catalogs;
@@ -12,6 +13,7 @@ using TCommerce.Services.PrepareModelServices.PrepareAdminModel;
 using TCommerce.Services.ProductServices;
 using TCommerce.Web.Areas.Admin.Models.Orders;
 using TCommerce.Web.Extensions;
+using TCommerce.Web.Models;
 
 namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
 {
@@ -30,8 +32,10 @@ namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
         private readonly IProductService _productService;
         private readonly IPictureService _pictureService;
         private readonly IOrderProcessingService _orderProcessingService;
+        private readonly IAddressService _addressService;
+        private readonly IMapper _mapper;
 
-        public AdminOrderModelService(IBaseAdminModelService baseAdminModelService, IPaymentService paymentService, IUserService userService, IDiscountService discountService, IOrderService orderService, IProductService productService, IPictureService pictureService, IOrderProcessingService orderProcessingService)
+        public AdminOrderModelService(IBaseAdminModelService baseAdminModelService, IPaymentService paymentService, IUserService userService, IDiscountService discountService, IOrderService orderService, IProductService productService, IPictureService pictureService, IOrderProcessingService orderProcessingService, IAddressService addressService, IMapper mapper)
         {
             _baseAdminModelService = baseAdminModelService;
             _paymentService = paymentService;
@@ -41,6 +45,8 @@ namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
             _productService = productService;
             _pictureService = pictureService;
             _orderProcessingService = orderProcessingService;
+            _addressService = addressService;
+            _mapper = mapper;
         }
 
         public async Task<OrderModel> PrepareOrderModelAsync(OrderModel model, Order order)
@@ -73,6 +79,8 @@ namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
 
                 //prepare nested search model
                 PrepareOrderNoteSearchModel(model.OrderNoteSearchModel, order);
+
+                model.ShippingAddress = _mapper.Map<AddressModel>(await _addressService.GetAddressByIdAsync(order.ShippingAddressId.Value));
             }
 
             return model;
@@ -111,7 +119,7 @@ namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
             model.OrderShippingExclTaxValue = order.OrderShippingExclTax;
 
             //tax
-            model.Tax = order.OrderTax;
+            model.Tax = order.OrderTax.ToString();
 
             //discount
             if (order.OrderDiscount > 0)
@@ -144,7 +152,7 @@ namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
 
             ArgumentNullException.ThrowIfNull(order);
 
-            var orderItems = await _orderService.GetOrderItemsAsync(order.Id);
+            var orderItems = await _orderService.GetOrderItemsByOrderIdAsync(order.Id);
 
             foreach (var orderItem in orderItems)
             {

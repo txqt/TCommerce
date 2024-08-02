@@ -69,5 +69,6 @@ namespace TCommerce.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<OrderNote> OrderNotes { get; set; }
     }
 }

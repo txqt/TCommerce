@@ -18,5 +18,7 @@ namespace TCommerce.Core.Interface
         bool CanPartiallyRefundOffline(Order order, decimal amountToRefund);
         bool CanVoid(Order order);
         bool CanVoidOffline(Order order);
+        Task CancelOrderAsync(Order order, bool notifyCustomer);
+        Task MarkOrderAsPaidAsync(Order order);
     }
 }

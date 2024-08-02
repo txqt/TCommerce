@@ -20,6 +20,13 @@ namespace TCommerce.Core.Interface
         public Task<Order> GetOrderByGuidAsync(Guid id);
         public Task CreateOrderItemsAsync(OrderItem orderItem);
         public Task BulkCreateOrderItemsAsync(List<OrderItem> orderItem);
-        public Task<List<OrderItem>> GetOrderItemsAsync(int orderId);
+        public Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId);
+        public Task<OrderItem> GetOrderItemByIdAsync(int orderItemId);
+        public Task UpdateOrderItemAsync(OrderItem orderItem);
+        public Task DeleteOrderItemAsync(int orderItemId);
+        Task<OrderNote> GetOrderNoteByIdAsync(int orderNoteId);
+        Task<List<OrderNote>> GetOrderNotesByOrderIdAsync(int orderId, bool? displayToCustomer = null);
+        Task DeleteOrderNoteAsync(int id);
+        Task CreateOrderNoteAsync(OrderNote orderNote);
     }
 }

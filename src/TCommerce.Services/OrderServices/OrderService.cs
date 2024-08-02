@@ -48,9 +48,24 @@ namespace TCommerce.Services.OrderServices
             await _orderItemRepository.CreateAsync(orderItem);
         }
 
+        public async Task CreateOrderNoteAsync(OrderNote orderNote)
+        {
+            await _orderNoteRepository.CreateAsync(orderNote);
+        }
+
         public async Task DeleteOrderAsync(int id)
         {
             await _orderRepository.DeleteAsync(id);
+        }
+
+        public async Task DeleteOrderItemAsync(int orderItemId)
+        {
+            await _orderItemRepository.DeleteAsync(orderItemId);
+        }
+
+        public async Task DeleteOrderNoteAsync(int id)
+        {
+            await _orderNoteRepository.DeleteAsync(id);
         }
 
         public async Task<List<Order>> GetAllOrdersAsync(bool includeDeleted)
@@ -68,9 +83,34 @@ namespace TCommerce.Services.OrderServices
             return await _orderRepository.GetByIdAsync(id);
         }
 
-        public async Task<List<OrderItem>> GetOrderItemsAsync(int orderId)
+        public async Task<OrderItem> GetOrderItemByIdAsync(int orderItemId)
+        {
+            return await _orderItemRepository.GetByIdAsync(orderItemId);
+        }
+
+        public async Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
         {
             return await _orderItemRepository.Table.Where(x => x.OrderId == orderId).ToListAsync();
+        }
+
+        public async Task<OrderNote> GetOrderNoteByIdAsync(int orderNoteId)
+        {
+            return await _orderNoteRepository.GetByIdAsync(orderNoteId);
+        }
+
+        public async Task<List<OrderNote>> GetOrderNotesByOrderIdAsync(int orderId, bool? displayToCustomer = null)
+        {
+            if (orderId == 0)
+                return new List<OrderNote>();
+
+            var query = _orderNoteRepository.Table.Where(on => on.OrderId == orderId);
+
+            if (displayToCustomer.HasValue)
+            {
+                query = query.Where(on => on.DisplayToCustomer == displayToCustomer);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<PagedList<Order>> SearchOrdersAsync(OrderParameters orderParameters)
@@ -127,6 +167,11 @@ namespace TCommerce.Services.OrderServices
         public async Task UpdateOrderAsync(Order order)
         {
             await _orderRepository.UpdateAsync(order);
+        }
+
+        public async Task UpdateOrderItemAsync(OrderItem orderItem)
+        {
+            await _orderItemRepository.UpdateAsync(orderItem);
         }
     }
 }
