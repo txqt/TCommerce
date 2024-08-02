@@ -12,5 +12,6 @@ namespace TCommerce.Core.Models.Orders
         public decimal DiscountAmount { get; set; }
         public decimal OriginalProductCost { get; set; }
         public string? AttributeInfo { get; set; }
+        public string? AttributeJson { get; set; }
     }
 }

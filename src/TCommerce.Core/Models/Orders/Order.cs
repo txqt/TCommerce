@@ -8,6 +8,7 @@ namespace TCommerce.Core.Models.Orders
     {
         public Guid OrderGuid { get; set; }
         public Guid UserId { get; set; }
+        public string? UserIp { get; set; }
         public int? BillingAddressId { get; set; }
         public int? ShippingAddressId { get; set; }
         public int OrderStatusId { get; set; }
@@ -19,11 +20,12 @@ namespace TCommerce.Core.Models.Orders
         public decimal OrderDiscount { get; set; }
         public decimal OrderTotal { get; set; }
         public string? TaxRates { get; set; }
-        public string? OrderTax { get; set; }
+        public decimal OrderTax { get; set; }
         public string? ShippingFee { get; set; }
         public decimal OrderShippingInclTax { get; set; }
         public decimal OrderShippingExclTax { get; set; }
         public string PaymentMethodSystemName { get; set; }
+        public DateTime? PaidDateUtc { get; set; }
         public decimal RefundedAmount { get; set; }
         public DateTime CreatedOnUtc { get; set; }
         public bool Deleted { get; set; }

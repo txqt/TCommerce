@@ -16,7 +16,7 @@ namespace TCommerce.Core.Interface
         Task<ServiceResponse<bool>> UpdateAsync(ShoppingCartItem model);
         bool IsUserShoppingCartEmpty(User user);
         Task<List<string>> GetShoppingCartItemWarningsAsync(User user, ShoppingCartType shoppingCartType, Product product, string attributesJson, int quantity = 1, bool getStandardWarnings = true, bool getAttributesWarnings = true);
-        Task AddToCartAsync(User user, ShoppingCartType cartType, Product product, string? attributeJson = null,
+        Task<List<string>> AddToCartAsync(User user, ShoppingCartType cartType, Product product, string? attributeJson = null,
             int quantity = 1);
         Task UpdateCartItemAsync(User user, int cartId, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1);
         Task ClearShoppingCartAsync(User user);

@@ -5,6 +5,8 @@ using TCommerce.Core.Models.Catalogs;
 using TCommerce.Core.Models.Orders;
 using TCommerce.Core.Models.Paging;
 using TCommerce.Core.Models.Security;
+using TCommerce.Services.OrderServices;
+using TCommerce.Services.ProductServices;
 using TCommerce.Web.Areas.Admin.Models.Orders;
 using TCommerce.Web.Areas.Admin.Services.PrepareAdminModel;
 using TCommerce.Web.Attribute;
@@ -20,12 +22,18 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         private readonly IAdminOrderModelService _orderModelService;
         private readonly IOrderService _orderService;
         private readonly IAddressService _addressService;
+        private readonly IOrderProcessingService _orderProcessingService;
+        private readonly IProductService _productService;
+        private readonly OrderSettings _orderSettings;
 
-        public OrderController(IAdminOrderModelService orderModelService, IOrderService orderService, IAddressService addressService)
+        public OrderController(IAdminOrderModelService orderModelService, IOrderService orderService, IAddressService addressService, IOrderProcessingService orderProcessingService, IProductService productService, OrderSettings orderSettings)
         {
             _orderModelService = orderModelService;
             _orderService = orderService;
             _addressService = addressService;
+            _orderProcessingService = orderProcessingService;
+            _productService = productService;
+            _orderSettings = orderSettings;
         }
 
         public virtual async Task<IActionResult> Index(List<int> orderStatuses = null, List<int> paymentStatuses = null)
@@ -118,13 +126,13 @@ namespace TCommerce.Web.Areas.Admin.Controllers
                 await _orderService.UpdateOrderAsync(order);
 
                 //add a note
-                //await _orderService.InsertOrderNoteAsync(new OrderNote
-                //{
-                //    OrderId = order.Id,
-                //    Note = $"Order status has been edited. New status: {await _localizationService.GetLocalizedEnumAsync(order.OrderStatus)}",
-                //    DisplayToCustomer = false,
-                //    CreatedOnUtc = DateTime.UtcNow
-                //});
+                await _orderService.CreateOrderNoteAsync(new OrderNote
+                {
+                    OrderId = order.Id,
+                    Note = $"Order status has been edited. New status: {order.OrderStatus.ToString()}",
+                    DisplayToCustomer = false,
+                    CreatedOnUtc = DateTime.UtcNow
+                });
 
                 return RedirectToAction("Edit", new { id = order.Id });
             }
@@ -135,6 +143,140 @@ namespace TCommerce.Web.Areas.Admin.Controllers
 
                 return View(model);
             }
+        }
+
+        [HttpPost, ActionName("Edit")]
+        [FormValueRequired("cancelorder")]
+        public virtual async Task<IActionResult> CancelOrder(int id)
+        {
+            //try to get an order with the specified id
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null)
+                return RedirectToAction("List");
+
+            try
+            {
+                await _orderProcessingService.CancelOrderAsync(order, true);
+
+                return RedirectToAction("Edit", new { id = order.Id });
+            }
+            catch (Exception exc)
+            {
+                //prepare model
+                var model = await _orderModelService.PrepareOrderModelAsync(null, order);
+
+                return View(model);
+            }
+        }
+
+        [HttpPost, ActionName("Edit")]
+        [FormValueRequired("btnSaveOrderTotals")]
+        public virtual async Task<IActionResult> EditOrderTotals(int id, OrderModel model)
+        {
+            //try to get an order with the specified id
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null)
+                return RedirectToAction("List");
+
+            order.OrderSubtotalInclTax = model.OrderSubtotalInclTaxValue;
+            order.OrderSubtotalExclTax = model.OrderSubtotalExclTaxValue;
+            order.OrderSubTotalDiscountInclTax = model.OrderSubTotalDiscountInclTaxValue;
+            order.OrderSubTotalDiscountExclTax = model.OrderSubTotalDiscountExclTaxValue;
+            order.OrderShippingInclTax = model.OrderShippingInclTaxValue;
+            order.OrderShippingExclTax = model.OrderShippingExclTaxValue;
+            order.TaxRates = model.TaxRatesValue;
+            order.OrderTax = model.TaxValue;
+            order.OrderDiscount = model.OrderTotalDiscountValue;
+            order.OrderTotal = model.OrderTotalValue;
+            await _orderService.UpdateOrderAsync(order);
+
+            //add a note
+            await _orderService.CreateOrderNoteAsync(new OrderNote
+            {
+                OrderId = order.Id,
+                Note = "Order totals have been edited",
+                DisplayToCustomer = false,
+                CreatedOnUtc = DateTime.UtcNow
+            });
+
+            return RedirectToAction("Edit", new { id = order.Id });
+        }
+
+        [HttpPost, ActionName("Edit")]
+        [FormValueRequired("markorderaspaid")]
+        public virtual async Task<IActionResult> MarkOrderAsPaid(int id)
+        {
+            //try to get an order with the specified id
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null)
+                return RedirectToAction("List");
+
+            try
+            {
+                await _orderProcessingService.MarkOrderAsPaidAsync(order);
+
+                return RedirectToAction("Edit", new { id = order.Id });
+            }
+            catch (Exception exc)
+            {
+                //prepare model
+                var model = await _orderModelService.PrepareOrderModelAsync(null, order);
+                return View(model);
+            }
+        }
+
+        [HttpPost, ActionName("Edit")]
+        [FormValueRequired(FormValueRequirement.StartsWith, "btnSaveOrderItem")]
+        public virtual async Task<IActionResult> EditOrderItem(int id, IFormCollection form)
+        {
+            //try to get an order with the specified id
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null)
+                return RedirectToAction("List");
+
+            //get order item identifier
+            var orderItemId = 0;
+            foreach (var formValue in form.Keys)
+                if (formValue.StartsWith("btnSaveOrderItem", StringComparison.InvariantCultureIgnoreCase))
+                    orderItemId = Convert.ToInt32(formValue["btnSaveOrderItem".Length..]);
+
+            var orderItem = await _orderService.GetOrderItemByIdAsync(orderItemId)
+                ?? throw new ArgumentException("No order item found with the specified id");
+
+            if (!decimal.TryParse(form["pvPrice" + orderItemId], out var price))
+                price = orderItem.Price;
+            if (!int.TryParse(form["pvQuantity" + orderItemId], out var quantity))
+                quantity = orderItem.Quantity;
+
+            var product = await _productService.GetByIdAsync(orderItem.ProductId);
+
+            if (quantity > 0)
+            {
+                var qtyDifference = orderItem.Quantity - quantity;
+
+                if (!_orderSettings.AutoUpdateOrderTotalsOnEditingOrder)
+                {
+                    orderItem.Price = price;
+                    orderItem.Quantity = quantity;
+                    await _orderService.UpdateOrderItemAsync(orderItem);
+                }
+            }
+            else
+            {
+                //delete item
+                await _orderService.DeleteOrderItemAsync(orderItem.Id);
+            }
+
+            //add a note
+            await _orderService.CreateOrderNoteAsync(new OrderNote
+            {
+                OrderId = order.Id,
+                Note = "Order item has been edited",
+                DisplayToCustomer = false,
+                CreatedOnUtc = DateTime.UtcNow
+            });
+
+            return RedirectToAction("Edit", new { id = order.Id });
         }
     }
 }

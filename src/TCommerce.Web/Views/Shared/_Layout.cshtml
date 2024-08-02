@@ -41,9 +41,28 @@
     <meta name="msapplication-TileColor" content="#cc9966">
     <meta name="msapplication-config" content="~/images/icons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
+    <style>
+        /* Thêm CSS để căn giữa modal loading */
+        .loading-modal .modal-dialog {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
-
+    <div class="modal loading-modal" id="loadingModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border" role="status">
+                    </div>
+                    <p class="mt-3">Please wait...</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="page-wrapper">
         <header class="header header-intro-clearance header-3">
             @await Component.InvokeAsync("HeaderTop")
@@ -379,7 +398,19 @@
     <script src="~/js/main.js"></script>
     <script src="~/js/bootstrap-input-spinner.js"></script>
     <script src="~/js/toastr.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(document).ajaxStart(function () {
+                $('.loading-modal').modal('show');
+            }).ajaxStop(function () {
+                $('.loading-modal').modal('hide');
+            });
 
+            $('form').submit(function () {
+                $('.loading-modal').modal('show');
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
     @Html.RenderScripts()
 </body>

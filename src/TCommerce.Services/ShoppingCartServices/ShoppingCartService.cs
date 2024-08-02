@@ -78,7 +78,7 @@ namespace TCommerce.Services.ShoppingCartServices
             ArgumentNullException.ThrowIfNull(shoppingCart);
 
             return await shoppingCart.Where(sci => sci.ShoppingCartType == shoppingCartType)
-                .FirstOrDefaultAsync(x => x.AttributeJson is not null && x.AttributeJson.Equals(attributesJson));
+                .FirstOrDefaultAsync(x => !string.IsNullOrEmpty(x.AttributeJson) && x.AttributeJson.Equals(attributesJson));
         }
 
         public async Task<ServiceResponse<bool>> UpdateAsync(ShoppingCartItem shoppingCartItem)
@@ -97,10 +97,17 @@ namespace TCommerce.Services.ShoppingCartServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task AddToCartAsync(User user, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
+        public async Task<List<string>> AddToCartAsync(User user, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
         {
             ArgumentNullException.ThrowIfNull(user);
             ArgumentNullException.ThrowIfNull(product);
+
+            var warnings = await GetShoppingCartItemWarningsAsync(user, cartType, product, attributeJson ?? "", quantity);
+            if (warnings.Any())
+            {
+                // Trả về cảnh báo nếu có
+                return warnings;
+            }
 
             var carts = await GetShoppingCartAsync(user, cartType, product.Id);
             var shoppingCartItem = await FindShoppingCartItemInTheCartAsync(carts,
@@ -126,6 +133,8 @@ namespace TCommerce.Services.ShoppingCartServices
                 await CreateAsync(shoppingCartItem);
             }
             await UpdateUserCartItemState(user);
+
+            return null;
         }
 
         private async Task UpdateUserCartItemState(User user)

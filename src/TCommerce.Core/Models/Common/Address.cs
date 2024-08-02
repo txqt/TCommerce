@@ -15,6 +15,7 @@ namespace TCommerce.Core.Models.Common
         public string LastName { get; set; } = null!;
 
         public string? Company { get; set; }
+
         public string? Email { get; set; }
 
         public string AddressDetails { get; set; } = null!;

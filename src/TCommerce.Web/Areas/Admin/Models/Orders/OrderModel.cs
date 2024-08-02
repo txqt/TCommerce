@@ -72,7 +72,7 @@ namespace TCommerce.Web.Areas.Admin.Models.Orders
 
         //billing info
         public AddressModel BillingAddress { get; set; }
-        public IList<OrderItemModel> Items { get; set; }
+        public List<OrderItemModel> Items { get; set; }
 
         //creation date
         public DateTime CreatedOn { get; set; }

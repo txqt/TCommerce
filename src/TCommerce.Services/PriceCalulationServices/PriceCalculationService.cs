@@ -41,7 +41,7 @@ namespace TCommerce.Services.PriceCalulationServices
         {
             decimal adjustedPrice = product.Price * sci.Quantity;
 
-            if (sci.AttributeJson is not null)
+            if (!string.IsNullOrEmpty(sci.AttributeJson))
             {
                 var selectedAttributes = _productAttributeConverter.ConvertToObject(sci.AttributeJson);
                 foreach (var selectedAttribute in selectedAttributes)
@@ -245,7 +245,7 @@ namespace TCommerce.Services.PriceCalulationServices
 
         public decimal CalculateShippingFee(List<ShoppingCartItem> carts)
         {
-            return 50_000;
+            return 0;
         }
 
         public async Task<decimal> CalculateSubTotalAsync(List<ShoppingCartItem> carts)

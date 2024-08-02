@@ -12,21 +12,6 @@
                 <div class="sidebar sidebar-shop">
                     <div class="widget widget-clean">
                     </div><!-- End .widget widget-clean -->
-                    @* @{
-                        var selectedTabId = 0;
-                        if (Url.ActionContext.RouteData.Values["controller"].ToString().Equals("account", StringComparison.InvariantCultureIgnoreCase) &&
-                        Url.ActionContext.RouteData.Values["action"].ToString().Equals("info", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            selectedTabId = (int)AccountNavigationEnum.Info;
-                        }
-
-                        if (Url.ActionContext.RouteData.Values["controller"].ToString().Equals("account", StringComparison.InvariantCultureIgnoreCase) &&
-                        Url.ActionContext.RouteData.Values["action"].ToString().Equals("addresses", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            selectedTabId = (int)AccountNavigationEnum.Addresses;
-                        }
-                    }
-                    @await Component.InvokeAsync("AccountNavigation", new { selectedTabId = selectedTabId}) *@
                     @await RenderSectionAsync("account_navigation")
                 </div><!-- End .sidebar sidebar-shop -->
             </aside><!-- End .col-lg-3 -->
