@@ -554,7 +554,7 @@ namespace TCommerce.Services.UserServices
                         AddressFull = $"{commune}, {district}, {province}",
                         PhoneNumber = item.PhoneNumber,
                         IsDefault = item.IsDefault
-                    }); ;
+                    });
                 }
             }
 

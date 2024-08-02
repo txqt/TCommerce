@@ -52,12 +52,12 @@
             success: function (result) {
                 if (result.success) {
                     $('#miniCartContainer').html(result.updateminicartsectionhtml);
-                    toastr.success("Đã thêm sản phẩm vào giỏ hàng");
+                    toastr.success(result.message);
                     if (result.redirectToCart) {
                         window.location.href = '/cart';
                     }
                 } else {
-                    toastr.warning(result.errors.join('<br>'));
+                    toastr.warning(result.message);
                 }
 
             },

@@ -19,6 +19,7 @@ using TCommerce.Web.Models;
 using TCommerce.Web.PrepareModelServices;
 using TCommerce.Core.Models.Discounts;
 using TCommerce.Services.UrlRecordServices;
+using TCommerce.Core.Utilities;
 
 namespace TCommerce.Web.Controllers
 {
@@ -192,7 +193,7 @@ namespace TCommerce.Web.Controllers
 
             var orderSubtotalAfterDiscount = orderSubtotal - subTotalDiscountAmount;
 
-            var taxRate = 10;  //%
+            var taxRate = 0;  //%
             var taxAmount = _priceCalculationService.CalculateTax(orderSubtotalAfterDiscount, taxRate);
 
             var shippingFee = _priceCalculationService.CalculateShippingFee(carts);
@@ -212,7 +213,7 @@ namespace TCommerce.Web.Controllers
             order.OrderTotal = orderTotal - orderTotalDiscountAmount;
 
             order.TaxRates = $"{taxRate}%";
-            order.OrderTax = taxAmount.ToString();
+            order.OrderTax = taxAmount;
             order.ShippingFee = shippingFee.ToString();
 
             order.OrderShippingInclTax = shippingFee + taxAmount;
@@ -232,7 +233,8 @@ namespace TCommerce.Web.Controllers
                 OrderStatus = OrderStatus.Pending,
                 CreatedOnUtc = DateTime.UtcNow,
                 PaymentMethodSystemName = paymentMethod.PaymentMethodSystemName,
-                PaymentStatus = PaymentStatus.Pending
+                PaymentStatus = PaymentStatus.Pending,
+                UserIp = AppUtilities.GetIpAddress(_httpContextAccessor)
             };
         }
 
@@ -246,7 +248,7 @@ namespace TCommerce.Web.Controllers
 
                 var attributeInfo = new StringBuilder();
 
-                if (cart.AttributeJson is not null)
+                if (!string.IsNullOrEmpty(cart.AttributeJson))
                 {
                     foreach (var selectedAttribute in _productAttributeConverter.ConvertToObject(cart.AttributeJson))
                     {
@@ -283,7 +285,8 @@ namespace TCommerce.Web.Controllers
                 ItemWeight = product.Weight,
                 Price = await _priceCalculationService.CalculateAdjustedPriceAsync(product, cart),
                 OriginalProductCost = product.Price,
-                AttributeInfo = attributeInfo.ToString()
+                AttributeInfo = attributeInfo.ToString(),
+                AttributeJson = cart.AttributeJson
             });
         }
             return orderItems;
@@ -359,7 +362,7 @@ namespace TCommerce.Web.Controllers
         {
             var result = new StringBuilder();
             var product = await _productService.GetByIdAsync(cart.ProductId);
-            if (cart.AttributeJson is not null)
+            if (!string.IsNullOrEmpty(cart.AttributeJson))
             {
                 foreach (var selectedAttribute in _productAttributeConverter.ConvertToObject(cart.AttributeJson))
                 {

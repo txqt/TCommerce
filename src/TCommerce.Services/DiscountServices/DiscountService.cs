@@ -136,7 +136,7 @@ namespace TCommerce.Services.DiscountServices
         public async Task<ServiceResponse<bool>> CheckValidDiscountAsync(Discount discount)
         {
             if (discount == null)
-                return new ServiceErrorResponse<bool>("Discount cannot be null.");
+                return new ServiceErrorResponse<bool>("Discount not found.");
 
             var user = await _userService.GetCurrentUser();
             var carts = await _shoppingCartService.GetShoppingCartAsync(user, ShoppingCartType.ShoppingCart);

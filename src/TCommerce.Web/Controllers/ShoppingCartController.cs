@@ -8,6 +8,8 @@ using TCommerce.Web.Component;
 using TCommerce.Web.PrepareModelServices;
 using TCommerce.Core.Extensions;
 using TCommerce.Core.Interface;
+using TCommerce.Web.Areas.Admin.Models.Orders;
+using TCommerce.Web.Models;
 
 namespace TCommerce.Web.Controllers
 {
@@ -98,6 +100,8 @@ namespace TCommerce.Web.Controllers
 
             var redirectToCart = false;
 
+            var warnings = new List<string>();
+
             if(updateCartItemId > 0)
             {
                 await _shoppingCartService.UpdateCartItemAsync(customer, updateCartItemId, (ShoppingCartType)shoppingCartTypeId, product, attributeJson, quantity);
@@ -105,10 +109,10 @@ namespace TCommerce.Web.Controllers
             }
             else
             {
-                await _shoppingCartService.AddToCartAsync(customer, (ShoppingCartType)shoppingCartTypeId, product, attributeJson, model.Quantity);
+                warnings = await _shoppingCartService.AddToCartAsync(customer, (ShoppingCartType)shoppingCartTypeId, product, attributeJson, model.Quantity);
             }
 
-            return await RefreshCartView("Success", redirectToCart);
+            return await RefreshCartView(warnings is not null ? $"{string.Join("; ", warnings)}" : "Success", redirectToCart, warnings is not null ? false : true);
         }
 
         private int ExtractUpdateCartItemId(int productId, IFormCollection form)
@@ -188,11 +192,11 @@ namespace TCommerce.Web.Controllers
         //    if (counponCode != null)
         //        counponCode = counponCode.Trim();
         //}
-        private async Task<JsonResult> RefreshCartView(string message, bool redirectToCart = false)
+        private async Task<JsonResult> RefreshCartView(string message, bool redirectToCart = false, bool success = true)
         {
             var updateMiniCartSectionHtml = await RenderViewComponentAsync(typeof(MiniCartDropDownViewComponent));
             var updateCartSectionHtml = await RenderViewAsync("Cart", ControllerContext, await _sciModelService.PrepareShoppingCartModelAsync(), true);
-            return Json(new { success = true, updateminicartsectionhtml = updateMiniCartSectionHtml, updatecartsectionhtml = updateCartSectionHtml, message, redirectToCart });
+            return Json(new { success, updateminicartsectionhtml = updateMiniCartSectionHtml, updatecartsectionhtml = updateCartSectionHtml, message, redirectToCart });
         }
 
         [HttpPost]
@@ -256,5 +260,24 @@ namespace TCommerce.Web.Controllers
             await _shoppingCartService.ClearShoppingCartAsync(await _userService.GetCurrentUser());
             return await RefreshCartView("Đã xóa", true);
         }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> RemoveDiscountCode(string discountCode)
+        {
+            var discountSessionKey = "Discount";
+            var discounts = HttpContext.Session.Get<List<string>>(discountSessionKey) ?? new List<string>();
+            discountCode = discountCode.ToLowerInvariant();
+
+            if (discounts.Contains(discountCode))
+            {
+                discounts.Remove(discountCode);
+                HttpContext.Session.Set(discountSessionKey, discounts);
+
+                return await RefreshCartView("Đã xóa", true);
+            }
+
+            return Json(new { success = false, message = "Không tìm thấy mã giảm giá." });
+        }
+
     }
 }

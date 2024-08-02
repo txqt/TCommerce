@@ -8,6 +8,7 @@ namespace TCommerce.Web.Models
         public ShoppingCartModel()
         {
             Items = new List<ShoppingCartItemModel>();
+            UsedDiscounts = new List<UsedDiscountModel>();
         }
 
         public IList<ShoppingCartItemModel> Items { get; set; }
@@ -16,7 +17,7 @@ namespace TCommerce.Web.Models
         public bool DisplayCheckoutButton { get; set; } = true;
         public bool ShowProductImages { get; set; }
         public List<string> Warnings { get; set; }
-
+        public List<UsedDiscountModel> UsedDiscounts { get; set; }
         public partial class ShoppingCartItemModel : BaseEntity
         {
             public ShoppingCartItemModel()
@@ -51,5 +52,16 @@ namespace TCommerce.Web.Models
 
             public List<string> Warnings { get; set; }
         }
+
+        #region Nested Classes
+
+        public class UsedDiscountModel : BaseEntity
+        {
+            public int DiscountId { get; set; }
+            public string DiscountCode { get; set; }
+            public string DiscountName { get; set; }
+        }
+
+        #endregion
     }
 }
