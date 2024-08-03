@@ -390,28 +390,6 @@ namespace TCommerce.Services.UserServices
             }
         }
 
-        public async Task<ServiceResponse<string>> ChangePassword(ChangePasswordRequest model)
-        {
-            var userId = model.UserId;
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return new ServiceErrorResponse<string>($"Unable to load user with ID '{userId}'.");
-            }
-
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
-            if (!changePasswordResult.Succeeded)
-            {
-                var errors = changePasswordResult.Errors.Select(e => e.Description);
-                return new ServiceErrorResponse<string>(string.Join(", ", errors));
-            }
-            else
-            {
-                await _signInManager.RefreshSignInAsync(user);
-                return new ServiceSuccessResponse<string>("Your Password has been reset");
-            }
-        }
-
         public string EncodeToken(string normalToken)
         {
             var encodedEmailToken = Encoding.UTF8.GetBytes(normalToken);
