@@ -12,8 +12,7 @@ namespace TCommerce.Core.Interface
         Task<ServiceResponse<string>> ResetPassword(ResetPasswordRequest model);
         Task<ServiceResponse<string>> ChangePassword(ChangePasswordRequest model);
         Task<ServiceResponse<string>> SendResetPasswordEmail(string email);
-        Task<ServiceResponse<AuthResponseDto>> Login(AccessTokenRequestModel loginRequest);
-        Task Logout();
+        Task<ServiceResponse<AuthResponseDto>> Login(LoginModel loginRequest);
         Task<ServiceResponse<string>> SendConfirmationEmail(User user);
     }
 }

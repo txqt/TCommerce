@@ -51,6 +51,10 @@ namespace TCommerce.Web.Extensions
                     pattern: $"account/addresses",
                     defaults: new { controller = "Account", action = "Addresses" });
 
+                endpoints.MapControllerRoute(name: "AccountChangePassword",
+                    pattern: $"account/change-password",
+                    defaults: new { controller = "Account", action = "ChangePassword" });
+
                 endpoints.MapControllerRoute(name: "AccountOrders",
                     pattern: $"order/history",
                     defaults: new { controller = "Account", action = "Orders" });

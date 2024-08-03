@@ -26,5 +26,6 @@ namespace TCommerce.Web.Models
     {
         Info = 1,
         Addresses = 2,
+        ChangePassword = 3
     }
 }

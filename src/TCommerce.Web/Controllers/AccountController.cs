@@ -13,12 +13,14 @@ using System.Security.Claims;
 using System.Text;
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Accounts;
+using TCommerce.Core.Models.Accounts.Account;
 using TCommerce.Core.Models.Common;
 using TCommerce.Core.Models.JwtToken;
 using TCommerce.Core.Models.Users;
 using TCommerce.Core.Models.ViewsModel;
 using TCommerce.Web.Models;
 using TCommerce.Web.PrepareModelServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TCommerce.Web.Controllers
 {
@@ -52,7 +54,7 @@ namespace TCommerce.Web.Controllers
         public async Task<IActionResult> Login(string returnUrl)
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            var loginVM = new AccessTokenRequestModel()
+            var loginVM = new LoginModel()
             {
                 RememberMe = true
             };
@@ -61,7 +63,7 @@ namespace TCommerce.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(AccessTokenRequestModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginModel model, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -70,7 +72,7 @@ namespace TCommerce.Web.Controllers
 
                 if (user != null)
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, lockoutOnFailure: true);
+                    var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, lockoutOnFailure: true);
 
                     if (result.Succeeded)
                     {
@@ -78,7 +80,14 @@ namespace TCommerce.Web.Controllers
                         await _userManager.ResetAccessFailedCountAsync(user);
 
                         // Redirect to the returnUrl if provided, or to Home/Index
-                        return RedirectToAction("Index", "Home");
+                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        {
+                            return Redirect(returnUrl);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                     else if (result.IsLockedOut)
                     {
@@ -104,12 +113,13 @@ namespace TCommerce.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            // Xóa cookie
             Response.Cookies.Delete("jwt");
             Response.Cookies.Delete("refreshToken");
+
             await _signInManager.SignOutAsync();
-            await _accountService.Logout();
+
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
             return RedirectToAction("Login", "Account");
         }
 
@@ -376,6 +386,41 @@ namespace TCommerce.Web.Controllers
             var result = await _userRegistrationService.ConfirmEmail(userId, token);
 
             return View(result.Success ? "ConfirmEmailSuccessfully" : "ConfirmEmailError");
+        }
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            var model = new ChangePasswordRequest
+            {
+                CurrentPassword = string.Empty,
+                NewPassword = string.Empty,
+                ConfirmNewPassword = string.Empty,
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            changePasswordRequest.UserId = (await _userService.GetCurrentUser()).Id;
+            var result = await _userRegistrationService.ChangePassword(changePasswordRequest);
+
+            if (ModelState.IsValid)
+            {
+                var changePasswordResult = await _userRegistrationService.ChangePassword(changePasswordRequest);
+                if (changePasswordResult.Success)
+                {
+                    await _signInManager.SignOutAsync();
+
+                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    return RedirectToAction(nameof(Login));
+                }
+            }
+
+            ModelState.AddModelError("", result.Message);
+            return View(changePasswordRequest);
         }
     }
 }

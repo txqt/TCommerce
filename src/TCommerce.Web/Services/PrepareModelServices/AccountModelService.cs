@@ -44,6 +44,14 @@ namespace TCommerce.Web.PrepareModelServices
                 ItemClass = "account-addresses"
             });
 
+            model.AccountNavigationItems.Add(new AccountNavigationItemModel
+            {
+                RouteName = "AccountChangePassword",
+                Title = "Account Change Password",
+                Tab = (int)AccountNavigationEnum.ChangePassword,
+                ItemClass = "account-change-password"
+            });
+
             model.SelectedTab = selectedTabId;
 
             return model;
