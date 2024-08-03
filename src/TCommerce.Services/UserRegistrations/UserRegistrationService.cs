@@ -40,15 +40,10 @@ namespace TCommerce.Services.UserRegistrations
             _emailSender = emailSender;
         }
 
-        public async Task<ServiceResponse<AuthResponseDto>> Login(AccessTokenRequestModel loginRequest)
+        public async Task<ServiceResponse<AuthResponseDto>> Login(LoginModel loginRequest)
         {
             //return await _tokenService.Create(loginRequest);
             throw new NotImplementedException();
-        }
-
-        public async Task Logout()
-        {
-           
         }
 
         public async Task<ServiceResponse<string>> SendResetPasswordEmail(string email)
@@ -116,7 +111,7 @@ namespace TCommerce.Services.UserRegistrations
         public async Task<ServiceResponse<string>> ChangePassword(ChangePasswordRequest model)
         {
             var userId = model.UserId;
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 return new ServiceErrorResponse<string>($"Unable to load user with ID '{userId}'.");

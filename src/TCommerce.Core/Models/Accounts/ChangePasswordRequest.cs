@@ -10,7 +10,7 @@ namespace TCommerce.Core.Models.Accounts.Account
 {
     public class ChangePasswordRequest
     {
-        public required string UserId { get; set; }
+        public Guid UserId { get; set; }
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Mật khẩu cũ")]
@@ -24,6 +24,6 @@ namespace TCommerce.Core.Models.Accounts.Account
         [DataType(DataType.Password)]
         [Display(Name = "Nhập lại mật khẩu mới")]
         [Compare("NewPassword", ErrorMessage = "Hai mật khẩu không giống nhau")]
-        public required string ConfirmPassword { get; set; }
+        public required string ConfirmNewPassword { get; set; }
     }
 }

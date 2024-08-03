@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TCommerce.Core.Models.Accounts
 {
-    public class AccessTokenRequestModel
+    public class LoginModel
     {
         [Required(ErrorMessage = "Phải nhập {0}")]
         [Display(Name = "Địa chỉ email hoặc tên tài khoản")]
