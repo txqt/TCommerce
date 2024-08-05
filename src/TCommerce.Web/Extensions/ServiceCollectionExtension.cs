@@ -50,6 +50,7 @@ using Microsoft.AspNetCore.Mvc;
 using TCommerce.Services.SettingServices;
 using Microsoft.AspNetCore.Hosting;
 using System.Reflection;
+using TCommerce.Web.Services.PrepareModelServices;
 
 namespace TCommerce.Core.Extensions
 {
@@ -164,6 +165,7 @@ namespace TCommerce.Core.Extensions
             services.AddScoped<ISettingService, SettingService>();
             services.AddScoped<IAdminOrderModelService, AdminOrderModelService>();
             services.AddScoped<IOrderProcessingService, OrderProcessingService>();
+            services.AddScoped<IOrderModelService, OrderModelService>();
 
             services.AddSingleton(new JsonSerializerOptions
             {

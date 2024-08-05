@@ -64,6 +64,8 @@ namespace TCommerce.Services.ProductServices
         private readonly IRepository<ProductAttributeValue> _productAttributeValueRepository;
 
         private readonly IRepository<DiscountProductMapping> _discountProductMappingRepository;
+
+        private readonly IPictureService _pictureSerivce;
         #endregion
 
         #region Ctor
@@ -79,7 +81,7 @@ namespace TCommerce.Services.ProductServices
             IRepository<ProductManufacturer> productManufacturerRepository,
             IRepository<RelatedProduct> relatedProductRepository,
             IRepository<Category> categoryRepository,
-            IRepository<ProductAttributeValue> productAttributeValueRepository, IRepository<ProductAttribute> productAttributeRepository, IRepository<DiscountProductMapping> discountProductMappingRepository)
+            IRepository<ProductAttributeValue> productAttributeValueRepository, IRepository<ProductAttribute> productAttributeRepository, IRepository<DiscountProductMapping> discountProductMappingRepository, IPictureService pictureSerivce)
         {
             _configuration = configuration;
             _environment = environment;
@@ -98,6 +100,7 @@ namespace TCommerce.Services.ProductServices
             _productAttributeValueRepository = productAttributeValueRepository;
             _productAttributeRepository = productAttributeRepository;
             _discountProductMappingRepository = discountProductMappingRepository;
+            _pictureSerivce = pictureSerivce;
         }
         #endregion
 
@@ -281,30 +284,12 @@ namespace TCommerce.Services.ProductServices
                 {
                     if (imageFile.Length > 0)
                     {
-                        var uniqueFileName = Path.GetRandomFileName();
-                        var fileExtension = Path.GetExtension(imageFile.FileName);
-                        var newFileName = uniqueFileName + fileExtension;
-
-                        var filePath = Path.Combine(_environment.ContentRootPath, "wwwroot/images/uploads/", newFileName);
-                        if (!Directory.Exists(filePath))
-                        {
-                            Directory.CreateDirectory(filePath);
-                        }
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await imageFile.CopyToAsync(fileStream);
-                        }
-
-                        var picture = new Picture
-                        {
-                            UrlPath = "/images/uploads/" + newFileName
-                        };
-                        await _pictureRepository.CreateAsync(picture);
+                        var pictureId = (await _pictureSerivce.SavePictureWithEncryptFileName(imageFile)).Data;
 
                         var productPicture = new ProductPicture
                         {
                             ProductId = productId,
-                            PictureId = picture.Id
+                            PictureId = pictureId
                         };
                         await _productPictureMappingRepository.CreateAsync(productPicture);
                     }
