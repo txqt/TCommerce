@@ -22,15 +22,15 @@
 <div class="page order-details-page">
     @if (!Model.PrintMode)
     {
-        <div class="page-title">
-            <h1>OrderInformation</h1>
+        <div class="page-title text-center">
+            <h1>Order Information</h1>
             <a href="@Url.RouteUrl("PrintOrderDetails", new { orderId = Model.Id })" target="_blank" class="button-2 print-order-button">Print</a>
         </div>
     }
     <div class="page-body">
         <div class="order-overview">
             <div class="order-number">
-                <strong>Order#@Model.Id</strong>
+                <strong>Order #@Model.Id</strong>
             </div>
             <ul class="order-overview-content">
                 <li class="order-date">
@@ -55,7 +55,7 @@
                         <ul class="info-list">
                             <li class="payment-method">
                                 <span class="label">
-                                    Payment.Method:
+                                    Payment Method:
                                 </span>
                                 <span class="value">
                                     @Model.PaymentMethod
@@ -154,9 +154,9 @@
                                     }
                                     @if (Model.ShowProductThumbnail)
                                     {
-                                        <td class="picture">
+                                        <td class="picture" style="width: 200px">
                                             <a href="/@item.ProductSeName">
-                                                <img style="width: 20%;" alt="@item.Picture.AltAttribute" src="@item.Picture.ImageUrl" title="@item.Picture.TitleAttribute"/>
+                                                <img style="width: 30%;" alt="@item.Picture.AltAttribute" src="@item.Picture.ImageUrl" title="@item.Picture.TitleAttribute"/>
                                             </a>
                                         </td>
                                     }
@@ -199,20 +199,16 @@
                     <table class="cart-total">
                         <tbody>
                             <tr>
-                                <td class="cart-total-left">
+                                <td>
                                     <label>SubTotal:</label>
-                                </td>
-                                <td class="cart-total-right">
                                     <span>@Model.OrderSubtotal</span>
                                 </td>
                             </tr>
                             @if (!string.IsNullOrEmpty(Model.OrderSubTotalDiscount))
                             {
                                 <tr>
-                                    <td class="cart-total-left">
-                                        <label>SubTotalDiscount:</label>
-                                    </td>
-                                    <td class="cart-total-right">
+                                    <td>
+                                        <label>SubTotal Discount:</label>
                                         <span>@Model.OrderSubTotalDiscount</span>
                                     </td>
                                 </tr>
@@ -220,19 +216,15 @@
                             @if (!string.IsNullOrEmpty(Model.OrderTotalDiscount))
                             {
                                 <tr>
-                                    <td class="cart-total-left">
-                                        <label>TotalDiscount:</label>
-                                    </td>
-                                    <td class="cart-total-right">
+                                    <td>
+                                        <label>Total Discount:</label>
                                         <span>@Model.OrderTotalDiscount</span>
                                     </td>
                                 </tr>
                             }
                             <tr>
-                                <td class="cart-total-left">
-                                    <label>OrderTotal:</label>
-                                </td>
-                                <td class="cart-total-right">
+                                <td>
+                                    <label>Order Total:</label>
                                     <span><strong>@Model.OrderTotal</strong></span>
                                 </td>
                             </tr>
@@ -244,7 +236,7 @@
                     <div class="actions">
                         @if (Model.IsReOrderAllowed)
                         {
-                            <button type="button" class="button-1 re-order-button" onclick="setLocation('@Url.RouteUrl("ReOrder", new { orderId = Model.Id })')">Reorder</button>
+                            <button type="button" class="btn btn-info re-order-button" onclick="window.location.href = '@Url.RouteUrl("ReOrder", new { orderId = Model.Id })'">Reorder</button>
                         }
                     </div>
                 }

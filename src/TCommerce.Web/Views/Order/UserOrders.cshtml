@@ -6,37 +6,34 @@
 {
     @await Component.InvokeAsync("AccountNavigation", new { selectedTabId = (int)AccountNavigationEnum.Orders })
 }
-<div class="page account-page order-list-page">
-    <div class="page-title">
-        <h1>Orders</h1>
-    </div>
-    <div class="page-body">
-        @if (Model.Orders.Count > 0)
-        {
-            <div class="order-list">
-                @foreach (var order in Model.Orders)
-                {
-                    <div class="section order-item">
-                        <div class="title">
-                            <strong>Order: @order.Id</strong>
-                        </div>
-                        <ul class="info">
-                            <li>Order Status: <span class="order-status @order.OrderStatusEnum.ToString().ToLowerInvariant()">@order.OrderStatus</span></li>
-                            <li>Order Date: <span class="order-date">@order.CreatedOn.ToString()</span></li>
-                            <li>Order Total: <span class="order-total">@order.OrderTotal</span></li>
-                        </ul>
-                        <div class="buttons">
-                            <button type="button" class="button-2 order-details-button" onclick="window.location.href = '@Url.RouteUrl("OrderDetails", new { orderId = order.Id })'">Order Details</button>
+@if (Model.Orders.Count > 0)
+{
+    @foreach (var order in Model.Orders)
+    {
+        <div class="card mb-2" style="width: 100%;">
+                <div class="d-flex justify-content-between">
+                    <div class="card-left">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted" style="text-transform: uppercase; margin: 0px 0px 10px;">
+                                <strong>Order: @order.Id</strong>
+                            </h6>
+
+                            <p class="card-text" style="margin: 0px 0px 5px;">Order Status: <span class="order-status @order.OrderStatusEnum.ToString().ToLowerInvariant()">@order.OrderStatus</span></p>
+                            <p class="card-text">Order Date: <span class="order-date">@order.CreatedOn.ToString()</span></p>
+                            <p class="card-text">Order Total: <span class="order-total">@order.OrderTotal</span></p>
                         </div>
                     </div>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="no-data">
-                No Orders
-            </div>
-        }
+                    <div class="card-right mx-2 my-2">
+                        <span><button type="button" class="btn btn-info" onclick="window.location.href = '@Url.RouteUrl("OrderDetails", new { orderId = order.Id })'">Order Details</button></span>
+                    </div>
+                </div>
+         </div>
+
+    }
+}
+else
+{
+    <div class="no-data">
+        No Orders
     </div>
-</div>
+}
