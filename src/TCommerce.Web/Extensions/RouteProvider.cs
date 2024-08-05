@@ -67,6 +67,10 @@ namespace TCommerce.Web.Extensions
                     pattern: $"orderdetails/print/{{orderId}}",
                     defaults: new { controller = "Order", action = "PrintOrderDetails" });
 
+                endpoints.MapControllerRoute(name: "ReOrder",
+                    pattern: $"reorder/{{orderId:min(0)}}",
+                    defaults: new { controller = "Order", action = "ReOrder" });
+
                 endpoints.MapControllerRoute(name: "CreateAddress",
                     pattern: $"account/address/create",
                     defaults: new { controller = "Account", action = "CreateAddress" });

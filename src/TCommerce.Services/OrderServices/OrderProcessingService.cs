@@ -9,6 +9,8 @@ using TCommerce.Core.Models.Payments;
 using TCommerce.Core.Models.SendMail;
 using TCommerce.Core.Models.Users;
 using TCommerce.Services.PaymentServices;
+using TCommerce.Services.ProductServices;
+using TCommerce.Services.ShoppingCartServices;
 
 namespace TCommerce.Services.OrderServices
 {
@@ -19,14 +21,18 @@ namespace TCommerce.Services.OrderServices
         private readonly IEmailSender _emailSender;
         private readonly IUserService _userService;
         private readonly IProductAttributeConverter _productAttributeParser;
+        private readonly IProductService _productService;
+        private readonly IShoppingCartService _shoppingCartService;
 
-        public OrderProcessingService(IPaymentService paymentService, IOrderService orderService, IEmailSender emailSender, IUserService userService, IProductAttributeConverter productAttributeParser)
+        public OrderProcessingService(IPaymentService paymentService, IOrderService orderService, IEmailSender emailSender, IUserService userService, IProductAttributeConverter productAttributeParser, IProductService productService, IShoppingCartService shoppingCartService)
         {
             _paymentService = paymentService;
             _orderService = orderService;
             _emailSender = emailSender;
             _userService = userService;
             _productAttributeParser = productAttributeParser;
+            _productService = productService;
+            _shoppingCartService = shoppingCartService;
         }
 
         public bool CanCancelOrder(Order order)
@@ -373,6 +379,30 @@ namespace TCommerce.Services.OrderServices
                 });
                 await AddOrderNoteAsync(order, $"\"Order paid\" email (to store owner).");
             }
+        }
+
+        public async Task<List<string>> ReOrderAsync(Order order)
+        {
+            ArgumentNullException.ThrowIfNull(order);
+
+            var customer = await _userService.GetUserById(order.UserId);
+
+            var warnings = new List<string>();
+
+            //move shopping cart items (if possible)
+            foreach (var orderItem in await _orderService.GetOrderItemsByOrderIdAsync(order.Id))
+            {
+                var product = await _productService.GetByIdAsync(orderItem.ProductId);
+
+                var addtoCartWarnings = await _shoppingCartService.AddToCartAsync(customer, ShoppingCartType.ShoppingCart, product, orderItem.AttributeJson, orderItem.Quantity);
+
+                if (addtoCartWarnings is not null && addtoCartWarnings.Any())
+                {
+                    warnings.AddRange(addtoCartWarnings);
+                }
+            }
+
+            return warnings;
         }
     }
 }
