@@ -22,12 +22,14 @@ namespace TCommerce.Web.Controllers
         private readonly IOrderService _orderService;
         private readonly IUserService _userService;
         private readonly IOrderModelService _orderModelService;
+        private readonly IOrderProcessingService _orderProcessingService;
 
-        public OrderController(IOrderService orderService, IUserService userService, IOrderModelService orderModelService)
+        public OrderController(IOrderService orderService, IUserService userService, IOrderModelService orderModelService, IOrderProcessingService orderProcessingService)
         {
             _orderService = orderService;
             _userService = userService;
             _orderModelService = orderModelService;
+            _orderProcessingService = orderProcessingService;
         }
 
         public async Task<IActionResult> UserOrders()
@@ -79,6 +81,19 @@ namespace TCommerce.Web.Controllers
             model.PrintMode = true;
 
             return View("Details", model);
+        }
+        public virtual async Task<IActionResult> ReOrder(int orderId)
+        {
+            var order = await _orderService.GetOrderByIdAsync(orderId);
+            var customer = await _userService.GetCurrentUser();
+            if (order == null || order.Deleted || customer.Id != order.UserId)
+                return Challenge();
+
+            var warnings = await _orderProcessingService.ReOrderAsync(order);
+
+            SetStatusMessage(string.Join("<br/>", warnings));
+
+            return RedirectToRoute("Cart");
         }
     }
 }

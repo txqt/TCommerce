@@ -20,5 +20,6 @@ namespace TCommerce.Core.Interface
         bool CanVoidOffline(Order order);
         Task CancelOrderAsync(Order order, bool notifyCustomer);
         Task MarkOrderAsPaidAsync(Order order);
+        Task<List<string>> ReOrderAsync(Order order);
     }
 }

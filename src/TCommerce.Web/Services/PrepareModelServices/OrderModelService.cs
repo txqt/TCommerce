@@ -37,6 +37,7 @@ namespace TCommerce.Web.Services.PrepareModelServices
                 CreatedOn = order.CreatedOnUtc,
                 OrderStatus = order.OrderStatus.ToString(),
                 PaymentMethod = order.PaymentStatus.ToString(),
+                IsReOrderAllowed = true
             };
 
             //payment method
