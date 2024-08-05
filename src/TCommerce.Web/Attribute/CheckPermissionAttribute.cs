@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using TCommerce.Core.Interface;
+using TCommerce.Services.DbManageServices;
 
 namespace TCommerce.Web.Attribute
 {
@@ -29,6 +30,11 @@ namespace TCommerce.Web.Attribute
         /// <param name="context">The permission checking context.</param>
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            ArgumentNullException.ThrowIfNull(context);
+
+            if (!DatabaseManager.IsDatabaseInstalled())
+                return;
+
             // Check if the Action or Controller is marked with [AllowAnonymous]
             bool allowAnonymous = context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousAttribute))
                 || context.ActionDescriptor.EndpointMetadata.Any(em => em.GetType() == typeof(AllowAnonymousFilter));

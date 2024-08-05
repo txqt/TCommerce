@@ -31,7 +31,7 @@ namespace TCommerce.Web.PrepareModelServices
             model.AccountNavigationItems.Add(new AccountNavigationItemModel
             {
                 RouteName = "AccountInfo",
-                Title = "Account Info",
+                Title = "Info",
                 Tab = (int)AccountNavigationEnum.Info,
                 ItemClass = "account-info"
             });
@@ -39,7 +39,7 @@ namespace TCommerce.Web.PrepareModelServices
             model.AccountNavigationItems.Add(new AccountNavigationItemModel
             {
                 RouteName = "AccountAddresses",
-                Title = "Account Addresses",
+                Title = "Addresses",
                 Tab = (int)AccountNavigationEnum.Addresses,
                 ItemClass = "account-addresses"
             });
@@ -47,9 +47,17 @@ namespace TCommerce.Web.PrepareModelServices
             model.AccountNavigationItems.Add(new AccountNavigationItemModel
             {
                 RouteName = "AccountChangePassword",
-                Title = "Account Change Password",
+                Title = "Change Password",
                 Tab = (int)AccountNavigationEnum.ChangePassword,
                 ItemClass = "account-change-password"
+            });
+
+            model.AccountNavigationItems.Add(new AccountNavigationItemModel
+            {
+                RouteName = "UserOrders",
+                Title = "Orders",
+                Tab = (int)AccountNavigationEnum.Orders,
+                ItemClass = "user-orders"
             });
 
             model.SelectedTab = selectedTabId;
