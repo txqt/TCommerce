@@ -1,33 +1,23 @@
-﻿@{
+﻿@using TCommerce.Core.Interface
+@using TCommerce.Core.Models.Security
+@inject ISecurityService securityService
+@{
     ViewData["Title"] = "Home Page";
+    var canManageOrders = await securityService.AuthorizeAsync(PermissionSystemName.ManageOrders);
+    var canManageUsers = await securityService.AuthorizeAsync(PermissionSystemName.ManageUsers);
+    var canManageProducts = await securityService.AuthorizeAsync(PermissionSystemName.ManageProducts);
 }
-<style>
-    .custom-link {
-        display: block;
-        padding: 20px; 
-        text-align: center;
-        outline: none;
-        font-size: 60px;
-        text-decoration: none;
+<h1 class="mt-4">Dashboard</h1>
+
+@if (canManageOrders && canManageUsers && canManageProducts)
+{
+    @await Component.InvokeAsync("CommonStatistics")
+}
+<div class="row">
+    @if (canManageOrders)
+    {
+        <div class="col-xl-8">
+            @await Html.PartialAsync("_OrderStatistics")
+        </div>
     }
-    .custom-link:hover{
-        text-decoration: none;
-    }
-</style>
-<div class="card">
-    <div class="card-body">
-        <a href="@Url.Action("Index","Product")" class="custom-link text-info">Product List</a>
-    </div>
-</div>
-<br />
-<div class="card">
-  <div class="card-body">
-    This is some text within a card body.
-  </div>
-</div>
-<br />
-<div class="card">
-    <div class="card-body">
-        This is some text within a card body.
-    </div>
 </div>

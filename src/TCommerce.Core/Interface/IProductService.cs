@@ -40,6 +40,8 @@ namespace TCommerce.Core.Interface
         Task<List<Product>> GetCategoryFeaturedProductsAsync(int categoryId);
         Task<List<Product>> GetManufacturerFeaturedProductsAsync(int manufacturerId);
         public bool ProductIsAvailable(Product product, DateTime? dateTime = null);
+        Task<PagedList<Product>> GetLowStockProductsAsync(bool? loadPublishedOnly = true,
+        int pageIndex = 1, int pageSize = int.MaxValue);
         #endregion
 
         #region ProductPictures

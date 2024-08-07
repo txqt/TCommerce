@@ -1,6 +1,8 @@
-﻿using TCommerce.Core.Interface;
+﻿using AutoMapper;
+using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Orders;
 using TCommerce.Core.Models.ViewsModel;
+using TCommerce.Services.AddressServices;
 using TCommerce.Web.Models;
 
 namespace TCommerce.Web.Services.PrepareModelServices
@@ -17,8 +19,10 @@ namespace TCommerce.Web.Services.PrepareModelServices
         private readonly IProductService _productService;
         private readonly IUrlRecordService _urlRecordService;
         private readonly IPictureService _pictureService;
+        private readonly IMapper _mapper;
+        private readonly IAddressService _addressService;
 
-        public OrderModelService(IPictureService pictureService, IUrlRecordService urlRecordService, IProductService productService, IPaymentService paymentService, IUserService userService, IOrderService orderService)
+        public OrderModelService(IPictureService pictureService, IUrlRecordService urlRecordService, IProductService productService, IPaymentService paymentService, IUserService userService, IOrderService orderService, IMapper mapper, IAddressService addressService)
         {
             _pictureService = pictureService;
             _urlRecordService = urlRecordService;
@@ -26,6 +30,8 @@ namespace TCommerce.Web.Services.PrepareModelServices
             _paymentService = paymentService;
             _userService = userService;
             _orderService = orderService;
+            _mapper = mapper;
+            _addressService = addressService;
         }
 
         public async Task<OrderDetailsModel> PrepareOrderDetailsModelAsync(Order order)
@@ -73,6 +79,8 @@ namespace TCommerce.Web.Services.PrepareModelServices
             //purchased products
             model.ShowSku = true;
             model.ShowProductThumbnail = true;
+
+            model.ShippingAddress = _mapper.Map<AddressModel>(await _addressService.GetAddressByIdAsync(order.ShippingAddressId.Value));
 
             var orderItems = await _orderService.GetOrderItemsByOrderIdAsync(order.Id);
 

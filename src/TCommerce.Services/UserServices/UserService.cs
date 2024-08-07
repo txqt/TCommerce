@@ -16,7 +16,7 @@ using TCommerce.Core.Models.Common;
 using TCommerce.Core.Models.Response;
 using TCommerce.Core.Models.ViewsModel;
 using TCommerce.Core.Utilities;
-using TCommerce.Core.Models.RoleName;
+using TCommerce.Core.Models.Roles;
 using TCommerce.Core.Models.SendMail;
 using TCommerce.Core.Models.Accounts;
 using TCommerce.Core.Models.Accounts.Account;
@@ -26,6 +26,8 @@ using TCommerce.Services.ShoppingCartServices;
 using TCommerce.Core.Interface;
 using System.Net.Http;
 using System.Data;
+using TCommerce.Core.Models.Paging;
+using System.Linq;
 
 namespace TCommerce.Services.UserServices
 {
@@ -232,10 +234,78 @@ namespace TCommerce.Services.UserServices
             return user;
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public async Task<List<User>> GetAllUsersAsync(UserParameters userParameters)
         {
-            var model = await _context.Users.Where(x => x.Deleted == false).ToListAsync();
-            return model;
+            var usersQuery = _userManager.Users.AsQueryable();
+
+            if (userParameters.CreatedFromUtc.HasValue)
+            {
+                usersQuery = usersQuery.Where(u => u.CreatedDate >= userParameters.CreatedFromUtc.Value);
+            }
+
+            if (userParameters.CreatedToUtc.HasValue)
+            {
+                usersQuery = usersQuery.Where(u => u.CreatedDate <= userParameters.CreatedToUtc.Value);
+            }
+
+            if (!string.IsNullOrEmpty(userParameters.Email))
+            {
+                usersQuery = usersQuery.Where(u =>u.Email != null && u.Email.Contains(userParameters.Email));
+            }
+
+            if (!string.IsNullOrEmpty(userParameters.UserName))
+            {
+                usersQuery = usersQuery.Where(u => u.UserName != null && u.UserName.Contains(userParameters.UserName));
+            }
+
+            if (!string.IsNullOrEmpty(userParameters.FirstName))
+            {
+                usersQuery = usersQuery.Where(u => u.FirstName != null && u.FirstName.Contains(userParameters.FirstName));
+            }
+
+            if (!string.IsNullOrEmpty(userParameters.LastName))
+            {
+                usersQuery = usersQuery.Where(u => u.LastName != null && u.LastName.Contains(userParameters.LastName));
+            }
+
+            if (!string.IsNullOrEmpty(userParameters.Company))
+            {
+                usersQuery = usersQuery.Where(u => u.Company.Contains(userParameters.Company));
+            }
+
+            if (userParameters.DayOfBirth.HasValue)
+            {
+                usersQuery = usersQuery.Where(u => u.Dob == userParameters.DayOfBirth.Value);
+            }
+
+            if (userParameters.Deleted)
+            {
+                usersQuery = usersQuery.Where(u => u.Deleted == userParameters.Deleted);
+            }
+
+            var users = await usersQuery.ToListAsync();
+
+            if (userParameters.Roles != null && userParameters.Roles.Any())
+            {
+                var usersInRoles = new List<User>();
+
+                foreach (var roleName in userParameters.Roles)
+                {
+                    var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+
+                    foreach (var user in usersInRole)
+                    {
+                        if (!usersInRoles.Any(u => u.Id == user.Id))
+                        {
+                            usersInRoles.Add(user);
+                        }
+                    }
+                }
+
+                users = users.Intersect(usersInRoles).ToList();
+            }
+
+            return users;
         }
 
         public string GenerateRandomPassword(int length)

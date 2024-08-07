@@ -166,6 +166,7 @@ namespace TCommerce.Core.Extensions
             services.AddScoped<IAdminOrderModelService, AdminOrderModelService>();
             services.AddScoped<IOrderProcessingService, OrderProcessingService>();
             services.AddScoped<IOrderModelService, OrderModelService>();
+            services.AddScoped<IAdminCommonModelService, AdminCommonModelService>();
 
             services.AddSingleton(new JsonSerializerOptions
             {

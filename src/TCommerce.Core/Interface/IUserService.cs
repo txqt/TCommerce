@@ -1,6 +1,7 @@
 ﻿using TCommerce.Core.Models.Accounts;
 using TCommerce.Core.Models.Common;
 using TCommerce.Core.Models.Orders;
+using TCommerce.Core.Models.Paging;
 using TCommerce.Core.Models.Response;
 using TCommerce.Core.Models.Security;
 using TCommerce.Core.Models.Users;
@@ -10,7 +11,7 @@ namespace TCommerce.Core.Interface
 {
     public interface IUserService
     {
-        Task<List<User>> GetAllAsync();
+        Task<List<User>> GetAllUsersAsync(UserParameters userParameters);
         Task<List<Role>> GetRolesByUserAsync(User user);
         Task<User> GetUserById(Guid id);
         Task<User> GetCurrentUser();

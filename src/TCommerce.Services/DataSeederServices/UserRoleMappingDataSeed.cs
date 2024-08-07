@@ -1,5 +1,5 @@
 ﻿using TCommerce.Core.Extensions;
-using TCommerce.Core.Models.RoleName;
+using TCommerce.Core.Models.Roles;
 using TCommerce.Core.Models.Security;
 using TCommerce.Core.Models.Users;
 

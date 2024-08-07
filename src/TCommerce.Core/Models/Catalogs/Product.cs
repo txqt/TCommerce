@@ -106,6 +106,7 @@ namespace TCommerce.Core.Models.Catalogs
         /// </summary>
         public bool IsFreeShipping { get; set; }
 
+        public int MinStockQuantity { get; set; }
         public int StockQuantity { get; set; }
 
         /// <summary>

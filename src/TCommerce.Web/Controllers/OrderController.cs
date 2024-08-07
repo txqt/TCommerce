@@ -49,6 +49,7 @@ namespace TCommerce.Web.Controllers
                     OrderStatusEnum = order.OrderStatus,
                     OrderStatus = order.OrderStatus.ToString(),
                     PaymentStatus = order.PaymentStatus.ToString(),
+                    OrderGuid = order.OrderGuid
                 };
                 orderModel.OrderTotal = order.OrderTotal.ToString();
 
