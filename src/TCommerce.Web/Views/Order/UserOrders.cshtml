@@ -15,7 +15,7 @@
                     <div class="card-left">
                         <div class="card-body">
                             <h6 class="card-subtitle mb-2 text-muted" style="text-transform: uppercase; margin: 0px 0px 10px;">
-                                <strong>Order: @order.Id</strong>
+                                <strong>Order: @order.Id (#@order.OrderGuid)</strong>
                             </h6>
 
                             <p class="card-text" style="margin: 0px 0px 5px;">Order Status: <span class="order-status @order.OrderStatusEnum.ToString().ToLowerInvariant()">@order.OrderStatus</span></p>
@@ -24,7 +24,7 @@
                         </div>
                     </div>
                     <div class="card-right mx-2 my-2">
-                        <span><button type="button" class="btn btn-info" onclick="window.location.href = '@Url.RouteUrl("OrderDetails", new { orderId = order.Id })'">Order Details</button></span>
+                        <span><button type="button" class="btn btn-info" onclick="window.location.href = '@Url.RouteUrl("OrderDetails", new { orderId = order.Id })'">Details</button></span>
                     </div>
                 </div>
          </div>

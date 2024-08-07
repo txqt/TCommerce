@@ -809,6 +809,27 @@ namespace TCommerce.Services.ProductServices
 
             return await products.ToListAsync();
         }
+
+        public async Task<PagedList<Product>> GetLowStockProductsAsync(bool? loadPublishedOnly = true, int pageIndex = 1, int pageSize = int.MaxValue)
+        {
+            var query = _productRepository.Query;
+
+            //filter by products with stock quantity less than the minimum
+            query = query.Where(product =>
+                (product.StockQuantity) <= product.MinStockQuantity);
+
+            //ignore deleted products
+            query = query.Where(product => !product.Deleted);
+
+            //whether to load published products only
+            if (loadPublishedOnly.HasValue)
+                query = query.Where(product => product.Published == loadPublishedOnly.Value);
+
+            query = query.OrderBy(product => product.MinStockQuantity).ThenBy(product => product.DisplayOrder).ThenBy(product => product.Id);
+
+            return await PagedList<Product>.ToPagedList
+                (query, pageIndex, pageSize);
+        }
         #endregion
     }
 }

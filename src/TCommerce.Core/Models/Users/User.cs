@@ -20,6 +20,7 @@ namespace TCommerce.Core.Models.Users
         public string? AvatarPath { get; set; }
 
         public string? RefreshToken { get; set; }
+        public string? Company { get; set; }
 
         public DateTime RefreshTokenExpiryTime { get; set; }
 
