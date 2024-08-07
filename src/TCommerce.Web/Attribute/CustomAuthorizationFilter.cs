@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
-using TCommerce.Core.Models.RoleName;
+using TCommerce.Core.Models.Roles;
 
 namespace TCommerce.Web.Attribute
 {

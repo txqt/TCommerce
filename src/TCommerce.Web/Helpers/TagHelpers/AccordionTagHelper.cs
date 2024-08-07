@@ -15,6 +15,9 @@ namespace TCommerce.Web.Helpers.TagHelpers
         [HtmlAttributeName("asp-title")]
         public string Title { get; set; }
 
+        [HtmlAttributeName("asp-icon")]
+        public string Icon { get; set; }
+
         [HtmlAttributeName("asp-collapsed")]
         public bool Collapsed { get; set; } = false;
 
@@ -48,12 +51,24 @@ namespace TCommerce.Web.Helpers.TagHelpers
             if (!string.IsNullOrEmpty(Title))
             {
                 var button = new TagBuilder("button");
-                button.AddCssClass("accordion-button");
+                button.AddCssClass("accordion-button d-flex align-items-center");
                 button.Attributes.Add("type", "button");
                 button.Attributes.Add("data-bs-toggle", "collapse");
                 button.Attributes.Add("data-bs-target", $"#{Id}");
                 button.Attributes.Add("aria-expanded", (!Collapsed).ToString().ToLower());
-                button.InnerHtml.Append(Title);
+
+                if (!string.IsNullOrEmpty(Icon))
+                {
+                    var iconSpan = new TagBuilder("span");
+                    iconSpan.AddCssClass(Icon);
+                    iconSpan.AddCssClass("me-2");
+                    button.InnerHtml.AppendHtml(iconSpan);
+                }
+
+                var titleSpan = new TagBuilder("span");
+                titleSpan.InnerHtml.Append(Title);
+
+                button.InnerHtml.AppendHtml(titleSpan);
 
                 accordionHeader.InnerHtml.AppendHtml(button);
             }

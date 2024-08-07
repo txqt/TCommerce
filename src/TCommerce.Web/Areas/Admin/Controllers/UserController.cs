@@ -55,7 +55,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var userList = await _userService.GetAllAsync();
+            var userList = await _userService.GetAllUsersAsync(new Core.Models.Paging.UserParameters());
 
             var models = _mapper.Map<List<UserModel>>(userList);
 

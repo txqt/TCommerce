@@ -1,5 +1,5 @@
 ﻿@model OrderDetailsModel
-
+@inject IAddressService _addressService;
 @{
     if (!Model.PrintMode)
     {
@@ -65,7 +65,55 @@
                     </div>
                 }
             </div>
+            <div class="shipping-info">
+                <div class="title">
+                     <strong>Shipping address</strong>
+                </div>
+                <table class="table table-hover table-bordered">
+                    <colgroup>
+                        <col span="1" width="200">    
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th colspan="2">
+                                <strong>Shipping address</strong>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><label asp-for="ShippingAddress.FirstName" class="control-label"></label></td>
+                            <td>@Model.ShippingAddress.FirstName</td>
+                        </tr>
+                        <tr>
+                            <td><label asp-for="ShippingAddress.LastName" class="control-label"></label></td>
+                            <td>@Model.ShippingAddress.LastName</td>
+                        </tr>
+                        <tr>
+                            <td><label asp-for="ShippingAddress.Company" class="control-label"></label></td>
+                            <td>@Model.ShippingAddress.Company</td>
+                        </tr>
+                        <tr>
+                            <td><label asp-for="ShippingAddress.PhoneNumber" class="control-label"></label></td>
+                            <td>@Model.ShippingAddress.PhoneNumber</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label">Tỉnh/Thành phố</label></td>
+                            <td>@((await _addressService.GetProvinceByIdAsync(Model.ShippingAddress.ProvinceId)).Name)</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label">Phường xã</label></td>
+                            <td>@((await _addressService.GetCommuneByIdAsync(Model.ShippingAddress.CommuneId)).Name)</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label" asp-for="ShippingAddress.AddressDetails"></label></td>
+                            <td>@Model.ShippingAddress.AddressDetails</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+        
         @if (Model.Items.Count > 0)
         {
             if (!Model.PrintMode && Model.OrderNotes.Count > 0)
@@ -194,13 +242,13 @@
                     </table>
                 </div>
             </div>
-            <div class="section totals">
+            <div class="section totals" style="display: flex; justify-content: space-between;">
                 <div class="total-info">
                     <table class="cart-total">
                         <tbody>
                             <tr>
                                 <td>
-                                    <label>SubTotal:</label>
+                                    <label>Sub Total:</label>
                                     <span>@Model.OrderSubtotal</span>
                                 </td>
                             </tr>
@@ -233,7 +281,7 @@
                 </div>
                 @if (!Model.PrintMode)
                 {
-                    <div class="actions">
+                    <div class="actions" style="display: flex; align-items: flex-end;">
                         @if (Model.IsReOrderAllowed)
                         {
                             <button type="button" class="btn btn-info re-order-button" onclick="window.location.href = '@Url.RouteUrl("ReOrder", new { orderId = Model.Id })'">Reorder</button>

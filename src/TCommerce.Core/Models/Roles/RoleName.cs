@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TCommerce.Core.Models.RoleName
+namespace TCommerce.Core.Models.Roles
 {
     public class RoleName
     {

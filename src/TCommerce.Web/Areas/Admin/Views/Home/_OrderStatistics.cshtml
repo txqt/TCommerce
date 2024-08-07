@@ -1,0 +1,119 @@
+﻿<style>
+    .btn {
+        margin: 5px;
+        padding: 10px 20px;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #f8f9fa;
+        color: black;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .btn.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn.inactive {
+        background-color: #f8f9fa;
+        color: black;
+    }
+    .btn-group{
+        float: right;
+    }
+    </style>
+<t-accordion asp-title="Orders" asp-icon="fas fa-shopping-cart">
+    <div class="btn-group">
+        <button id="btnYear" class="btn inactive">Year</button>
+        <button id="btnMonth" class="btn inactive">Month</button>
+        <button id="btnWeek" class="btn active">Week</button>
+    </div>
+    <canvas id="orderStatisticsChart" width="1000" height="400"></canvas>
+    <script>
+        $(document).ready(function() {
+            var chart;
+
+            function loadChart(period) {
+                $.ajax({
+                    url: '@Url.Action("LoadOrderStatistics", "Order")',
+                    type: 'GET',
+                    data: { period: period },
+                    success: function(data) {
+                        var labels = [];
+                        var values = [];
+
+                        $.each(data, function(index, item) {
+                            labels.push(item.date);
+                            values.push(item.value);
+                        });
+
+                        // Nếu chart đã tồn tại, cập nhật dữ liệu
+                        if (chart) {
+                            chart.destroy();
+                        }
+
+                        // Tạo Chart.js mới
+                        var ctx = document.getElementById('orderStatisticsChart').getContext('2d');
+                        chart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Order Count',
+                                    data: values,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('An error occurred:', error);
+                    }
+                });
+            }
+
+            // Gọi loadChart với giá trị mặc định
+            loadChart('week');
+
+            // Thay đổi giai đoạn khi nút được nhấn
+            $('#btnWeek').click(function() {
+                setActiveButton('btnWeek');
+                loadChart('week');
+            });
+
+            $('#btnMonth').click(function() {
+                setActiveButton('btnMonth');
+                loadChart('month');
+            });
+
+            $('#btnYear').click(function() {
+                setActiveButton('btnYear');
+                loadChart('year');
+            });
+
+            function setActiveButton(activeButtonId) {
+                var buttons = document.querySelectorAll('.btn');
+                buttons.forEach(function(button) {
+                    button.classList.remove('active');
+                    button.classList.add('inactive');
+                });
+
+                var activeButton = document.getElementById(activeButtonId);
+                if (activeButton) {
+                    activeButton.classList.add('active');
+                    activeButton.classList.remove('inactive');
+                }
+            }   
+        });
+    </script>
+</t-accordion>
