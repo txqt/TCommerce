@@ -8,6 +8,7 @@ using TCommerce.Web.Extensions;
 using TCommerce.Web.Routing;
 using TCommerce.Web.Middleware;
 using AspNetCoreRateLimit;
+using Microsoft.AspNetCore.Hosting;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,7 +50,7 @@ builder.Services.Configure<AuthorizationOptionsConfig>(jwtSection);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    options.LoginPath = "/sign-in-sign-up";
+    options.LoginPath = "/login";
     options.LogoutPath = "/logout";
     options.AccessDeniedPath = "/AccessDenied";
 });

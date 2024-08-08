@@ -830,6 +830,11 @@ namespace TCommerce.Services.ProductServices
             return await PagedList<Product>.ToPagedList
                 (query, pageIndex, pageSize);
         }
+
+        public async Task<ProductPicture?> GetProductPictureByIdAsync(int productPictureId)
+        {
+            return await _productPictureMappingRepository.GetByIdAsync(productPictureId);
+        }
         #endregion
     }
 }

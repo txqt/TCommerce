@@ -38,7 +38,7 @@ namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
             {
                 Roles = new List<string>
                 {
-                    RoleName.Customer
+                    RoleName.Registerd
                 }
             })).Count;
 

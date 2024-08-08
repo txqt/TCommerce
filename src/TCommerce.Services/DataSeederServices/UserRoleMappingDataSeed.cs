@@ -31,7 +31,7 @@ namespace TCommerce.Services.DataSeederServices
                     },
                     Roles = new List<Role>()
                     {
-                        new Role(RoleName.Customer),
+                        new Role(RoleName.Registerd),
                         new Role(RoleName.Employee)
                     }
                 }

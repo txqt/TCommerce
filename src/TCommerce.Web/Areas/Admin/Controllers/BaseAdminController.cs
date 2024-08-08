@@ -30,7 +30,7 @@ namespace TCommerce.Web.Areas.Admin.Controllers
 
             return parameters;
         }
-        protected DataTableResponse<T> ToDatatableReponse<T>(int recordsTotal, int recordsFiltered, List<T> items) where T : BaseEntity, new()
+        protected DataTableResponse<T> ToDatatableReponse<T>(int recordsTotal, int recordsFiltered, List<T> items) where T : new()
         {
             var draw = int.Parse(Request.Form["draw"].FirstOrDefault());
             return new DataTableResponse<T>

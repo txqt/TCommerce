@@ -75,18 +75,18 @@
                 var createButton = {
                     text: '@(Model.CreateButtonName == null ? "Create" : Model.CreateButtonName)',
                     action: function (e, dt, node, config) {
-    @if (Model.PopupWindow)
-    {
-        <text>
-                                openPopup(createUrl);
-        </text>
-    }
-    else
-    {
-        <text>
-                                window.location.href = createUrl;
-        </text>
-    }
+                        @if (Model.PopupWindow)
+                        {
+                            <text>
+                                                    openPopup(createUrl);
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                                    window.location.href = createUrl;
+                            </text>
+                        }
                                                                                                                 },
                     className: 'create-new-button btn btn-info'
                 };
@@ -95,30 +95,34 @@
 
             var serverSide = @Model.ServerSide.ToString().ToLower();
 
-    @if (Model.Columns is not null && Model.Columns.Count > 0)
-    {
-        <text>
-                    $(document).on('click', '#selectAll', function () {
-                        $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]').prop('checked', this.checked);
-                        selectedIds = $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]:checked').map(function () {
-                            return this.value;
-                        }).get();
-                        console.log(selectedIds);
-                    });
+                @if (Model.Columns is not null && Model.Columns.Count > 0)
+                {
+                    <text>
+                                $(document).on('click', '#selectAll', function () {
+                                    $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]').prop('checked', this.checked);
+                                    selectedIds = $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]:checked').map(function () {
+                                        return this.value;
+                                    }).get();
+                                    console.log(selectedIds);
+                                });
 
-                $(document).on('change', 'input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]', function () {
-                    selectedIds = $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]:checked').map(function () {
-                        return this.value;
-                    }).get();
-                    console.log(selectedIds);
-                });
-        </text>
-    }
+                            $(document).on('change', 'input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]', function () {
+                                selectedIds = $('input[name="@Model.Columns.FirstOrDefault().CheckBoxName"]:checked').map(function () {
+                                    return this.value;
+                                }).get();
+                                console.log(selectedIds);
+                            });
+                    </text>
+                }
 
                 LoadTable_@(Model.TableId)(tableId, url, buttons, serverSide);
 
             //Edit inline
             $(tableId).on('init.dt', function () {
+                $('.btn_save').hide();
+                $('.btn_cancel').hide();
+            });
+            $(tableId).on('draw.dt', function () {
                 $('.btn_save').hide();
                 $('.btn_cancel').hide();
             });
@@ -271,57 +275,57 @@
                 url: url,
                 type: "POST",
                 data: function (data) {
-    @if (Model.Filters != null)
-    {
-        foreach (var filter in Model.Filters)
-        {
-            if (filter.Type == typeof(string))
-            {
+                    @if (Model.Filters != null)
+                    {
+                        foreach (var filter in Model.Filters)
+                        {
+                            if (filter.Type == typeof(string))
+                            {
 
-                if (!string.IsNullOrEmpty(filter.ModelName))
-                {
-                    <text>
-                                        data.@filter.Name = $('#@(filter.ModelName)_@filter.Name').val();
-                    </text>
-                }
-                else
-                {
-                    <text>
-                                        data.@filter.Name = $('#@filter.Name').val();
-                    </text>
-                }
-                continue;
-            }
-            if (filter.Type == typeof(bool))
-            {
-                <text>
-                                    data.@filter.Name = $('#@filter.Name').is(':checked');
-                </text>
-                continue;
-            }
-            if (filter.Type == typeof(int))
-            {
-                if (int.TryParse(@filter.Value.ToString(), out int val))
-                {
-                    <text>
-                                        data.@filter.Name = @val;
-                    </text>
-                }
-                continue;
-            }
-            if (filter.Type == typeof(DateTime?))
-            {
-                <text>
-                                    data.@filter.Name = $('#@filter.Name').val();
-                </text>
-                continue;
-            }
-        }
-        <text>
-                            addAntiForgeryToken(data);
-        </text>
-    }
-                                                return data;
+                                if (!string.IsNullOrEmpty(filter.ModelName))
+                                {
+                                    <text>
+                                                        data.@filter.Name = $('#@(filter.ModelName)_@filter.Name').val();
+                                    </text>
+                                }
+                                else
+                                {
+                                    <text>
+                                                        data.@filter.Name = $('#@filter.Name').val();
+                                    </text>
+                                }
+                                continue;
+                            }
+                            if (filter.Type == typeof(bool))
+                            {
+                                <text>
+                                                    data.@filter.Name = $('#@filter.Name').is(':checked');
+                                </text>
+                                continue;
+                            }
+                            if (filter.Type == typeof(int))
+                            {
+                                if (int.TryParse(@filter.Value.ToString(), out int val))
+                                {
+                                    <text>
+                                                        data.@filter.Name = @val;
+                                    </text>
+                                }
+                                continue;
+                            }
+                            if (filter.Type == typeof(DateTime?))
+                            {
+                                <text>
+                                                    data.@filter.Name = $('#@filter.Name').val();
+                                </text>
+                                continue;
+                            }
+                        }
+                        <text>
+                                            addAntiForgeryToken(data);
+                        </text>
+                    }
+                    return data;
                 },
                 beforeSend: function () {
                     clearSelectAllCheckbox('#selectAll');
@@ -347,155 +351,155 @@
             pageLength: @Model.PageLength,
             serverSide: serverSide,
             processing: @Model.Processing.ToString().ToLower(),
-    @if (Model.DefaultSort != null)
-    {
-        <text>
-                order: [
-                [@Model.DefaultSort.ColumnIndex, '@Model.DefaultSort.Order']
-            ],
-        </text>
-    }
-            ajax: ajaxSettings,
-            buttons: buttons,
-    @if (Model.Columns is not null && Model.Columns.Count > 0)
-    {
-        <text>
-                columns: [
-            @for (int i = 0; i < Model.Columns.Count; i++)
-            {
-                var column = Model.Columns[i];
-                <text>
-                    {
-                    @if (!string.IsNullOrEmpty(column.Title) && !column.IsMasterCheckBox)
-                    {
-                        <text>
-                        title: '@JavaScriptEncoder.Default.Encode(column.Title)',
-                        </text>
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrEmpty(column.Title) && column.IsMasterCheckBox)
+                @if (Model.DefaultSort != null)
+                {
+                    <text>
+                            order: [
+                            [@Model.DefaultSort.ColumnIndex, '@Model.DefaultSort.Order']
+                        ],
+                    </text>
+                }
+                        ajax: ajaxSettings,
+                        buttons: buttons,
+                @if (Model.Columns is not null && Model.Columns.Count > 0)
+                {
+                    <text>
+                            columns: [
+                        @for (int i = 0; i < Model.Columns.Count; i++)
                         {
+                            var column = Model.Columns[i];
                             <text>
-                            title: '<div class="checkbox"><label><input id="selectAll" type="checkbox" />@JavaScriptEncoder.Default.Encode(column.Title)</label></div>',
-                            </text>
-                        }
-                        else
-                        {
-                            if (string.IsNullOrEmpty(column.Title) && column.IsMasterCheckBox)
-                            {
-                                <text>
-                                title: '<input id="selectAll" type="checkbox"/>',
-                                </text>
-                            }
-                        }
-                    }
-                    width: '@column.Width',
-                    visible: @column.Visible.ToString().ToLowerInvariant(),
-                    searchable: @column.Searchable.ToString().ToLowerInvariant(),
-                    orderable: @column.Orderable.ToString().ToLowerInvariant(),
-                    @if (column.AutoWidth)
-                    {
-                        <text>
-                        autoWidth: @column.AutoWidth.ToString().ToLowerInvariant(),
-                        </text>
-                    }
-                    @if (!string.IsNullOrEmpty(column.ClassName) || column.Editable)
-                    {
-                        <text>
-                        className: '@column.ClassName @(column.Editable ? "row_data" : "")',
-                        </text>
-                    }
-                    @if (column.Editable)
-                    {
-                        <text>
-                        createdCell: function (td, cellData, rowData, row, col) {
-                            var idToUse = rowData.Id !== undefined ? rowData.Id : rowData.id;
-                            $(td).attr('col_name', '@column.Data');
-                            $(td).closest('tr').attr('row_id', idToUse);
-                        },
-                        </text>
-                    }
-                    @switch (column.RenderType)
-                    {
-                        case RenderType.RenderButtonRemove:
-                            <text>
-                            render: function (data, type, row, meta) {
-                                var dataToDelete = row.@(column.Data);
-                                return '<button class="@(column.ClassName ?? "btn btn-danger") deleteBtn" data-param-name="@(column.Data)" data-params="' + dataToDelete + '"><i class="far fa-trash-alt"></i></button>';
-                            },
-                            </text>
-                            break;
-                        case RenderType.RenderButtonEdit:
-                            <text>
-                            render: function (data, type, row, meta) {
-                                if (@Model.PopupWindow.ToString().ToLower()) {
-                                    return '<button class="@(column.ClassName ?? "btn btn-info")" onclick="openPopup(\'@(Model.EditUrl + "?id=")' + data + '\')"><i class="fas fa-pencil-alt"></i></button>';
-                                } else {
-                                    return '<a class="@(column.ClassName ?? "btn btn-info")" href="@(Model.EditUrl + "?id=")' + data + '"><i class="fas fa-pencil-alt"></i></a>';
+                                {
+                                @if (!string.IsNullOrEmpty(column.Title) && !column.IsMasterCheckBox)
+                                {
+                                    <text>
+                                    title: '@JavaScriptEncoder.Default.Encode(column.Title)',
+                                    </text>
                                 }
-                            },
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(column.Title) && column.IsMasterCheckBox)
+                                    {
+                                        <text>
+                                        title: '<div class="checkbox"><label><input id="selectAll" type="checkbox" />@JavaScriptEncoder.Default.Encode(column.Title)</label></div>',
+                                        </text>
+                                    }
+                                    else
+                                    {
+                                        if (string.IsNullOrEmpty(column.Title) && column.IsMasterCheckBox)
+                                        {
+                                            <text>
+                                            title: '<input id="selectAll" type="checkbox"/>',
+                                            </text>
+                                        }
+                                    }
+                                }
+                                width: '@column.Width',
+                                visible: @column.Visible.ToString().ToLowerInvariant(),
+                                searchable: @column.Searchable.ToString().ToLowerInvariant(),
+                                orderable: @column.Orderable.ToString().ToLowerInvariant(),
+                                @if (column.AutoWidth)
+                                {
+                                    <text>
+                                    autoWidth: @column.AutoWidth.ToString().ToLowerInvariant(),
+                                    </text>
+                                }
+                                @if (!string.IsNullOrEmpty(column.ClassName) || column.Editable)
+                                {
+                                    <text>
+                                    className: '@column.ClassName @(column.Editable ? "row_data" : "")',
+                                    </text>
+                                }
+                                @if (column.Editable)
+                                {
+                                    <text>
+                                    createdCell: function (td, cellData, rowData, row, col) {
+                                        var idToUse = rowData.Id !== undefined ? rowData.Id : rowData.id;
+                                        $(td).attr('col_name', '@column.Data');
+                                        $(td).closest('tr').attr('row_id', idToUse);
+                                    },
+                                    </text>
+                                }
+                                @switch (column.RenderType)
+                                {
+                                    case RenderType.RenderButtonRemove:
+                                        <text>
+                                        render: function (data, type, row, meta) {
+                                            var dataToDelete = row.@(column.Data);
+                                            return '<button class="@(column.ClassName ?? "btn btn-danger") deleteBtn" data-param-name="@(column.Data)" data-params="' + dataToDelete + '"><i class="far fa-trash-alt"></i></button>';
+                                        },
+                                        </text>
+                                        break;
+                                    case RenderType.RenderButtonEdit:
+                                        <text>
+                                        render: function (data, type, row, meta) {
+                                            if (@Model.PopupWindow.ToString().ToLower()) {
+                                                return '<button class="@(column.ClassName ?? "btn btn-info")" onclick="openPopup(\'@(Model.EditUrl + "?id=")' + data + '\')"><i class="fas fa-pencil-alt"></i></button>';
+                                            } else {
+                                                return '<a class="@(column.ClassName ?? "btn btn-info")" href="@(Model.EditUrl + "?id=")' + data + '"><i class="fas fa-pencil-alt"></i></a>';
+                                            }
+                                        },
+                                        </text>
+                                        break;
+                                    case RenderType.RenderInlineEdit:
+                                        <text>
+                                        render: function (data, type, row, meta) {
+                                            return '<span class="btn_edit" > <a href="#" class="btn btn-link " row_id="' + data + '" > Edit</a> </span>'
+                                                + '<span class="btn_save"> <a href="#" class="btn btn-link"  row_id="' + data + '"> Save</a> | </span>'
+                                                + '<span class="btn_cancel"> <a href="#" class="btn btn-link" row_id="' + data + '"> Cancel</a> | </span>';
+                                        },
+                                        </text>
+                                        break;
+                                    case RenderType.RenderPicture:
+                                        var widthAttr = string.Empty;
+                                        <text>
+                                        render: function (data, type, row, meta) {
+                                            return '<img src="' + data + '" style="max-width: 200px;height: auto; "/>';
+                                        },
+                                        </text>
+                                        break;
+                                    case RenderType.RenderCheckBox:
+                                        <text>
+                                        render: function (data, type, row, meta) {
+                                            return '<input type="checkbox" name="@column.CheckBoxName" class="row-checkbox" value="' + data + '">';
+                                        },
+                                        </text>
+                                        break;
+                                    case RenderType.RenderBoolean:
+                                        <text>
+                                        render: function (data, type, row) {
+                                            return data
+                                                ? '<i class="fas fa-check true-icon" value="true"></i>'
+                                                : '<i class="fas fa-times false-icon" value="false"></i>';
+                                        },
+                                        </text>
+                                        break;
+                                    case RenderType.NotRender:
+                                        <text>
+                                            render: function (data, type, row, meta) {
+                                            return escapeHtml(data);
+                                        },
+                                        </text>
+                                        break;
+                                    case RenderType.Custom:
+                                        <text>
+                                        render: function (data, type, row, meta) {
+                                            return @(column.FunctionName)(data, type, row, meta);
+                                        },
+                                        </text>
+                                        break;
+                                }
+                                data: '@column.Data'
+                                                                                                                                                                                        }
+                                @if (i != Model.Columns.Count - 1)
+                                {
+                                    <text>, </text>
+                                }
                             </text>
-                            break;
-                        case RenderType.RenderInlineEdit:
-                            <text>
-                            render: function (data, type, row, meta) {
-                                return '<span class="btn_edit" > <a href="#" class="btn btn-link " row_id="' + data + '" > Edit</a> </span>'
-                                    + '<span class="btn_save"> <a href="#" class="btn btn-link"  row_id="' + data + '"> Save</a> | </span>'
-                                    + '<span class="btn_cancel"> <a href="#" class="btn btn-link" row_id="' + data + '"> Cancel</a> | </span>';
-                            },
-                            </text>
-                            break;
-                        case RenderType.RenderPicture:
-                            var widthAttr = string.Empty;
-                            <text>
-                            render: function (data, type, row, meta) {
-                                return '<img src="' + data + '" style="max-width: 200px;height: auto; "/>';
-                            },
-                            </text>
-                            break;
-                        case RenderType.RenderCheckBox:
-                            <text>
-                            render: function (data, type, row, meta) {
-                                return '<input type="checkbox" name="@column.CheckBoxName" class="row-checkbox" value="' + data + '">';
-                            },
-                            </text>
-                            break;
-                        case RenderType.RenderBoolean:
-                            <text>
-                            render: function (data, type, row) {
-                                return data
-                                    ? '<i class="fas fa-check true-icon" value="true"></i>'
-                                    : '<i class="fas fa-times false-icon" value="false"></i>';
-                            },
-                            </text>
-                            break;
-                        case RenderType.NotRender:
-                            <text>
-                                render: function (data, type, row, meta) {
-                                return escapeHtml(data);
-                            },
-                            </text>
-                            break;
-                        case RenderType.Custom:
-                            <text>
-                            render: function (data, type, row, meta) {
-                                return @(column.FunctionName)(data, type, row, meta);
-                            },
-                            </text>
-                            break;
-                    }
-                    data: '@column.Data'
-                                                                                                                                                                            }
-                    @if (i != Model.Columns.Count - 1)
-                    {
-                        <text>, </text>
-                    }
-                </text>
-            }
-                                                                                                ]
-        </text>
-    }
+                        }
+                                                                                                            ]
+                    </text>
+                }
                                                                 });
 
     $(tableId).on('click', '.deleteBtn', function () {

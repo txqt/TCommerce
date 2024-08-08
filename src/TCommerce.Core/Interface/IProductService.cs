@@ -46,6 +46,7 @@ namespace TCommerce.Core.Interface
 
         #region ProductPictures
         Task<List<ProductPicture>?> GetProductPicturesByProductIdAsync(int productId);
+        Task<ProductPicture?> GetProductPictureByIdAsync(int productPictureId);
         Task<ServiceResponse<bool>> AddProductImage(List<IFormFile> ListImages, int productId);
         Task<ServiceResponse<bool>> EditProductImageAsync(ProductPicture productPicture);
         Task<ServiceResponse<bool>> DeleteProductImage(int pictureMappingId);
