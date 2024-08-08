@@ -9,6 +9,11 @@ namespace TCommerce.Core.Models.Paging
 {
     public class UserParameters : QueryStringParameters
     {
+        public UserParameters()
+        {
+            Roles = new List<string>();
+        }
+
         public List<string> Roles { get; set; }
         public DateTime? CreatedFromUtc { get; set; }
         public DateTime? CreatedToUtc { get; set; }

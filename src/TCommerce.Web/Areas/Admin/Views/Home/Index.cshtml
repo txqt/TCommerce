@@ -16,8 +16,11 @@
 <div class="row">
     @if (canManageOrders)
     {
-        <div class="col-xl-8">
+        <div class="col-xl-6">
             @await Html.PartialAsync("_OrderStatistics")
+        </div>
+        <div class="col-xl-6">
+            @await Html.PartialAsync("_UserStatistics")
         </div>
     }
 </div>

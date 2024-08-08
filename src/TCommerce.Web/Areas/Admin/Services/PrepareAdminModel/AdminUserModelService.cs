@@ -1,17 +1,21 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Org.BouncyCastle.Utilities;
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Catalogs;
+using TCommerce.Core.Models.Roles;
 using TCommerce.Core.Models.Users;
 using TCommerce.Core.Models.ViewsModel;
 using TCommerce.Services.CategoryServices;
 using TCommerce.Web.Areas.Admin.Models.Users;
+using TCommerce.Web.Models.Catalog;
 
 namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
 {
     public interface IAdminUserModelService
     {
         Task<UserModel> PrepareUserModelAsync(UserModel model, User user);
+        Task<UserSearchModel> PrepareUserSearchModel(UserSearchModel model);
     }
     public class AdminUserModelService : IAdminUserModelService
     {
@@ -61,5 +65,21 @@ namespace TCommerce.Web.Areas.Admin.Services.PrepareAdminModel
             return model;
         }
 
+        public async Task<UserSearchModel> PrepareUserSearchModel(UserSearchModel model)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+
+            var allRoles = await _securityService.GetRoles();
+
+            model.AvailableUserRoles = (allRoles).Select(role => new SelectListItem
+            {
+                Text = role.Name,
+                Value = role.Id.ToString()
+            }).ToList();
+
+            model.SelectedUserRoleIds.Add(allRoles.Where(x => x.Name == RoleName.Registerd).FirstOrDefault().Id);
+
+            return model;
+        }
     }
 }
