@@ -1,9 +1,16 @@
 ﻿using AutoMapper;
+using Azure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
+using TCommerce.Core.Extensions;
 using TCommerce.Core.Interface;
+using TCommerce.Core.Models.Catalogs;
+using TCommerce.Core.Models.Paging;
 using TCommerce.Core.Models.Security;
 using TCommerce.Core.Models.Users;
 using TCommerce.Core.Models.ViewsModel;
+using TCommerce.Services.OrderServices;
 using TCommerce.Web.Areas.Admin.Models.Datatables;
 using TCommerce.Web.Areas.Admin.Models.Users;
 using TCommerce.Web.Areas.Admin.Services.PrepareAdminModel;
@@ -20,46 +27,47 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly IAdminUserModelService _prepareModelService;
+        private readonly RoleManager<Role> _roleManager;
 
-        public UserController(IUserService userService, IMapper mapper, IAdminUserModelService prepareModelService)
+        public UserController(IUserService userService, IMapper mapper, IAdminUserModelService prepareModelService, RoleManager<Role> roleManager)
         {
             _userService = userService;
             _mapper = mapper;
             _prepareModelService = prepareModelService;
+            _roleManager = roleManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var model = new DataTableViewModel
+            return View(await _prepareModelService.PrepareUserSearchModel(new UserSearchModel()));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllAsync(UserSearchModel userSearchModel)
+        {
+            var userParameters = ParseQueryStringParameters<UserParameters>();
+            _mapper.Map(userSearchModel, userParameters);
+            if(userSearchModel.SelectedUserRoleIds is not null && userSearchModel.SelectedUserRoleIds.Any())
             {
-                TableTitle = "Danh sách User",
-                CreateUrl = Url.Action("Create", "User"),
-                EditUrl = Url.Action("Edit", "User"),
-                DeleteUrl = Url.Action("DeleteUser", "User"),
-                GetDataUrl = Url.Action("GetAll", "User"),
-                Columns = new List<ColumnDefinition>
+                foreach(var srId in userSearchModel.SelectedUserRoleIds)
                 {
-                    new ColumnDefinition(nameof(UserModel.FirstName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.FirstName) },
-                    new ColumnDefinition(nameof(UserModel.LastName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.LastName) },
-                    new ColumnDefinition(nameof(UserModel.Email)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.Email) },
-                    new ColumnDefinition(nameof(UserModel.UserName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.UserName) },
-                    new ColumnDefinition(nameof(UserModel.PhoneNumber)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.PhoneNumber) },
-                    new ColumnDefinition(nameof(UserModel.Deleted)) { RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>(m=>m.Deleted) },
-                    new ColumnDefinition(nameof(UserModel.Id)) { RenderType = RenderType.RenderButtonEdit },
-                    new ColumnDefinition(nameof(UserModel.Id)) { RenderType = RenderType.RenderButtonRemove },
+                    var roleName = (await _roleManager.FindByIdAsync(srId.ToString())).Name;
+                    if(!string.IsNullOrEmpty(roleName))
+                        userParameters.Roles.Add(roleName);
                 }
+            }
+
+            var response = await _userService.GetAllUsersAsync(userParameters);
+
+            var pagingResponse = new PagingResponse<User>
+            {
+                Items = response,
+                MetaData = response.MetaData
             };
-            return View(model);
-        }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            var userList = await _userService.GetAllUsersAsync(new Core.Models.Paging.UserParameters());
+            var model = ToDatatableReponse(pagingResponse.MetaData.TotalCount, pagingResponse.MetaData.TotalCount, pagingResponse.Items);
 
-            var models = _mapper.Map<List<UserModel>>(userList);
-
-            return this.JsonWithPascalCase(models);
+            return this.JsonWithPascalCase(model);
         }
 
         [HttpGet]
@@ -155,6 +163,87 @@ namespace TCommerce.Web.Areas.Admin.Controllers
                 return Json(new { success = false, message = result.Message });
             }
             return Json(new { success = true, message = result.Message });
+        }
+
+        public virtual async Task<IActionResult> LoadCustomerStatistics(string period)
+        {
+            var result = new List<object>();
+
+            var nowDt = DateTime.UtcNow.ConvertToUserTime(DateTimeExtensions.GetCurrentTimeZone());
+            var timeZone = DateTimeExtensions.GetCurrentTimeZone();
+
+            switch (period)
+            {
+                case "year":
+                    // year statistics
+                    var yearAgoDt = nowDt.AddYears(-1).AddMonths(1);
+                    var searchYearDateUser = new DateTime(yearAgoDt.Year, yearAgoDt.Month, 1);
+                    for (var i = 0; i <= 12; i++)
+                    {
+                        result.Add(new
+                        {
+                            date = searchYearDateUser.Date.ToString("Y", CultureInfo.CurrentCulture),
+                            value = (await _userService.GetAllUsersAsync(new UserParameters()
+                            {
+                                CreatedFromUtc = searchYearDateUser.ConvertToUtcTime(timeZone),
+                                CreatedToUtc = searchYearDateUser.AddMonths(1).ConvertToUtcTime(timeZone),
+                                PageNumber = 1,
+                                PageSize = 1
+                            })).MetaData.TotalCount.ToString()
+                        });
+
+                        searchYearDateUser = searchYearDateUser.AddMonths(1);
+                    }
+
+                    break;
+                case "month":
+                    // month statistics
+                    var monthAgoDt = nowDt.AddDays(-30);
+                    var searchMonthDateUser = new DateTime(monthAgoDt.Year, monthAgoDt.Month, monthAgoDt.Day);
+                    for (var i = 0; i <= 30; i++)
+                    {
+                        result.Add(new
+                        {
+                            date = searchMonthDateUser.Date.ToString("M", CultureInfo.CurrentCulture),
+                            value = (await _userService.GetAllUsersAsync(new UserParameters()
+                            {
+                                CreatedFromUtc = searchMonthDateUser.ConvertToUtcTime(timeZone),
+                                CreatedToUtc = searchMonthDateUser.AddDays(1).ConvertToUtcTime(timeZone),
+                                PageNumber = 1,
+                                PageSize = 1
+                            })).MetaData.TotalCount.ToString()
+                        });
+
+                        searchMonthDateUser = searchMonthDateUser.AddDays(1);
+                    }
+
+                    break;
+                case "week":
+                default:
+                    // week statistics
+                    var weekAgoDt = nowDt.AddDays(-7);
+                    var searchWeekDateUser = new DateTime(weekAgoDt.Year, weekAgoDt.Month, weekAgoDt.Day);
+                    for (var i = 0; i <= 7; i++)
+                    {
+                        result.Add(new
+                        {
+                            date = searchWeekDateUser.Date.ToString("d dddd", CultureInfo.CurrentCulture),
+                            value = (await _userService.GetAllUsersAsync(new UserParameters()
+                            {
+                                CreatedFromUtc = searchWeekDateUser.ConvertToUtcTime(timeZone),
+                                CreatedToUtc = searchWeekDateUser.AddDays(1).ConvertToUtcTime(timeZone),
+                                PageNumber = 1,
+                                PageSize = 1
+                            })).MetaData.TotalCount.ToString()
+                        });
+
+                        searchWeekDateUser = searchWeekDateUser.AddDays(1);
+                    }
+
+                    break;
+            }
+
+            return Json(result);
         }
     }
 }

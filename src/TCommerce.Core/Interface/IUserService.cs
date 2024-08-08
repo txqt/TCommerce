@@ -11,7 +11,7 @@ namespace TCommerce.Core.Interface
 {
     public interface IUserService
     {
-        Task<List<User>> GetAllUsersAsync(UserParameters userParameters);
+        Task<PagedList<User>> GetAllUsersAsync(UserParameters userParameters);
         Task<List<Role>> GetRolesByUserAsync(User user);
         Task<User> GetUserById(Guid id);
         Task<User> GetCurrentUser();

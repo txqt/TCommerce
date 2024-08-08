@@ -517,10 +517,10 @@ namespace TCommerce.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateProductImage([FromBody] ProductPictureModel model)
         {
-            var productPicture = new ProductPicture()
-            {
-                DisplayOrder = model.DisplayOrder,
-            };
+            var productPicture = await _productService.GetProductPictureByIdAsync(model.Id)
+            ?? throw new ArgumentException("No product picture found with the specified id");
+
+            productPicture.DisplayOrder = model.DisplayOrder;
 
             var result = await _productService.EditProductImageAsync(productPicture);
             if (!result.Success)

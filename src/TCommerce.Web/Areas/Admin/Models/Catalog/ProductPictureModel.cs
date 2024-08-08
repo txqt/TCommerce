@@ -18,12 +18,6 @@ namespace TCommerce.Web.Areas.Admin.Models.Catalog
         [Display(Name = "Thứ tự hiển thị")]
         public int DisplayOrder { get; set; }
 
-        public string OverrideAltAttribute { get; set; }
-
-        public string OverrideTitleAttribute { get; set; }
-
-        public DataTableViewModel DataTable { get; set; }
-
         #endregion
     }
 }

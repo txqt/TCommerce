@@ -10,7 +10,7 @@ namespace TCommerce.Core.Models.Roles
     {
         public const string Admin = "Admin";
         public const string Shipper = "Shipper";
-        public const string Customer = "Customer";
+        public const string Registerd = "Registerd";
         public const string Employee = "Employee";
     }
 }

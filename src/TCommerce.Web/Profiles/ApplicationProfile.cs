@@ -14,6 +14,7 @@ using TCommerce.Web.Areas.Admin.Models.Catalog;
 using TCommerce.Web.Areas.Admin.Models.Users;
 using TCommerce.Web.Areas.Admin.Models.Banners;
 using TCommerce.Web.Areas.Admin.Models.Orders;
+using TCommerce.Core.Models.Paging;
 
 namespace TCommerce.Web.Profiles
 {
@@ -64,6 +65,9 @@ namespace TCommerce.Web.Profiles
                 .ReverseMap();
 
             CreateMap<User, User>()
+                .ReverseMap();
+
+            CreateMap<UserSearchModel, UserParameters>()
                 .ReverseMap();
 
             CreateMap<AccountInfoModel, User>()

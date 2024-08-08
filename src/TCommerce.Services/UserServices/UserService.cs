@@ -28,6 +28,7 @@ using System.Net.Http;
 using System.Data;
 using TCommerce.Core.Models.Paging;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TCommerce.Services.UserServices
 {
@@ -134,7 +135,7 @@ namespace TCommerce.Services.UserServices
                 }
 
             }
-            var defaultRole = await _roleManager.FindByNameAsync(RoleName.Customer);
+            var defaultRole = await _roleManager.FindByNameAsync(RoleName.Registerd);
 
             if (defaultRole != null && defaultRole.Name != null && !await _userManager.IsInRoleAsync(user, defaultRole.Name))
             {
@@ -234,9 +235,25 @@ namespace TCommerce.Services.UserServices
             return user;
         }
 
-        public async Task<List<User>> GetAllUsersAsync(UserParameters userParameters)
+        public async Task<PagedList<User>> GetAllUsersAsync(UserParameters userParameters)
         {
-            var usersQuery = _userManager.Users.AsQueryable();
+            IQueryable<User> usersQuery = _context.Users;
+
+            // Lấy ID của người dùng dựa trên vai trò
+            if (userParameters.Roles.Any())
+            {
+                var roleIds = await _context.UserRoles
+                    .Where(ur => _context.Roles
+                        .Where(r => userParameters.Roles.Contains(r.Name))
+                        .Select(r => r.Id)
+                        .Contains(ur.RoleId))
+                    .Select(ur => ur.UserId)
+                    .Distinct()
+                    .ToListAsync();
+
+                // Lọc người dùng dựa trên các ID
+                usersQuery = usersQuery.Where(u => roleIds.Contains(u.Id));
+            }
 
             if (userParameters.CreatedFromUtc.HasValue)
             {
@@ -283,29 +300,7 @@ namespace TCommerce.Services.UserServices
                 usersQuery = usersQuery.Where(u => u.Deleted == userParameters.Deleted);
             }
 
-            var users = await usersQuery.ToListAsync();
-
-            if (userParameters.Roles != null && userParameters.Roles.Any())
-            {
-                var usersInRoles = new List<User>();
-
-                foreach (var roleName in userParameters.Roles)
-                {
-                    var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
-
-                    foreach (var user in usersInRole)
-                    {
-                        if (!usersInRoles.Any(u => u.Id == user.Id))
-                        {
-                            usersInRoles.Add(user);
-                        }
-                    }
-                }
-
-                users = users.Intersect(usersInRoles).ToList();
-            }
-
-            return users;
+            return await PagedList<User>.ToPagedList(usersQuery, userParameters.PageNumber, userParameters.PageSize);
         }
 
         public string GenerateRandomPassword(int length)

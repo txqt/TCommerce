@@ -1,9 +1,124 @@
-﻿@model DataTableViewModel
+﻿@model UserSearchModel
 
 @{
     ViewData["Title"] = "Danh sách người dùng";
+    var model = new DataTableViewModel
+            {
+                TableTitle = "Danh sách User",
+                CreateUrl = Url.Action("Create", "User"),
+                EditUrl = Url.Action("Edit", "User"),
+                DeleteUrl = Url.Action("DeleteUser", "User"),
+                GetDataUrl = Url.Action("GetAll", "User"),
+                SearchButtonId = "search-users",
+                ServerSide = true,
+                Filters = new List<Filter>()
+                {
+                    new Filter(nameof(Model.Email)),
+                    new Filter(nameof(Model.FirstName)),
+                    new Filter(nameof(Model.LastName)),
+                    new Filter(nameof(Model.DayOfBirth)),
+                    new Filter(nameof(Model.SearchRegistrationDateFrom)),
+                    new Filter(nameof(Model.SearchRegistrationDateTo)),
+                    new Filter(nameof(Model.Company)),
+                    new Filter(nameof(Model.SelectedUserRoleIds)),
+                },
+                Columns = new List<ColumnDefinition>
+                {
+                    new ColumnDefinition(nameof(UserModel.FirstName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>
+                        (m=>m.FirstName) },
+                        new ColumnDefinition(nameof(UserModel.LastName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>
+                            (m=>m.LastName) },
+                            new ColumnDefinition(nameof(UserModel.Email)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>
+                                (m=>m.Email) },
+                                new ColumnDefinition(nameof(UserModel.UserName)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>
+                                    (m=>m.UserName) },
+                                    new ColumnDefinition(nameof(UserModel.PhoneNumber)) { Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>
+                                        (m=>m.PhoneNumber) },
+                                        new ColumnDefinition(nameof(UserModel.Deleted)) { RenderType = RenderType.RenderBoolean, Title = DisplayNameExtensions.GetPropertyDisplayName<UserModel>
+                                            (m=>m.Deleted) },
+                                            new ColumnDefinition(nameof(UserModel.Id)) { RenderType = RenderType.RenderButtonEdit },
+                                            new ColumnDefinition(nameof(UserModel.Id)) { RenderType = RenderType.RenderButtonRemove },
+                }
+    };
 }
 
 <t-accordion>
-    @await Html.PartialAsync("_Table", Model)
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="item">
+                <div class="col-auto">
+                    <label asp-for="Email" class="col-form-label"></label>
+                </div>
+                <div class="col-auto">
+                    <input class="form-control" type="email" asp-for="Email">
+                </div>
+            </div>
+            <div class="item">
+                <div class="col-auto">
+                    <label asp-for="FirstName" class="col-form-label"></label>
+                </div>
+                <div class="col-auto">
+                    <input class="form-control" type="text" asp-for="FirstName">
+                </div>
+            </div>
+            <div class="item">
+                <div class="col-auto">
+                    <label asp-for="LastName" class="col-form-label"></label>
+                </div>
+                <div class="col-auto">
+                    <input class="form-control" type="text" asp-for="LastName">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="item">
+                <div class="col-auto">
+                    <label asp-for="DayOfBirth" class="col-form-label"></label>
+                </div>
+                <div class="col-auto">
+                    <input class="form-select" type="date" asp-for="DayOfBirth">
+                </div>
+            </div>
+            <div class="item">
+                <div class="col-auto">
+                    <label asp-for="SearchRegistrationDateFrom" class="col-form-label"></label>
+                </div>
+                <div class="col-auto">
+                    <input class="form-select" type="date" asp-for="SearchRegistrationDateFrom">
+                </div>
+            </div>
+            <div class="item">
+                <div class="col-auto">
+                    <label asp-for="SearchRegistrationDateTo" class="col-form-label"></label>
+                </div>
+                <div class="col-auto">
+                    <input class="form-select" type="date" asp-for="SearchRegistrationDateTo">
+                </div>
+            </div>
+            <div class="col-auto">
+                <label asp-for="SelectedUserRoleIds" class="col-form-label"></label>
+            </div>
+            <div class="col-auto">
+                <select class="form-select" asp-items="Model.AvailableUserRoles" asp-for="SelectedUserRoleIds" multiple="multiple">
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="button text-center p-4">
+        <button type="button" id="search-users" class="btn btn-primary btn-search">
+            <i class="fas fa-search"></i>
+            Search
+        </button>
+    </div>
 </t-accordion>
+<t-accordion>
+    @await Html.PartialAsync("_Table", model)
+</t-accordion>
+@Html.Script(@<text>
+        <script>
+            $(document).ready(function () {
+                $('#@nameof(Model.SelectedUserRoleIds)').select2();
+            });
+        </script>
+    </text>
+)

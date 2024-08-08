@@ -63,6 +63,8 @@
                 // Xử lý kết quả thành công
                 console.log(result);
                 $(tableId).DataTable().ajax.reload();
+                $('.btn_save').hide();
+                $('.btn_cancel').hide();
             },
             error: function (xhr, status, error) {
                 // Xử lý lỗi
