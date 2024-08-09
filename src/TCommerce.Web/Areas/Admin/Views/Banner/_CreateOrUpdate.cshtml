@@ -64,8 +64,6 @@
 @* @await Html.PartialAsync("_CKEditor", new TCommerce.Web.Areas.Admin.Models.CKEditor("Title"))
 @await Html.PartialAsync("_CKEditor", new TCommerce.Web.Areas.Admin.Models.CKEditor("Subtitle")) *@
 
-@await Html.PartialAsync("_Summernote", new Summernote("#Title"))
-@await Html.PartialAsync("_Summernote", new Summernote("#Subtitle", false))
 
 @Html.Script(
     @<text>
@@ -81,6 +79,9 @@
                 };
                 reader.readAsDataURL(input.files[0]);
             }
+            tinymce.init({
+                selector: '#@nameof(Model.Title), #@nameof(Model.Subtitle)'
+              });
         </script>
     </text>
 )
