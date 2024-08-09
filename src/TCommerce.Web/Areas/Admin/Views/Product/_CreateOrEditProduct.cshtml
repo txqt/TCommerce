@@ -233,12 +233,6 @@
     <input type="submit" value="Save" class="btn btn-primary" />
 </div>
 
-
-
-
-@await Html.PartialAsync("_Summernote", new Summernote("#ShortDescription"))
-@await Html.PartialAsync("_Summernote", new Summernote("#FullDescription", false))
-
 @Html.Script(@<text>
         <script>
             $('#markasnewcheckbox').change(function () {
@@ -251,6 +245,9 @@
             $(document).ready(function () {
                 $('#@nameof(Model.CategoryIds)').select2();
             });
+            tinymce.init({
+                selector: '#@nameof(Model.ShortDescription), #@nameof(Model.FullDescription)'
+              });
         </script>
     </text>
 )
