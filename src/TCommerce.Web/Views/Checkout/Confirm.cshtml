@@ -7,8 +7,8 @@
                 <li class="checkout-item">
                     <div class="feed-item-list">
                         <div>
-                            <h5 class="font-size-16 mb-1">Shipping Info</h5>
-                            <p class="text-muted text-truncate mb-4">Chọn địa chỉ ship</p>
+                            <h5 class="font-size-16 mb-1">@T["Checkout.Confirm.ShippingInfo"]</h5>
+                            <p class="text-muted text-truncate mb-4">@T["Checkout.Confirm.SelectShippingAddress"]</p>
                             <div class="mb-3">
                                 <div class="row d-flex justify-content-between">
 
@@ -20,21 +20,21 @@
                                                 var defaultAddress = @Model.ShippingAddress.DefaultShippingAddress;
 
                                                 <span class="fs-14 mb-2 d-block"><strong>@defaultAddress.FullName</strong></span>
-                                                <span class="text-muted fw-normal text-wrap mb-1 d-block">Địa chỉ: <strong>@defaultAddress.AddressFull</strong></span>
-                                                <span class="text-muted fw-normal d-block">Điện thoại: <strong>@defaultAddress.PhoneNumber</strong></span>
+                                                <span class="text-muted fw-normal text-wrap mb-1 d-block">@T["Checkout.Confirm.Address"]: <strong>@defaultAddress.AddressFull</strong></span>
+                                                <span class="text-muted fw-normal d-block">@T["Checkout.Confirm.PhoneNumber"]: <strong>@defaultAddress.PhoneNumber</strong></span>
                                             }
                                         </div>
                                         <div class="col-lg-4 col-sm-4">
 
                                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#selectAddressModal">
-                                                Thay đổi
+                                                @T["Checkout.Confirm.ChangeShippingAddress"]
                                             </button>
                                             <div class="modal fade" id="selectAddressModal" tabindex="-1" aria-labelledby="selectAddressLabel" aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <form method="post" action="/Checkout/SelectAddress" id="selectAddressForm">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="selectAddressLabel">Chọn địa chỉ</h5>
+                                                                <h5 class="modal-title" id="selectAddressLabel">@T["Checkout.Confirm.SelectAddress"]</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body row mx-2 my-2">
@@ -48,8 +48,8 @@
                                                                                     <input type="radio" name="id" class="card-radio-input" value="@item.Id" @(item.IsDefault ? "checked" : "")>
                                                                                     <div class="card-radio text-truncate p-3">
                                                                                         <span class="fs-14 mb-2 d-block">@item.FullName</span>
-                                                                                        <span class="text-muted fw-normal text-wrap mb-1 d-block">Địa chỉ: @item.AddressFull</span>
-                                                                                        <span class="text-muted fw-normal d-block">Điện thoại: @item.PhoneNumber</span>
+                                                                                        <span class="text-muted fw-normal text-wrap mb-1 d-block">@T["Checkout.Confirm.Address"]: @item.AddressFull</span>
+                                                                                        <span class="text-muted fw-normal d-block">@T["Checkout.Confirm.PhoneNumber"]: @item.PhoneNumber</span>
                                                                                     </div>
                                                                                 </label>
                                                                                 <div class="edit-btn bg-light  rounded">
@@ -63,7 +63,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                                    <p>Không có địa chỉ để chọn</p>
+                                                                    <p>@T["Checkout.Confirm.NoAddressToSelect"]</p>
                                                                 }
 
 
@@ -71,10 +71,10 @@
 
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAddressModal">
-                                                                    Địa chỉ mới
+                                                                    @T["Checkout.Confirm.NewAddress"]
                                                                 </button>
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                <button type="submit" class="btn btn-success">Save changes</button>
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Checkout.Confirm.Close"]</button>
+                                                                <button type="submit" class="btn btn-success">@T["Checkout.Confirm.SaveChanges"]</button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -85,15 +85,15 @@
                                                     <form method="post" action="/Checkout/NewDefaultAddress">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="newAddressLabel">Địa chỉ mới</h5>
+                                                                <h5 class="modal-title" id="newAddressLabel">@T["Checkout.Confirm.NewAddress"]</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body mx-2 my-2">
                                                                 @await Html.PartialAsync("~/Views/Account/_CreateOrUpdateAddress.cshtml", Model.ShippingAddress.NewShippingAddress)
                                                             </div>
                                                             <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Checkout.Confirm.Close"]</button>
+                                                                <button type="submit" class="btn btn-primary">@T["Checkout.Confirm.SaveChanges"]</button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -116,8 +116,8 @@
                 <li class="checkout-item">
                     <div class="feed-item-list">
                         <div>
-                            <h5 class="font-size-14 mb-3">Payment method :</h5>
-                            <p class="text-muted text-truncate mb-4">Chọn phương thức thanh toán</p>
+                            <h5 class="font-size-14 mb-3">@T["Checkout.Confirm.PaymentInfo"]:</h5>
+                            <p class="text-muted text-truncate mb-4">@T["Checkout.Confirm.SelectPaymentMethod"]</p>
                             <form asp-action="SavePaymentMethod" method="post">
                                 <div class="row" id="paymentMethods">
                                 @if (Model.PaymentMethods is not null && Model.PaymentMethods.Count > 0)
@@ -152,15 +152,15 @@
                 <li class="checkout-item">
                     <div class="feed-item-list">
                         <div>
-                            <h5 class="font-size-14 mb-3">Cart items :</h5>
+                            <h5 class="font-size-14 mb-3">@T["Checkout.Confirm.CartItems"]:</h5>
                             <table class="table table-cart table-mobile">
                                 <thead>
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Thuộc tính</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
+                                        <th>@T["Checkout.Confirm.CartItems.Product"]</th>
+                                        <th>@T["Checkout.Confirm.CartItems.ProductAttributes"]</th>
+                                        <th>@T["Checkout.Confirm.CartItems.ProductPrice"]</th>
+                                        <th>@T["Checkout.Confirm.CartItems.ProductQuantity"]</th>
+                                        <th>@T["Checkout.Confirm.CartItems.SubTotal"]</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -229,7 +229,7 @@
         @(await Component.InvokeAsync("OrderTotals"))
         <div class="col-sm-6">
             <form asp-action="ConfirmOrder" method="post" id="checkoutForm">
-                <button type="submit" class="btn btn-success float-end" id="confirmOrderButton">Xác nhận</button>
+            <button type="submit" class="btn btn-success float-end" id="confirmOrderButton">@T["Checkout.Confirm.ConfirmButton"]</button>
             </form>
         </div>
 </div>

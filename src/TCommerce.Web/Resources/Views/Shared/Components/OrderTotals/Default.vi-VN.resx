@@ -117,10 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MiniCartDropDown.SubTotal" xml:space="preserve">
-    <value>Subtotal</value>
+  <data name="OrderTotals.OrderTotal" xml:space="preserve">
+    <value>Tổng tiền</value>
   </data>
-  <data name="MiniCartDropDown.ViewCart" xml:space="preserve">
-    <value>View cart</value>
+  <data name="OrderTotals.SubTotal" xml:space="preserve">
+    <value>Tạm tính</value>
+  </data>
+  <data name="OrderTotals.SubTotalAfterDiscount" xml:space="preserve">
+    <value>Tạm tính sau giảm giá</value>
+  </data>
+  <data name="OrderTotals.Tax" xml:space="preserve">
+    <value>Thuế</value>
   </data>
 </root>
