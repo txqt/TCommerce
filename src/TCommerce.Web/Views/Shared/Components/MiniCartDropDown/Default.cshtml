@@ -45,7 +45,7 @@
             </div><!-- End .cart-product -->
 
             <div class="dropdown-cart-total">
-                <span>Sub Total</span>
+                <span>@T["MiniCartDropDown.SubTotal"]</span>
 
                 <span class="cart-total-price">@Model.SubTotal</span>
             </div><!-- End .dropdown-cart-total -->
@@ -53,7 +53,7 @@
             <div class="dropdown-cart-action">
                 @if (Model.DisplayShoppingCartButton)
                 {
-                    <a href="/cart" class="btn btn-primary">View Cart</a>
+                    <a href="/cart" class="btn btn-primary">@T["MiniCartDropDown.ViewCart"]</a>
                 }
             </div><!-- End .dropdown-cart-total -->
         </div>

@@ -70,7 +70,7 @@
                 case (int)AttributeControlType.DropdownList:
                     <div class="select-custom">
                         <select data-attr="@(attributeItem.Id)" name="@(controlId)" id="@(controlId)" class="form-control">
-                            <option value="0" selected="selected">Select a @attributeItem.Name</option>
+                            <option value="0" selected="selected">@T["Product.Details.ProductAttributes.DefaultDropdownList"] @attributeItem.Name</option>
                             @foreach (var attributeValue in attributeItem.Values)
                             {
                                 <option data-attr-value="@attributeValue.Id" selected="@attributeValue.IsPreSelected" value="@attributeValue.Id">@attributeValue.Name</option>

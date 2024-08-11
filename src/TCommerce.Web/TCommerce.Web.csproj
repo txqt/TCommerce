@@ -1,6 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<ItemGroup>
+	  <Compile Remove="Views\Payment\**" />
+	  <Content Remove="Views\Payment\**" />
+	  <EmbeddedResource Remove="Views\Payment\**" />
+	  <None Remove="Views\Payment\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Content Remove="Areas\Admin\Views\Discount\_CreateOrEdit.AppliedToCategories.cshtml" />
 	</ItemGroup>
 
@@ -163,7 +170,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
-		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
@@ -196,7 +203,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Views\Payment\" />
+	  <EmbeddedResource Update="Resources\Views\Home\Index.en-US.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Views\Home\Index.vi-VN.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<PropertyGroup>
