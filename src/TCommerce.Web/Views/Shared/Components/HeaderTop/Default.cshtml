@@ -16,7 +16,7 @@
                             break;
                     }
                 }
-                <span>@currentLanguage</span>
+                <span style="cursor: pointer">@currentLanguage</span>
                 <div class="header-menu">
                     <ul>
                         <li><a href="@Url.Action("SetLanguage", "Home", new { culture = "en-US", returnUrl = Url.ActionContext.HttpContext.Request.Path })">English</a></li>

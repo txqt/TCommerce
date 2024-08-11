@@ -7,19 +7,19 @@
         <table class="table table-summary">
             <tbody>
                 <tr class="summary-subtotal">
-                    <td>Tạm tính:</td>
+                    <td>@T["OrderTotals.SubTotal"]:</td>
                     <td>@Model.SubTotal</td>
                 </tr><!-- End .summary-subtotal -->
                 <tr class="summary-subtotal-discount">
-                    <td>Tạm tính sau giảm giá:</td>
+                    <td>@T["OrderTotals.SubTotalAfterDiscount"]:</td>
                     <td>@Model.SubTotalDiscount</td>
                 </tr><!-- End .summary-subtotal-discount -->
                 <tr class="summary-tax">
-                    <td>Thuế:</td>
+                    <td>@T["OrderTotals.Tax"]:</td>
                     <td>@Model.Tax</td>
                 </tr><!-- End .summary-subtotal-discount -->
                 <tr class="summary-total">
-                    <td>Tổng tiền:</td>
+                    <td>@T["OrderTotals.OrderTotal"]:</td>
                     <td>@Model.OrderTotal</td>
                 </tr><!-- End .summary-total -->
             </tbody>

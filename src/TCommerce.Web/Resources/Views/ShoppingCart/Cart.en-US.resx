@@ -117,10 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MiniCartDropDown.SubTotal" xml:space="preserve">
-    <value>Subtotal</value>
+  <data name="ShoppingCart.Cart.CartEmpty" xml:space="preserve">
+    <value>Cart is empty !</value>
   </data>
-  <data name="MiniCartDropDown.ViewCart" xml:space="preserve">
-    <value>View cart</value>
+  <data name="ShoppingCart.Cart.ClearCart" xml:space="preserve">
+    <value>CLEAR CART</value>
+  </data>
+  <data name="ShoppingCart.Cart.ContinueShopping" xml:space="preserve">
+    <value>CONTINUE SHOPPING</value>
+  </data>
+  <data name="ShoppingCart.Cart.ProceedToCheckout" xml:space="preserve">
+    <value>PROCEED TO CHECKOUT</value>
+  </data>
+  <data name="ShoppingCart.Cart.Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="ShoppingCart.Cart.ProductAttributes" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="ShoppingCart.Cart.ProductPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="ShoppingCart.Cart.ProductQuantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="ShoppingCart.Cart.SubTotal" xml:space="preserve">
+    <value>SubTotal</value>
+  </data>
+  <data name="ShoppingCart.Cart.UpdateCart" xml:space="preserve">
+    <value>UPDATE CART</value>
   </data>
 </root>

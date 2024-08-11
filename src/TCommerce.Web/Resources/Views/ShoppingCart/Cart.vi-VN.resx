@@ -117,10 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MiniCartDropDown.SubTotal" xml:space="preserve">
-    <value>Subtotal</value>
+  <data name="ShoppingCart.Cart.CartEmpty" xml:space="preserve">
+    <value>Giỏ hàng trống !</value>
   </data>
-  <data name="MiniCartDropDown.ViewCart" xml:space="preserve">
-    <value>View cart</value>
+  <data name="ShoppingCart.Cart.ClearCart" xml:space="preserve">
+    <value>XÓA GIỎ HÀNG</value>
+  </data>
+  <data name="ShoppingCart.Cart.ContinueShopping" xml:space="preserve">
+    <value>TIẾP TỤC MUA SẮM</value>
+  </data>
+  <data name="ShoppingCart.Cart.ProceedToCheckout" xml:space="preserve">
+    <value>TIẾN HÀNH THANH TOÁN</value>
+  </data>
+  <data name="ShoppingCart.Cart.Product" xml:space="preserve">
+    <value>Sản phẩm</value>
+  </data>
+  <data name="ShoppingCart.Cart.ProductAttributes" xml:space="preserve">
+    <value>Thuộc tính</value>
+  </data>
+  <data name="ShoppingCart.Cart.ProductPrice" xml:space="preserve">
+    <value>Giá</value>
+  </data>
+  <data name="ShoppingCart.Cart.ProductQuantity" xml:space="preserve">
+    <value>Số lượng</value>
+  </data>
+  <data name="ShoppingCart.Cart.SubTotal" xml:space="preserve">
+    <value>Tạm tính</value>
+  </data>
+  <data name="ShoppingCart.Cart.UpdateCart" xml:space="preserve">
+    <value>CẬP NHẬT GIỎ HÀNG</value>
   </data>
 </root>

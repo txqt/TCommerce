@@ -20,11 +20,11 @@
                             <table class="table table-cart table-mobile">
                                 <thead>
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Thuộc tính</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>SubTotal</th>
+                                        <th>@T["ShoppingCart.Cart.Product"]</th>
+                                        <th>@T["ShoppingCart.Cart.ProductAttributes"]</th>
+                                        <th>@T["ShoppingCart.Cart.ProductPrice"]</th>
+                                        <th>@T["ShoppingCart.Cart.ProductQuantity"]</th>
+                                        <th>@T["ShoppingCart.Cart.SubTotal"]</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -85,8 +85,8 @@
                             </table><!-- End .table table-wishlist -->
 
                             <div class="cart-bottom">
-                                <button type="button" style="margin-left: 0px" class="btn btn-outline-dark-2 btn-clear-cart"><span>CLEAR CART</span><i class="icon-refresh"></i></button>
-                                <button type="submit" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></button>
+                                <button type="button" style="margin-left: 0px" class="btn btn-outline-dark-2 btn-clear-cart"><span>@T["ShoppingCart.Cart.ClearCart"]</span><i class="icon-refresh"></i></button>
+                                <button type="submit" class="btn btn-outline-dark-2"><span>@T["ShoppingCart.Cart.UpdateCart"]</span><i class="icon-refresh"></i></button>
                             </div><!-- End .cart-bottom -->
                         </div><!-- End .col-lg-9 -->
 
@@ -101,10 +101,10 @@
 
                         <div class="row">
                             <div class="col-6">
-                                <a href="@Url.Action("Confirm", "Checkout")" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                                <a href="@Url.Action("Confirm", "Checkout")" class="btn btn-outline-primary-2 btn-order btn-block">@T["ShoppingCart.Cart.ProceedToCheckout"]</a>
                             </div>
                             <div class="col-6">
-                                <a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
+                                <a href="/" class="btn btn-outline-dark-2 btn-block mb-3"><span>@T["ShoppingCart.Cart.ContinueShopping"]</span><i class="icon-refresh"></i></a>
                             </div>
                         </div>
                     </aside><!-- End .col-lg-3 -->
@@ -115,7 +115,7 @@
     }
     else
     {
-        <p class="text-center">Cart is empty !</p>
+        <p class="text-center">@T["ShoppingCart.Cart.CartEmpty"]</p>
     }
 </div>
 @section Scripts {
