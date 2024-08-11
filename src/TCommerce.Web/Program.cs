@@ -9,24 +9,16 @@ using TCommerce.Web.Routing;
 using TCommerce.Web.Middleware;
 using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Hosting;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews(options =>
-{
-    options.Conventions.Add(new RouteTokenTransformerConvention(
-                                 new SlugifyParameterTransformer()));
-})
-    .AddDataAnnotationsLocalization().AddRazorRuntimeCompilation().AddJsonOptions(options =>
-    {
-        //options.JsonSerializerOptions.PropertyNamingPolicy = null;
-        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-    });
-
 builder.Services.AddServices();
 builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddOptionsConfig(builder.Configuration);
 builder.Services.AddHttpClient(builder.Configuration);
 builder.Services.AddIdentityConfig();
 builder.Services.AddHttpContextAccessor();
@@ -40,13 +32,6 @@ builder.Services.AddSingleton(new JsonSerializerOptions
     PropertyNameCaseInsensitive = true,
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
 });
-
-
-var jwtSection = builder.Configuration.GetSection("Authorization");
-var jwtOptions = new AuthorizationOptionsConfig();
-jwtSection.Bind(jwtOptions);
-builder.Services.Configure<AuthorizationOptionsConfig>(jwtSection);
-
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
@@ -65,6 +50,37 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new List<CultureInfo>
+        {
+            new CultureInfo("en-US"),
+            new CultureInfo("vi-VN"),
+        };
+
+    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Conventions.Add(new RouteTokenTransformerConvention(
+                                 new SlugifyParameterTransformer()));
+})
+    .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization()
+    .AddRazorRuntimeCompilation()
+    .AddJsonOptions(options =>
+    {
+        //options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -85,6 +101,8 @@ app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRequestLocalization(app.Services.GetService<IOptions<RequestLocalizationOptions>>().Value);
 
 if (app.Environment.IsDevelopment())
 {

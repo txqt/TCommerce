@@ -12,14 +12,14 @@
 </div>
 <div class="product-details-action">
     @{
-        var cartButtonText = "add to cart";
+        var cartButtonText = T["Product.Details.AddToCart"];
         if (Model.UpdatedShoppingCartItemId > 0 && Model.UpdateShoppingCartItemType.HasValue && Model.UpdateShoppingCartItemType.Value == ShoppingCartType.ShoppingCart)
         {
-            cartButtonText = "update to cart";
+            cartButtonText = T["Product.Details.UpdateToCart"];
         }
         else if (Model.UpdatedShoppingCartItemId > 0 && Model.UpdateShoppingCartItemType.HasValue && Model.UpdateShoppingCartItemType.Value == ShoppingCartType.Wishlist)
         {
-            cartButtonText = "update to wishlist";
+            cartButtonText = T["Product.Details.UpdateToWishlist"];
         }
     }
     @if (!Model.DisableBuyButton)

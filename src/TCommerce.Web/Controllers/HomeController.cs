@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using TCommerce.Core.Interface;
 using TCommerce.Services.DbManageServices;
 
@@ -25,14 +26,16 @@ namespace TCommerce.Web.Controllers
             return View();
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllProductsDisplayedOnHomepageAsync()
-        //{
-        //    var listModel = await _productService.GetAllProductsDisplayedOnHomepageAsync();
-        //    return Json(new { data = listModel });
-        //}
+        public IActionResult SetLanguage(string culture, string returnUrl)
+        {
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
 
-        //[CustomAuthorizationFilter(RoleName.Customer)]
+            return LocalRedirect(returnUrl);
+        }
         public IActionResult Privacy()
         {
             return View();

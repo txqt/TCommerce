@@ -4,22 +4,23 @@
     <div class="container">
         <div class="header-left">
             <div class="header-dropdown">
-                <a href="#">Usd</a>
+                @{
+                    var currentLanguage = "";
+                    switch (CultureInfo.CurrentCulture.ToString())
+                    {
+                        case "en-US":
+                            currentLanguage = "English";
+                            break;
+                        case "vi-VN":
+                            currentLanguage = "Tiếng Việt";
+                            break;
+                    }
+                }
+                <span>@currentLanguage</span>
                 <div class="header-menu">
                     <ul>
-                        <li><a href="#">Eur</a></li>
-                        <li><a href="#">Usd</a></li>
-                    </ul>
-                </div><!-- End .header-menu -->
-            </div><!-- End .header-dropdown -->
-
-            <div class="header-dropdown">
-                <a href="#">Eng</a>
-                <div class="header-menu">
-                    <ul>
-                        <li><a href="#">English</a></li>
-                        <li><a href="#">French</a></li>
-                        <li><a href="#">Spanish</a></li>
+                        <li><a href="@Url.Action("SetLanguage", "Home", new { culture = "en-US", returnUrl = Url.ActionContext.HttpContext.Request.Path })">English</a></li>
+                        <li><a href="@Url.Action("SetLanguage", "Home", new { culture = "vi-VN", returnUrl = Url.ActionContext.HttpContext.Request.Path })">Tiếng Việt</a></li>
                     </ul>
                 </div><!-- End .header-menu -->
             </div><!-- End .header-dropdown -->
@@ -30,22 +31,18 @@
                 <li>
                     <a href="#">Links</a>
                     <ul>
-                        <li><a href="tel:#"><i class="icon-phone"></i>Call: +0123 456 789</a></li>
-                        <li><a href="wishlist.html"><i class="icon-heart-o"></i>Wishlist <span>(3)</span></a></li>
-                        <li><a href="about.html">About Us</a></li>
-                        <li><a href="contact.html">Contact Us</a></li>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li><a href="@Url.RouteName("AccountInfo")">Tài khoản</a></li>
-                            <li><a href="#" id="logoutLink">Đăng xuất</a></li>
+                            <li><a href="@Url.RouteName("AccountInfo")">@T["HeaderTop.Account.Info"]</a></li>
+                            <li><a href="#" id="logoutLink">@T["HeaderTop.Logout"]</a></li>
                             @if (ViewBag.IsAdmin)
                             {
-                                <li><a href="@Url.RouteName("HomeAdmin")">Admin mode</a></li>
+                                <li><a href="@Url.RouteName("HomeAdmin")">@T["HeaderTop.AdminDashboard"]</a></li>
                             }
                         }
                         else
                         {
-                            <li><a href="@Url.RouteName("Login")"><i class="icon-user"></i>Login</a></li>
+                            <li><a href="@Url.RouteName("Login")"><i class="icon-user"></i>@T["HeaderTop.Login"]</a></li>
                         }
 
                     </ul>

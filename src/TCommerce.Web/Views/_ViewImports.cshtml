@@ -1,6 +1,7 @@
 ﻿@using TCommerce.Web
 @using TCommerce.Web.Models
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, TCommerce.Web
 @using TCommerce.Core.Models.ViewsModel
 @using TCommerce.Core.Models.Common
 @using TCommerce.Web.Extensions
@@ -14,6 +15,5 @@
 @using TCommerce.Core.Models.Orders
 @using TCommerce.Core.Models
 @using System.Text.Encodings.Web
-
-@addTagHelper *, TCommerce.Web
-@addTagHelper *, SmartBreadcrumbs
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@using System.Globalization

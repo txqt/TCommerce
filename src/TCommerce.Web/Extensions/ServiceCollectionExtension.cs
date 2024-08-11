@@ -291,5 +291,14 @@ namespace TCommerce.Core.Extensions
 
             return services;
         }
+        public static IServiceCollection AddOptionsConfig(this IServiceCollection services, IConfiguration configuration)
+        {
+            if (!DatabaseManager.IsDatabaseInstalled())
+                return services;
+
+            services.Configure<AuthorizationOptionsConfig>(configuration.GetSection("Authorization"));
+
+            return services;
+        }
     }
 }
