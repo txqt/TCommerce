@@ -1547,7 +1547,7 @@ blockquote {
     margin-right: 1.5rem;
 }
 
-.header-intro-clearance .header-bottom .container::before {
+/*.header-intro-clearance .header-bottom .container::before {
     position: absolute;
     content: "";
     left: 28.5rem;
@@ -1556,9 +1556,9 @@ blockquote {
     top: 50%;
     background-color: #ccc;
     transform: translateY(-50%);
-}
+}*/
 
-.header-intro-clearance .header-bottom .container::after {
+/*.header-intro-clearance .header-bottom .container::after {
     position: absolute;
     content: "";
     right: 28rem;
@@ -1567,7 +1567,7 @@ blockquote {
     top: 50%;
     background-color: #ccc;
     transform: translateY(-50%);
-}
+}*/
 
 .header-intro-clearance .header-middle .header-right p {
     font-size: 1.1rem;
