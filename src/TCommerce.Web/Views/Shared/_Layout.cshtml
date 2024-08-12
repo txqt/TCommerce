@@ -66,8 +66,8 @@
     <div class="page-wrapper">
         <header class="header header-intro-clearance header-3">
             @await Component.InvokeAsync("HeaderTop")
-
             @await Html.PartialAsync("_HeaderMiddle")
+            @await Component.InvokeAsync("HomepageCategories")
         </header><!-- End .header -->
         <partial name="_AlertMessage"></partial>
         @* <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
@@ -389,13 +389,9 @@
     </div>*@
     <!-- Plugins JS File -->
     @* <script src="~/js/jquery.min.js"></script> *@
-    <script src="~/js/jquery.hoverIntent.min.js"></script>
-    <script src="~/js/jquery.waypoints.min.js"></script>
     <script src="~/js/superfish.min.js"></script>
     <script src="~/js/owl.carousel.min.js"></script>
-    <script src="~/js/jquery.plugin.min.js"></script>
-    <script src="~/js/jquery.magnific-popup.min.js"></script>
-    <script src="~/js/jquery.countdown.min.js"></script>
+    <script src="~/js/jquery.waypoints.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <!-- Main JS File -->
     <script src="~/js/demos/demo-3.js"></script>

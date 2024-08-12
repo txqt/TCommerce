@@ -22,6 +22,7 @@ namespace TCommerce.Core.Interface
         Task<ServiceResponse<bool>> DeleteProductCategoryMappingById(int productCategoryId);
         Task<ServiceResponse<bool>> UpdateProductCategoryAsync(ProductCategory productCategory);
         Task<ServiceResponse<bool>> BulkUpdateProductCategoryAsync(List<ProductCategory> productCategories);
+        Task<List<Category>> GetAllCategoriesDisplayedOnHomepageAsync(bool showHidden = false);
 
         #region Category discounts
         Task ClearDiscountCategoryMappingAsync(Discount discount);

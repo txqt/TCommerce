@@ -1,0 +1,22 @@
+﻿@model List<CategoryModel>
+@if(Model is not null && Model.Any())
+{
+    <div class="sticky-wrapper">
+        <div class="header-bottom sticky-header">
+            <div class="container">
+                <div class="header-center">
+                    <nav class="main-nav">
+                        <ul class="menu sf-arrows sf-js-enabled" style="touch-action: pan-y;">
+                            @foreach(var item in Model)
+                            {
+                                <li>
+                                    <a href="/@item.SeName" class="sf-with-ul">@item.Name</a>
+                                </li>
+                            }
+                        </ul><!-- End .menu -->
+                    </nav><!-- End .main-nav -->
+                </div><!-- End .header-center -->
+            </div><!-- End .container -->
+        </div>
+    </div>
+}
