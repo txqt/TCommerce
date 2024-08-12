@@ -12,9 +12,9 @@ namespace TCommerce.Web.Component
             _catalogModelService = catalogModelService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync(string viewName = "Default")
         {
-            return View(await _catalogModelService.PrepareSearchBoxModelAsync());
+            return View(viewName, await _catalogModelService.PrepareSearchBoxModelAsync());
         }
     }
 }

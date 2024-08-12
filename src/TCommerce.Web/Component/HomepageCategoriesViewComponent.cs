@@ -12,13 +12,13 @@ namespace TCommerce.Web.Component
             _catalogModelService = catalogModelService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync(string viewName = "Default")
         {
             var model = await _catalogModelService.PrepareHomepageCategoryModelsAsync();
             if (!model.Any())
                 return Content("");
 
-            return View(model);
+            return View(viewName, model);
         }
     }
 }

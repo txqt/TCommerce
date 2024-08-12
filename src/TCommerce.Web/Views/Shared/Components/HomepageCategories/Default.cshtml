@@ -3,14 +3,14 @@
 {
     <div class="sticky-wrapper">
         <div class="header-bottom sticky-header">
-            <div class="container">
-                <div class="header-center">
+            <div class="container d-flex justify-content-center">
+                <div class="header-center justify-content-sm-around">
                     <nav class="main-nav">
                         <ul class="menu sf-arrows sf-js-enabled" style="touch-action: pan-y;">
                             @foreach(var item in Model)
                             {
                                 <li>
-                                    <a href="/@item.SeName" class="sf-with-ul">@item.Name</a>
+                                    <a class="fs-1" href="/@item.SeName" class="sf-with-ul">@item.Name</a>
                                 </li>
                             }
                         </ul><!-- End .menu -->

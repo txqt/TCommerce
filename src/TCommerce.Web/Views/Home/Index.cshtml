@@ -2,12 +2,9 @@
     ViewData["Title"] = @T["Home.Index.Title"];
     //var sliderModel = await _sliderItemService.GetAllSliderItemAsync();
 }
+@await Component.InvokeAsync("HomepageCategories")
 <main class="main">
     @await Component.InvokeAsync("Banner")
-
-    <div class="container">
-        <hr class="mt-5 mb-6">
-    </div><!-- End .container -->
 
     @await Component.InvokeAsync("HomePageProducts")
 </main>
