@@ -1515,11 +1515,11 @@ blockquote {
         top: 0;
     }
 
-.header-intro-clearance
+/*.header-intro-clearance
 .header-bottom
 .menu.sf-arrows > li > .sf-with-ul::after {
     right: 1.3rem;
-}
+}*/
 
 .header-intro-clearance .header-bottom .menu > li + li {
     margin-left: 0.7rem;
@@ -2061,7 +2061,7 @@ blockquote {
         position: relative;
     }
 
-        .menu.sf-arrows .sf-with-ul::after {
+        /*.menu.sf-arrows .sf-with-ul::after {
             font-family: "molla";
             content: "\f110";
             position: absolute;
@@ -2071,7 +2071,7 @@ blockquote {
             font-size: 1rem;
             line-height: 1;
             margin-top: -0.5rem;
-        }
+        }*/
 
     .menu.sf-arrows ul .sf-with-ul {
         padding-right: 4rem;

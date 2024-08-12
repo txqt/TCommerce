@@ -8,6 +8,7 @@ using TCommerce.Core.Models.ViewsModel;
 using TCommerce.Core.Models.Discounts;
 using System.Drawing.Printing;
 using TCommerce.Core.Interface;
+using TCommerce.Core.Helpers;
 
 namespace TCommerce.Services.CategoryServices
 {
@@ -227,6 +228,21 @@ namespace TCommerce.Services.CategoryServices
         public async Task<List<Category>?> GetCategoriesByIdsAsync(List<int> ids)
         {
             return (await _categoryRepository.GetByIdsAsync(ids)).ToList();
+        }
+
+        public async Task<List<Category>> GetAllCategoriesDisplayedOnHomepageAsync(bool showHidden = false)
+        {
+            var categories = await _categoryRepository.GetAllAsync(query =>
+            {
+                return from c in query
+                       orderby c.DisplayOrder, c.Id
+                       where c.Published &&
+                             (showHidden ? c.Deleted : !c.Deleted) &&
+                             c.ShowOnHomepage
+                       select c;
+            }, CacheKeysDefault<Category>.AllPrefix + "displayed.on.home.page");
+
+            return categories.ToList();
         }
     }
 }

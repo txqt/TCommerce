@@ -24,6 +24,7 @@ namespace TCommerce.Web.PrepareModelServices
         Task<SearchModel> PrepareSearchModelAsync(SearchModel model, CatalogProductsCommand command);
         Task<CatalogProductsModel> PrepareSearchProductsModelAsync(SearchModel searchModel, CatalogProductsCommand command);
         Task<SearchBoxModel> PrepareSearchBoxModelAsync();
+        Task<List<CategoryModel>> PrepareHomepageCategoryModelsAsync();
     }
     public class CatalogModelService : ICatalogModelService
     {
@@ -684,6 +685,30 @@ namespace TCommerce.Web.PrepareModelServices
             };
 
             return Task.FromResult(model);
+        }
+
+        public async Task<List<CategoryModel>> PrepareHomepageCategoryModelsAsync()
+        {
+            var homepageCategories = await _categoryService.GetAllCategoriesDisplayedOnHomepageAsync();
+
+            var categoryModelList = new List<CategoryModel>();
+
+            foreach (var category in homepageCategories)
+            {
+                var catModel = new CategoryModel
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    Description = category.Description,
+                    MetaKeywords = category.MetaKeywords,
+                    MetaDescription = category.MetaDescription,
+                    MetaTitle = category.MetaTitle,
+                    SeName = await _urlRecordService.GetSeNameAsync(category),
+                };
+                categoryModelList.Add(catModel);
+            }
+
+            return categoryModelList;
         }
     }
 }
