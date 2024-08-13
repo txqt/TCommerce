@@ -118,60 +118,60 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Checkout.Confirm.Address" xml:space="preserve">
-    <value>Address</value>
+    <value>Địa chỉ</value>
   </data>
   <data name="Checkout.Confirm.CartItems" xml:space="preserve">
-    <value>Cart Items</value>
+    <value>Mặt hàng</value>
   </data>
   <data name="Checkout.Confirm.CartItems.Product" xml:space="preserve">
-    <value>Product</value>
+    <value>Sản phẩm</value>
   </data>
   <data name="Checkout.Confirm.CartItems.ProductAttributes" xml:space="preserve">
-    <value>Attributes</value>
+    <value>Thuộc tính</value>
   </data>
   <data name="Checkout.Confirm.CartItems.ProductPrice" xml:space="preserve">
-    <value>Price</value>
+    <value>Giá</value>
   </data>
   <data name="Checkout.Confirm.CartItems.ProductQuantity" xml:space="preserve">
-    <value>Quantity</value>
+    <value>Số lượng</value>
   </data>
   <data name="Checkout.Confirm.CartItems.SubTotal" xml:space="preserve">
-    <value>SubTotal</value>
+    <value>Tạm tính</value>
   </data>
   <data name="Checkout.Confirm.ChangeShippingAddress" xml:space="preserve">
-    <value>Change address</value>
+    <value>Đổi địa chỉ</value>
   </data>
   <data name="Checkout.Confirm.Close" xml:space="preserve">
-    <value>Close</value>
+    <value>Đóng</value>
   </data>
   <data name="Checkout.Confirm.ConfirmButton" xml:space="preserve">
-    <value>Confirm</value>
+    <value>Xác nhận</value>
   </data>
   <data name="Checkout.Confirm.NewAddress" xml:space="preserve">
-    <value>New address</value>
+    <value>Địa chỉ mới</value>
   </data>
   <data name="Checkout.Confirm.NoAddressToSelect" xml:space="preserve">
-    <value>No address to select</value>
+    <value>Không có địa chỉ để chọn</value>
   </data>
   <data name="Checkout.Confirm.PaymentInfo" xml:space="preserve">
-    <value>Payment Info</value>
+    <value>Thông tin thanh toán</value>
   </data>
   <data name="Checkout.Confirm.PhoneNumber" xml:space="preserve">
-    <value>Phone number</value>
+    <value>Số điện thoại</value>
   </data>
   <data name="Checkout.Confirm.SaveChanges" xml:space="preserve">
-    <value>Save changes</value>
+    <value>Lưu thay đổi</value>
   </data>
   <data name="Checkout.Confirm.SelectAddress" xml:space="preserve">
-    <value>Select address</value>
+    <value>Chọn địa chỉ</value>
   </data>
   <data name="Checkout.Confirm.SelectPaymentMethod" xml:space="preserve">
-    <value>Select Payment Method</value>
+    <value>Chọn phương thức thanh toán</value>
   </data>
   <data name="Checkout.Confirm.SelectShippingAddress" xml:space="preserve">
-    <value>Select Shipping Address</value>
+    <value>Chọn địa chỉ giao hàng</value>
   </data>
   <data name="Checkout.Confirm.ShippingInfo" xml:space="preserve">
-    <value>Shipping Info</value>
+    <value>Thông tin giao hàng</value>
   </data>
 </root>

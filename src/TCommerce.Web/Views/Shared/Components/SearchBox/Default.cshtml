@@ -8,7 +8,7 @@
                 <div class="header-search-wrapper search-wrapper-wide" style="border: 0.1rem solid black;">
                     <label for="q" class="sr-only">Search</label>
                     <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                    <input autocomplete="off" id="small-searchterms" type="search" class="form-control search-box-text" name="q" id="q" placeholder="Search product ..." required="">
+                    <input autocomplete="off" id="small-searchterms" type="search" class="form-control search-box-text" name="q" placeholder="Search product ..." required="">
                     @if (Model.SearchTermMinimumLength > 0)
                     {
                         @Html.Script(@<text>
@@ -27,39 +27,30 @@
                     {
                         @Html.Script(@<text>
                             <script>
-                                    $(function() {
-                                        var showLinkToResultSearch;
-                                        var searchText;
-                                        $('#small-searchterms').autocomplete({
-                                                delay: 500,
-                                                minLength: @(Model.SearchTermMinimumLength.ToString()),
-                                                source: '@(Url.RouteUrl("ProductSearchAutoComplete"))',
-                                                appendTo: '.search-box',
-                                                select: function(event, ui) {
-                                                    $("#small-searchterms").val(ui.item.label);
-                                                    setLocation(ui.item.producturl);
-                                                    return false;
+                                    $(function () {
+                                        $("#small-searchterms").autocomplete({
+                                            source: function (request, response) {
+                                                $.ajax({
+                                                    url: '@Url.RouteUrl("ProductSearchAutoComplete")',
+                                                    type: "GET",
+                                                    data: { term: request.term },
+                                                    success: function (data) {
+                                                        response($.map(data, function(item) {
+                                                            return {
+                                                                label: item.label,
+                                                                value: item.value
+                                                            };
+                                                        }));
+                                                    }
+                                                });
                                             },
-                                            //append link to the end of list
-                                            open: function(event, ui) {
-                                                //display link to search page
-                                                if (showLinkToResultSearch) {
-                                                    searchText = document.getElementById("small-searchterms").value;
-                                                    $(".ui-autocomplete").append("<li class=\"ui-menu-item\" role=\"presentation\"><a href=\"/search?q=" + searchText + "\">Search.SearchBox.SearchPageLink</a></li>");
-                                                }
-                                            }
-                                        })
-                                        .data("ui-autocomplete")._renderItem = function(ul, item) {
-                                            var t = item.label;
-                                            showLinkToResultSearch = item.showlinktoresultsearch;
-                                            //html encode
-                                            t = htmlEncode(t);
-                                            imageWidth = '100';
-                                            return $("<li></li>")
-                                                .data("item.autocomplete", item)
-                                                    .append("<a>@(Model.ShowProductImagesInSearchAutoComplete ? Html.Raw("<img src='\" + item.productpictureurl + \"' width='\" + imageWidth + \"'>") : null)<span>" + t + "</span></a>")
-                                                .appendTo(ul);
-                                        };
+                                            minLength: @Model.SearchTermMinimumLength,
+                                            select: function (event, ui) {
+                                                event.preventDefault();
+                                                $("#small-searchterms").val(ui.item.label);
+                                                window.location.href = ui.item.value;
+                                            },
+                                        });
                                     });
                                 </script>
                                 </text>)

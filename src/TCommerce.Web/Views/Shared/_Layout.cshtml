@@ -19,6 +19,7 @@
     "~/css/skins/skin-demo-6.css",
     "~/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css",
     "~/css/toastr.min.css",
+    "https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css",
     };
     }
     @foreach (var cssFile in cssFiles)
@@ -26,6 +27,8 @@
         <link href="@Href(cssFile)" rel="stylesheet" asp-append-version="true" />
     }
     <script src="~/js/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+
     @*FontAwesome*@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 
@@ -225,17 +228,17 @@
     <script src="~/js/bootstrap-input-spinner.js"></script>
     <script src="~/js/toastr.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $(document).ajaxStart(function () {
-                $('.loading-modal').modal('show');
-            }).ajaxStop(function () {
-                $('.loading-modal').modal('hide');
-            });
+        // $(document).ready(function () {
+        //     $(document).ajaxStart(function () {
+        //         $('.loading-modal').modal('show');
+        //     }).ajaxStop(function () {
+        //         $('.loading-modal').modal('hide');
+        //     });
 
-            $('form').submit(function () {
-                $('.loading-modal').modal('show');
-            });
-        });
+        //     $('form').submit(function () {
+        //         $('.loading-modal').modal('show');
+        //     });
+        // });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
     @Html.RenderScripts()

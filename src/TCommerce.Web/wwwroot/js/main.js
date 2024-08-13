@@ -4,6 +4,18 @@ $(document).ready(function() {
         $("#loadingModal").show();
     });
 });
+
+function htmlEncode(n) {
+    return $("<div/>").text(n).html()
+}
+function htmlDecode(n) {
+    return $("<div/>").html(n).text()
+}
+
+function setLocation(n) {
+    window.location.href = n
+}
+
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
