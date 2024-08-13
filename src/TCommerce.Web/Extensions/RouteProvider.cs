@@ -43,6 +43,11 @@ namespace TCommerce.Web.Extensions
                     pattern: "product/search",
                     defaults: new { controller = "Catalog", action = "SearchProducts" });
 
+                //autocomplete search term (AJAX)
+                endpoints.MapControllerRoute(name: "ProductSearchAutoComplete",
+                    pattern: $"catalog/searchtermautocomplete",
+                    defaults: new { controller = "Catalog", action = "SearchTermAutoComplete" });
+
                 endpoints.MapControllerRoute(name: "AccountInfo",
                     pattern: $"account/info",
                     defaults: new { controller = "Account", action = "Info" });
