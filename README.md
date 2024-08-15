@@ -1,4 +1,4 @@
-# TCommerce
+# TCommerce [EN](./README(EN).md) | VI
 
 - Dự án thương mại điện tử sử dụng ASP.NET Core MVC và ASP.NET Core Web API.
 
