@@ -2,7 +2,6 @@
 
 - Dự án thương mại điện tử sử dụng ASP.NET Core MVC và ASP.NET Core Web API.
 
-
 ## Tổng quan
 - Dự án này là một ứng dụng thương mại điện tử nhỏ được xây dựng để nâng cao kỹ năng lập trình.
 - Nhiều class và phương thức của tôi đều dựa vào [nopCommerce](https://github.com/nopSolutions/nopCommerce) để làm.
@@ -11,7 +10,6 @@
 - [ASP.NET Core 8](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Visual Studio 2019 hoặc 2022](https://visualstudio.microsoft.com/vs/)
 - [Microsoft SQL Server 2019 hoặc 2022](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
-
 
 ## Hướng dẫn cài đặt
 1. Clone dự án từ GitHub:
@@ -31,3 +29,14 @@
 6. Điền thông tin cơ bản về database
 ![Tài khoản admin và tạo dữ liệu mẫu](setup-images/store-info.png)
 ![Điền thông tin của datatable(MSSQL)](setup-images/db-info.png)
+
+## Một vài chức năng
+
+- **Quản lý sản phẩm**: Có thể thêm, sửa, xóa, chỉnh sửa thuộc tính, thêm hình ảnh sản phẩm và liên kết các sản phẩm liên quan với nhau (related product).
+- **Quản lí thuộc tính**: Có thể thêm, sửa, xóa thuộc tính sản phẩm.
+- **Quản lí danh mục**: Có thể thêm, sửa, xóa danh mục và thêm các sản phẩm vào danh mục.
+- **Quản lí nhà sản xuất**: Có thể thêm, sửa, xóa danh mục và thêm các sản phẩm nhà chế tạo.
+- **Quản lý người dùng**: Có thể thêm, sửa, xóa, thêm hoặc chỉnh sửa vai trò của người dùng.
+- **Quản lý vai trò và quyền hạn**: Có thể thêm hoặc xóa quyền của một hoặc nhiều vai trò.
+- **Quản lý đơn hàng**: Xử lý các đơn hàng, theo dõi trạng thái và quản lý lịch sử đơn hàng.
+- **Tích hợp thanh toán trực tuyến**: Hỗ trợ thanh toán VNPAY (test).
