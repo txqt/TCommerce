@@ -14,6 +14,7 @@
                         @Html.Script(@<text>
                             <script>
                                 $("#small-search-box-form").on("submit", function(event) {
+                                    console.log("Form submit event triggered");
                                     if ($("#small-searchterms").val() == "") {
                                         alert('@Html.Raw(JavaScriptEncoder.Default.Encode("Hãy nhập gì đó"))');
                                         $("#small-searchterms").focus();
