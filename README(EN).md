@@ -1,6 +1,6 @@
 # TCommerce EN) | [VI](./README.md)
 
-- An e-commerce project using ASP.NET Core MVC and ASP.NET Core Web API.
+- An e-commerce project using ASP.NET Core MVC.
 
 ## Overview
 - This project is a small e-commerce application built to enhance programming skills.
