@@ -1,6 +1,6 @@
 # TCommerce [EN](./README(EN).md) | VI
 
-- Dự án thương mại điện tử sử dụng ASP.NET Core MVC và ASP.NET Core Web API.
+- Dự án thương mại điện tử sử dụng ASP.NET Core MVC.
 
 ## Tổng quan
 - Dự án này là một ứng dụng thương mại điện tử nhỏ được xây dựng để nâng cao kỹ năng lập trình.
