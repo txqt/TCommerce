@@ -162,7 +162,7 @@ namespace TCommerce.Web.Controllers
 
             await SendMailConfirmedOrder(order);
 
-            //await _shoppingCartService.ClearShoppingCartAsync(user);
+            await _shoppingCartService.ClearShoppingCartAsync(user);
 
             var paymentResult = await _paymentService.ProcessPaymentAsync(order, paymentMethod);
 
