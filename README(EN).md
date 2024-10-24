@@ -1,4 +1,4 @@
-# TCommerce EN) | [VI](./README.md)
+# TCommerce EN | [VI](./README.md)
 
 - An e-commerce project using ASP.NET Core MVC.
 
