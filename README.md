@@ -23,8 +23,8 @@
     ```bash
     dotnet restore
     ```
-4. Build dự án (Ctrl + Shift + B)
-5. Run dự án (TCommerce.Web) với phím F5 hoặc Ctrl + F5
+4. Build dự án
+5. Run dự án (TCommerce.Web)
 6. Điền thông tin cơ bản về database
 ![Tài khoản admin và tạo dữ liệu mẫu](setup-images/store-info.png)
 ![Điền thông tin của datatable(MSSQL)](setup-images/db-info.png)
