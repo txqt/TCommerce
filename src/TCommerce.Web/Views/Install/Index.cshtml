@@ -10,61 +10,61 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <h2>Store Information</h2>
         <div class="border p-3 mt-3">
-            <div class="form-group">
+            <div class="mb-3">
                 <label class="form-label" for="adminEmail">Admin Email:</label>
                 <input type="email" id="adminEmail" asp-for="AdminEmail" class="form-control" required>
             </div>
-            <div class="form-group">
-                <label class="form-label" for="adminPassword">Admin Password:</label>
+            <div class="mb-3">
+                <label c for="adminPassword">Admin Password:</label>
                 <input type="password" id="adminPassword" asp-for="AdminPassword" class="form-control" required>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label class="form-label" for="confirmPassword">Confirm Password:</label>
                 <input type="password" id="confirmPassword" asp-for="ConfirmPassword" class="form-control" required>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <div class="form-check">
                     <input type="checkbox" id="createSampleData" asp-for="CreateSampleData" class="form-check-input">
-                    <label class="form-label" class="form-check-label" for="createSampleData">Create sample data</label>
+                    <label class="form-check-label" for="createSampleData">Create sample data</label>
                 </div>
             </div>
         </div>
         <br />
         <h2>Database Information</h2>
-        <div class="form-group">
-            <label for="dbType">Database Type:</label>
+        <div class="mb-3">
+            <label class="form-label" for="dbType">Database Type:</label>
             <select id="dbType" name="dbType" class="form-control">
                 <option value="SqlServer">SQL Server</option>
                 <!-- Add other options as needed -->
             </select>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
             <div class="form-check">
                 <input type="checkbox" id="createDatabaseIfNotExist" asp-for="CreateDatabaseIfNotExist" class="form-check-input">
                 <label class="form-check-label" for="createDatabaseIfNotExist">Create Database If Not Exist</label>
             </div>
         </div>
         <div class="border p-3 mt-3">
-            <div class="form-group">
+            <div class="mb-3">
                 <label class="form-label" for="serverName">Server Name:</label>
                 <input type="text" id="serverName" asp-for="ServerName" class="form-control" required>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label class="form-label" for="dbName">Database Name:</label>
                 <input type="text" id="dbName" asp-for="DbName" class="form-control" required>
             </div>
         </div>
-        <div class="form-group form-check mt-3">
+        <div class="mb-3 form-check mt-3">
             <input type="checkbox" id="useWindowsAuth" asp-for="UseWindowsAuth" class="form-check-input">
             <label class="form-check-label" for="useWindowsAuth">Use Integrated Windows Authentication:</label>
         </div>
 
         <div id="sqlUserPass" class="border p-3 mt-3">
-            <div class="form-group">
+            <div class="mb-3">
                 <label class="form-label" for="sqlUsername">SQL Username:</label>
                 <input type="text" id="sqlUsername" asp-for="SqlUsername" class="form-control">
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label class="form-label" for="sqlPassword">SQL Password:</label>
                 <input type="password" id="sqlPassword" asp-for="SqlPassword" class="form-control">
             </div>
