@@ -7,7 +7,7 @@
 ## Yêu Cầu
 
 - [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
-- [Visual Studio 2022 (phiên bản hoặc hơn)](https://visualstudio.microsoft.com/vs/)
+- [Visual Studio 2022 (phiên bản v17.12 hoặc hơn)](https://visualstudio.microsoft.com/vs/)
 - [Microsoft SQL Server 2019 hoặc 2022](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 
 ## Hướng dẫn cài đặt
