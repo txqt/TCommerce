@@ -8,7 +8,7 @@
 ## Requirements
 
 - [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
-- [Visual Studio 2022 (or later)](https://visualstudio.microsoft.com/vs/)
+- [Visual Studio 2022 (v17.12 or later)](https://visualstudio.microsoft.com/vs/)
 - [Microsoft SQL Server 2019 or 2022](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 
 ## Installation Guide
