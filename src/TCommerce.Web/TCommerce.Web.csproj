@@ -1,220 +1,211 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
-	<ItemGroup>
-	  <Compile Remove="Views\Payment\**" />
-	  <Content Remove="Views\Payment\**" />
-	  <EmbeddedResource Remove="Views\Payment\**" />
-	  <None Remove="Views\Payment\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Remove="Areas\Admin\Views\Discount\_CreateOrEdit.AppliedToCategories.cshtml" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="Areas\Admin\Views\Discount\_CreateOrEdit.AppliedToCategories.cshtml" />
-	  <None Include="wwwroot\js\tinymce\icons\default\icons.min.js" />
-	  <None Include="wwwroot\js\tinymce\icons\default\index.js" />
-	  <None Include="wwwroot\js\tinymce\jquery.tinymce.min.js" />
-	  <None Include="wwwroot\js\tinymce\langs\ar.js" />
-	  <None Include="wwwroot\js\tinymce\langs\bg_BG.js" />
-	  <None Include="wwwroot\js\tinymce\langs\ca.js" />
-	  <None Include="wwwroot\js\tinymce\langs\cs.js" />
-	  <None Include="wwwroot\js\tinymce\langs\cy.js" />
-	  <None Include="wwwroot\js\tinymce\langs\da.js" />
-	  <None Include="wwwroot\js\tinymce\langs\de.js" />
-	  <None Include="wwwroot\js\tinymce\langs\el.js" />
-	  <None Include="wwwroot\js\tinymce\langs\eo.js" />
-	  <None Include="wwwroot\js\tinymce\langs\es.js" />
-	  <None Include="wwwroot\js\tinymce\langs\es_ES.js" />
-	  <None Include="wwwroot\js\tinymce\langs\es_MX.js" />
-	  <None Include="wwwroot\js\tinymce\langs\eu.js" />
-	  <None Include="wwwroot\js\tinymce\langs\fa.js" />
-	  <None Include="wwwroot\js\tinymce\langs\fa_IR.js" />
-	  <None Include="wwwroot\js\tinymce\langs\fi.js" />
-	  <None Include="wwwroot\js\tinymce\langs\fr_FR.js" />
-	  <None Include="wwwroot\js\tinymce\langs\gl.js" />
-	  <None Include="wwwroot\js\tinymce\langs\he_IL.js" />
-	  <None Include="wwwroot\js\tinymce\langs\hr.js" />
-	  <None Include="wwwroot\js\tinymce\langs\hu_HU.js" />
-	  <None Include="wwwroot\js\tinymce\langs\id.js" />
-	  <None Include="wwwroot\js\tinymce\langs\it.js" />
-	  <None Include="wwwroot\js\tinymce\langs\it_IT.js" />
-	  <None Include="wwwroot\js\tinymce\langs\ja.js" />
-	  <None Include="wwwroot\js\tinymce\langs\kk.js" />
-	  <None Include="wwwroot\js\tinymce\langs\ko_KR.js" />
-	  <None Include="wwwroot\js\tinymce\langs\lt.js" />
-	  <None Include="wwwroot\js\tinymce\langs\nb_NO.js" />
-	  <None Include="wwwroot\js\tinymce\langs\nl.js" />
-	  <None Include="wwwroot\js\tinymce\langs\pl.js" />
-	  <None Include="wwwroot\js\tinymce\langs\pt_BR.js" />
-	  <None Include="wwwroot\js\tinymce\langs\pt_PT.js" />
-	  <None Include="wwwroot\js\tinymce\langs\ro.js" />
-	  <None Include="wwwroot\js\tinymce\langs\ro_RO.js" />
-	  <None Include="wwwroot\js\tinymce\langs\ru.js" />
-	  <None Include="wwwroot\js\tinymce\langs\sk.js" />
-	  <None Include="wwwroot\js\tinymce\langs\sl.js" />
-	  <None Include="wwwroot\js\tinymce\langs\sl_SI.js" />
-	  <None Include="wwwroot\js\tinymce\langs\sv_SE.js" />
-	  <None Include="wwwroot\js\tinymce\langs\ta.js" />
-	  <None Include="wwwroot\js\tinymce\langs\ta_IN.js" />
-	  <None Include="wwwroot\js\tinymce\langs\th_TH.js" />
-	  <None Include="wwwroot\js\tinymce\langs\tr.js" />
-	  <None Include="wwwroot\js\tinymce\langs\tr_TR.js" />
-	  <None Include="wwwroot\js\tinymce\langs\uk.js" />
-	  <None Include="wwwroot\js\tinymce\langs\vi.js" />
-	  <None Include="wwwroot\js\tinymce\langs\zh_CN.js" />
-	  <None Include="wwwroot\js\tinymce\langs\zh_TW.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\advlist\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\advlist\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\anchor\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\anchor\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\autolink\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\autolink\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\autoresize\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\autoresize\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\autosave\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\autosave\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\bbcode\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\bbcode\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\charmap\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\charmap\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\codesample\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\codesample\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\code\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\code\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\colorpicker\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\colorpicker\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\contextmenu\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\contextmenu\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\directionality\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\directionality\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\emoticons\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojis.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\emoticons\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\fullpage\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\fullpage\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\fullscreen\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\fullscreen\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\help\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\help\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\hr\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\hr\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\imagetools\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\imagetools\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\image\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\image\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\importcss\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\importcss\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\insertdatetime\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\insertdatetime\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\legacyoutput\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\legacyoutput\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\link\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\link\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\lists\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\lists\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\media\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\media\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\nonbreaking\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\nonbreaking\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\noneditable\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\noneditable\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\pagebreak\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\pagebreak\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\paste\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\paste\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\preview\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\preview\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\print\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\print\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\quickbars\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\quickbars\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\save\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\save\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\searchreplace\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\searchreplace\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\spellchecker\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\spellchecker\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\tabfocus\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\tabfocus\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\table\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\table\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\template\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\template\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\textcolor\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\textcolor\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\textpattern\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\textpattern\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\toc\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\toc\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\visualblocks\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\visualblocks\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\visualchars\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\visualchars\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\wordcount\index.js" />
-	  <None Include="wwwroot\js\tinymce\plugins\wordcount\plugin.min.js" />
-	  <None Include="wwwroot\js\tinymce\themes\mobile\index.js" />
-	  <None Include="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
-	  <None Include="wwwroot\js\tinymce\themes\silver\index.js" />
-	  <None Include="wwwroot\js\tinymce\themes\silver\theme.min.js" />
-	  <None Include="wwwroot\js\tinymce\tinymce.min.js" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\TCommerce.Core\TCommerce.Core.csproj" />
-		<ProjectReference Include="..\TCommerce.Data\TCommerce.Data.csproj" />
-		<ProjectReference Include="..\TCommerce.Services\TCommerce.Services.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
-		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		  <PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		  <PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-		<PackageReference Include="Slick" Version="1.5.11" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
-		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Update="Areas\Admin\Views\Discount\AddCategoryToDiscount.cshtml">
-	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
-	  <Content Update="Views\Account\ChangePassword.cshtml">
-	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
-	  <Content Update="Views\Catalog\Manufacturer.cshtml">
-	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Update="Resources\Views\Home\Index.en-US.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Views\Home\Index.vi-VN.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	</ItemGroup>
-
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<Nullable>disable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
-
+  <ItemGroup>
+    <Compile Remove="Views\Payment\**" />
+    <Content Remove="Views\Payment\**" />
+    <EmbeddedResource Remove="Views\Payment\**" />
+    <None Remove="Views\Payment\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Areas\Admin\Views\Discount\_CreateOrEdit.AppliedToCategories.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Areas\Admin\Views\Discount\_CreateOrEdit.AppliedToCategories.cshtml" />
+    <None Include="wwwroot\js\tinymce\icons\default\icons.min.js" />
+    <None Include="wwwroot\js\tinymce\icons\default\index.js" />
+    <None Include="wwwroot\js\tinymce\jquery.tinymce.min.js" />
+    <None Include="wwwroot\js\tinymce\langs\ar.js" />
+    <None Include="wwwroot\js\tinymce\langs\bg_BG.js" />
+    <None Include="wwwroot\js\tinymce\langs\ca.js" />
+    <None Include="wwwroot\js\tinymce\langs\cs.js" />
+    <None Include="wwwroot\js\tinymce\langs\cy.js" />
+    <None Include="wwwroot\js\tinymce\langs\da.js" />
+    <None Include="wwwroot\js\tinymce\langs\de.js" />
+    <None Include="wwwroot\js\tinymce\langs\el.js" />
+    <None Include="wwwroot\js\tinymce\langs\eo.js" />
+    <None Include="wwwroot\js\tinymce\langs\es.js" />
+    <None Include="wwwroot\js\tinymce\langs\es_ES.js" />
+    <None Include="wwwroot\js\tinymce\langs\es_MX.js" />
+    <None Include="wwwroot\js\tinymce\langs\eu.js" />
+    <None Include="wwwroot\js\tinymce\langs\fa.js" />
+    <None Include="wwwroot\js\tinymce\langs\fa_IR.js" />
+    <None Include="wwwroot\js\tinymce\langs\fi.js" />
+    <None Include="wwwroot\js\tinymce\langs\fr_FR.js" />
+    <None Include="wwwroot\js\tinymce\langs\gl.js" />
+    <None Include="wwwroot\js\tinymce\langs\he_IL.js" />
+    <None Include="wwwroot\js\tinymce\langs\hr.js" />
+    <None Include="wwwroot\js\tinymce\langs\hu_HU.js" />
+    <None Include="wwwroot\js\tinymce\langs\id.js" />
+    <None Include="wwwroot\js\tinymce\langs\it.js" />
+    <None Include="wwwroot\js\tinymce\langs\it_IT.js" />
+    <None Include="wwwroot\js\tinymce\langs\ja.js" />
+    <None Include="wwwroot\js\tinymce\langs\kk.js" />
+    <None Include="wwwroot\js\tinymce\langs\ko_KR.js" />
+    <None Include="wwwroot\js\tinymce\langs\lt.js" />
+    <None Include="wwwroot\js\tinymce\langs\nb_NO.js" />
+    <None Include="wwwroot\js\tinymce\langs\nl.js" />
+    <None Include="wwwroot\js\tinymce\langs\pl.js" />
+    <None Include="wwwroot\js\tinymce\langs\pt_BR.js" />
+    <None Include="wwwroot\js\tinymce\langs\pt_PT.js" />
+    <None Include="wwwroot\js\tinymce\langs\ro.js" />
+    <None Include="wwwroot\js\tinymce\langs\ro_RO.js" />
+    <None Include="wwwroot\js\tinymce\langs\ru.js" />
+    <None Include="wwwroot\js\tinymce\langs\sk.js" />
+    <None Include="wwwroot\js\tinymce\langs\sl.js" />
+    <None Include="wwwroot\js\tinymce\langs\sl_SI.js" />
+    <None Include="wwwroot\js\tinymce\langs\sv_SE.js" />
+    <None Include="wwwroot\js\tinymce\langs\ta.js" />
+    <None Include="wwwroot\js\tinymce\langs\ta_IN.js" />
+    <None Include="wwwroot\js\tinymce\langs\th_TH.js" />
+    <None Include="wwwroot\js\tinymce\langs\tr.js" />
+    <None Include="wwwroot\js\tinymce\langs\tr_TR.js" />
+    <None Include="wwwroot\js\tinymce\langs\uk.js" />
+    <None Include="wwwroot\js\tinymce\langs\vi.js" />
+    <None Include="wwwroot\js\tinymce\langs\zh_CN.js" />
+    <None Include="wwwroot\js\tinymce\langs\zh_TW.js" />
+    <None Include="wwwroot\js\tinymce\plugins\advlist\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\advlist\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\anchor\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\anchor\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\autolink\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\autolink\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\autoresize\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\autoresize\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\autosave\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\autosave\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\bbcode\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\bbcode\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\charmap\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\charmap\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\codesample\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\codesample\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\code\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\code\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\colorpicker\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\colorpicker\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\contextmenu\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\contextmenu\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\directionality\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\directionality\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\emoticons\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojiimages.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\emoticons\js\emojis.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\emoticons\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\fullpage\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\fullpage\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\fullscreen\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\fullscreen\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\help\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\help\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\hr\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\hr\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\imagetools\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\imagetools\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\image\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\image\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\importcss\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\importcss\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\insertdatetime\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\insertdatetime\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\legacyoutput\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\legacyoutput\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\link\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\link\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\lists\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\lists\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\media\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\media\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\nonbreaking\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\nonbreaking\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\noneditable\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\noneditable\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\pagebreak\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\pagebreak\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\paste\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\paste\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\preview\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\preview\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\print\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\print\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\quickbars\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\quickbars\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\save\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\save\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\searchreplace\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\searchreplace\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\spellchecker\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\spellchecker\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\tabfocus\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\tabfocus\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\table\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\table\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\template\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\template\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\textcolor\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\textcolor\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\textpattern\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\textpattern\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\toc\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\toc\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\visualblocks\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\visualblocks\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\visualchars\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\visualchars\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\plugins\wordcount\index.js" />
+    <None Include="wwwroot\js\tinymce\plugins\wordcount\plugin.min.js" />
+    <None Include="wwwroot\js\tinymce\themes\mobile\index.js" />
+    <None Include="wwwroot\js\tinymce\themes\mobile\theme.min.js" />
+    <None Include="wwwroot\js\tinymce\themes\silver\index.js" />
+    <None Include="wwwroot\js\tinymce\themes\silver\theme.min.js" />
+    <None Include="wwwroot\js\tinymce\tinymce.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TCommerce.Core\TCommerce.Core.csproj" />
+    <ProjectReference Include="..\TCommerce.Data\TCommerce.Data.csproj" />
+    <ProjectReference Include="..\TCommerce.Services\TCommerce.Services.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Slick" Version="1.5.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Areas\Admin\Views\Discount\AddCategoryToDiscount.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Account\ChangePassword.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Catalog\Manufacturer.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Views\Home\Index.en-US.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Home\Index.vi-VN.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
 </Project>
