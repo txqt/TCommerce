@@ -6,8 +6,8 @@
 - Dự án này là một ứng dụng thương mại điện tử nhỏ được xây dựng để nâng cao kỹ năng lập trình.
 ## Yêu Cầu
 
-- [ASP.NET Core 8](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Visual Studio 2019 hoặc 2022](https://visualstudio.microsoft.com/vs/)
+- [.NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+- [Visual Studio 2022 (phiên bản hoặc hơn)](https://visualstudio.microsoft.com/vs/)
 - [Microsoft SQL Server 2019 hoặc 2022](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 
 ## Hướng dẫn cài đặt
@@ -17,7 +17,7 @@
     git clone https://github.com/txqt/TCommerce.git
     ```
 
-2. Mở solution trong VS2019 hoặc VS2022.
+2. Mở solution
 3. Chạy lệnh sau để cài đặt các gói NuGet:
 
     ```bash
@@ -38,4 +38,4 @@
 - **Quản lý người dùng**: Có thể thêm, sửa, xóa, thêm hoặc chỉnh sửa vai trò của người dùng.
 - **Quản lý vai trò và quyền hạn**: Có thể thêm hoặc xóa quyền của một hoặc nhiều vai trò.
 - **Quản lý đơn hàng**: Xử lý các đơn hàng, theo dõi trạng thái và quản lý lịch sử đơn hàng.
-- **Tích hợp thanh toán trực tuyến**: Hỗ trợ thanh toán VNPAY (test).
+- **Tích hợp thanh toán trực tuyến**: Hỗ trợ thanh toán VNPAY (sandbox).
