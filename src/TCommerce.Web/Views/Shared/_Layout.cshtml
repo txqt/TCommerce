@@ -5,32 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TCommerce</title>
 
-    @* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous"> *@
     @{
         var cssFiles = new List<string>
-    {
-    "~/TCommerce.Web.styles.css",
-    "~/css/bootstrap.min.css",
-    "~/css/plugins/owl-carousel/owl.carousel.css",
-    "~/css/plugins/magnific-popup/magnific-popup.css",
-    "~/css/plugins/jquery.countdown.css",
-    "~/css/style.css",
-    "~/css/demos/demo-6.css",
-    "~/css/skins/skin-demo-6.css",
-    "~/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css",
-    "~/css/toastr.min.css",
-    "https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css",
-    };
+        {
+        "~/TCommerce.Web.styles.css",
+        "~/css/bootstrap.min.css",
+        "~/css/plugins/owl-carousel/owl.carousel.css",
+        "~/css/plugins/magnific-popup/magnific-popup.css",
+        "~/css/plugins/jquery.countdown.css",
+        "~/css/style.css",
+        "~/css/demos/demo-6.css",
+        "~/css/skins/skin-demo-6.css",
+        "~/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css",
+        "~/css/toastr.min.css",
+        "~/css/jquery-ui.min.css",
+        "~/css/fontawesome.min.css",
+        };
     }
+
     @foreach (var cssFile in cssFiles)
     {
         <link href="@Href(cssFile)" rel="stylesheet" asp-append-version="true" />
     }
     <script src="~/js/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
-
-    @*FontAwesome*@
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <script src="~/js/jquery-ui.min.js"></script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="~/images/icons/apple-touch-icon.png">
@@ -69,7 +67,7 @@
     <div class="page-wrapper">
         <header class="header header-intro-clearance header-3">
             @await Component.InvokeAsync("HeaderTop")
-            
+
             @await Html.PartialAsync("_HeaderMiddle")
         </header><!-- End .header -->
         <partial name="_AlertMessage"></partial>
@@ -78,7 +76,7 @@
                     <breadcrumb></breadcrumb>
                 </div><!-- End .container -->
             </nav> *@
-        
+
         @RenderBody()
         <!-- End .main -->
 
@@ -220,6 +218,7 @@
     <script src="~/js/jquery.waypoints.min.js"></script>
     <script src="~/js/jquery.magnific-popup.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+
     <!-- Main JS File -->
     <script src="~/js/demos/demo-3.js"></script>
     <script src="~/js/popper.min.js"></script>
@@ -227,19 +226,6 @@
     <script src="~/js/main.js"></script>
     <script src="~/js/bootstrap-input-spinner.js"></script>
     <script src="~/js/toastr.min.js"></script>
-    <script>
-        // $(document).ready(function () {
-        //     $(document).ajaxStart(function () {
-        //         $('.loading-modal').modal('show');
-        //     }).ajaxStop(function () {
-        //         $('.loading-modal').modal('hide');
-        //     });
-
-        //     $('form').submit(function () {
-        //         $('.loading-modal').modal('show');
-        //     });
-        // });
-    </script>
     @await RenderSectionAsync("Scripts", required: false)
     @Html.RenderScripts()
 </body>

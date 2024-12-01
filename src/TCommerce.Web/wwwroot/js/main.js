@@ -241,20 +241,26 @@ var allImages = document.querySelectorAll('img');
 var defaultImageSet = false;
 
 function SetPictureDefault() {
-    allImages = document.querySelectorAll('img');
-    defaultImageSet = false;
+    const allImages = document.querySelectorAll('img');
     allImages.forEach(function (image) {
+
         if (!image.src || image.src.trim() === '') {
             image.src = '/images/no-picture.png';
-            defaultImageSet = true;
+        }
+
+        if (!image.alt || image.alt.trim() === '') {
+            image.alt = 'No Image Available';
         }
 
         image.addEventListener('error', function () {
             image.src = '/images/no-picture.png';
-            defaultImageSet = true;
+            if (!image.alt || image.alt.trim() === '') {
+                image.alt = 'No Image Available';
+            }
         });
     });
 }
+
 
 // Quantity Input - Cart page - Product Details pages
 function quantityInputs() {

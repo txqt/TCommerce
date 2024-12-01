@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Text;
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Common;
 using TCommerce.Core.Models.Response;
@@ -172,26 +174,22 @@ namespace TCommerce.Services.UrlRecordServices
 
         public async Task<string> ValidateSlug<T>(T entity, string seName, string name, bool ensureNotEmpty = false) where T : BaseEntity
         {
-            // Kiểm tra và sử dụng tên nếu seName không được chỉ định
             if (string.IsNullOrWhiteSpace(seName) && !string.IsNullOrWhiteSpace(name))
             {
-                seName = SlugConverter.ConvertToSlug(name);
+                seName = SlugConverter.ConvertToSlug(RemoveDiacritics(name));
             }
 
-            // Giới hạn độ dài tối đa cho seName
-            int maxLength = 255; // Độ dài tối đa được định nghĩa;
+            int maxLength = 255;
             if (seName.Length > maxLength)
             {
                 seName = seName.Substring(0, maxLength);
             }
 
-            // Xác nhận seName không rỗng
             if (ensureNotEmpty && string.IsNullOrWhiteSpace(seName))
             {
-                seName = entity.GetType().Name.ToString(); // Sử dụng định danh của thực thể làm seName
+                seName = entity.GetType().Name.ToString();
             }
 
-            // Đảm bảo seName không trùng lặp
             int counter = 1;
             string originalSeName = seName;
             while (await _urlRecordRepository.Table.AnyAsync(ur => ur.Slug == seName))
@@ -202,7 +200,39 @@ namespace TCommerce.Services.UrlRecordServices
 
             return seName;
         }
+        public static string RemoveDiacritics(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
 
+            string normalizedString = input.Normalize(NormalizationForm.FormD);
+            StringBuilder stringBuilder = new StringBuilder();
+
+            foreach (char c in normalizedString)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            string result = stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+
+            result = result.Replace("đ", "d").Replace("Đ", "D")
+                           .Replace("ơ", "o").Replace("Ơ", "O")
+                           .Replace("ư", "u").Replace("Ư", "U")
+                           .Replace("á", "a").Replace("à", "a").Replace("ả", "a").Replace("ã", "a").Replace("á", "a").Replace("â", "a").Replace("ă", "a")
+                           .Replace("é", "e").Replace("è", "e").Replace("ẻ", "e").Replace("ẽ", "e").Replace("ê", "e")
+                           .Replace("í", "i").Replace("ì", "i").Replace("ỉ", "i").Replace("ĩ", "i")
+                           .Replace("ó", "o").Replace("ò", "o").Replace("ỏ", "o").Replace("õ", "o").Replace("ô", "o").Replace("ơ", "o")
+                           .Replace("ú", "u").Replace("ù", "u").Replace("ủ", "u").Replace("ũ", "u").Replace("ư", "u")
+                           .Replace("ý", "y").Replace("ỳ", "y").Replace("ỷ", "y").Replace("ỹ", "y")
+                           .Replace("ç", "c")
+                           .Replace("é", "e").Replace("è", "e").Replace("ê", "e").Replace("í", "i").Replace("ó", "o")
+                           .Replace("ú", "u").Replace("ñ", "n");
+
+            return result;
+        }
 
     }
 }
