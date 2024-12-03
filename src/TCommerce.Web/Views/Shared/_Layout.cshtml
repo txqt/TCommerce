@@ -9,26 +9,25 @@
         var cssFiles = new List<string>
         {
         "~/TCommerce.Web.styles.css",
-        "~/css/bootstrap.min.css",
-        "~/css/plugins/owl-carousel/owl.carousel.css",
-        "~/css/plugins/magnific-popup/magnific-popup.css",
-        "~/css/plugins/jquery.countdown.css",
+        "~/bootstrap/css/bootstrap.min.css",
+        "~/owl-carousel/owl.carousel.css",
+        "~/magnific-popup/magnific-popup.css",
+        "~/jquery/jquery.countdown.css",
         "~/css/style.css",
         "~/css/demos/demo-6.css",
         "~/css/skins/skin-demo-6.css",
         "~/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css",
-        "~/css/toastr.min.css",
-        "~/css/jquery-ui.min.css",
-        "~/css/fontawesome.min.css",
+        "~/toastr/toastr.min.css",
+        "~/jquery/jquery-ui.min.css",
+        "~/fontawesome/fontawesome.min.css",
         };
     }
-
     @foreach (var cssFile in cssFiles)
     {
         <link href="@Href(cssFile)" rel="stylesheet" asp-append-version="true" />
     }
-    <script src="~/js/jquery-3.6.0.min.js"></script>
-    <script src="~/js/jquery-ui.min.js"></script>
+    <script src="~/jquery/jquery-3.6.0.min.js"></script>
+    <script src="~/jquery/jquery-ui.min.js"></script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="~/images/icons/apple-touch-icon.png">
@@ -86,7 +85,7 @@
                     <div class="row">
                         <div class="col-sm-6 col-lg-3">
                             <div class="widget widget-about">
-                                <img src="~/images/demos/demo-3/logo-footer.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
+                                <img src="~/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25" style="border-radius: 50%">
                                 <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
                                 <div class="widget-call">
@@ -214,18 +213,19 @@
     <!-- Plugins JS File -->
     @* <script src="~/js/jquery.min.js"></script> *@
     <script src="~/js/superfish.min.js"></script>
-    <script src="~/js/owl.carousel.min.js"></script>
-    <script src="~/js/jquery.waypoints.min.js"></script>
-    <script src="~/js/jquery.magnific-popup.min.js"></script>
+    <script src="~/owl-carousel/owl.carousel.min.js"></script>
+    <script src="~/jquery/jquery.waypoints.min.js"></script>
+    <script src="~/magnific-popup/jquery.magnific-popup.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
 
     <!-- Main JS File -->
     <script src="~/js/demos/demo-3.js"></script>
     <script src="~/js/popper.min.js"></script>
-    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
     <script src="~/js/main.js"></script>
-    <script src="~/js/bootstrap-input-spinner.js"></script>
-    <script src="~/js/toastr.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap-input-spinner.js"></script>
+    <script src="~/toastr/toastr.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
     @Html.RenderScripts()
 </body>
