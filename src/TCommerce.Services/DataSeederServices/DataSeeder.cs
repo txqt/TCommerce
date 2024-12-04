@@ -64,7 +64,7 @@ namespace TCommerce.ServicesSeederService
                 LastName = "Admin",
                 Email = adminEmail,
                 NormalizedEmail = adminEmail,
-                PhoneNumber = "0322321312",
+                PhoneNumber = "0",
                 UserName = adminEmail,
                 NormalizedUserName = adminEmail.ToUpper(),
                 CreatedDate = DateTime.UtcNow,

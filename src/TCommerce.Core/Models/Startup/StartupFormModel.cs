@@ -30,17 +30,5 @@ namespace TCommerce.Core.Models.Startup
 
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string SqlPassword { get; set; } = string.Empty;
-
-        //public string GetConnectionString()
-        //{
-        //    if (UseWindowsAuth)
-        //    {
-        //        return $"Data Source={ServerName};Initial Catalog={DbName};Integrated Security=True";
-        //    }
-        //    else
-        //    {
-        //        return $"Data Source={ServerName};Initial Catalog={DbName};User ID={SqlUsername};Password={SqlPassword}";
-        //    }
-        //}
     }
 }
