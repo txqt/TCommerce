@@ -13,9 +13,12 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.ResponseCompression;
+using dotenv.net;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+DotEnv.Load();
 
 builder.Services.AddServices();
 builder.Services.AddDatabase(builder.Configuration);

@@ -1,7 +1,17 @@
-﻿<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+﻿<style>
+        .nav-link.collapsed .fas.fa-chevron-down {
+            transform: rotate(0deg);
+        }
+
+        .nav-link:not(.collapsed) .fas.fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+</style>
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/admin">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
@@ -13,7 +23,7 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" href="/admin">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
@@ -29,30 +39,31 @@
 
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-           aria-expanded="true" aria-controls="collapseTwo">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+           aria-expanded="false" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-cog"></i>
             <span>Catalog</span>
+            <i class="fas fa-chevron-down ms-auto" style="transition: transform 0.2s;"></i>
         </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Product Manage:</h6>
                 <a class="collapse-item" asp-controller="Product" asp-action="Index">Products</a>
                 <a class="collapse-item" asp-controller="ProductAttribute" asp-action="Index">Products Attribute</a>
                 <a class="collapse-item" asp-controller="Category" asp-action="Index">Category</a>
                 <a class="collapse-item" asp-controller="Manufacturer" asp-action="Index">Manufacturer</a>
-                @*<a class="collapse-item" href="cards.html">Cards</a>*@
             </div>
         </div>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUser"
-           aria-expanded="true" aria-controls="collapseUser">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUser"
+           aria-expanded="false" aria-controls="collapseUser">
             <i class="fas fa-fw fa-cog"></i>
             <span>User</span>
+            <i class="fas fa-chevron-down ms-auto" style="transition: transform 0.2s;"></i>
         </a>
-        <div id="collapseUser" class="collapse" aria-labelledby="headingUser" data-parent="#accordionSidebar">
+        <div id="collapseUser" class="collapse" aria-labelledby="headingUser" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">User Manage:</h6>
                 <a class="collapse-item" asp-controller="User" asp-action="Index">Users</a>
@@ -61,12 +72,13 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMAC"
-           aria-expanded="true" aria-controls="collapseMAC">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMAC"
+           aria-expanded="false" aria-controls="collapseMAC">
             <i class="fas fa-fw fa-cog"></i>
             <span>Manage Access Control</span>
+            <i class="fas fa-chevron-down ms-auto" style="transition: transform 0.2s;"></i>
         </a>
-        <div id="collapseMAC" class="collapse" aria-labelledby="headingSlider" data-parent="#accordionSidebar">
+        <div id="collapseMAC" class="collapse" aria-labelledby="headingSlider" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Manage Access Control:</h6>
                 <a class="collapse-item" asp-controller="Security" asp-action="Index">List</a>
@@ -75,12 +87,13 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseHPB"
-           aria-expanded="true" aria-controls="collapseHPB">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseHPB"
+           aria-expanded="false" aria-controls="collapseHPB">
             <i class="fas fa-fw fa-cog"></i>
             <span>Home Page Banner</span>
+            <i class="fas fa-chevron-down ms-auto" style="transition: transform 0.2s;"></i>
         </a>
-        <div id="collapseHPB" class="collapse" aria-labelledby="headingSlider" data-parent="#accordionSidebar">
+        <div id="collapseHPB" class="collapse" aria-labelledby="headingSlider" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Home Page Banner:</h6>
                 <a class="collapse-item" asp-controller="Banner" asp-action="Index">List</a>
@@ -89,12 +102,13 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSale"
-           aria-expanded="true" aria-controls="collapseSale">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSale"
+           aria-expanded="false" aria-controls="collapseSale">
             <i class="fas fa-fw fa-cog"></i>
             <span>Sales</span>
+            <i class="fas fa-chevron-down ms-auto" style="transition: transform 0.2s;"></i>
         </a>
-        <div id="collapseSale" class="collapse" aria-labelledby="headingSlider" data-parent="#accordionSidebar">
+        <div id="collapseSale" class="collapse" aria-labelledby="headingSlider" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Sales:</h6>
                 <a class="collapse-item" asp-controller="Order" asp-action="Index">Order</a>
@@ -103,12 +117,13 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePromotion"
-           aria-expanded="true" aria-controls="collapsePromotion">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePromotion"
+           aria-expanded="false" aria-controls="collapsePromotion">
             <i class="fas fa-fw fa-cog"></i>
             <span>Promotions</span>
+            <i class="fas fa-chevron-down ms-auto" style="transition: transform 0.2s;"></i>
         </a>
-        <div id="collapsePromotion" class="collapse" aria-labelledby="headingSlider" data-parent="#accordionSidebar">
+        <div id="collapsePromotion" class="collapse" aria-labelledby="headingSlider" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Promotions:</h6>
                 <a class="collapse-item" asp-controller="Discount" asp-action="Index">Discounts</a>
@@ -117,16 +132,18 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseConfiguration"
-           aria-expanded="true" aria-controls="collapseConfiguration">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseConfiguration"
+           aria-expanded="false" aria-controls="collapseConfiguration">
             <i class="fas fa-fw fa-cog"></i>
             <span>Configuration</span>
+            <i class="fas fa-chevron-down ms-auto" style="transition: transform 0.2s;"></i>
         </a>
-        <div id="collapseConfiguration" class="collapse" aria-labelledby="headingSlider" data-parent="#accordionSidebar">
+        <div id="collapseConfiguration" class="collapse" aria-labelledby="headingSlider" data-bs-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Configuration:</h6>
                 <a class="collapse-item" asp-controller="Setting" asp-action="Catalog">Catalog Settings</a>
             </div>
         </div>
     </li>
+
 </ul>

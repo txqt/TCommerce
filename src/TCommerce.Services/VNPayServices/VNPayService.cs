@@ -26,8 +26,10 @@ namespace TCommerce.Services.VNPayServices
         public string CreatePaymentUrl(Order order, string baseUrl)
         {
             var vnPayConfig = _configuration.GetSection("VNPay");
-            string vnp_TmnCode = vnPayConfig["vnp_TmnCode"];
-            string vnp_HashSecret = vnPayConfig["vnp_HashSecret"];
+            //string vnp_TmnCode = vnPayConfig["vnp_TmnCode"];
+            //string vnp_HashSecret = vnPayConfig["vnp_HashSecret"];
+            string vnp_TmnCode = Environment.GetEnvironmentVariable("vnp_TmnCode"); ;
+            string vnp_HashSecret = Environment.GetEnvironmentVariable("vnp_HashSecret");
             string vnp_Url = vnPayConfig["vnp_Url"];
             string vnp_ReturnUrl = vnPayConfig["vnp_ReturnUrl"];
 

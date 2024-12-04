@@ -175,6 +175,7 @@ namespace TCommerce.Web.Controllers
             {
                 return Json(new { success = true, message = "Cảm ơn đã mua hàng, vui lòng kiểm tra email của bạn", redirectUrl = paymentResult.Data });
             }
+
             var redirectUrl = Url.Action("Thankyou", "Checkout", new { message = "Order confirmed successfully!" });
             return Json(new { success = true, message = "Cảm ơn đã mua hàng, vui lòng kiểm tra email của bạn", redirectUrl });
         }
