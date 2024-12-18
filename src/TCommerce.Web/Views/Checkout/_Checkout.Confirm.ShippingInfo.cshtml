@@ -1,0 +1,110 @@
+﻿@model CheckoutPaymentModel
+<div class="card">
+    <div class="card-body">
+        <ol class="mb-0 px-4 mt-3">
+            <li class="checkout-item">
+                <div class="feed-item-list">
+                    <div>
+                        <h5 class="font-size-16 mb-1">@T["Checkout.Confirm.ShippingInfo"]</h5>
+                        <p class="text-muted text-truncate mb-4">@T["Checkout.Confirm.SelectShippingAddress"]</p>
+                        <div class="mb-3">
+                            <div class="row d-flex justify-content-between">
+
+                                @if (Model.ShippingAddress is not null)
+                                {
+                                    <div class="col-lg-8 col-sm-8">
+                                        @if (Model.ShippingAddress.DefaultShippingAddress is not null)
+                                        {
+                                            var defaultAddress = @Model.ShippingAddress.DefaultShippingAddress;
+
+                                            <span class="fs-14 mb-2 d-block"><strong>@defaultAddress.FullName</strong></span>
+                                            <span class="text-muted fw-normal text-wrap mb-1 d-block">@T["Checkout.Confirm.Address"]: <strong>@defaultAddress.AddressFull</strong></span>
+                                            <span class="text-muted fw-normal d-block">@T["Checkout.Confirm.PhoneNumber"]: <strong>@defaultAddress.PhoneNumber</strong></span>
+                                        }
+                                    </div>
+                                    <div class="col-lg-4 col-sm-4">
+
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#selectAddressModal">
+                                            @T["Checkout.Confirm.ChangeShippingAddress"]
+                                        </button>
+                                        <div class="modal fade" id="selectAddressModal" tabindex="-1" aria-labelledby="selectAddressLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <form method="post" action="/Checkout/SelectAddress" id="selectAddressForm">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="selectAddressLabel">@T["Checkout.Confirm.SelectAddress"]</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body row mx-2 my-2">
+                                                            @if (Model.ShippingAddress.ExistingAddresses is not null && Model.ShippingAddress.ExistingAddresses.Count > 0)
+                                                            {
+                                                                @foreach (var item in Model.ShippingAddress.ExistingAddresses)
+                                                                {
+                                                                    <div class="col-lg-4 col-sm-6">
+                                                                        <div data-bs-toggle="collapse">
+                                                                            <label class="card-radio-label mb-0">
+                                                                                <input type="radio" name="id" class="card-radio-input" value="@item.Id" @(item.IsDefault ? "checked" : "")>
+                                                                                <div class="card-radio text-truncate p-3">
+                                                                                    <span class="fs-14 mb-2 d-block">@item.FullName</span>
+                                                                                    <span class="text-muted fw-normal text-wrap mb-1 d-block">@T["Checkout.Confirm.Address"]: @item.AddressFull</span>
+                                                                                    <span class="text-muted fw-normal d-block">@T["Checkout.Confirm.PhoneNumber"]: @item.PhoneNumber</span>
+                                                                                </div>
+                                                                            </label>
+                                                                            <div class="edit-btn bg-light  rounded">
+                                                                                <a href="#" data-bs-toggle="tooltip" data-placement="top" title="" data-bs-original-title="Edit">
+                                                                                    <i class="bx bx-pencil font-size-16"></i>
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <p>@T["Checkout.Confirm.NoAddressToSelect"]</p>
+                                                            }
+
+
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAddressModal">
+                                                                @T["Checkout.Confirm.NewAddress"]
+                                                            </button>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Checkout.Confirm.Close"]</button>
+                                                            <button type="submit" class="btn btn-success">@T["Checkout.Confirm.SaveChanges"]</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="modal fade" id="newAddressModal" tabindex="-1" aria-labelledby="newAddressLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <form method="post" action="/Checkout/NewDefaultAddress">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="newAddressLabel">@T["Checkout.Confirm.NewAddress"]</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body mx-2 my-2">
+                                                            @await Html.PartialAsync("~/Views/Account/_CreateOrUpdateAddress.cshtml", Model.ShippingAddress.NewShippingAddress)
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Checkout.Confirm.Close"]</button>
+                                                            <button type="submit" class="btn btn-primary">@T["Checkout.Confirm.SaveChanges"]</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ol>
+    </div>
+</div>

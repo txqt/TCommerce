@@ -11,7 +11,7 @@ namespace TCommerce.Core.Models.Payments
         public VNPayPaymentMethod()
         {
             PaymentMethodSystemName = "Payment.VNPay";
-            Name = "VNPay";
+            Name = "VNPay (không hỗ trợ test nữa)";
             Description = "Pay with VNPay";
             Fee = "0";
         }

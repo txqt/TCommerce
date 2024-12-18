@@ -98,21 +98,20 @@ namespace TCommerce.Web.Controllers
 
             string attributeJson = await _productAttributeConverter.ConvertToJsonAsync(attributes);
 
-            var redirectToCart = false;
+            var warnings = await _shoppingCartService.AddOrUpdateCartItemAsync(
+                                                                                customer,
+                                                                                (ShoppingCartType)shoppingCartTypeId,
+                                                                                product,
+                                                                                attributeJson,
+                                                                                quantity);
 
-            var warnings = new List<string>();
+            var redirectToCart = updateCartItemId > 0 ? true : false;
+            return await RefreshCartView(
+                warnings is not null ? $"{string.Join("; ", warnings)}" : "Success",
+                redirectToCart,
+                warnings is null || warnings.Count == 0);
 
-            if(updateCartItemId > 0)
-            {
-                await _shoppingCartService.UpdateCartItemAsync(customer, updateCartItemId, (ShoppingCartType)shoppingCartTypeId, product, attributeJson, quantity);
-                redirectToCart = true;
-            }
-            else
-            {
-                warnings = await _shoppingCartService.AddToCartAsync(customer, (ShoppingCartType)shoppingCartTypeId, product, attributeJson, model.Quantity);
-            }
-
-            return await RefreshCartView(warnings is not null ? $"{string.Join("; ", warnings)}" : "Success", redirectToCart, warnings is not null ? false : true);
+            
         }
 
         private int ExtractUpdateCartItemId(int productId, IFormCollection form)
@@ -181,7 +180,7 @@ namespace TCommerce.Web.Controllers
             foreach(var item in model)
             {
                 var product = await _productService.GetByIdAsync(item.ProductId);
-                await _shoppingCartService.UpdateCartItemAsync(customer, item.Id, ShoppingCartType.ShoppingCart, product, item.AttributeJson, item.Quantity);
+                await _shoppingCartService.AddOrUpdateCartItemAsync(customer, ShoppingCartType.ShoppingCart, product, item.AttributeJson, item.Quantity);
             }
             return RedirectToAction(nameof(Cart));
         }

@@ -2,6 +2,7 @@
 using TCommerce.Core.Interface;
 using TCommerce.Core.Models.Payments;
 using TCommerce.Core.Utilities;
+using TCommerce.Services.MomoServices;
 using TCommerce.Services.VNPayServices;
 using TCommerce.Web.Attribute;
 
@@ -13,21 +14,23 @@ namespace TCommerce.Web.Controllers
         private readonly IConfiguration _configuration;
         private readonly IVNPayService _VNPayService;
         private readonly IOrderService _orderService;
+        private readonly IMomoService _momoService;
 
-        public PaymentController(IConfiguration configuration, IVNPayService VNPayService, IOrderService orderService)
+        public PaymentController(IConfiguration configuration, IVNPayService VNPayService, IOrderService orderService, IMomoService momoService)
         {
             _configuration = configuration;
             _VNPayService = VNPayService;
             _orderService = orderService;
+            _momoService = momoService;
         }
 
         [HttpGet]
         [Route("payment/vnpaycallback")]
-        public async Task<IActionResult> VNPayCallback()
+        public async Task<IActionResult> VNPayCallBack()
         {
             var queryParameters = Request.Query;
 
-            var paymentResult = await _VNPayService.ProcessPaymentCallbackAsync(queryParameters);
+            var paymentResult = await _VNPayService.ProcessPaymentCallBackAsync(queryParameters);
 
             if (paymentResult.Success)
             {
@@ -36,7 +39,7 @@ namespace TCommerce.Web.Controllers
 
                 if (order != null)
                 {
-                    order.PaymentStatus = PaymentStatus.Paid; 
+                    order.PaymentStatus = PaymentStatus.Paid;
                     await _orderService.UpdateOrderAsync(order);
 
                     return View("Thankyou", $"#{orderId}");
@@ -50,6 +53,15 @@ namespace TCommerce.Web.Controllers
             {
                 return Content(paymentResult.Message);
             }
+        }
+
+        [HttpGet]
+        [Route("payment/momocallback")]
+        public async Task<IActionResult> MomoCallBack()
+        {
+            var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
+
+            return View("Thankyou", $"#{response.OrderId} {response.Amount} {response.OrderInfo}");
         }
     }
 }

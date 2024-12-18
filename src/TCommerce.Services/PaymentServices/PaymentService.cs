@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ using TCommerce.Core.Models.Payments;
 using TCommerce.Core.Models.Response;
 using TCommerce.Core.Models.SendMail;
 using TCommerce.Core.Models.Users;
+using TCommerce.Services.MomoServices;
 using TCommerce.Services.PriceCalulationServices;
 using TCommerce.Services.ProductServices;
 using TCommerce.Services.VNPayServices;
@@ -27,8 +29,9 @@ namespace TCommerce.Services.PaymentServices
     {
         private readonly List<PaymentMethod> _paymentMethods;
         private readonly IVNPayService _vnpayService;
+        private readonly IMomoService _momoService;
         private readonly IOptions<UrlOptions> _urlOptions;
-        public PaymentService(IVNPayService vnpayService, IOptions<UrlOptions> urlOptions)
+        public PaymentService(IVNPayService vnpayService, IOptions<UrlOptions> urlOptions, IMomoService momoService)
         {
             _paymentMethods = new List<PaymentMethod>
             {
@@ -36,10 +39,12 @@ namespace TCommerce.Services.PaymentServices
                 {
                     Selected = true,
                 },
-                new VNPayPaymentMethod()
+                new VNPayPaymentMethod(),
+                new MomoPaymentMethod()
             };
             _vnpayService = vnpayService;
             _urlOptions = urlOptions;
+            _momoService = momoService;
         }
 
         public List<PaymentMethod> GetAllPaymentMethods()
@@ -63,6 +68,10 @@ namespace TCommerce.Services.PaymentServices
                 case VNPayPaymentMethod vNPayPaymentMethod:
                     string paymentUrl = _vnpayService.CreatePaymentUrl(order, _urlOptions.Value.ClientUrl);
                     result.Data = paymentUrl;
+                    result.Success = true;
+                    break;
+                case MomoPaymentMethod momoPaymentMethod:
+                    result.Data = (await _momoService.CreatePaymentAsync(order)).PayUrl;
                     result.Success = true;
                     break;
                 default:

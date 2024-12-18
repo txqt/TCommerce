@@ -117,61 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Checkout.Confirm.Address" xml:space="preserve">
-    <value>Địa chỉ</value>
-  </data>
-  <data name="Checkout.Confirm.CartItems" xml:space="preserve">
-    <value>Mặt hàng</value>
-  </data>
-  <data name="Checkout.Confirm.CartItems.Product" xml:space="preserve">
-    <value>Sản phẩm</value>
-  </data>
-  <data name="Checkout.Confirm.CartItems.ProductAttributes" xml:space="preserve">
-    <value>Thuộc tính</value>
-  </data>
-  <data name="Checkout.Confirm.CartItems.ProductPrice" xml:space="preserve">
-    <value>Giá</value>
-  </data>
-  <data name="Checkout.Confirm.CartItems.ProductQuantity" xml:space="preserve">
-    <value>Số lượng</value>
-  </data>
-  <data name="Checkout.Confirm.CartItems.SubTotal" xml:space="preserve">
-    <value>Tạm tính</value>
-  </data>
-  <data name="Checkout.Confirm.ChangeShippingAddress" xml:space="preserve">
-    <value>Đổi địa chỉ</value>
-  </data>
-  <data name="Checkout.Confirm.Close" xml:space="preserve">
-    <value>Đóng</value>
-  </data>
   <data name="Checkout.Confirm.ConfirmButton" xml:space="preserve">
     <value>Xác nhận</value>
-  </data>
-  <data name="Checkout.Confirm.NewAddress" xml:space="preserve">
-    <value>Địa chỉ mới</value>
-  </data>
-  <data name="Checkout.Confirm.NoAddressToSelect" xml:space="preserve">
-    <value>Không có địa chỉ để chọn</value>
-  </data>
-  <data name="Checkout.Confirm.PaymentInfo" xml:space="preserve">
-    <value>Thông tin thanh toán</value>
-  </data>
-  <data name="Checkout.Confirm.PhoneNumber" xml:space="preserve">
-    <value>Số điện thoại</value>
-  </data>
-  <data name="Checkout.Confirm.SaveChanges" xml:space="preserve">
-    <value>Lưu thay đổi</value>
-  </data>
-  <data name="Checkout.Confirm.SelectAddress" xml:space="preserve">
-    <value>Chọn địa chỉ</value>
-  </data>
-  <data name="Checkout.Confirm.SelectPaymentMethod" xml:space="preserve">
-    <value>Chọn phương thức thanh toán</value>
-  </data>
-  <data name="Checkout.Confirm.SelectShippingAddress" xml:space="preserve">
-    <value>Chọn địa chỉ giao hàng</value>
-  </data>
-  <data name="Checkout.Confirm.ShippingInfo" xml:space="preserve">
-    <value>Thông tin giao hàng</value>
   </data>
 </root>

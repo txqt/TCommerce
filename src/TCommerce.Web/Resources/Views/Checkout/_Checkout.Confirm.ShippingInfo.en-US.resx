@@ -117,7 +117,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Checkout.Confirm.Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems" xml:space="preserve">
+    <value>Cart items</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.ProductAttributes" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.ProductPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.ProductQuantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.SubTotal" xml:space="preserve">
+    <value>Sub total</value>
+  </data>
+  <data name="Checkout.Confirm.ChangeShippingAddress" xml:space="preserve">
+    <value>Shipping Address</value>
+  </data>
+  <data name="Checkout.Confirm.Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
   <data name="Checkout.Confirm.ConfirmButton" xml:space="preserve">
     <value>Confirm</value>
+  </data>
+  <data name="Checkout.Confirm.NewAddress" xml:space="preserve">
+    <value>New Address</value>
+  </data>
+  <data name="Checkout.Confirm.NoAddressToSelect" xml:space="preserve">
+    <value>No Address To Select</value>
+  </data>
+  <data name="Checkout.Confirm.PaymentInfo" xml:space="preserve">
+    <value>Payment Info</value>
+  </data>
+  <data name="Checkout.Confirm.PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="Checkout.Confirm.SaveChanges" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="Checkout.Confirm.SelectAddress" xml:space="preserve">
+    <value>Select Address</value>
+  </data>
+  <data name="Checkout.Confirm.SelectPaymentMethod" xml:space="preserve">
+    <value>Select Payment Method</value>
+  </data>
+  <data name="Checkout.Confirm.SelectShippingAddress" xml:space="preserve">
+    <value>Select Shipping Address</value>
+  </data>
+  <data name="Checkout.Confirm.ShippingInfo" xml:space="preserve">
+    <value>Shipping Info</value>
   </data>
 </root>

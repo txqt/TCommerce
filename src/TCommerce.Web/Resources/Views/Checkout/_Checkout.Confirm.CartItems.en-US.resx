@@ -117,7 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Checkout.Confirm.ConfirmButton" xml:space="preserve">
-    <value>Confirm</value>
+  <data name="Checkout.Confirm.CartItems" xml:space="preserve">
+    <value>Cart items</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.ProductAttributes" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.ProductPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.ProductQuantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.SubTotal" xml:space="preserve">
+    <value>Sub total</value>
   </data>
 </root>

@@ -1,0 +1,37 @@
+﻿@model CheckoutPaymentModel
+<div class="card">
+    <div class="card-body">
+        <ol class="mb-0 px-4 mt-3">
+            <li class="checkout-item">
+                <div class="feed-item-list">
+                    <div>
+                        <h5 class="font-size-14 mb-3">@T["Checkout.Confirm.PaymentInfo"]:</h5>
+                        <p class="text-muted text-truncate mb-4">@T["Checkout.Confirm.SelectPaymentMethod"]</p>
+                        <form asp-action="SavePaymentMethod" method="post">
+                            <div class="row" id="paymentMethods">
+                                @if (Model.PaymentMethods is not null && Model.PaymentMethods.Count > 0)
+                                {
+                                    foreach (var item in Model.PaymentMethods)
+                                    {
+                                        var controlId = "payment_method";
+                                        <div class="col-lg-3 col-sm-6">
+                                            <div data-bs-toggle="collapse">
+                                                <label class="card-radio-label">
+                                                    <input class="card-radio-input" type="radio" id="@(controlId)_@(item.Id)" name="@(controlId)"
+                                                           value="@item.PaymentMethodSystemName" @(item.Selected ? "checked" : "")>
+                                                    <span class="card-radio py-3 text-center text-truncate">
+                                                        <i class="bx bx-credit-card d-block h2 mb-3"></i> @item.Name
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        </ol>
+    </div>
+</div>

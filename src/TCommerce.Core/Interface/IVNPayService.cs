@@ -12,6 +12,6 @@ namespace TCommerce.Core.Interface
     public interface IVNPayService
     {
         string CreatePaymentUrl(Order order, string baseUrl);
-        Task<ServiceResponse<string>> ProcessPaymentCallbackAsync(IQueryCollection queryParameters);
+        Task<ServiceResponse<string>> ProcessPaymentCallBackAsync(IQueryCollection queryParameters);
     }
 }

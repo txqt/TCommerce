@@ -7,9 +7,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Areas\Admin\Views\Discount\_CreateOrEdit.AppliedToCategories.cshtml" />
+    <Content Remove="Views\Checkout\_Checkout.Confirm.ShippingInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Areas\Admin\Views\Discount\_CreateOrEdit.AppliedToCategories.cshtml" />
+    <None Include="Views\Checkout\_Checkout.Confirm.ShippingInfo.cshtml" />
     <None Include="wwwroot\tinymce\icons\default\icons.min.js" />
     <None Include="wwwroot\tinymce\icons\default\index.js" />
     <None Include="wwwroot\tinymce\jquery.tinymce.min.js" />

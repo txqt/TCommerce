@@ -97,45 +97,81 @@ namespace TCommerce.Services.ShoppingCartServices
             return new ServiceSuccessResponse<bool>();
         }
 
-        public async Task<List<string>> AddToCartAsync(User user, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
-        {
-            ArgumentNullException.ThrowIfNull(user);
-            ArgumentNullException.ThrowIfNull(product);
+        //public async Task<List<string>> AddToCartAsync(User user, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
+        //{
+        //    ArgumentNullException.ThrowIfNull(user);
+        //    ArgumentNullException.ThrowIfNull(product);
 
-            var warnings = await GetShoppingCartItemWarningsAsync(user, cartType, product, attributeJson ?? "", quantity);
-            if (warnings.Any())
-            {
-                // Trả về cảnh báo nếu có
-                return warnings;
-            }
+        //    var warnings = await GetShoppingCartItemWarningsAsync(user, cartType, product, attributeJson ?? "", quantity);
+        //    if (warnings.Any())
+        //    {
+        //        // Trả về cảnh báo nếu có
+        //        return warnings;
+        //    }
 
-            var carts = await GetShoppingCartAsync(user, cartType, product.Id);
-            var shoppingCartItem = await FindShoppingCartItemInTheCartAsync(carts,
-            cartType, attributeJson);
+        //    var carts = await GetShoppingCartAsync(user, cartType, product.Id);
+        //    var shoppingCartItem = await FindShoppingCartItemInTheCartAsync(carts,
+        //    cartType, attributeJson);
 
-            if (shoppingCartItem is not null)
-            {
-                shoppingCartItem.Quantity += quantity;
-                shoppingCartItem.AttributeJson = attributeJson!;
-                await UpdateAsync(shoppingCartItem);
-            }
-            else
-            {
-                shoppingCartItem = new ShoppingCartItem();
-                shoppingCartItem.ShoppingCartType = cartType;
-                shoppingCartItem.Quantity = quantity;
-                shoppingCartItem.AttributeJson = attributeJson!;
-                shoppingCartItem.UserId = user.Id;
-                shoppingCartItem.ProductId = product.Id;
-                shoppingCartItem.CreatedOnUtc = DateTime.UtcNow;
-                shoppingCartItem.UpdatedOnUtc = DateTime.UtcNow;
+        //    if (shoppingCartItem is not null)
+        //    {
+        //        shoppingCartItem.Quantity += quantity;
+        //        shoppingCartItem.AttributeJson = attributeJson!;
+        //        await UpdateAsync(shoppingCartItem);
+        //    }
+        //    else
+        //    {
+        //        shoppingCartItem = new ShoppingCartItem();
+        //        shoppingCartItem.ShoppingCartType = cartType;
+        //        shoppingCartItem.Quantity = quantity;
+        //        shoppingCartItem.AttributeJson = attributeJson!;
+        //        shoppingCartItem.UserId = user.Id;
+        //        shoppingCartItem.ProductId = product.Id;
+        //        shoppingCartItem.CreatedOnUtc = DateTime.UtcNow;
+        //        shoppingCartItem.UpdatedOnUtc = DateTime.UtcNow;
 
-                await CreateAsync(shoppingCartItem);
-            }
-            await UpdateUserCartItemState(user);
+        //        await CreateAsync(shoppingCartItem);
+        //    }
+        //    await UpdateUserCartItemState(user);
 
-            return null;
-        }
+        //    return null;
+        //}
+
+        //public async Task UpdateCartItemAsync(User user, int cartId, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
+        //{
+        //    ArgumentNullException.ThrowIfNull(user);
+
+        //    var carts = await GetShoppingCartAsync(user, cartType, product.Id);
+        //    var otherCartWithSameParameters = await FindShoppingCartItemInTheCartAsync(carts,
+        //    cartType, attributeJson);
+        //    var currentCart = (await GetById(cartId))!;
+
+        //    //check if that other cart is current cart
+        //    if (otherCartWithSameParameters is not null && otherCartWithSameParameters.Id == currentCart.Id)
+        //    {
+        //        otherCartWithSameParameters = null;
+        //    }
+
+        //    if (otherCartWithSameParameters is not null && otherCartWithSameParameters.UserId == user.Id)
+        //    {
+        //        otherCartWithSameParameters.Quantity += quantity;
+        //        otherCartWithSameParameters.AttributeJson = attributeJson!;
+        //        if (currentCart is not null && currentCart.Id != otherCartWithSameParameters.Id)
+        //        {
+        //            await DeleteAsync(currentCart.Id);
+        //            await UpdateAsync(otherCartWithSameParameters);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        currentCart.ShoppingCartType = cartType;
+        //        currentCart.Quantity = quantity;
+        //        currentCart.AttributeJson = attributeJson!;
+        //        await UpdateAsync(currentCart);
+        //    }
+
+        //    await UpdateUserCartItemState(user);
+        //}
 
         private async Task UpdateUserCartItemState(User user)
         {
@@ -148,42 +184,6 @@ namespace TCommerce.Services.ShoppingCartServices
                     await _userService.UpdateUserAsync(user, null, null, false);
                 }
             }
-        }
-
-        public async Task UpdateCartItemAsync(User user, int cartId, ShoppingCartType cartType, Product product, string? attributeJson = null, int quantity = 1)
-        {
-            ArgumentNullException.ThrowIfNull(user);
-
-            var carts = await GetShoppingCartAsync(user, cartType, product.Id);
-            var otherCartWithSameParameters = await FindShoppingCartItemInTheCartAsync(carts,
-            cartType, attributeJson);
-            var currentCart = (await GetById(cartId))!;
-
-            //check if that other cart is current cart
-            if (otherCartWithSameParameters is not null && otherCartWithSameParameters.Id == currentCart.Id)
-            {
-                otherCartWithSameParameters = null;
-            }
-
-            if (otherCartWithSameParameters is not null && otherCartWithSameParameters.UserId == user.Id)
-            {
-                otherCartWithSameParameters.Quantity += quantity;
-                otherCartWithSameParameters.AttributeJson = attributeJson!;
-                if (currentCart is not null && currentCart.Id != otherCartWithSameParameters.Id)
-                {
-                    await DeleteAsync(currentCart.Id);
-                    await UpdateAsync(otherCartWithSameParameters);
-                }
-            }
-            else
-            {
-                currentCart.ShoppingCartType = cartType;
-                currentCart.Quantity = quantity;
-                currentCart.AttributeJson = attributeJson!;
-                await UpdateAsync(currentCart);
-            }
-
-            await UpdateUserCartItemState(user);
         }
 
         public async Task<ServiceResponse<bool>> DeleteBatchAsync(List<int> ids)
@@ -331,6 +331,65 @@ namespace TCommerce.Services.ShoppingCartServices
 
             return warnings;
         }
+
+        public async Task<List<string>> AddOrUpdateCartItemAsync(
+                                                                User user,
+                                                                ShoppingCartType cartType,
+                                                                Product product,
+                                                                string? attributeJson = null,
+                                                                int quantity = 1)
+        {
+            // Kiểm tra các tham số đầu vào
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentNullException.ThrowIfNull(product);
+
+            // Lấy cảnh báo (nếu có) trước khi thêm/cập nhật
+            var warnings = await GetShoppingCartItemWarningsAsync(user, cartType, product, attributeJson ?? "", quantity);
+            if (warnings.Any())
+            {
+                // Trả về cảnh báo nếu có
+                return warnings;
+            }
+
+            // Lấy danh sách giỏ hàng của user cho loại cartType
+            var carts = await GetShoppingCartAsync(user, cartType, product.Id);
+
+            // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng chưa
+            var existingCartItem = await FindShoppingCartItemInTheCartAsync(carts, cartType, attributeJson);
+
+            if (existingCartItem is not null)
+            {
+                // Nếu đã tồn tại, tăng số lượng
+                existingCartItem.Quantity += quantity;
+                existingCartItem.AttributeJson = attributeJson!;
+
+                // Cập nhật sản phẩm trong giỏ hàng
+                await UpdateAsync(existingCartItem);
+            }
+            else
+            {
+                // Nếu chưa tồn tại, thêm sản phẩm mới vào giỏ hàng
+                var newCartItem = new ShoppingCartItem
+                {
+                    ShoppingCartType = cartType,
+                    Quantity = quantity,
+                    AttributeJson = attributeJson!,
+                    UserId = user.Id,
+                    ProductId = product.Id,
+                    CreatedOnUtc = DateTime.UtcNow,
+                    UpdatedOnUtc = DateTime.UtcNow
+                };
+
+                await CreateAsync(newCartItem);
+            }
+
+            // Cập nhật trạng thái giỏ hàng của user
+            await UpdateUserCartItemState(user);
+
+            // Trả về null nếu không có cảnh báo nào
+            return null;
+        }
+
         #endregion
     }
 }

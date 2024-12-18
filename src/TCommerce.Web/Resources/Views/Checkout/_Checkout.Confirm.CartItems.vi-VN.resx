@@ -117,7 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Checkout.Confirm.ConfirmButton" xml:space="preserve">
-    <value>Confirm</value>
+  <data name="Checkout.Confirm.CartItems" xml:space="preserve">
+    <value>Mặt hàng</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.Product" xml:space="preserve">
+    <value>Sản phẩm</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.ProductAttributes" xml:space="preserve">
+    <value>Thuộc tính</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.ProductPrice" xml:space="preserve">
+    <value>Giá</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.ProductQuantity" xml:space="preserve">
+    <value>Số lượng</value>
+  </data>
+  <data name="Checkout.Confirm.CartItems.SubTotal" xml:space="preserve">
+    <value>Tạm tính</value>
   </data>
 </root>

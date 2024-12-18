@@ -1,0 +1,78 @@
+﻿@model CheckoutPaymentModel
+<div class="card">
+    <div class="card-body">
+        <ol class="mb-0 px-4 mt-3">
+            <li class="checkout-item">
+                <div class="feed-item-list">
+                    <div>
+                        <h5 class="font-size-14 mb-3">@T["Checkout.Confirm.CartItems"]:</h5>
+                        <table class="table table-cart table-mobile">
+                            <thead>
+                                <tr>
+                                    <th>@T["Checkout.Confirm.CartItems.Product"]</th>
+                                    <th>@T["Checkout.Confirm.CartItems.ProductAttributes"]</th>
+                                    <th>@T["Checkout.Confirm.CartItems.ProductPrice"]</th>
+                                    <th>@T["Checkout.Confirm.CartItems.ProductQuantity"]</th>
+                                    <th>@T["Checkout.Confirm.CartItems.SubTotal"]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if (Model.Cart.Items?.Count > 0)
+                                {
+                                    foreach (var item in Model.Cart.Items)
+                                    {
+                                        <tr style="@(item.Warnings?.Count > 0 ? "border: 0.2rem solid #FF0000;" : "")" class="item@(item.Warnings.Any() ? " unselectable" : "")">
+                                            <td class="product-col">
+                                                <div class="product">
+                                                    @if (item.Picture is not null)
+                                                    {
+                                                        <figure class="product-media">
+                                                            <a href="/@item.ProductSeName">
+                                                                <img src="@item.Picture.ImageUrl" alt="@item.ProductName">
+                                                            </a>
+                                                        </figure>
+                                                    }
+
+                                                    <h3 class="product-title">
+                                                        <a href="/@item.ProductSeName">@item.ProductName</a>
+                                                    </h3><!-- End .product-title -->
+
+                                                    <br />
+
+                                                </div><!-- End .product -->
+                                                @if (item.Warnings?.Count > 0)
+                                                {
+                                                    foreach (var warning in item.Warnings)
+                                                    {
+                                                        <h3 class="product-title">
+                                                            <p class="text-danger">@warning</p>
+                                                        </h3>
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="attributes-col">
+                                                <div class="product-content">
+                                                    <p>@item.AttributeInfo</p>
+                                                </div>
+                                            </td>
+                                            <td class="price-col">@item.Price</td>
+                                            <td class="quantity-col">
+                                                <div class="cart-product-quantity">
+                                                    <p>@item.Quantity</p>
+                                                </div>
+                                                <!-- End .cart-product-quantity -->
+                                            </td>
+                                            <td class="total-col">@(item.SubTotal)</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table><!-- End .table table-wishlist -->
+                    </div>
+                </div>
+            </li>
+        </ol>
+    </div>
+</div>

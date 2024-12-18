@@ -394,7 +394,7 @@ namespace TCommerce.Services.OrderServices
             {
                 var product = await _productService.GetByIdAsync(orderItem.ProductId);
 
-                var addtoCartWarnings = await _shoppingCartService.AddToCartAsync(customer, ShoppingCartType.ShoppingCart, product, orderItem.AttributeJson, orderItem.Quantity);
+                var addtoCartWarnings = await _shoppingCartService.AddOrUpdateCartItemAsync(customer, ShoppingCartType.ShoppingCart, product, orderItem.AttributeJson, orderItem.Quantity);
 
                 if (addtoCartWarnings is not null && addtoCartWarnings.Any())
                 {

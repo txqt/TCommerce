@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,10 +27,8 @@ namespace TCommerce.Services.VNPayServices
         public string CreatePaymentUrl(Order order, string baseUrl)
         {
             var vnPayConfig = _configuration.GetSection("VNPay");
-            //string vnp_TmnCode = vnPayConfig["vnp_TmnCode"];
-            //string vnp_HashSecret = vnPayConfig["vnp_HashSecret"];
-            string vnp_TmnCode = Environment.GetEnvironmentVariable("vnp_TmnCode"); ;
-            string vnp_HashSecret = Environment.GetEnvironmentVariable("vnp_HashSecret");
+            string vnp_TmnCode = vnPayConfig["vnp_TmnCode"];
+            string vnp_HashSecret = vnPayConfig["vnp_HashSecret"];
             string vnp_Url = vnPayConfig["vnp_Url"];
             string vnp_ReturnUrl = vnPayConfig["vnp_ReturnUrl"];
 
@@ -39,7 +38,7 @@ namespace TCommerce.Services.VNPayServices
             vnpay.AddRequestData("vnp_Version", "2.1.0");
             vnpay.AddRequestData("vnp_Command", "pay");
             vnpay.AddRequestData("vnp_TmnCode", vnp_TmnCode);
-            vnpay.AddRequestData("vnp_Amount", (order.OrderTotal * 100).ToString("F0")); //Số tiền thanh toán. Số tiền không mang các ký tự phân tách thập phân, phần nghìn, ký tự tiền tệ. Để gửi số tiền thanh toán là 100,000 VND (một trăm nghìn VNĐ) thì merchant cần nhân thêm 100 lần (khử phần thập phân), sau đó gửi sang VNPAY là: 10000000
+            vnpay.AddRequestData("vnp_Amount", (order.OrderTotal * 100).ToString("0", CultureInfo.InvariantCulture)); //Số tiền thanh toán. Số tiền không mang các ký tự phân tách thập phân, phần nghìn, ký tự tiền tệ. Để gửi số tiền thanh toán là 100,000 VND (một trăm nghìn VNĐ) thì merchant cần nhân thêm 100 lần (khử phần thập phân), sau đó gửi sang VNPAY là: 10000000
             vnpay.AddRequestData("vnp_BankCode", "");
             vnpay.AddRequestData("vnp_CreateDate", order.CreatedOnUtc.ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", "VND");
@@ -58,7 +57,7 @@ namespace TCommerce.Services.VNPayServices
             return paymentUrl;
         }
 
-        public async Task<ServiceResponse<string>> ProcessPaymentCallbackAsync(IQueryCollection queryParameters)
+        public async Task<ServiceResponse<string>> ProcessPaymentCallBackAsync(IQueryCollection queryParameters)
         {
             var vnPayConfig = _configuration.GetSection("VNPay");
             string vnp_HashSecret = vnPayConfig["vnp_HashSecret"];

@@ -51,6 +51,7 @@ using TCommerce.Services.SettingServices;
 using Microsoft.AspNetCore.Hosting;
 using System.Reflection;
 using TCommerce.Web.Services.PrepareModelServices;
+using TCommerce.Services.MomoServices;
 
 namespace TCommerce.Core.Extensions
 {
@@ -167,6 +168,7 @@ namespace TCommerce.Core.Extensions
             services.AddScoped<IOrderProcessingService, OrderProcessingService>();
             services.AddScoped<IOrderModelService, OrderModelService>();
             services.AddScoped<IAdminCommonModelService, AdminCommonModelService>();
+            services.AddScoped<IMomoService, MomoService>();
 
             services.AddSingleton(new JsonSerializerOptions
             {
@@ -232,6 +234,7 @@ namespace TCommerce.Core.Extensions
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
             services.Configure<UrlOptions>(configuration.GetSection("Url"));
             services.Configure<AuthorizationOptionsConfig>(configuration.GetSection("Authorization"));
+            services.Configure<MomoOptions>(configuration.GetSection("MomoAPI"));
             return services;
         }
         public static IServiceCollection AddHttpClient(this IServiceCollection services, IConfiguration configuration)

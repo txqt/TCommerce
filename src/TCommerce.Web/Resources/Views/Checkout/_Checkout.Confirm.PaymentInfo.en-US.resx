@@ -117,7 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Checkout.Confirm.ConfirmButton" xml:space="preserve">
-    <value>Confirm</value>
+  <data name="Checkout.Confirm.PaymentInfo" xml:space="preserve">
+    <value>Payment Info</value>
+  </data>
+  <data name="Checkout.Confirm.SelectPaymentMethod" xml:space="preserve">
+    <value>Chọn phương thức thanh toán</value>
   </data>
 </root>
