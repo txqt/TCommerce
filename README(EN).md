@@ -42,4 +42,4 @@
 - **User Management**: Add, edit, delete users, and manage their roles.
 - **Role and Permission Management**: Add or remove permissions for one or more roles.
 - **Order Management**: Process orders, track statuses, and manage order histories.
-- **Online Payment Integration**: Supports VNPAY (sandbox).
+- **Online Payment Integration**: Momo (test).
