@@ -60,8 +60,19 @@ namespace TCommerce.Web.Controllers
         public async Task<IActionResult> MomoCallBack()
         {
             var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
+            var order = await _orderService.GetOrderByGuidAsync(Guid.Parse(response.OrderId));
 
-            return View("Thankyou", $"#{response.OrderId} {response.Amount} {response.OrderInfo}");
+            if (order != null)
+            {
+                order.PaymentStatus = PaymentStatus.Paid;
+                await _orderService.UpdateOrderAsync(order);
+
+                return View("Thankyou", $"#{response.OrderId}");
+            }
+            else
+            {
+                return Content("Order not found.");
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -12,84 +13,64 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TCommerce.Core.Models.Common;
 using TCommerce.Core.Models.Momo;
 using TCommerce.Core.Models.Options;
 using TCommerce.Core.Models.Orders;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TCommerce.Services.MomoServices
 {
     public interface IMomoService
     {
-        Task<dynamic> CreatePaymentAsync(Order order);
+        Task<MomoCreatePaymentResponseModel> CreatePaymentAsync(Order order);
         MomoExecuteResponseModel PaymentExecuteAsync(IQueryCollection collection);
     }
     public class MomoService : IMomoService
     {
         private readonly IOptions<MomoOptions> _options;
+        private readonly HttpClient _httpClient;
 
-        public MomoService(IOptions<MomoOptions> options)
+        public MomoService(IOptions<MomoOptions> options, HttpClient httpClient)
         {
             _options = options;
+            _httpClient = httpClient;
         }
 
-        public async Task<dynamic> CreatePaymentAsync(Order order)
+        public async Task<MomoCreatePaymentResponseModel> CreatePaymentAsync(Order model)
         {
-            var amount = order.OrderTotal.ToString("0", CultureInfo.InvariantCulture);
-            var orderInfo = "Ma khach hang: " + order.UserId + " Thanh toan don hang:" + order.Id;
+            CollectionLinkRequest request = new CollectionLinkRequest();
+            request.OrderInfo = "(TCommerce) Thanh toan don hang #"+model.OrderGuid.ToString();
+            request.PartnerCode = _options.Value.PartnerCode;
+            request.RedirectUrl = "";
+            request.IpnUrl = "https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b";
+            request.RedirectUrl = _options.Value.ReturnUrl;
+            request.Amount = (long)model.OrderTotal;
+            request.OrderId = model.OrderGuid.ToString();
+            request.RequestId = model.OrderGuid.ToString();
+            request.RequestType = _options.Value.RequestType;
+            request.ExtraData = "";
+            request.PartnerName = "MoMo Payment";
+            request.StoreId = "Test Store";
+            request.OrderGroupId = "";
+            request.AutoCapture = true;
+            request.Lang = "vi";
 
-            var rawData =
-                $"partnerCode={_options.Value.PartnerCode}" +
-                $"&accessKey={_options.Value.AccessKey}" +
-                $"&requestId={order.Id.ToString()}" +
-                $"&amount={amount}" +
-                $"&orderId={order.Id.ToString()}" +
-                $"&orderInfo={orderInfo}" +
-                $"&returnUrl={_options.Value.ReturnUrl}" +
-                $"&notifyUrl={_options.Value.NotifyUrl}" +
-                $"&notifyUrl={_options.Value.NotifyUrl}" +
-                $"&partnerCode={_options.Value.PartnerCode}" +
-                $"&paymentCode={_options.Value.NotifyUrl}" +
-                $"&extraData=";
+            var rawSignature = "accessKey=" + _options.Value.AccessKey + "&amount=" + request.Amount + "&extraData=" + request.ExtraData + "&ipnUrl=" + request.IpnUrl + "&orderId=" + request.OrderId + "&orderInfo=" + request.OrderInfo + "&partnerCode=" + request.PartnerCode + "&redirectUrl=" + request.RedirectUrl + "&requestId=" + request.RequestId + "&requestType=" + request.RequestType;
+            request.Signature = ComputeHmacSha256(rawSignature, _options.Value.SecretKey);
 
-            var signature = ComputeHmacSha256(rawData, _options.Value.SecretKey);
-
-            var requestData = new
+            StringContent httpContent = new StringContent(System.Text.Json. JsonSerializer.Serialize(request, new JsonSerializerOptions()
             {
-                accessKey = _options.Value.AccessKey,
-                partnerCode = _options.Value.PartnerCode,
-                requestType = _options.Value.RequestType,
-                notifyUrl = _options.Value.NotifyUrl,
-                returnUrl = _options.Value.ReturnUrl,
-                orderId = order.Id.ToString(),
-                amount,
-                orderInfo,
-                requestId = order.Id.ToString(),
-                extraData = "",
-                signature
-            };
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            }), System.Text.Encoding.UTF8, "application/json");
+            var quickPayResponse = await _httpClient.PostAsync("https://test-payment.momo.vn/v2/gateway/api/create", httpContent);
+            var contents = quickPayResponse.Content.ReadAsStringAsync().Result;
+            System.Console.WriteLine(contents + "");
 
-            var jsonData = JsonConvert.SerializeObject(requestData);
-
-            using var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, _options.Value.MomoApiUrl)
-            {
-                Content = new StringContent(jsonData, Encoding.UTF8, "application/json") // Thiết lập Content-Type ở đây
-            };
-
-            var response = await client.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception($"HTTP request failed with status code: {response.StatusCode}");
-            }
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject(responseContent);
+            return JsonConvert.DeserializeObject<MomoCreatePaymentResponseModel>(contents);
         }
-
 
         public MomoExecuteResponseModel PaymentExecuteAsync(IQueryCollection collection)
         {
@@ -103,22 +84,19 @@ namespace TCommerce.Services.MomoServices
                 OrderInfo = orderInfo
             };
         }
-
         private string ComputeHmacSha256(string message, string secretKey)
         {
-            var keyBytes = Encoding.UTF8.GetBytes(secretKey);
-            var messageBytes = Encoding.UTF8.GetBytes(message);
+            ASCIIEncoding encoding = new ASCIIEncoding();
 
-            byte[] hashBytes;
+            Byte[] textBytes = encoding.GetBytes(message);
+            Byte[] keyBytes = encoding.GetBytes(secretKey);
 
-            using (var hmac = new HMACSHA256(keyBytes))
-            {
-                hashBytes = hmac.ComputeHash(messageBytes);
-            }
+            Byte[] hashBytes;
 
-            var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            using (HMACSHA256 hash = new HMACSHA256(keyBytes))
+                hashBytes = hash.ComputeHash(textBytes);
 
-            return hashString;
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
     }
 }
