@@ -42,4 +42,4 @@
 - **Quản lý người dùng**: Thêm, sửa, xóa người dùng, gán hoặc sửa vai trò.
 - **Quản lý vai trò và quyền hạn**: Thêm hoặc xóa quyền của một hoặc nhiều vai trò.
 - **Quản lý đơn hàng**: Xử lý, theo dõi trạng thái và quản lý lịch sử đơn hàng.
-- **Thanh toán trực tuyến**: Tích hợp VNPAY (sandbox).
+- **Thanh toán trực tuyến**: Momo (test).
