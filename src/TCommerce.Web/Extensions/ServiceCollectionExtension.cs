@@ -57,6 +57,18 @@ namespace TCommerce.Core.Extensions
 {
     public static class ServiceCollectionExtension
     {
+        public static IServiceCollection AddCustomServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddServices();
+            services.AddDatabase(configuration);
+            services.AddOptionsConfig(configuration);
+            services.AddHttpClient(configuration);
+            services.AddCustomOptions(configuration);
+            services.AddRateLimit(configuration);
+            services.AddIdentityConfig();
+            services.AddSetting();
+            return services;
+        }
         public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthorization(options =>
@@ -112,7 +124,6 @@ namespace TCommerce.Core.Extensions
 
             return services;
         }
-        // Thêm các dịch vụ cần thiết
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(RepositoryService<>));
@@ -179,8 +190,6 @@ namespace TCommerce.Core.Extensions
 
             return services;
         }
-
-        // Thêm cấu hình cơ sở dữ liệu
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
             if (!DatabaseManager.IsDatabaseInstalled())
@@ -194,8 +203,6 @@ namespace TCommerce.Core.Extensions
 
             return services;
         }
-
-        // Thêm cấu hình Identity
         public static IServiceCollection AddIdentityConfig(this IServiceCollection services)
         {
             if (!DatabaseManager.IsDatabaseInstalled())
@@ -228,7 +235,6 @@ namespace TCommerce.Core.Extensions
 
             return services;
         }
-
         public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));

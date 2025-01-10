@@ -20,16 +20,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 DotEnv.Load();
 
-builder.Services.AddServices();
-builder.Services.AddDatabase(builder.Configuration);
-builder.Services.AddOptionsConfig(builder.Configuration);
-builder.Services.AddHttpClient(builder.Configuration);
-builder.Services.AddIdentityConfig();
+builder.Services.AddCustomServices(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
-builder.Services.AddCustomOptions(builder.Configuration);
-builder.Services.AddRateLimit(builder.Configuration);
-builder.Services.AddSetting();
 builder.Services.AddSingleton(new JsonSerializerOptions
 {
     PropertyNamingPolicy = null,

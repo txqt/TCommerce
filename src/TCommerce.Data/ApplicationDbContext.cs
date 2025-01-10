@@ -37,6 +37,13 @@ namespace TCommerce.Data
                 }
             }
 
+            foreach (var property in modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetProperties())
+                .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
+                {
+                    property.SetColumnType("decimal(18,2)");
+                }
+
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
@@ -46,8 +53,8 @@ namespace TCommerce.Data
         public DbSet<ProductAttribute> ProductAttributes { get; set; }
         public DbSet<ProductAttributeMapping> Product_ProductAttribute_Mapping { get; set; }
         public DbSet<ProductAttributeValue> ProductAttributeValues { get; set; }
-        public DbSet<ProductCategory> Product_ProductCategory_Mapping { get; set; }
-        public DbSet<ProductPicture> Product_ProductPicture_Mapping { get; set; }
+        public DbSet<ProductCategory> Product_Category_Mapping { get; set; }
+        public DbSet<ProductPicture> Product_Picture_Mapping { get; set; }
         public DbSet<ProductReview> ProductReviews { get; set; }
         public DbSet<ProductReviewHelpfulness> ProductReviewHelpfulness { get; set; }
         public DbSet<Banner> Banners { get; set; }
